@@ -21,7 +21,7 @@ vcd:
 	gtkwave ./dump/sim.vcd
 
 diff:
-	cd difftest && make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 -j 16 EMU_TRACE=1
+	cd difftest_trinity && make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 -j 16 EMU_TRACE=1
 
 run_diff: diff
 	./build/emu --diff=$(REF)  --dump-wave-full --wave-path=$(WAVE_PATH) -b 0 -e 5119 --image=/nfs/home/jinpeize/trinity/r2r/coremark-riscv64-xs-flash.bin
