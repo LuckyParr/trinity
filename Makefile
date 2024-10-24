@@ -5,7 +5,7 @@ SIM_CPP = ./csrc/sim.cpp
 CSRC = ./csrc/dpic.cpp
 REF = /nfs/home/jinpeize/trinity/r2r/riscv64-nemu-interpreter-so
 BIN = /nfs/home/jinpeize/trinity/r2r/coremark-riscv64-xs-flash.bin
-WAVE_PATH = /nfs/home/jinpeize/trinity/dump/test.vcd
+WAVE_PATH = /nfs/home/jinpeize/trinity/dump/sim.vcd
 sim-verilog:
 	echo NULL
 
@@ -24,7 +24,10 @@ diff:
 	cd difftest_trinity && make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 -j 16 EMU_TRACE=1
 
 run_diff: diff
-	./build/emu --diff=$(REF)  --dump-wave-full --wave-path=$(WAVE_PATH) -b 0 -e 5119 --image=/nfs/home/jinpeize/trinity/r2r/coremark-riscv64-xs-flash.bin
+	./build/emu --diff=$(REF)  --dump-wave-full --wave-path=$(WAVE_PATH) -b 0 -e 10000 --image=/nfs/home/jinpeize/trinity/r2r/coremark-riscv64-xs-flash.bin
 
 strace:
 	strace -e trace=open ./build/emu --diff=$(REF)  --dump-wave-full --wave-path=$(WAVE_PATH) -b 0 -e 5120 --image=/nfs/home/jinpeize/trinity/r2r/coremark-riscv64-xs-flash.bin
+
+clean:
+	rm -rf build/emu-compile emu time.log
