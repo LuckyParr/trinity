@@ -1,0 +1,3 @@
+[submodule "difftest_trinity"]
+	path = difftest_trinity
+	url = https://github.com/Jpz-sdju/difftest_trinity.git

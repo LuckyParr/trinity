@@ -1,0 +1,109 @@
+`begin_keywords "1800-2023"
+`line 1 "../vsrc/sim_ram/MemRWHelper.v" 1
+ 
+import "DPI-C" function longint difftest_ram_read(input longint rIdx);
+  
+
+
+`line 6 "../vsrc/sim_ram/MemRWHelper.v" 0
+ 
+import "DPI-C" function void difftest_ram_write
+(
+  input  longint index,
+  input  longint data,
+  input  longint mask
+);
+  
+
+`line 15 "../vsrc/sim_ram/MemRWHelper.v" 0
+module MemRWHelper(
+  
+input             r_enable,
+input      [63:0] r_index,
+output reg [63:0] r_data,
+
+`line 21 "../vsrc/sim_ram/MemRWHelper.v" 0
+  
+input         w_enable,
+input  [63:0] w_index,
+input  [63:0] w_data,
+input  [63:0] w_mask,
+
+`line 27 "../vsrc/sim_ram/MemRWHelper.v" 0
+  input enable,
+  input clock
+);
+  
+ 
+ 
+ 
+ 
+ 
+ 
+
+`line 38 "../vsrc/sim_ram/MemRWHelper.v" 0
+ 
+ 
+
+`line 41 "../vsrc/sim_ram/MemRWHelper.v" 0
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+`line 67 "../vsrc/sim_ram/MemRWHelper.v" 0
+  always @(posedge clock) begin
+    if (enable) begin
+      
+ 
+if (r_enable) begin
+  r_data <= difftest_ram_read(r_index);
+end
+
+`line 75 "../vsrc/sim_ram/MemRWHelper.v" 0
+  
+    
+
+`line 78 "../vsrc/sim_ram/MemRWHelper.v" 0
+  
+
+`line 80 "../vsrc/sim_ram/MemRWHelper.v" 0
+      
+ 
+if (w_enable) begin
+  difftest_ram_write(w_index, w_data, w_mask);
+end
+
+`line 86 "../vsrc/sim_ram/MemRWHelper.v" 0
+  
+          
+
+`line 89 "../vsrc/sim_ram/MemRWHelper.v" 0
+  
+
+`line 91 "../vsrc/sim_ram/MemRWHelper.v" 0
+    end
+  end
+endmodule
+`line 94 "../vsrc/sim_ram/MemRWHelper.v" 0

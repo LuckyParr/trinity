@@ -1,0 +1,290 @@
+// Dump of all post-preprocessor input
+// Blank lines and `line directives have been removed
+//
+// Information:
+//   Verilator 5.025 devel rev v5.024-69-g7c9fa8647
+//   Arguments: --exe -O0 --cc --top-module SimTop +define+VERILATOR=1 +define+PRINTF_COND=1 +define+RANDOMIZE_REG_INIT +define+RANDOMIZE_MEM_INIT +define+RANDOMIZE_GARBAGE_ASSIGN +define+RANDOMIZE_DELAY=0 -Wno-STMTDLY -Wno-WIDTH --max-num-width 150000 --assert --x-assign unique --output-split 30000 --output-split-cfuncs 30000 -I/nfs/home/jinpeize/trinity/build/rtl -I/nfs/home/jinpeize/trinity/build/generated-src -I../vsrc/ -I../vsrc/sim_ram/ -CFLAGS -I/nfs/home/jinpeize/trinity/difftest/src/test/csrc/common -I/nfs/home/jinpeize/trinity/difftest/config -DNOOP_HOME=\"/nfs/home/jinpeize/trinity\" -I/nfs/home/jinpeize/trinity/build/generated-src -I/nfs/home/jinpeize/trinity/difftest/src/test/csrc/plugin/include -I/nfs/home/jinpeize/trinity/difftest/src/test/csrc/difftest -I/nfs/home/jinpeize/trinity/difftest/src/test/csrc/plugin/spikedasm -I/nfs/home/jinpeize/trinity/difftest/src/test/csrc/verilator -DVERILATOR -DNUM_CORES=1 --std=c++17 -DVERILATOR_4_210 -LDFLAGS -lz -lzstd -ldl -CFLAGS $(PGO_CFLAGS) -LDFLAGS $(PGO_LDFLAGS) -o /nfs/home/jinpeize/trinity/build/emu +define+DIFFTEST --instr-count-dpi 1 --no-timing +define+VERILATOR_5 --quiet-stats --trace --debug -CFLAGS -ggdb -LDFLAGS -ggdb -Mdir /nfs/home/jinpeize/trinity/build/emu-compile /nfs/home/jinpeize/trinity/build/rtl/SimTop.sv /nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/ref.v /nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v /nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/SimJTAG.v /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/uart.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/main.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/compress.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/common.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/golden.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/flash.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/coverage.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/lightsss.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/device.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/keyboard.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/dut.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/ram.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/SimJTAG.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/vga.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/remote_bitbang.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/perf.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/common/sdcard.cpp /nfs/home/jinpeize/trinity/build/generated-src/difftest-dpic.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/difftest/difftrace.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/difftest/difftest.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/difftest/refproxy.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/difftest/goldenmem.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/plugin/spikedasm/spikedasm.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/verilator/snapshot.cpp /nfs/home/jinpeize/trinity/difftest/src/test/csrc/verilator/emu.cpp
+//   Build jobs: 1
+//   Verilate jobs: 1
+
+`begin_keywords "1800-2023"
+module SimTop (
+    input wire reset,
+    input wire clock,
+    input wire difftest_logCtrl_begin,
+    input wire difftest_logCtrl_end,
+    output wire difftest_uart_out_valid,
+    output wire [7:0] difftest_uart_out_ch,
+    input wire difftest_uart_in_valid,
+    input wire [7:0] difftest_uart_in_ch,
+    input wire difftest_perfCtrl_clean,
+    input wire difftest_perfCtrl_dump,
+    output wire difftest_exit,
+    output wire difftest_step
+);
+  assign difftest_step = 1'b1;
+  assign difftest_exit = 1'b0;
+  assign difftest_uart_out_ch = 8'b0;
+  assign difftest_uart_out_valid = 1'b0;
+  top u_top (
+      .clk  (clock),
+      .rst_n(~reset),
+      .opt  ()
+  );
+  reg [63:0] cnt;
+  always @(posedge clock) begin
+    if (reset) begin
+      cnt <= 'b0;
+    end
+    else begin
+     cnt <= cnt + 1'b1;
+    end
+  end
+  DifftestTrapEvent u_DifftestTrapEvent (
+      .clock      (clock),
+      .enable     (1'b1),
+      .io_hasTrap (1'b0),
+      .io_cycleCnt(cnt),
+      .io_instrCnt('b0),
+      .io_hasWFI  ('b0),
+      .io_code    ('b0),
+      .io_pc      ('b0),
+      .io_coreid  ('b0)
+  );
+endmodule
+
+`begin_keywords "1800-2023"
+import "DPI-C" function byte pte_helper (
+  input  longint satp,
+  input  longint vpn,
+  output longint pte,
+  output byte    level
+);
+module PTEHelper(
+  input             clock,
+  input             enable,
+  input      [63:0] satp,
+  input      [63:0] vpn,
+  output reg [63:0] pte,
+  output reg [ 7:0] level,
+  output reg [ 7:0] pf
+);
+  always @(posedge clock) begin
+    if (enable) begin
+      pf <= pte_helper(satp, vpn, pte, level);
+    end
+  end
+endmodule
+import "DPI-C" function longint amo_helper(
+  input byte    cmd,
+  input longint addr,
+  input longint wdata,
+  input byte    mask
+);
+module AMOHelper(
+  input             clock,
+  input             enable,
+  input      [ 4:0] cmd,
+  input      [63:0] addr,
+  input      [63:0] wdata,
+  input      [ 7:0] mask,
+  output reg [63:0] rdata
+);
+  always @(posedge clock) begin
+    if (enable) begin
+      rdata <= amo_helper(cmd, addr, wdata, mask);
+    end
+  end
+endmodule
+
+`begin_keywords "1800-2023"
+import "DPI-C" function void xs_assert
+(
+  input  longint    line
+);
+import "DPI-C" function void xs_assert_v2
+(
+  input  string     filename,
+  input  longint    line
+);
+
+`begin_keywords "1800-2023"
+import "DPI-C" function int jtag_tick
+(
+ output bit jtag_TCK,
+ output bit jtag_TMS,
+ output bit jtag_TDI,
+ output bit jtag_TRSTn,
+ input bit  jtag_TDO
+);
+module SimJTAG #(
+                 parameter TICK_DELAY = 50
+                 )(
+                   input         clock,
+                   input         reset,
+                   input         enable,
+                   input         init_done,
+                   output        jtag_TCK,
+                   output        jtag_TMS,
+                   output        jtag_TDI,
+                   output        jtag_TRSTn,
+                   input         jtag_TDO_data,
+                   input         jtag_TDO_driven,
+                   output [31:0] exit
+                   );
+   reg [31:0]                    tickCounterReg;
+   wire [31:0]                   tickCounterNxt;
+   assign tickCounterNxt = (tickCounterReg == 0) ? TICK_DELAY :  (tickCounterReg - 1);
+   bit          r_reset;
+   logic [31:0] random_bits = $random;
+   wire         #0.1 __jtag_TDO = jtag_TDO_driven ?
+                jtag_TDO_data : random_bits[0];
+   bit          __jtag_TCK;
+   bit          __jtag_TMS;
+   bit          __jtag_TDI;
+   bit          __jtag_TRSTn;
+   int          __exit;
+   reg          init_done_sticky;
+   assign #0.1 jtag_TCK   = __jtag_TCK;
+   assign #0.1 jtag_TMS   = __jtag_TMS;
+   assign #0.1 jtag_TDI   = __jtag_TDI;
+   assign #0.1 jtag_TRSTn = __jtag_TRSTn;
+   assign #0.1 exit = __exit;
+   always @(posedge clock) begin
+      r_reset <= reset;
+      if (reset || r_reset) begin
+         __exit = 0;
+         tickCounterReg <= TICK_DELAY;
+         init_done_sticky <= 1'b0;
+         __jtag_TCK = !__jtag_TCK;
+      end else begin
+         init_done_sticky <= init_done | init_done_sticky;
+         if (enable && init_done_sticky) begin
+            tickCounterReg <= tickCounterNxt;
+            if (tickCounterReg == 0) begin
+               __exit = jtag_tick(
+                                  __jtag_TCK,
+                                  __jtag_TMS,
+                                  __jtag_TDI,
+                                  __jtag_TRSTn,
+                                  __jtag_TDO);
+            end
+         end  
+      end  
+   end  
+endmodule
+
+`begin_keywords "1800-2023"
+module top #(
+) (
+    input wire clk,
+    input wire rst_n,
+    output wire [31:0] opt
+);
+  reg [ 3:0] a;
+  reg [31:0] b;
+  always @(posedge clk) begin
+    if (~rst_n) begin
+      a <= 'b0;
+    end else if (a[3] != 1'b1) begin
+      a <= a + 1'b1;
+    end else begin
+      a <= a;
+    end
+  end
+  always @(posedge clk) begin
+    if (~rst_n) begin
+      b <= 'b0;
+    end else if (a[3] == 1'b1) begin
+      b <= 'b1;
+    end
+  end
+  assign opt = b;
+  reg r_enable;
+  reg [63:0] r_index;
+  reg [63:0] r_data;
+  reg w_enable;
+  reg [63:0] w_index;
+  reg [63:0] w_data;
+  reg [63:0] w_mask;
+  reg enable;
+  MemRWHelper mem (
+      .r_enable(r_enable),   
+      .r_index (r_index),    
+      .r_data  (r_data),     
+      .w_enable(w_enable),   
+      .w_index(w_index),   
+      .w_data(w_data),   
+      .w_mask(w_mask),   
+      .enable(1'b1),   
+      .clock(clk)   
+  );
+  always @(posedge clk) begin
+    if (~rst_n) begin
+      r_enable <= 'b0;
+      r_index  <= 'b0;
+      w_enable <= 'b0;
+      w_index  <= 'b0;
+      w_data   <= 'b0;
+      w_mask   <= 'b0;
+    end
+  end
+endmodule
+
+`begin_keywords "1800-2023"
+module DifftestTrapEvent(
+  input         clock,
+  input         enable,
+  input         io_hasTrap,
+  input  [63:0] io_cycleCnt,
+  input  [63:0] io_instrCnt,
+  input         io_hasWFI,
+  input  [31:0] io_code,
+  input  [63:0] io_pc,
+  input  [ 7:0] io_coreid
+);
+import "DPI-C" function void v_difftest_TrapEvent (
+  input       bit io_hasTrap,
+  input   longint io_cycleCnt,
+  input   longint io_instrCnt,
+  input       bit io_hasWFI,
+  input       int io_code,
+  input   longint io_pc,
+  input      byte io_coreid
+);
+  always @(posedge clock) begin
+    if (enable)
+      v_difftest_TrapEvent (io_hasTrap, io_cycleCnt, io_instrCnt, io_hasWFI, io_code, io_pc, io_coreid);
+  end
+endmodule
+
+`begin_keywords "1800-2023"
+import "DPI-C" function longint difftest_ram_read(input longint rIdx);
+import "DPI-C" function void difftest_ram_write
+(
+  input  longint index,
+  input  longint data,
+  input  longint mask
+);
+module MemRWHelper(
+input             r_enable,
+input      [63:0] r_index,
+output reg [63:0] r_data,
+input         w_enable,
+input  [63:0] w_index,
+input  [63:0] w_data,
+input  [63:0] w_mask,
+  input enable,
+  input clock
+);
+  always @(posedge clock) begin
+    if (enable) begin
+if (r_enable) begin
+  r_data <= difftest_ram_read(r_index);
+end
+if (w_enable) begin
+  difftest_ram_write(w_index, w_data, w_mask);
+end
+    end
+  end
+endmodule

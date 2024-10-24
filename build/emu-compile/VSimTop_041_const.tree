@@ -1,0 +1,680 @@
+Verilator Tree Dump (format 0x3900) from <e8011> to <e8053>
+     NETLIST 0x555556cca000 <e1> {a0aa}  $root [1ps/1ps]
+    1: MODULE 0x555556dca900 <e5091> {d1ai}  __024root  L1 [P] [1ps]
+    1:2: CELL 0x555556dcaa20 <e7968> {d1ai}  __PVT__SimTop -> MODULE 0x555556ce1c20 <e5093> {d1ai}  SimTop  L2 [1ps]
+    1:2: VAR 0x555556dcab40 <e5095> {d2aq} @dt=0x555556d42840@(G/w1)  reset [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2: VAR 0x555556dcac60 <e5100> {d3aq} @dt=0x555556d42840@(G/w1)  clock [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2: VAR 0x555556dcad80 <e5106> {d4aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_begin [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2: VAR 0x555556dcaea0 <e5112> {d5aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_end [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2: VAR 0x555556dcafc0 <e5118> {d6ar} @dt=0x555556d42840@(G/w1)  difftest_uart_out_valid [PO] OUTPUT [P] [VSTATIC]  WIRE
+    1:2: VAR 0x555556dcb0e0 <e5124> {d7ax} @dt=0x555556d4db00@(G/w8)  difftest_uart_out_ch [PO] OUTPUT [P] [VSTATIC]  WIRE
+    1:2: VAR 0x555556dcb200 <e5130> {d8aq} @dt=0x555556d42840@(G/w1)  difftest_uart_in_valid [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2: VAR 0x555556dcb320 <e5136> {d9aw} @dt=0x555556d4db00@(G/w8)  difftest_uart_in_ch [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2: VAR 0x555556dcb440 <e5142> {d11aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_clean [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2: VAR 0x555556dcb560 <e5148> {d12aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_dump [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2: VAR 0x555556dcb680 <e5154> {d14ar} @dt=0x555556d42840@(G/w1)  difftest_exit [PO] OUTPUT [P] [VSTATIC]  WIRE
+    1:2: VAR 0x555556dcb7a0 <e5160> {d15ar} @dt=0x555556d42840@(G/w1)  difftest_step [PO] OUTPUT [P] [VSTATIC]  WIRE
+    1:2: CELL 0x555556dcb8c0 <e7969> {a0aa}  __PVT____024unit -> PACKAGE 0x555556d55320 <e3763> {a0aa}  __024unit  L3 [LIB] [1ps]
+    1:2: TOPSCOPE 0x555556d26aa0 <e6364> {d1ai}
+    1:2:2: SCOPE 0x555556daddc0 <e7970> {d1ai}  TOP [abovep=0] [cellp=0] [modp=0x555556dca900]
+    1:2:2:1: VARSCOPE 0x555556e0b500 <e6377> {d2aq} @dt=0x555556d42840@(G/w1)  TOP->reset [T] [scopep=0x555556daddc0] -> VAR 0x555556dcab40 <e5095> {d2aq} @dt=0x555556d42840@(G/w1)  reset [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:1: VARSCOPE 0x555556e0b5c0 <e6380> {d3aq} @dt=0x555556d42840@(G/w1)  TOP->clock [T] [scopep=0x555556daddc0] -> VAR 0x555556dcac60 <e5100> {d3aq} @dt=0x555556d42840@(G/w1)  clock [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:1: VARSCOPE 0x555556e0b680 <e6383> {d4aq} @dt=0x555556d42840@(G/w1)  TOP->difftest_logCtrl_begin [T] [scopep=0x555556daddc0] -> VAR 0x555556dcad80 <e5106> {d4aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_begin [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:1: VARSCOPE 0x555556e0b740 <e6386> {d5aq} @dt=0x555556d42840@(G/w1)  TOP->difftest_logCtrl_end [T] [scopep=0x555556daddc0] -> VAR 0x555556dcaea0 <e5112> {d5aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_end [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:1: VARSCOPE 0x555556e0b800 <e6389> {d6ar} @dt=0x555556d42840@(G/w1)  TOP->difftest_uart_out_valid [T] [scopep=0x555556daddc0] -> VAR 0x555556dcafc0 <e5118> {d6ar} @dt=0x555556d42840@(G/w1)  difftest_uart_out_valid [PO] OUTPUT [P] [VSTATIC]  WIRE
+    1:2:2:1: VARSCOPE 0x555556e0b8c0 <e6392> {d7ax} @dt=0x555556d4db00@(G/w8)  TOP->difftest_uart_out_ch [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb0e0 <e5124> {d7ax} @dt=0x555556d4db00@(G/w8)  difftest_uart_out_ch [PO] OUTPUT [P] [VSTATIC]  WIRE
+    1:2:2:1: VARSCOPE 0x555556e0b980 <e6395> {d8aq} @dt=0x555556d42840@(G/w1)  TOP->difftest_uart_in_valid [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb200 <e5130> {d8aq} @dt=0x555556d42840@(G/w1)  difftest_uart_in_valid [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:1: VARSCOPE 0x555556e0ba40 <e6398> {d9aw} @dt=0x555556d4db00@(G/w8)  TOP->difftest_uart_in_ch [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb320 <e5136> {d9aw} @dt=0x555556d4db00@(G/w8)  difftest_uart_in_ch [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:1: VARSCOPE 0x555556e0bb00 <e6401> {d11aq} @dt=0x555556d42840@(G/w1)  TOP->difftest_perfCtrl_clean [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb440 <e5142> {d11aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_clean [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:1: VARSCOPE 0x555556e0bbc0 <e6404> {d12aq} @dt=0x555556d42840@(G/w1)  TOP->difftest_perfCtrl_dump [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb560 <e5148> {d12aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_dump [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:1: VARSCOPE 0x555556e0bc80 <e6407> {d14ar} @dt=0x555556d42840@(G/w1)  TOP->difftest_exit [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb680 <e5154> {d14ar} @dt=0x555556d42840@(G/w1)  difftest_exit [PO] OUTPUT [P] [VSTATIC]  WIRE
+    1:2:2:1: VARSCOPE 0x555556e0bd40 <e6410> {d15ar} @dt=0x555556d42840@(G/w1)  TOP->difftest_step [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb7a0 <e5160> {d15ar} @dt=0x555556d42840@(G/w1)  difftest_step [PO] OUTPUT [P] [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNW 0x555556d26b40 <e5868> {d15ar} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: VARREF 0x555556d36340 <e6913> {d15ar} @dt=0x555556d42840@(G/w1)  difftest_step [RV] <- VARSCOPE 0x555556e052c0 <e6260> {d15ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_step [T] [scopep=0x555556dadea0] -> VAR 0x555556d54a20 <e4781> {d15ar} @dt=0x555556d42840@(G/w1)  difftest_step OUTPUT [VSTATIC]  WIRE
+    1:2:2:2:2: VARREF 0x555556d288f0 <e5866> {d15ar} @dt=0x555556d42840@(G/w1)  difftest_step [LV] => VARSCOPE 0x555556e0bd40 <e6410> {d15ar} @dt=0x555556d42840@(G/w1)  TOP->difftest_step [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb7a0 <e5160> {d15ar} @dt=0x555556d42840@(G/w1)  difftest_step [PO] OUTPUT [P] [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNW 0x555556d26be0 <e6365> {d14ar} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: VARREF 0x555556d36410 <e6919> {d14ar} @dt=0x555556d42840@(G/w1)  difftest_exit [RV] <- VARSCOPE 0x555556e05380 <e6257> {d14ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_exit [T] [scopep=0x555556dadea0] -> VAR 0x555556d54900 <e4773> {d14ar} @dt=0x555556d42840@(G/w1)  difftest_exit OUTPUT [VSTATIC]  WIRE
+    1:2:2:2:2: VARREF 0x555556d289c0 <e5855> {d14ar} @dt=0x555556d42840@(G/w1)  difftest_exit [LV] => VARSCOPE 0x555556e0bc80 <e6407> {d14ar} @dt=0x555556d42840@(G/w1)  TOP->difftest_exit [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb680 <e5154> {d14ar} @dt=0x555556d42840@(G/w1)  difftest_exit [PO] OUTPUT [P] [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNW 0x555556d26c80 <e6366> {d12aq} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: VARREF 0x555556d28a90 <e5843> {d12aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_dump [RV] <- VARSCOPE 0x555556e0bbc0 <e6404> {d12aq} @dt=0x555556d42840@(G/w1)  TOP->difftest_perfCtrl_dump [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb560 <e5148> {d12aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_dump [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:2:2: VARREF 0x555556d364e0 <e6925> {d12aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_dump [LV] => VARSCOPE 0x555556e05440 <e6254> {d12aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_perfCtrl_dump [T] [scopep=0x555556dadea0] -> VAR 0x555556d547e0 <e4765> {d12aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_dump INPUT [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNW 0x555556d26d20 <e6367> {d11aq} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: VARREF 0x555556d28b60 <e5832> {d11aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_clean [RV] <- VARSCOPE 0x555556e0bb00 <e6401> {d11aq} @dt=0x555556d42840@(G/w1)  TOP->difftest_perfCtrl_clean [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb440 <e5142> {d11aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_clean [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:2:2: VARREF 0x555556d365b0 <e6931> {d11aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_clean [LV] => VARSCOPE 0x555556e05500 <e6251> {d11aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_perfCtrl_clean [T] [scopep=0x555556dadea0] -> VAR 0x555556d546c0 <e4757> {d11aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_clean INPUT [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNW 0x555556d26dc0 <e6368> {d9aw} @dt=0x555556d4db00@(G/w8)
+    1:2:2:2:1: VARREF 0x555556d28c30 <e5821> {d9aw} @dt=0x555556d4db00@(G/w8)  difftest_uart_in_ch [RV] <- VARSCOPE 0x555556e0ba40 <e6398> {d9aw} @dt=0x555556d4db00@(G/w8)  TOP->difftest_uart_in_ch [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb320 <e5136> {d9aw} @dt=0x555556d4db00@(G/w8)  difftest_uart_in_ch [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:2:2: VARREF 0x555556d36680 <e6937> {d9aw} @dt=0x555556d4db00@(G/w8)  difftest_uart_in_ch [LV] => VARSCOPE 0x555556e055c0 <e6248> {d9aw} @dt=0x555556d4db00@(G/w8)  TOP.__PVT__SimTop->difftest_uart_in_ch [T] [scopep=0x555556dadea0] -> VAR 0x555556d545a0 <e4913> {d9aw} @dt=0x555556d4db00@(G/w8)  difftest_uart_in_ch INPUT [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNW 0x555556d26e60 <e6369> {d8aq} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: VARREF 0x555556d28d00 <e5810> {d8aq} @dt=0x555556d42840@(G/w1)  difftest_uart_in_valid [RV] <- VARSCOPE 0x555556e0b980 <e6395> {d8aq} @dt=0x555556d42840@(G/w1)  TOP->difftest_uart_in_valid [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb200 <e5130> {d8aq} @dt=0x555556d42840@(G/w1)  difftest_uart_in_valid [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:2:2: VARREF 0x555556d36750 <e6943> {d8aq} @dt=0x555556d42840@(G/w1)  difftest_uart_in_valid [LV] => VARSCOPE 0x555556e05680 <e6245> {d8aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_uart_in_valid [T] [scopep=0x555556dadea0] -> VAR 0x555556d54480 <e4741> {d8aq} @dt=0x555556d42840@(G/w1)  difftest_uart_in_valid INPUT [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNW 0x555556d26f00 <e6370> {d7ax} @dt=0x555556d4db00@(G/w8)
+    1:2:2:2:1: VARREF 0x555556d36820 <e6949> {d7ax} @dt=0x555556d4db00@(G/w8)  difftest_uart_out_ch [RV] <- VARSCOPE 0x555556e05740 <e6242> {d7ax} @dt=0x555556d4db00@(G/w8)  TOP.__PVT__SimTop->difftest_uart_out_ch [T] [scopep=0x555556dadea0] -> VAR 0x555556d54360 <e4733> {d7ax} @dt=0x555556d4db00@(G/w8)  difftest_uart_out_ch OUTPUT [VSTATIC]  WIRE
+    1:2:2:2:2: VARREF 0x555556d28dd0 <e5800> {d7ax} @dt=0x555556d4db00@(G/w8)  difftest_uart_out_ch [LV] => VARSCOPE 0x555556e0b8c0 <e6392> {d7ax} @dt=0x555556d4db00@(G/w8)  TOP->difftest_uart_out_ch [T] [scopep=0x555556daddc0] -> VAR 0x555556dcb0e0 <e5124> {d7ax} @dt=0x555556d4db00@(G/w8)  difftest_uart_out_ch [PO] OUTPUT [P] [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNW 0x555556d26fa0 <e6371> {d6ar} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: VARREF 0x555556d368f0 <e6955> {d6ar} @dt=0x555556d42840@(G/w1)  difftest_uart_out_valid [RV] <- VARSCOPE 0x555556e05800 <e6239> {d6ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_uart_out_valid [T] [scopep=0x555556dadea0] -> VAR 0x555556d54240 <e4725> {d6ar} @dt=0x555556d42840@(G/w1)  difftest_uart_out_valid OUTPUT [VSTATIC]  WIRE
+    1:2:2:2:2: VARREF 0x555556d28ea0 <e5789> {d6ar} @dt=0x555556d42840@(G/w1)  difftest_uart_out_valid [LV] => VARSCOPE 0x555556e0b800 <e6389> {d6ar} @dt=0x555556d42840@(G/w1)  TOP->difftest_uart_out_valid [T] [scopep=0x555556daddc0] -> VAR 0x555556dcafc0 <e5118> {d6ar} @dt=0x555556d42840@(G/w1)  difftest_uart_out_valid [PO] OUTPUT [P] [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNW 0x555556d27040 <e6372> {d5aq} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: VARREF 0x555556d28f70 <e5777> {d5aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_end [RV] <- VARSCOPE 0x555556e0b740 <e6386> {d5aq} @dt=0x555556d42840@(G/w1)  TOP->difftest_logCtrl_end [T] [scopep=0x555556daddc0] -> VAR 0x555556dcaea0 <e5112> {d5aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_end [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:2:2: VARREF 0x555556d369c0 <e6961> {d5aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_end [LV] => VARSCOPE 0x555556e058c0 <e6236> {d5aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_logCtrl_end [T] [scopep=0x555556dadea0] -> VAR 0x555556d54120 <e4717> {d5aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_end INPUT [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNW 0x555556d270e0 <e6373> {d4aq} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: VARREF 0x555556d29040 <e5766> {d4aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_begin [RV] <- VARSCOPE 0x555556e0b680 <e6383> {d4aq} @dt=0x555556d42840@(G/w1)  TOP->difftest_logCtrl_begin [T] [scopep=0x555556daddc0] -> VAR 0x555556dcad80 <e5106> {d4aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_begin [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:2:2: VARREF 0x555556d36a90 <e6967> {d4aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_begin [LV] => VARSCOPE 0x555556e05980 <e6233> {d4aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_logCtrl_begin [T] [scopep=0x555556dadea0] -> VAR 0x555556d54000 <e4709> {d4aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_begin INPUT [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNW 0x555556d27180 <e6374> {d3aq} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: VARREF 0x555556d29110 <e5755> {d3aq} @dt=0x555556d42840@(G/w1)  clock [RV] <- VARSCOPE 0x555556e0b5c0 <e6380> {d3aq} @dt=0x555556d42840@(G/w1)  TOP->clock [T] [scopep=0x555556daddc0] -> VAR 0x555556dcac60 <e5100> {d3aq} @dt=0x555556d42840@(G/w1)  clock [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:2:2: VARREF 0x555556d36b60 <e6973> {d3aq} @dt=0x555556d42840@(G/w1)  clock [LV] => VARSCOPE 0x555556e05a40 <e6230> {d3aq} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->clock [T] [scopep=0x555556dadea0] -> VAR 0x555556ce1e60 <e4701> {d3aq} @dt=0x555556d42840@(G/w1)  clock INPUT [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNW 0x555556d27220 <e6375> {d2aq} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: VARREF 0x555556d291e0 <e5744> {d2aq} @dt=0x555556d42840@(G/w1)  reset [RV] <- VARSCOPE 0x555556e0b500 <e6377> {d2aq} @dt=0x555556d42840@(G/w1)  TOP->reset [T] [scopep=0x555556daddc0] -> VAR 0x555556dcab40 <e5095> {d2aq} @dt=0x555556d42840@(G/w1)  reset [PI] INPUT [P] [VSTATIC]  WIRE
+    1:2:2:2:2: VARREF 0x555556d36c30 <e6979> {d2aq} @dt=0x555556d42840@(G/w1)  reset [LV] => VARSCOPE 0x555556e05b00 <e6227> {d2aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->reset [T] [scopep=0x555556dadea0] -> VAR 0x555556ce1d40 <e4693> {d2aq} @dt=0x555556d42840@(G/w1)  reset INPUT [VSTATIC]  WIRE
+    1:2:2:2: CFUNC 0x555556e26000 <e6984> {e18be}  pte_helper [DPIIP]
+    1:2:2:2:1: VAR 0x555556e24480 <e4632> {e19as} @dt=0x555556d0d140@(G/sw64)  satp INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e245a0 <e6985> {e20as} @dt=0x555556d0d140@(G/sw64)  vpn INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e246c0 <e6986> {e21as} @dt=0x555556d0d140@(G/sw64)  pte OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e247e0 <e6987> {e22as} @dt=0x555556d4d380@(G/sw8)  level OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2: CFUNC 0x555556e262c0 <e7153> {e45bh}  amo_helper [DPIIP]
+    1:2:2:2:1: VAR 0x555556e24ea0 <e4931> {e46ar} @dt=0x555556d4d380@(G/sw8)  cmd INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e24fc0 <e7154> {e47ar} @dt=0x555556d0d140@(G/sw64)  addr INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e250e0 <e7155> {e48ar} @dt=0x555556d0d140@(G/sw64)  wdata INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e25200 <e7156> {e49ar} @dt=0x555556d4d380@(G/sw8)  mask INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2: CFUNC 0x555556e26580 <e7257> {f18be}  xs_assert [DPIIP]
+    1:2:2:2:1: VAR 0x555556e25440 <e4936> {f20av} @dt=0x555556d0d140@(G/sw64)  line INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2: CFUNC 0x555556e26840 <e7277> {f23be}  xs_assert_v2 [DPIIP]
+    1:2:2:2:1: VAR 0x555556e257a0 <e4663> {f25av} @dt=0x555556d6cc00@(G/str)  filename INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e258c0 <e7278> {f26av} @dt=0x555556d0d140@(G/sw64)  line INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2: CFUNC 0x555556e26b00 <e7311> {g7bd}  jtag_tick [DPIIP]
+    1:2:2:2:1: VAR 0x555556e2e120 <e4673> {g9an} @dt=0x555556d6cfc0@(G/w1)  jtag_TCK OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e2e240 <e7312> {g10an} @dt=0x555556d6cfc0@(G/w1)  jtag_TMS OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e2e360 <e7313> {g11an} @dt=0x555556d6cfc0@(G/w1)  jtag_TDI OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e2e480 <e7314> {g12an} @dt=0x555556d6cfc0@(G/w1)  jtag_TRSTn OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e2e5a0 <e7315> {g14an} @dt=0x555556d6cfc0@(G/w1)  jtag_TDO INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2: CFUNC 0x555556e26dc0 <e7557> {j2bh}  difftest_ram_read [DPIIP]
+    1:2:2:2:1: VAR 0x555556e2e900 <e4943> {j2cn} @dt=0x555556d0d140@(G/sw64)  rIdx INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2: CFUNC 0x555556e27080 <e7622> {j7be}  difftest_ram_write [DPIIP]
+    1:2:2:2:1: VAR 0x555556e2ed80 <e4945> {j9as} @dt=0x555556d0d140@(G/sw64)  index INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e2eea0 <e7623> {j10as} @dt=0x555556d0d140@(G/sw64)  data INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e2efc0 <e7624> {j11as} @dt=0x555556d0d140@(G/sw64)  mask INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2: CFUNC 0x555556e27340 <e7668> {i16be}  v_difftest_TrapEvent [DPIIP]
+    1:2:2:2:1: VAR 0x555556e2f8c0 <e5035> {i17at} @dt=0x555556d6cfc0@(G/w1)  io_hasTrap INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e2f9e0 <e7669> {i18at} @dt=0x555556d0d140@(G/sw64)  io_cycleCnt INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e2fb00 <e7670> {i19at} @dt=0x555556d0d140@(G/sw64)  io_instrCnt INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e2fc20 <e7671> {i20at} @dt=0x555556d6cfc0@(G/w1)  io_hasWFI INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e2fd40 <e7672> {i21at} @dt=0x555556d6ce40@(G/sw32)  io_code INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e2fe60 <e7673> {i22at} @dt=0x555556d0d140@(G/sw64)  io_pc INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:2:1: VAR 0x555556e34000 <e7674> {i23at} @dt=0x555556d4d380@(G/sw8)  io_coreid INPUT [FUNC] [VAUTOM]  PORT
+    1: MODULE 0x555556ce1c20 <e5093> {d1ai}  SimTop  L2 [1ps]
+    1:2: VAR 0x555556ce1d40 <e4693> {d2aq} @dt=0x555556d42840@(G/w1)  reset INPUT [VSTATIC]  WIRE
+    1:2: VAR 0x555556ce1e60 <e4701> {d3aq} @dt=0x555556d42840@(G/w1)  clock INPUT [VSTATIC]  WIRE
+    1:2: VAR 0x555556d54000 <e4709> {d4aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_begin INPUT [VSTATIC]  WIRE
+    1:2: VAR 0x555556d54120 <e4717> {d5aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_end INPUT [VSTATIC]  WIRE
+    1:2: VAR 0x555556d54240 <e4725> {d6ar} @dt=0x555556d42840@(G/w1)  difftest_uart_out_valid OUTPUT [VSTATIC]  WIRE
+    1:2:3: CONST 0x555556e06c30 <e5252> {d21bk} @dt=0x555556d42840@(G/w1)  1'h0
+    1:2: VAR 0x555556d54360 <e4733> {d7ax} @dt=0x555556d4db00@(G/w8)  difftest_uart_out_ch OUTPUT [VSTATIC]  WIRE
+    1:2:3: CONST 0x555556e06b40 <e5242> {d20bh} @dt=0x555556d4db00@(G/w8)  8'h0
+    1:2: VAR 0x555556d54480 <e4741> {d8aq} @dt=0x555556d42840@(G/w1)  difftest_uart_in_valid INPUT [VSTATIC]  WIRE
+    1:2: VAR 0x555556d545a0 <e4913> {d9aw} @dt=0x555556d4db00@(G/w8)  difftest_uart_in_ch INPUT [VSTATIC]  WIRE
+    1:2: VAR 0x555556d546c0 <e4757> {d11aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_clean INPUT [VSTATIC]  WIRE
+    1:2: VAR 0x555556d547e0 <e4765> {d12aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_dump INPUT [VSTATIC]  WIRE
+    1:2: VAR 0x555556d54900 <e4773> {d14ar} @dt=0x555556d42840@(G/w1)  difftest_exit OUTPUT [VSTATIC]  WIRE
+    1:2:3: CONST 0x555556e06a50 <e5232> {d19ba} @dt=0x555556d42840@(G/w1)  1'h0
+    1:2: VAR 0x555556d54a20 <e4781> {d15ar} @dt=0x555556d42840@(G/w1)  difftest_step OUTPUT [VSTATIC]  WIRE
+    1:2:3: CONST 0x555556e06960 <e5222> {d18ba} @dt=0x555556d42840@(G/w1)  1'h1
+    1:2: CELL 0x555556d54b40 <e7971> {d22ah}  __PVT__u_top -> MODULE 0x555556d80fc0 <e3767> {h1ai}  top  L3 [LIB] [1ps]
+    1:2:1: PIN 0x555556ce28c0 <e771> {d25ai}  opt -> VAR 0x555556d81320 <e7987> {h5ay} @dt=0x555556e04840@(G/w32)  __PVT__opt OUTPUT [VSTATIC]  WIRE [.n]
+    1:2: VAR 0x555556dcb9e0 <e5365> {h4aq} @dt=0x555556d42840@(G/w1)  __Vcellinp__u_top__rst_n MODULETEMP
+    1:2: VAR 0x555556d54c60 <e7972> {d27ao} @dt=0x555556d0c900@(G/w64)  __PVT__cnt [VSTATIC]  VAR
+    1:2: CELL 0x555556d54d80 <e7973> {d36av}  __PVT__u_DifftestTrapEvent -> MODULE 0x555556dae120 <e3768> {i2ai}  DifftestTrapEvent  L3 [LIB] [1ps]
+    1:2: SCOPE 0x555556dadea0 <e7974> {d1ai}  TOP.__PVT__SimTop [abovep=0x555556daddc0] [cellp=0x555556dcaa20] [modp=0x555556ce1c20]
+    1:2:1: VARSCOPE 0x555556e05b00 <e6227> {d2aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->reset [T] [scopep=0x555556dadea0] -> VAR 0x555556ce1d40 <e4693> {d2aq} @dt=0x555556d42840@(G/w1)  reset INPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e05a40 <e6230> {d3aq} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->clock [T] [scopep=0x555556dadea0] -> VAR 0x555556ce1e60 <e4701> {d3aq} @dt=0x555556d42840@(G/w1)  clock INPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e05980 <e6233> {d4aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_logCtrl_begin [T] [scopep=0x555556dadea0] -> VAR 0x555556d54000 <e4709> {d4aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_begin INPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e058c0 <e6236> {d5aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_logCtrl_end [T] [scopep=0x555556dadea0] -> VAR 0x555556d54120 <e4717> {d5aq} @dt=0x555556d42840@(G/w1)  difftest_logCtrl_end INPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e05800 <e6239> {d6ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_uart_out_valid [T] [scopep=0x555556dadea0] -> VAR 0x555556d54240 <e4725> {d6ar} @dt=0x555556d42840@(G/w1)  difftest_uart_out_valid OUTPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e05740 <e6242> {d7ax} @dt=0x555556d4db00@(G/w8)  TOP.__PVT__SimTop->difftest_uart_out_ch [T] [scopep=0x555556dadea0] -> VAR 0x555556d54360 <e4733> {d7ax} @dt=0x555556d4db00@(G/w8)  difftest_uart_out_ch OUTPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e05680 <e6245> {d8aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_uart_in_valid [T] [scopep=0x555556dadea0] -> VAR 0x555556d54480 <e4741> {d8aq} @dt=0x555556d42840@(G/w1)  difftest_uart_in_valid INPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e055c0 <e6248> {d9aw} @dt=0x555556d4db00@(G/w8)  TOP.__PVT__SimTop->difftest_uart_in_ch [T] [scopep=0x555556dadea0] -> VAR 0x555556d545a0 <e4913> {d9aw} @dt=0x555556d4db00@(G/w8)  difftest_uart_in_ch INPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e05500 <e6251> {d11aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_perfCtrl_clean [T] [scopep=0x555556dadea0] -> VAR 0x555556d546c0 <e4757> {d11aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_clean INPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e05440 <e6254> {d12aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_perfCtrl_dump [T] [scopep=0x555556dadea0] -> VAR 0x555556d547e0 <e4765> {d12aq} @dt=0x555556d42840@(G/w1)  difftest_perfCtrl_dump INPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e05380 <e6257> {d14ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_exit [T] [scopep=0x555556dadea0] -> VAR 0x555556d54900 <e4773> {d14ar} @dt=0x555556d42840@(G/w1)  difftest_exit OUTPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e052c0 <e6260> {d15ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_step [T] [scopep=0x555556dadea0] -> VAR 0x555556d54a20 <e4781> {d15ar} @dt=0x555556d42840@(G/w1)  difftest_step OUTPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e05200 <e6265> {h4aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->__Vcellinp__u_top__rst_n [T] [scopep=0x555556dadea0] -> VAR 0x555556dcb9e0 <e5365> {h4aq} @dt=0x555556d42840@(G/w1)  __Vcellinp__u_top__rst_n MODULETEMP
+    1:2:1: VARSCOPE 0x555556e05140 <e6268> {d27ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop->__PVT__cnt [T] [scopep=0x555556dadea0] -> VAR 0x555556d54c60 <e7972> {d27ao} @dt=0x555556d0c900@(G/w64)  __PVT__cnt [VSTATIC]  VAR
+    1:2:2: ASSIGNW 0x555556d26000 <e5890> {d24ao} @dt=0x555556d42840@(G/w1)
+    1:2:2:1: VARREF 0x555556d1fd40 <e5887> {d24ao} @dt=0x555556d42840@(G/w1)  __Vcellinp__u_top__rst_n [RV] <- VARSCOPE 0x555556e05200 <e6265> {h4aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->__Vcellinp__u_top__rst_n [T] [scopep=0x555556dadea0] -> VAR 0x555556dcb9e0 <e5365> {h4aq} @dt=0x555556d42840@(G/w1)  __Vcellinp__u_top__rst_n MODULETEMP
+    1:2:2:2: VARREF 0x555556d29a00 <e6847> {d24ao} @dt=0x555556d42840@(G/w1)  __PVT__rst_n [LV] => VARSCOPE 0x555556e09740 <e6129> {h4aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__rst_n [T] [scopep=0x555556d1c000] -> VAR 0x555556d81200 <e7975> {h4aq} @dt=0x555556d42840@(G/w1)  __PVT__rst_n INPUT [VSTATIC]  WIRE
+    1:2:2: ASSIGNW 0x555556d260a0 <e6261> {d23ao} @dt=0x555556d42840@(G/w1)
+    1:2:2:1: VARREF 0x555556d1fe10 <e5876> {d23ao} @dt=0x555556d42840@(G/w1)  clock [RV] <- VARSCOPE 0x555556e05a40 <e6230> {d3aq} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->clock [T] [scopep=0x555556dadea0] -> VAR 0x555556ce1e60 <e4701> {d3aq} @dt=0x555556d42840@(G/w1)  clock INPUT [VSTATIC]  WIRE
+    1:2:2:2: VARREF 0x555556d29ad0 <e6853> {d23ao} @dt=0x555556d42840@(G/w1)  __PVT__clk [LV] => VARSCOPE 0x555556e09800 <e6126> {h3aq} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__clk [T] [scopep=0x555556d1c000] -> VAR 0x555556d810e0 <e7976> {h3aq} @dt=0x555556d42840@(G/w1)  __PVT__clk INPUT [VSTATIC]  WIRE
+    1:2:2: ASSIGNW 0x555556d26140 <e6262> {d24ai} @dt=0x555556d42840@(G/w1)
+    1:2:2:1: NOT 0x555556dd1e40 <e5369> {d24ao} @dt=0x555556d42840@(G/w1)
+    1:2:2:1:1: VARREF 0x555556d1fee0 <e4791> {d24ap} @dt=0x555556d42840@(G/w1)  reset [RV] <- VARSCOPE 0x555556e05b00 <e6227> {d2aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->reset [T] [scopep=0x555556dadea0] -> VAR 0x555556ce1d40 <e4693> {d2aq} @dt=0x555556d42840@(G/w1)  reset INPUT [VSTATIC]  WIRE
+    1:2:2:2: VARREF 0x555556d28000 <e5370> {d24ai} @dt=0x555556d42840@(G/w1)  __Vcellinp__u_top__rst_n [LV] => VARSCOPE 0x555556e05200 <e6265> {h4aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->__Vcellinp__u_top__rst_n [T] [scopep=0x555556dadea0] -> VAR 0x555556dcb9e0 <e5365> {h4aq} @dt=0x555556d42840@(G/w1)  __Vcellinp__u_top__rst_n MODULETEMP
+    1:2:2: ALWAYS 0x555556dd1ef0 <e6269> {d28ad}
+    1:2:2:1: SENTREE 0x555556d2a000 <e3195> {d28ak}
+    1:2:2:1:1: SENITEM 0x555556d2a0b0 <e795> {d28am} [POS]
+    1:2:2:1:1:1: VARREF 0x555556d280d0 <e4801> {d28au} @dt=0x555556d42840@(G/w1)  clock [RV] <- VARSCOPE 0x555556e05a40 <e6230> {d3aq} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->clock [T] [scopep=0x555556dadea0] -> VAR 0x555556ce1e60 <e4701> {d3aq} @dt=0x555556d42840@(G/w1)  clock INPUT [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNDLY 0x555556d261e0 <e5470> {d30al} @dt=0x555556d0c900@(G/w64)
+    1:2:2:2:1: COND 0x555556d2a160 <e5468> {d30ao} @dt=0x555556d0c900@(G/w64)
+    1:2:2:2:1:1: VARREF 0x555556d281a0 <e5464> {d29aj} @dt=0x555556d42840@(G/w1)  reset [RV] <- VARSCOPE 0x555556e05b00 <e6227> {d2aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->reset [T] [scopep=0x555556dadea0] -> VAR 0x555556ce1d40 <e4693> {d2aq} @dt=0x555556d42840@(G/w1)  reset INPUT [VSTATIC]  WIRE
+    1:2:2:2:1:2: CONST 0x555556d20870 <e5465> {d30ao} @dt=0x555556d0c900@(G/w64)  64'h0
+    1:2:2:2:1:3: ADD 0x555556d2a210 <e5466> {d33ar} @dt=0x555556d0c900@(G/w64)
+    1:2:2:2:1:3:1: CONST 0x555556d20960 <e5255> {d33at} @dt=0x555556d0c900@(G/w64)  64'h1
+    1:2:2:2:1:3:2: VARREF 0x555556d28270 <e5256> {d33an} @dt=0x555556d0c900@(G/w64)  __PVT__cnt [RV] <- VARSCOPE 0x555556e05140 <e6268> {d27ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop->__PVT__cnt [T] [scopep=0x555556dadea0] -> VAR 0x555556d54c60 <e7972> {d27ao} @dt=0x555556d0c900@(G/w64)  __PVT__cnt [VSTATIC]  VAR
+    1:2:2:2:2: VARREF 0x555556d28340 <e4802> {d30ah} @dt=0x555556d0c900@(G/w64)  __PVT__cnt [LV] => VARSCOPE 0x555556e05140 <e6268> {d27ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop->__PVT__cnt [T] [scopep=0x555556dadea0] -> VAR 0x555556d54c60 <e7972> {d27ao} @dt=0x555556d0c900@(G/w64)  __PVT__cnt [VSTATIC]  VAR
+    1:2:2: ASSIGNW 0x555556d26280 <e6270> {d45au} @dt=0x555556d4db00@(G/w8)
+    1:2:2:1: CONST 0x555556d20a50 <e5986> {d45au} @dt=0x555556d4db00@(G/w8)  8'h0
+    1:2:2:2: VARREF 0x555556d29ba0 <e6859> {d45au} @dt=0x555556d4db00@(G/w8)  __PVT__io_coreid [LV] => VARSCOPE 0x555556e086c0 <e6202> {i11ar} @dt=0x555556d4db00@(G/w8)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_coreid [T] [scopep=0x555556d1c1c0] -> VAR 0x555556daeb40 <e7977> {i11ar} @dt=0x555556d4db00@(G/w8)  __PVT__io_coreid INPUT PORT
+    1:2:2: ASSIGNW 0x555556d26320 <e6271> {d44au} @dt=0x555556d0c900@(G/w64)
+    1:2:2:1: CONST 0x555556d20b40 <e5975> {d44au} @dt=0x555556d0c900@(G/w64)  64'h0
+    1:2:2:2: VARREF 0x555556d29c70 <e6865> {d44au} @dt=0x555556d0c900@(G/w64)  __PVT__io_pc [LV] => VARSCOPE 0x555556e08780 <e6199> {i10ar} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_pc [T] [scopep=0x555556d1c1c0] -> VAR 0x555556daea20 <e7978> {i10ar} @dt=0x555556d0c900@(G/w64)  __PVT__io_pc INPUT PORT
+    1:2:2: ASSIGNW 0x555556d263c0 <e6272> {d43au} @dt=0x555556e04840@(G/w32)
+    1:2:2:1: CONST 0x555556d20c30 <e5964> {d43au} @dt=0x555556e04840@(G/w32)  32'h0
+    1:2:2:2: VARREF 0x555556d29d40 <e6871> {d43au} @dt=0x555556e04840@(G/w32)  __PVT__io_code [LV] => VARSCOPE 0x555556e08840 <e6196> {i9ar} @dt=0x555556e04840@(G/w32)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_code [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae900 <e7979> {i9ar} @dt=0x555556e04840@(G/w32)  __PVT__io_code INPUT PORT
+    1:2:2: ASSIGNW 0x555556d26460 <e6273> {d42au} @dt=0x555556d42840@(G/w1)
+    1:2:2:1: CONST 0x555556d20d20 <e5953> {d42au} @dt=0x555556d42840@(G/w1)  1'h0
+    1:2:2:2: VARREF 0x555556d29e10 <e6877> {d42au} @dt=0x555556d42840@(G/w1)  __PVT__io_hasWFI [LV] => VARSCOPE 0x555556e08900 <e6193> {i8ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_hasWFI [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae7e0 <e7980> {i8ar} @dt=0x555556d42840@(G/w1)  __PVT__io_hasWFI INPUT PORT
+    1:2:2: ASSIGNW 0x555556d26500 <e6274> {d41au} @dt=0x555556d0c900@(G/w64)
+    1:2:2:1: CONST 0x555556d20e10 <e5942> {d41au} @dt=0x555556d0c900@(G/w64)  64'h0
+    1:2:2:2: VARREF 0x555556d29ee0 <e6883> {d41au} @dt=0x555556d0c900@(G/w64)  __PVT__io_instrCnt [LV] => VARSCOPE 0x555556e089c0 <e6190> {i7ar} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_instrCnt [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae6c0 <e7981> {i7ar} @dt=0x555556d0c900@(G/w64)  __PVT__io_instrCnt INPUT PORT
+    1:2:2: ASSIGNW 0x555556d265a0 <e6275> {d40au} @dt=0x555556d0c900@(G/w64)
+    1:2:2:1: VARREF 0x555556d28410 <e5931> {d40au} @dt=0x555556d0c900@(G/w64)  __PVT__cnt [RV] <- VARSCOPE 0x555556e05140 <e6268> {d27ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop->__PVT__cnt [T] [scopep=0x555556dadea0] -> VAR 0x555556d54c60 <e7972> {d27ao} @dt=0x555556d0c900@(G/w64)  __PVT__cnt [VSTATIC]  VAR
+    1:2:2:2: VARREF 0x555556d36000 <e6889> {d40au} @dt=0x555556d0c900@(G/w64)  __PVT__io_cycleCnt [LV] => VARSCOPE 0x555556e08a80 <e6187> {i6ar} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_cycleCnt [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae5a0 <e7982> {i6ar} @dt=0x555556d0c900@(G/w64)  __PVT__io_cycleCnt INPUT PORT
+    1:2:2: ASSIGNW 0x555556d26640 <e6276> {d39au} @dt=0x555556d42840@(G/w1)
+    1:2:2:1: CONST 0x555556d20f00 <e5920> {d39au} @dt=0x555556d42840@(G/w1)  1'h0
+    1:2:2:2: VARREF 0x555556d360d0 <e6895> {d39au} @dt=0x555556d42840@(G/w1)  __PVT__io_hasTrap [LV] => VARSCOPE 0x555556e08b40 <e6184> {i5ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_hasTrap [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae480 <e7983> {i5ar} @dt=0x555556d42840@(G/w1)  __PVT__io_hasTrap INPUT PORT
+    1:2:2: ASSIGNW 0x555556d266e0 <e6277> {d38au} @dt=0x555556d42840@(G/w1)
+    1:2:2:1: CONST 0x555556d20ff0 <e5909> {d38au} @dt=0x555556d42840@(G/w1)  1'h1
+    1:2:2:2: VARREF 0x555556d361a0 <e6901> {d38au} @dt=0x555556d42840@(G/w1)  __PVT__enable [LV] => VARSCOPE 0x555556e08c00 <e6181> {i4ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__enable [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae360 <e7984> {i4ar} @dt=0x555556d42840@(G/w1)  __PVT__enable INPUT PORT
+    1:2:2: ASSIGNW 0x555556d26780 <e6278> {d37au} @dt=0x555556d42840@(G/w1)
+    1:2:2:1: VARREF 0x555556d284e0 <e5898> {d37au} @dt=0x555556d42840@(G/w1)  clock [RV] <- VARSCOPE 0x555556e05a40 <e6230> {d3aq} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->clock [T] [scopep=0x555556dadea0] -> VAR 0x555556ce1e60 <e4701> {d3aq} @dt=0x555556d42840@(G/w1)  clock INPUT [VSTATIC]  WIRE
+    1:2:2:2: VARREF 0x555556d36270 <e6907> {d37au} @dt=0x555556d42840@(G/w1)  __PVT__clock [LV] => VARSCOPE 0x555556e08cc0 <e6178> {i3ar} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__clock [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae240 <e7985> {i3ar} @dt=0x555556d42840@(G/w1)  __PVT__clock INPUT PORT
+    1:2:2: INITIAL 0x555556d2a2c0 <e6279> {d18ay}
+    1:2:2:2: ASSIGN 0x555556d26820 <e5218> {d18ay} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: CONST 0x555556d210e0 <e5216> {d18ba} @dt=0x555556d42840@(G/w1)  1'h1
+    1:2:2:2:2: VARREF 0x555556d285b0 <e5217> {d18ak} @dt=0x555556d42840@(G/w1)  difftest_step [LV] => VARSCOPE 0x555556e052c0 <e6260> {d15ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_step [T] [scopep=0x555556dadea0] -> VAR 0x555556d54a20 <e4781> {d15ar} @dt=0x555556d42840@(G/w1)  difftest_step OUTPUT [VSTATIC]  WIRE
+    1:2:2: INITIAL 0x555556d2a370 <e6280> {d19ay}
+    1:2:2:2: ASSIGN 0x555556d268c0 <e5228> {d19ay} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: CONST 0x555556d211d0 <e5226> {d19ba} @dt=0x555556d42840@(G/w1)  1'h0
+    1:2:2:2:2: VARREF 0x555556d28680 <e5227> {d19ak} @dt=0x555556d42840@(G/w1)  difftest_exit [LV] => VARSCOPE 0x555556e05380 <e6257> {d14ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_exit [T] [scopep=0x555556dadea0] -> VAR 0x555556d54900 <e4773> {d14ar} @dt=0x555556d42840@(G/w1)  difftest_exit OUTPUT [VSTATIC]  WIRE
+    1:2:2: INITIAL 0x555556d2a420 <e6281> {d20bf}
+    1:2:2:2: ASSIGN 0x555556d26960 <e5238> {d20bf} @dt=0x555556d4db00@(G/w8)
+    1:2:2:2:1: CONST 0x555556d212c0 <e5236> {d20bh} @dt=0x555556d4db00@(G/w8)  8'h0
+    1:2:2:2:2: VARREF 0x555556d28750 <e5237> {d20ak} @dt=0x555556d4db00@(G/w8)  difftest_uart_out_ch [LV] => VARSCOPE 0x555556e05740 <e6242> {d7ax} @dt=0x555556d4db00@(G/w8)  TOP.__PVT__SimTop->difftest_uart_out_ch [T] [scopep=0x555556dadea0] -> VAR 0x555556d54360 <e4733> {d7ax} @dt=0x555556d4db00@(G/w8)  difftest_uart_out_ch OUTPUT [VSTATIC]  WIRE
+    1:2:2: INITIAL 0x555556d2a4d0 <e6282> {d21bi}
+    1:2:2:2: ASSIGN 0x555556d26a00 <e5248> {d21bi} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1: CONST 0x555556d213b0 <e5246> {d21bk} @dt=0x555556d42840@(G/w1)  1'h0
+    1:2:2:2:2: VARREF 0x555556d28820 <e5247> {d21ak} @dt=0x555556d42840@(G/w1)  difftest_uart_out_valid [LV] => VARSCOPE 0x555556e05800 <e6239> {d6ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop->difftest_uart_out_valid [T] [scopep=0x555556dadea0] -> VAR 0x555556d54240 <e4725> {d6ar} @dt=0x555556d42840@(G/w1)  difftest_uart_out_valid OUTPUT [VSTATIC]  WIRE
+    1: PACKAGE 0x555556d55320 <e3763> {a0aa}  __024unit  L3 [LIB] [1ps]
+    1:2: SCOPE 0x555556d1c2a0 <e7986> {a0aa}  TOP.__PVT____024unit [abovep=0x555556daddc0] [cellp=0x555556dcb8c0] [modp=0x555556d55320]
+    1:2:1: VARSCOPE 0x555556e0be00 <e6990> {e18be} @dt=0x555556d4d380@(G/sw8)  TOP.__PVT____024unit->pte_helper__Vfuncrtn [T] [scopep=0x555556d1c2a0] -> VAR 0x555556d23e60 <e7011> {e18be} @dt=0x555556d4d380@(G/sw8)  pte_helper__Vfuncrtn OUTPUT [FUNC] [VAUTOM]  VAR
+    1:2:1: VARSCOPE 0x555556e0bec0 <e6995> {e19as} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->satp [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e24000 <e6992> {e19as} @dt=0x555556d0d140@(G/sw64)  satp INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e28000 <e7000> {e20as} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->vpn [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e24120 <e6997> {e20as} @dt=0x555556d0d140@(G/sw64)  vpn INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e280c0 <e7005> {e21as} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->pte [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e24240 <e7002> {e21as} @dt=0x555556d0d140@(G/sw64)  pte OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e28180 <e7010> {e22as} @dt=0x555556d4d380@(G/sw8)  TOP.__PVT____024unit->level [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e24360 <e7007> {e22as} @dt=0x555556d4d380@(G/sw8)  level OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e28d80 <e7159> {e45bh} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->amo_helper__Vfuncrtn [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e24900 <e7180> {e45bh} @dt=0x555556d0d140@(G/sw64)  amo_helper__Vfuncrtn OUTPUT [FUNC] [VAUTOM]  VAR
+    1:2:1: VARSCOPE 0x555556e28e40 <e7164> {e46ar} @dt=0x555556d4d380@(G/sw8)  TOP.__PVT____024unit->cmd [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e24a20 <e7161> {e46ar} @dt=0x555556d4d380@(G/sw8)  cmd INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e28f00 <e7169> {e47ar} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->addr [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e24b40 <e7166> {e47ar} @dt=0x555556d0d140@(G/sw64)  addr INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e28fc0 <e7174> {e48ar} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->wdata [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e24c60 <e7171> {e48ar} @dt=0x555556d0d140@(G/sw64)  wdata INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e29080 <e7179> {e49ar} @dt=0x555556d4d380@(G/sw8)  TOP.__PVT____024unit->mask [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e24d80 <e7176> {e49ar} @dt=0x555556d4d380@(G/sw8)  mask INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e29500 <e7262> {f20av} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->line [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e25320 <e7259> {f20av} @dt=0x555556d0d140@(G/sw64)  line INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e295c0 <e7283> {f25av} @dt=0x555556d6cc00@(G/str)  TOP.__PVT____024unit->filename [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e25560 <e7280> {f25av} @dt=0x555556d6cc00@(G/str)  filename INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e29680 <e7288> {f26av} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->line [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e25680 <e7285> {f26av} @dt=0x555556d0d140@(G/sw64)  line INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e29740 <e7318> {g7bd} @dt=0x555556d6ce40@(G/sw32)  TOP.__PVT____024unit->jtag_tick__Vfuncrtn [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e259e0 <e7344> {g7bd} @dt=0x555556d6ce40@(G/sw32)  jtag_tick__Vfuncrtn OUTPUT [FUNC] [VAUTOM]  VAR
+    1:2:1: VARSCOPE 0x555556e29800 <e7323> {g9an} @dt=0x555556d6cfc0@(G/w1)  TOP.__PVT____024unit->jtag_TCK [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e25b00 <e7320> {g9an} @dt=0x555556d6cfc0@(G/w1)  jtag_TCK OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e298c0 <e7328> {g10an} @dt=0x555556d6cfc0@(G/w1)  TOP.__PVT____024unit->jtag_TMS [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e25c20 <e7325> {g10an} @dt=0x555556d6cfc0@(G/w1)  jtag_TMS OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e29980 <e7333> {g11an} @dt=0x555556d6cfc0@(G/w1)  TOP.__PVT____024unit->jtag_TDI [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e25d40 <e7330> {g11an} @dt=0x555556d6cfc0@(G/w1)  jtag_TDI OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e29a40 <e7338> {g12an} @dt=0x555556d6cfc0@(G/w1)  TOP.__PVT____024unit->jtag_TRSTn [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e25e60 <e7335> {g12an} @dt=0x555556d6cfc0@(G/w1)  jtag_TRSTn OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e29b00 <e7343> {g14an} @dt=0x555556d6cfc0@(G/w1)  TOP.__PVT____024unit->jtag_TDO [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e2e000 <e7340> {g14an} @dt=0x555556d6cfc0@(G/w1)  jtag_TDO INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e30f00 <e7560> {j2bh} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->difftest_ram_read__Vfuncrtn [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e2e6c0 <e7566> {j2bh} @dt=0x555556d0d140@(G/sw64)  difftest_ram_read__Vfuncrtn OUTPUT [FUNC] [VAUTOM]  VAR
+    1:2:1: VARSCOPE 0x555556e30fc0 <e7565> {j2cn} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->rIdx [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e2e7e0 <e7562> {j2cn} @dt=0x555556d0d140@(G/sw64)  rIdx INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e31440 <e7629> {j9as} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->index [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e2ea20 <e7626> {j9as} @dt=0x555556d0d140@(G/sw64)  index INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e31500 <e7634> {j10as} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->data [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e2eb40 <e7631> {j10as} @dt=0x555556d0d140@(G/sw64)  data INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e315c0 <e7639> {j11as} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->mask [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e2ec60 <e7636> {j11as} @dt=0x555556d0d140@(G/sw64)  mask INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2: CFUNC 0x555556e26160 <e7144> {e18be}  __Vdpiimwrap_pte_helper_TOP____024unit [STATIC] [DPIIW]
+    1:2:2:1: VAR 0x555556e24000 <e6992> {e19as} @dt=0x555556d0d140@(G/sw64)  satp INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e24120 <e6997> {e20as} @dt=0x555556d0d140@(G/sw64)  vpn INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e24240 <e7002> {e21as} @dt=0x555556d0d140@(G/sw64)  pte OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e24360 <e7007> {e22as} @dt=0x555556d4d380@(G/sw8)  level OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556d23e60 <e7011> {e18be} @dt=0x555556d4d380@(G/sw8)  pte_helper__Vfuncrtn OUTPUT [FUNC] [VAUTOM]  VAR
+    1:2:2:3: CSTMT 0x555556d272c0 <e7012> {e19as}
+    1:2:2:3:1: TEXT 0x555556d36d00 <e7013> {e19as} "long long satp__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556d27360 <e7016> {e19as}
+    1:2:2:3:1: TEXT 0x555556d36dd0 <e7015> {e19as} "for (size_t satp__Vidx = 0; satp__Vidx < 1; ++satp__Vidx) satp__Vcvt = satp;..."
+    1:2:2:3: CSTMT 0x555556d27400 <e7019> {e20as}
+    1:2:2:3:1: TEXT 0x555556d36ea0 <e7018> {e20as} "long long vpn__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556d274a0 <e7022> {e20as}
+    1:2:2:3:1: TEXT 0x555556d36f70 <e7021> {e20as} "for (size_t vpn__Vidx = 0; vpn__Vidx < 1; ++vpn__Vidx) vpn__Vcvt = vpn;..."
+    1:2:2:3: CSTMT 0x555556d27540 <e7025> {e21as}
+    1:2:2:3:1: TEXT 0x555556d37040 <e7024> {e21as} "long long pte__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556d275e0 <e7028> {e22as}
+    1:2:2:3:1: TEXT 0x555556d37110 <e7027> {e22as} "char level__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556d27680 <e7031> {e18be}
+    1:2:2:3:1: TEXT 0x555556d371e0 <e7030> {e18be} "char pte_helper__Vfuncrtn__Vcvt;..."
+    1:2:2:3: TEXT 0x555556d372b0 <e7033> {e18be} "pte_helper__Vfuncrtn__Vcvt = "
+    1:2:2:3: STMTEXPR 0x555556d27720 <e7038> {e18be}
+    1:2:2:3:1: CCALL 0x555556d1c8c0 <e7037> {e18be} @dt=0x555556d404d0@(w0)void pte_helper => CFUNC 0x555556e26000 <e6984> {e18be}  pte_helper [DPIIP]
+    1:2:2:3: ASSIGN 0x555556d277c0 <e7073> {e21as} @dt=0x555556d0d140@(G/sw64)
+    1:2:2:3:1: CEXPR 0x555556d2a580 <e8014#> {e21as} @dt=0x555556d0c900@(G/w64)
+    1:2:2:3:1:1: TEXT 0x555556d37450 <e7042> {e21as} "pte__Vcvt"
+    1:2:2:3:2: VARREF 0x555556d37380 <e7071> {e21as} @dt=0x555556d0d140@(G/sw64)  pte [LV] => VARSCOPE 0x555556e280c0 <e7005> {e21as} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->pte [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e24240 <e7002> {e21as} @dt=0x555556d0d140@(G/sw64)  pte OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:3: ASSIGN 0x555556d27860 <e7108> {e22as} @dt=0x555556d4d380@(G/sw8)
+    1:2:2:3:1: CEXPR 0x555556d2a630 <e8017#> {e22as} @dt=0x555556d4db00@(G/w8)
+    1:2:2:3:1:1: TEXT 0x555556d375f0 <e7077> {e22as} "level__Vcvt"
+    1:2:2:3:2: VARREF 0x555556d37520 <e7106> {e22as} @dt=0x555556d4d380@(G/sw8)  level [LV] => VARSCOPE 0x555556e28180 <e7010> {e22as} @dt=0x555556d4d380@(G/sw8)  TOP.__PVT____024unit->level [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e24360 <e7007> {e22as} @dt=0x555556d4d380@(G/sw8)  level OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:3: ASSIGN 0x555556d27900 <e7143> {e18be} @dt=0x555556d4d380@(G/sw8)
+    1:2:2:3:1: CEXPR 0x555556d2a6e0 <e8020#> {e18be} @dt=0x555556d4db00@(G/w8)
+    1:2:2:3:1:1: TEXT 0x555556d37790 <e7112> {e18be} "pte_helper__Vfuncrtn__Vcvt"
+    1:2:2:3:2: VARREF 0x555556d376c0 <e7141> {e18be} @dt=0x555556d4d380@(G/sw8)  pte_helper__Vfuncrtn [LV] => VARSCOPE 0x555556e0be00 <e6990> {e18be} @dt=0x555556d4d380@(G/sw8)  TOP.__PVT____024unit->pte_helper__Vfuncrtn [T] [scopep=0x555556d1c2a0] -> VAR 0x555556d23e60 <e7011> {e18be} @dt=0x555556d4d380@(G/sw8)  pte_helper__Vfuncrtn OUTPUT [FUNC] [VAUTOM]  VAR
+    1:2:2: CFUNC 0x555556e26420 <e7249> {e45bh}  __Vdpiimwrap_amo_helper_TOP____024unit [STATIC] [DPIIW]
+    1:2:2:1: VAR 0x555556e24a20 <e7161> {e46ar} @dt=0x555556d4d380@(G/sw8)  cmd INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e24b40 <e7166> {e47ar} @dt=0x555556d0d140@(G/sw64)  addr INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e24c60 <e7171> {e48ar} @dt=0x555556d0d140@(G/sw64)  wdata INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e24d80 <e7176> {e49ar} @dt=0x555556d4d380@(G/sw8)  mask INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e24900 <e7180> {e45bh} @dt=0x555556d0d140@(G/sw64)  amo_helper__Vfuncrtn OUTPUT [FUNC] [VAUTOM]  VAR
+    1:2:2:3: CSTMT 0x555556d279a0 <e7181> {e46ar}
+    1:2:2:3:1: TEXT 0x555556d37860 <e7182> {e46ar} "char cmd__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556d27a40 <e7185> {e46ar}
+    1:2:2:3:1: TEXT 0x555556d37930 <e7184> {e46ar} "for (size_t cmd__Vidx = 0; cmd__Vidx < 1; ++cmd__Vidx) cmd__Vcvt = cmd;..."
+    1:2:2:3: CSTMT 0x555556d27ae0 <e7188> {e47ar}
+    1:2:2:3:1: TEXT 0x555556d37a00 <e7187> {e47ar} "long long addr__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556d27b80 <e7191> {e47ar}
+    1:2:2:3:1: TEXT 0x555556d37ad0 <e7190> {e47ar} "for (size_t addr__Vidx = 0; addr__Vidx < 1; ++addr__Vidx) addr__Vcvt = addr;..."
+    1:2:2:3: CSTMT 0x555556d27c20 <e7194> {e48ar}
+    1:2:2:3:1: TEXT 0x555556d37ba0 <e7193> {e48ar} "long long wdata__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556d27cc0 <e7197> {e48ar}
+    1:2:2:3:1: TEXT 0x555556d37c70 <e7196> {e48ar} "for (size_t wdata__Vidx = 0; wdata__Vidx < 1; ++wdata__Vidx) wdata__Vcvt = wdata;..."
+    1:2:2:3: CSTMT 0x555556d27d60 <e7200> {e49ar}
+    1:2:2:3:1: TEXT 0x555556d37d40 <e7199> {e49ar} "char mask__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556d27e00 <e7203> {e49ar}
+    1:2:2:3:1: TEXT 0x555556d37e10 <e7202> {e49ar} "for (size_t mask__Vidx = 0; mask__Vidx < 1; ++mask__Vidx) mask__Vcvt = mask;..."
+    1:2:2:3: CSTMT 0x555556d27ea0 <e7206> {e45bh}
+    1:2:2:3:1: TEXT 0x555556d37ee0 <e7205> {e45bh} "long long amo_helper__Vfuncrtn__Vcvt;..."
+    1:2:2:3: TEXT 0x555556e2a000 <e7208> {e45bh} "amo_helper__Vfuncrtn__Vcvt = "
+    1:2:2:3: STMTEXPR 0x555556d27f40 <e7213> {e45bh}
+    1:2:2:3:1: CCALL 0x555556d1c9a0 <e7212> {e45bh} @dt=0x555556d404d0@(w0)void amo_helper => CFUNC 0x555556e262c0 <e7153> {e45bh}  amo_helper [DPIIP]
+    1:2:2:3: ASSIGN 0x555556e2c000 <e7248> {e45bh} @dt=0x555556d0d140@(G/sw64)
+    1:2:2:3:1: CEXPR 0x555556d2a790 <e8023#> {e45bh} @dt=0x555556d0c900@(G/w64)
+    1:2:2:3:1:1: TEXT 0x555556e2a1a0 <e7217> {e45bh} "amo_helper__Vfuncrtn__Vcvt"
+    1:2:2:3:2: VARREF 0x555556e2a0d0 <e7246> {e45bh} @dt=0x555556d0d140@(G/sw64)  amo_helper__Vfuncrtn [LV] => VARSCOPE 0x555556e28d80 <e7159> {e45bh} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->amo_helper__Vfuncrtn [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e24900 <e7180> {e45bh} @dt=0x555556d0d140@(G/sw64)  amo_helper__Vfuncrtn OUTPUT [FUNC] [VAUTOM]  VAR
+    1:2:2: CFUNC 0x555556e266e0 <e7273> {f18be}  __Vdpiimwrap_xs_assert_TOP____024unit [STATIC] [DPIIW]
+    1:2:2:1: VAR 0x555556e25320 <e7259> {f20av} @dt=0x555556d0d140@(G/sw64)  line INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:3: CSTMT 0x555556e2c0a0 <e7263> {f20av}
+    1:2:2:3:1: TEXT 0x555556e2a270 <e7264> {f20av} "long long line__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2c140 <e7267> {f20av}
+    1:2:2:3:1: TEXT 0x555556e2a340 <e7266> {f20av} "for (size_t line__Vidx = 0; line__Vidx < 1; ++line__Vidx) line__Vcvt = line;..."
+    1:2:2:3: STMTEXPR 0x555556e2c1e0 <e7272> {f18be}
+    1:2:2:3:1: CCALL 0x555556d1ca80 <e7271> {f18be} @dt=0x555556d404d0@(w0)void xs_assert => CFUNC 0x555556e26580 <e7257> {f18be}  xs_assert [DPIIP]
+    1:2:2: CFUNC 0x555556e269a0 <e7305> {f23be}  __Vdpiimwrap_xs_assert_v2_TOP____024unit [STATIC] [DPIIW]
+    1:2:2:1: VAR 0x555556e25560 <e7280> {f25av} @dt=0x555556d6cc00@(G/str)  filename INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e25680 <e7285> {f26av} @dt=0x555556d0d140@(G/sw64)  line INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:3: CSTMT 0x555556e2c280 <e7289> {f25av}
+    1:2:2:3:1: TEXT 0x555556e2a410 <e7290> {f25av} "const char* filename__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2c320 <e7293> {f25av}
+    1:2:2:3:1: TEXT 0x555556e2a4e0 <e7292> {f25av} "for (size_t filename__Vidx = 0; filename__Vidx < 1; ++filename__Vidx) filename__Vcvt = filename.c_str();..."
+    1:2:2:3: CSTMT 0x555556e2c3c0 <e7296> {f26av}
+    1:2:2:3:1: TEXT 0x555556e2a5b0 <e7295> {f26av} "long long line__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2c460 <e7299> {f26av}
+    1:2:2:3:1: TEXT 0x555556e2a680 <e7298> {f26av} "for (size_t line__Vidx = 0; line__Vidx < 1; ++line__Vidx) line__Vcvt = line;..."
+    1:2:2:3: STMTEXPR 0x555556e2c500 <e7304> {f23be}
+    1:2:2:3:1: CCALL 0x555556d1cb60 <e7303> {f23be} @dt=0x555556d404d0@(w0)void xs_assert_v2 => CFUNC 0x555556e26840 <e7277> {f23be}  xs_assert_v2 [DPIIP]
+    1:2:2: CFUNC 0x555556e26c60 <e7547> {g7bd}  __Vdpiimwrap_jtag_tick_TOP____024unit [STATIC] [DPIIW]
+    1:2:2:1: VAR 0x555556e25b00 <e7320> {g9an} @dt=0x555556d6cfc0@(G/w1)  jtag_TCK OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e25c20 <e7325> {g10an} @dt=0x555556d6cfc0@(G/w1)  jtag_TMS OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e25d40 <e7330> {g11an} @dt=0x555556d6cfc0@(G/w1)  jtag_TDI OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e25e60 <e7335> {g12an} @dt=0x555556d6cfc0@(G/w1)  jtag_TRSTn OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e2e000 <e7340> {g14an} @dt=0x555556d6cfc0@(G/w1)  jtag_TDO INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e259e0 <e7344> {g7bd} @dt=0x555556d6ce40@(G/sw32)  jtag_tick__Vfuncrtn OUTPUT [FUNC] [VAUTOM]  VAR
+    1:2:2:3: CSTMT 0x555556e2c5a0 <e7345> {g9an}
+    1:2:2:3:1: TEXT 0x555556e2a750 <e7346> {g9an} "svBit jtag_TCK__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2c640 <e7349> {g10an}
+    1:2:2:3:1: TEXT 0x555556e2a820 <e7348> {g10an} "svBit jtag_TMS__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2c6e0 <e7352> {g11an}
+    1:2:2:3:1: TEXT 0x555556e2a8f0 <e7351> {g11an} "svBit jtag_TDI__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2c780 <e7355> {g12an}
+    1:2:2:3:1: TEXT 0x555556e2a9c0 <e7354> {g12an} "svBit jtag_TRSTn__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2c820 <e7358> {g14an}
+    1:2:2:3:1: TEXT 0x555556e2aa90 <e7357> {g14an} "svBit jtag_TDO__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2c8c0 <e7361> {g14an}
+    1:2:2:3:1: TEXT 0x555556e2ab60 <e7360> {g14an} "for (size_t jtag_TDO__Vidx = 0; jtag_TDO__Vidx < 1; ++jtag_TDO__Vidx) jtag_TDO__Vcvt = jtag_TDO;..."
+    1:2:2:3: CSTMT 0x555556e2c960 <e7364> {g7bd}
+    1:2:2:3:1: TEXT 0x555556e2ac30 <e7363> {g7bd} "int jtag_tick__Vfuncrtn__Vcvt;..."
+    1:2:2:3: TEXT 0x555556e2ad00 <e7366> {g7bd} "jtag_tick__Vfuncrtn__Vcvt = "
+    1:2:2:3: STMTEXPR 0x555556e2ca00 <e7371> {g7bd}
+    1:2:2:3:1: CCALL 0x555556d1cc40 <e7370> {g7bd} @dt=0x555556d404d0@(w0)void jtag_tick => CFUNC 0x555556e26b00 <e7311> {g7bd}  jtag_tick [DPIIP]
+    1:2:2:3: ASSIGN 0x555556e2caa0 <e7406> {g9an} @dt=0x555556d6cfc0@(G/w1)
+    1:2:2:3:1: SEL 0x555556e29bc0 <e7403> {g9an} @dt=0x555556d42840@(G/w1)
+    1:2:2:3:1:1: CEXPR 0x555556d2a840 <e7394> {g9an} @dt=0x555556e04840@(G/w32)
+    1:2:2:3:1:1:1: TEXT 0x555556e2aea0 <e7375> {g9an} "jtag_TCK__Vcvt"
+    1:2:2:3:1:2: CONST 0x555556d21c20 <e7395> {g9an} @dt=0x555556e04840@(G/w32)  32'h0
+    1:2:2:3:1:3: CONST 0x555556d21d10 <e7396> {g9an} @dt=0x555556e04840@(G/w32)  32'h1
+    1:2:2:3:2: VARREF 0x555556e2add0 <e7404> {g9an} @dt=0x555556d6cfc0@(G/w1)  jtag_TCK [LV] => VARSCOPE 0x555556e29800 <e7323> {g9an} @dt=0x555556d6cfc0@(G/w1)  TOP.__PVT____024unit->jtag_TCK [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e25b00 <e7320> {g9an} @dt=0x555556d6cfc0@(G/w1)  jtag_TCK OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:3: ASSIGN 0x555556e2cb40 <e7441> {g10an} @dt=0x555556d6cfc0@(G/w1)
+    1:2:2:3:1: SEL 0x555556e30000 <e7438> {g10an} @dt=0x555556d42840@(G/w1)
+    1:2:2:3:1:1: CEXPR 0x555556d2a8f0 <e7429> {g10an} @dt=0x555556e04840@(G/w32)
+    1:2:2:3:1:1:1: TEXT 0x555556e2b040 <e7410> {g10an} "jtag_TMS__Vcvt"
+    1:2:2:3:1:2: CONST 0x555556d21e00 <e7430> {g10an} @dt=0x555556e04840@(G/w32)  32'h0
+    1:2:2:3:1:3: CONST 0x555556d21ef0 <e7431> {g10an} @dt=0x555556e04840@(G/w32)  32'h1
+    1:2:2:3:2: VARREF 0x555556e2af70 <e7439> {g10an} @dt=0x555556d6cfc0@(G/w1)  jtag_TMS [LV] => VARSCOPE 0x555556e298c0 <e7328> {g10an} @dt=0x555556d6cfc0@(G/w1)  TOP.__PVT____024unit->jtag_TMS [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e25c20 <e7325> {g10an} @dt=0x555556d6cfc0@(G/w1)  jtag_TMS OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:3: ASSIGN 0x555556e2cbe0 <e7476> {g11an} @dt=0x555556d6cfc0@(G/w1)
+    1:2:2:3:1: SEL 0x555556e303c0 <e7473> {g11an} @dt=0x555556d42840@(G/w1)
+    1:2:2:3:1:1: CEXPR 0x555556d2a9a0 <e7464> {g11an} @dt=0x555556e04840@(G/w32)
+    1:2:2:3:1:1:1: TEXT 0x555556e2b1e0 <e7445> {g11an} "jtag_TDI__Vcvt"
+    1:2:2:3:1:2: CONST 0x555556e32000 <e7465> {g11an} @dt=0x555556e04840@(G/w32)  32'h0
+    1:2:2:3:1:3: CONST 0x555556e320f0 <e7466> {g11an} @dt=0x555556e04840@(G/w32)  32'h1
+    1:2:2:3:2: VARREF 0x555556e2b110 <e7474> {g11an} @dt=0x555556d6cfc0@(G/w1)  jtag_TDI [LV] => VARSCOPE 0x555556e29980 <e7333> {g11an} @dt=0x555556d6cfc0@(G/w1)  TOP.__PVT____024unit->jtag_TDI [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e25d40 <e7330> {g11an} @dt=0x555556d6cfc0@(G/w1)  jtag_TDI OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:3: ASSIGN 0x555556e2cc80 <e7511> {g12an} @dt=0x555556d6cfc0@(G/w1)
+    1:2:2:3:1: SEL 0x555556e30780 <e7508> {g12an} @dt=0x555556d42840@(G/w1)
+    1:2:2:3:1:1: CEXPR 0x555556d2aa50 <e7499> {g12an} @dt=0x555556e04840@(G/w32)
+    1:2:2:3:1:1:1: TEXT 0x555556e2b380 <e7480> {g12an} "jtag_TRSTn__Vcvt"
+    1:2:2:3:1:2: CONST 0x555556e321e0 <e7500> {g12an} @dt=0x555556e04840@(G/w32)  32'h0
+    1:2:2:3:1:3: CONST 0x555556e322d0 <e7501> {g12an} @dt=0x555556e04840@(G/w32)  32'h1
+    1:2:2:3:2: VARREF 0x555556e2b2b0 <e7509> {g12an} @dt=0x555556d6cfc0@(G/w1)  jtag_TRSTn [LV] => VARSCOPE 0x555556e29a40 <e7338> {g12an} @dt=0x555556d6cfc0@(G/w1)  TOP.__PVT____024unit->jtag_TRSTn [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e25e60 <e7335> {g12an} @dt=0x555556d6cfc0@(G/w1)  jtag_TRSTn OUTPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:3: ASSIGN 0x555556e2cd20 <e7546> {g7bd} @dt=0x555556d6ce40@(G/sw32)
+    1:2:2:3:1: CEXPR 0x555556d2ab00 <e8026#> {g7bd} @dt=0x555556e04840@(G/w32)
+    1:2:2:3:1:1: TEXT 0x555556e2b520 <e7515> {g7bd} "jtag_tick__Vfuncrtn__Vcvt"
+    1:2:2:3:2: VARREF 0x555556e2b450 <e7544> {g7bd} @dt=0x555556d6ce40@(G/sw32)  jtag_tick__Vfuncrtn [LV] => VARSCOPE 0x555556e29740 <e7318> {g7bd} @dt=0x555556d6ce40@(G/sw32)  TOP.__PVT____024unit->jtag_tick__Vfuncrtn [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e259e0 <e7344> {g7bd} @dt=0x555556d6ce40@(G/sw32)  jtag_tick__Vfuncrtn OUTPUT [FUNC] [VAUTOM]  VAR
+    1:2:2: CFUNC 0x555556e26f20 <e7617> {j2bh}  __Vdpiimwrap_difftest_ram_read_TOP____024unit [STATIC] [DPIIW]
+    1:2:2:1: VAR 0x555556e2e7e0 <e7562> {j2cn} @dt=0x555556d0d140@(G/sw64)  rIdx INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e2e6c0 <e7566> {j2bh} @dt=0x555556d0d140@(G/sw64)  difftest_ram_read__Vfuncrtn OUTPUT [FUNC] [VAUTOM]  VAR
+    1:2:2:3: CSTMT 0x555556e2cdc0 <e7567> {j2cn}
+    1:2:2:3:1: TEXT 0x555556e2b5f0 <e7568> {j2cn} "long long rIdx__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2ce60 <e7571> {j2cn}
+    1:2:2:3:1: TEXT 0x555556e2b6c0 <e7570> {j2cn} "for (size_t rIdx__Vidx = 0; rIdx__Vidx < 1; ++rIdx__Vidx) rIdx__Vcvt = rIdx;..."
+    1:2:2:3: CSTMT 0x555556e2cf00 <e7574> {j2bh}
+    1:2:2:3:1: TEXT 0x555556e2b790 <e7573> {j2bh} "long long difftest_ram_read__Vfuncrtn__Vcvt;..."
+    1:2:2:3: TEXT 0x555556e2b860 <e7576> {j2bh} "difftest_ram_read__Vfuncrtn__Vcvt = "
+    1:2:2:3: STMTEXPR 0x555556e2cfa0 <e7581> {j2bh}
+    1:2:2:3:1: CCALL 0x555556d1cd20 <e7580> {j2bh} @dt=0x555556d404d0@(w0)void difftest_ram_read => CFUNC 0x555556e26dc0 <e7557> {j2bh}  difftest_ram_read [DPIIP]
+    1:2:2:3: ASSIGN 0x555556e2d040 <e7616> {j2bh} @dt=0x555556d0d140@(G/sw64)
+    1:2:2:3:1: CEXPR 0x555556d2abb0 <e8029#> {j2bh} @dt=0x555556d0c900@(G/w64)
+    1:2:2:3:1:1: TEXT 0x555556e2ba00 <e7585> {j2bh} "difftest_ram_read__Vfuncrtn__Vcvt"
+    1:2:2:3:2: VARREF 0x555556e2b930 <e7614> {j2bh} @dt=0x555556d0d140@(G/sw64)  difftest_ram_read__Vfuncrtn [LV] => VARSCOPE 0x555556e30f00 <e7560> {j2bh} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT____024unit->difftest_ram_read__Vfuncrtn [T] [scopep=0x555556d1c2a0] -> VAR 0x555556e2e6c0 <e7566> {j2bh} @dt=0x555556d0d140@(G/sw64)  difftest_ram_read__Vfuncrtn OUTPUT [FUNC] [VAUTOM]  VAR
+    1:2:2: CFUNC 0x555556e271e0 <e7662> {j7be}  __Vdpiimwrap_difftest_ram_write_TOP____024unit [STATIC] [DPIIW]
+    1:2:2:1: VAR 0x555556e2ea20 <e7626> {j9as} @dt=0x555556d0d140@(G/sw64)  index INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e2eb40 <e7631> {j10as} @dt=0x555556d0d140@(G/sw64)  data INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e2ec60 <e7636> {j11as} @dt=0x555556d0d140@(G/sw64)  mask INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:3: CSTMT 0x555556e2d0e0 <e7640> {j9as}
+    1:2:2:3:1: TEXT 0x555556e2bad0 <e7641> {j9as} "long long index__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2d180 <e7644> {j9as}
+    1:2:2:3:1: TEXT 0x555556e2bba0 <e7643> {j9as} "for (size_t index__Vidx = 0; index__Vidx < 1; ++index__Vidx) index__Vcvt = index;..."
+    1:2:2:3: CSTMT 0x555556e2d220 <e7647> {j10as}
+    1:2:2:3:1: TEXT 0x555556e2bc70 <e7646> {j10as} "long long data__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2d2c0 <e7650> {j10as}
+    1:2:2:3:1: TEXT 0x555556e2bd40 <e7649> {j10as} "for (size_t data__Vidx = 0; data__Vidx < 1; ++data__Vidx) data__Vcvt = data;..."
+    1:2:2:3: CSTMT 0x555556e2d360 <e7653> {j11as}
+    1:2:2:3:1: TEXT 0x555556e2be10 <e7652> {j11as} "long long mask__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2d400 <e7656> {j11as}
+    1:2:2:3:1: TEXT 0x555556e2bee0 <e7655> {j11as} "for (size_t mask__Vidx = 0; mask__Vidx < 1; ++mask__Vidx) mask__Vcvt = mask;..."
+    1:2:2:3: STMTEXPR 0x555556e2d4a0 <e7661> {j7be}
+    1:2:2:3:1: CCALL 0x555556d1ce00 <e7660> {j7be} @dt=0x555556d404d0@(w0)void difftest_ram_write => CFUNC 0x555556e27080 <e7622> {j7be}  difftest_ram_write [DPIIP]
+    1: MODULE 0x555556d80fc0 <e3767> {h1ai}  top  L3 [LIB] [1ps]
+    1:2: VAR 0x555556d810e0 <e7976> {h3aq} @dt=0x555556d42840@(G/w1)  __PVT__clk INPUT [VSTATIC]  WIRE
+    1:2: VAR 0x555556d81200 <e7975> {h4aq} @dt=0x555556d42840@(G/w1)  __PVT__rst_n INPUT [VSTATIC]  WIRE
+    1:2: VAR 0x555556d81320 <e7987> {h5ay} @dt=0x555556e04840@(G/w32)  __PVT__opt OUTPUT [VSTATIC]  WIRE
+    1:2: VAR 0x555556d81440 <e7988> {h7ao} @dt=0x555556d8e9c0@(G/w4)  __PVT__a [VSTATIC]  VAR
+    1:2: VAR 0x555556d81560 <e7989> {h8ao} @dt=0x555556e04840@(G/w32)  __PVT__b [VSTATIC]  VAR
+    1:2: VAR 0x555556d81680 <e7990> {h30ah} @dt=0x555556d42840@(G/w1)  __PVT__r_enable [VSTATIC]  VAR
+    1:2: VAR 0x555556d817a0 <e7991> {h31ao} @dt=0x555556d0c900@(G/w64)  __PVT__r_index [VSTATIC]  VAR
+    1:2: VAR 0x555556d818c0 <e7992> {h32ao} @dt=0x555556d0c900@(G/w64)  __PVT__r_data [VSTATIC]  VAR
+    1:2: VAR 0x555556d819e0 <e7993> {h34ah} @dt=0x555556d42840@(G/w1)  __PVT__w_enable [VSTATIC]  VAR
+    1:2: VAR 0x555556d81b00 <e7994> {h35ao} @dt=0x555556d0c900@(G/w64)  __PVT__w_index [VSTATIC]  VAR
+    1:2: VAR 0x555556d81c20 <e7995> {h36ao} @dt=0x555556d0c900@(G/w64)  __PVT__w_data [VSTATIC]  VAR
+    1:2: VAR 0x555556d81d40 <e7996> {h37ao} @dt=0x555556d0c900@(G/w64)  __PVT__w_mask [VSTATIC]  VAR
+    1:2: VAR 0x555556d81e60 <e7997> {h38ah} @dt=0x555556d42840@(G/w1)  __PVT__enable [VSTATIC]  VAR
+    1:2: CELL 0x555556dae000 <e7998> {h40ap}  __PVT__mem -> MODULE 0x555556daf8c0 <e3769> {j15ai}  MemRWHelper  L4 [LIB] [1ps]
+    1:2: SCOPE 0x555556d1c000 <e7999> {d22ah}  TOP.__PVT__SimTop.__PVT__u_top [abovep=0x555556dadea0] [cellp=0x555556d54b40] [modp=0x555556d80fc0]
+    1:2:1: VARSCOPE 0x555556e09800 <e6126> {h3aq} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__clk [T] [scopep=0x555556d1c000] -> VAR 0x555556d810e0 <e7976> {h3aq} @dt=0x555556d42840@(G/w1)  __PVT__clk INPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e09740 <e6129> {h4aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__rst_n [T] [scopep=0x555556d1c000] -> VAR 0x555556d81200 <e7975> {h4aq} @dt=0x555556d42840@(G/w1)  __PVT__rst_n INPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e09680 <e6132> {h5ay} @dt=0x555556e04840@(G/w32)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__opt [T] [scopep=0x555556d1c000] -> VAR 0x555556d81320 <e7987> {h5ay} @dt=0x555556e04840@(G/w32)  __PVT__opt OUTPUT [VSTATIC]  WIRE
+    1:2:1: VARSCOPE 0x555556e095c0 <e6135> {h7ao} @dt=0x555556d8e9c0@(G/w4)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__a [T] [scopep=0x555556d1c000] -> VAR 0x555556d81440 <e7988> {h7ao} @dt=0x555556d8e9c0@(G/w4)  __PVT__a [VSTATIC]  VAR
+    1:2:1: VARSCOPE 0x555556e09500 <e6138> {h8ao} @dt=0x555556e04840@(G/w32)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__b [T] [scopep=0x555556d1c000] -> VAR 0x555556d81560 <e7989> {h8ao} @dt=0x555556e04840@(G/w32)  __PVT__b [VSTATIC]  VAR
+    1:2:1: VARSCOPE 0x555556e092c0 <e6143> {h30ah} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__r_enable [T] [scopep=0x555556d1c000] -> VAR 0x555556d81680 <e7990> {h30ah} @dt=0x555556d42840@(G/w1)  __PVT__r_enable [VSTATIC]  VAR
+    1:2:1: VARSCOPE 0x555556e09200 <e6146> {h31ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__r_index [T] [scopep=0x555556d1c000] -> VAR 0x555556d817a0 <e7991> {h31ao} @dt=0x555556d0c900@(G/w64)  __PVT__r_index [VSTATIC]  VAR
+    1:2:1: VARSCOPE 0x555556e09140 <e6149> {h32ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__r_data [T] [scopep=0x555556d1c000] -> VAR 0x555556d818c0 <e7992> {h32ao} @dt=0x555556d0c900@(G/w64)  __PVT__r_data [VSTATIC]  VAR
+    1:2:1: VARSCOPE 0x555556e09080 <e6152> {h34ah} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__w_enable [T] [scopep=0x555556d1c000] -> VAR 0x555556d819e0 <e7993> {h34ah} @dt=0x555556d42840@(G/w1)  __PVT__w_enable [VSTATIC]  VAR
+    1:2:1: VARSCOPE 0x555556e08fc0 <e6155> {h35ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__w_index [T] [scopep=0x555556d1c000] -> VAR 0x555556d81b00 <e7994> {h35ao} @dt=0x555556d0c900@(G/w64)  __PVT__w_index [VSTATIC]  VAR
+    1:2:1: VARSCOPE 0x555556e08f00 <e6158> {h36ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__w_data [T] [scopep=0x555556d1c000] -> VAR 0x555556d81c20 <e7995> {h36ao} @dt=0x555556d0c900@(G/w64)  __PVT__w_data [VSTATIC]  VAR
+    1:2:1: VARSCOPE 0x555556e08e40 <e6161> {h37ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__w_mask [T] [scopep=0x555556d1c000] -> VAR 0x555556d81d40 <e7996> {h37ao} @dt=0x555556d0c900@(G/w64)  __PVT__w_mask [VSTATIC]  VAR
+    1:2:1: VARSCOPE 0x555556e08d80 <e6164> {h38ah} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__enable [T] [scopep=0x555556d1c000] -> VAR 0x555556d81e60 <e7997> {h38ah} @dt=0x555556d42840@(G/w1)  __PVT__enable [VSTATIC]  VAR
+    1:2:2: ALWAYS 0x555556dd1080 <e2085> {h9ad}
+    1:2:2:1: SENTREE 0x555556dd1130 <e3230> {h9ak}
+    1:2:2:1:1: SENITEM 0x555556dd11e0 <e2019> {h9am} [POS]
+    1:2:2:1:1:1: VARREF 0x555556e15e10 <e4348> {h9au} @dt=0x555556d42840@(G/w1)  __PVT__clk [RV] <- VARSCOPE 0x555556e09800 <e6126> {h3aq} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__clk [T] [scopep=0x555556d1c000] -> VAR 0x555556d810e0 <e7976> {h3aq} @dt=0x555556d42840@(G/w1)  __PVT__clk INPUT [VSTATIC]  WIRE
+    1:2:2:2: ASSIGNDLY 0x555556d17360 <e5458> {h15aj} @dt=0x555556d8e9c0@(G/w4)
+    1:2:2:2:1: COND 0x555556dd1290 <e5456> {h15am} @dt=0x555556d8e9c0@(G/w4)
+    1:2:2:2:1:1: VARREF 0x555556e15ee0 <e5452> {h10ak} @dt=0x555556d42840@(G/w1)  __PVT__rst_n [RV] <- VARSCOPE 0x555556e09740 <e6129> {h4aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__rst_n [T] [scopep=0x555556d1c000] -> VAR 0x555556d81200 <e7975> {h4aq} @dt=0x555556d42840@(G/w1)  __PVT__rst_n INPUT [VSTATIC]  WIRE
+    1:2:2:2:1:2: COND 0x555556dd1340 <e5453> {h15am} @dt=0x555556d8e9c0@(G/w4)
+    1:2:2:2:1:2:1: SEL 0x555556e09440 <e5440> {h12at} @dt=0x555556d42840@(G/w1) decl[3:0]]
+    1:2:2:2:1:2:1:1: VARREF 0x555556d1e000 <e4390> {h12as} @dt=0x555556d8e9c0@(G/w4)  __PVT__a [RV] <- VARSCOPE 0x555556e095c0 <e6135> {h7ao} @dt=0x555556d8e9c0@(G/w4)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__a [T] [scopep=0x555556d1c000] -> VAR 0x555556d81440 <e7988> {h7ao} @dt=0x555556d8e9c0@(G/w4)  __PVT__a [VSTATIC]  VAR
+    1:2:2:2:1:2:1:2: CONST 0x555556e07a40 <e4412> {h12au} @dt=0x555556e026c0@(G/sw2)  2'h3
+    1:2:2:2:1:2:1:3: CONST 0x555556e07b30 <e4959> {h12at} @dt=0x555556e04840@(G/w32)  32'h1
+    1:2:2:2:1:2:2: VARREF 0x555556d1e0d0 <e5441> {h15am} @dt=0x555556d8e9c0@(G/w4)  __PVT__a [RV] <- VARSCOPE 0x555556e095c0 <e6135> {h7ao} @dt=0x555556d8e9c0@(G/w4)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__a [T] [scopep=0x555556d1c000] -> VAR 0x555556d81440 <e7988> {h7ao} @dt=0x555556d8e9c0@(G/w4)  __PVT__a [VSTATIC]  VAR
+    1:2:2:2:1:2:3: ADD 0x555556dd13f0 <e5442> {h13ao} @dt=0x555556d8e9c0@(G/w4)
+    1:2:2:2:1:2:3:1: CONST 0x555556e07c20 <e5183> {h13aq} @dt=0x555556d8e9c0@(G/w4)  4'h1
+    1:2:2:2:1:2:3:2: VARREF 0x555556d1e1a0 <e5184> {h13am} @dt=0x555556d8e9c0@(G/w4)  __PVT__a [RV] <- VARSCOPE 0x555556e095c0 <e6135> {h7ao} @dt=0x555556d8e9c0@(G/w4)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__a [T] [scopep=0x555556d1c000] -> VAR 0x555556d81440 <e7988> {h7ao} @dt=0x555556d8e9c0@(G/w4)  __PVT__a [VSTATIC]  VAR
+    1:2:2:2:1:3: CONST 0x555556e07d10 <e5454> {h11am} @dt=0x555556d8e9c0@(G/w4)  4'h0
+    1:2:2:2:2: VARREF 0x555556d1e270 <e4377> {h15ah} @dt=0x555556d8e9c0@(G/w4)  __PVT__a [LV] => VARSCOPE 0x555556e095c0 <e6135> {h7ao} @dt=0x555556d8e9c0@(G/w4)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__a [T] [scopep=0x555556d1c000] -> VAR 0x555556d81440 <e7988> {h7ao} @dt=0x555556d8e9c0@(G/w4)  __PVT__a [VSTATIC]  VAR
+    1:2:2: ALWAYS 0x555556dd14a0 <e6139> {h20ad}
+    1:2:2:1: SENTREE 0x555556dd1550 <e3237> {h20ak}
+    1:2:2:1:1: SENITEM 0x555556dd1600 <e2087> {h20am} [POS]
+    1:2:2:1:1:1: VARREF 0x555556d1e340 <e4423> {h20au} @dt=0x555556d42840@(G/w1)  __PVT__clk [RV] <- VARSCOPE 0x555556e09800 <e6126> {h3aq} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__clk [T] [scopep=0x555556d1c000] -> VAR 0x555556d810e0 <e7976> {h3aq} @dt=0x555556d42840@(G/w1)  __PVT__clk INPUT [VSTATIC]  WIRE
+    1:2:2:2: IF 0x555556dd16b0 <e5306> {h21af}
+    1:2:2:2:1: VARREF 0x555556d1e410 <e5210> {h21ak} @dt=0x555556d42840@(G/w1)  __PVT__rst_n [RV] <- VARSCOPE 0x555556e09740 <e6129> {h4aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__rst_n [T] [scopep=0x555556d1c000] -> VAR 0x555556d81200 <e7975> {h4aq} @dt=0x555556d42840@(G/w1)  __PVT__rst_n INPUT [VSTATIC]  WIRE
+    1:2:2:2:2: IF 0x555556dd1760 <e5208> {h23ao}
+    1:2:2:2:2:1: SEL 0x555556e09380 <e5205> {h23at} @dt=0x555556d42840@(G/w1) decl[3:0]]
+    1:2:2:2:2:1:1: VARREF 0x555556d1e4e0 <e4438> {h23as} @dt=0x555556d8e9c0@(G/w4)  __PVT__a [RV] <- VARSCOPE 0x555556e095c0 <e6135> {h7ao} @dt=0x555556d8e9c0@(G/w4)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__a [T] [scopep=0x555556d1c000] -> VAR 0x555556d81440 <e7988> {h7ao} @dt=0x555556d8e9c0@(G/w4)  __PVT__a [VSTATIC]  VAR
+    1:2:2:2:2:1:2: CONST 0x555556e07e00 <e4462> {h23au} @dt=0x555556e026c0@(G/sw2)  2'h3
+    1:2:2:2:2:1:3: CONST 0x555556e07ef0 <e4981> {h23at} @dt=0x555556e04840@(G/w32)  32'h1
+    1:2:2:2:2:2: ASSIGNDLY 0x555556d17400 <e5300> {h25aj} @dt=0x555556e04840@(G/w32)
+    1:2:2:2:2:2:1: CONST 0x555556d20000 <e4991> {h25am} @dt=0x555556e04840@(G/w32)  32'h1
+    1:2:2:2:2:2:2: VARREF 0x555556d1e5b0 <e4992> {h25ah} @dt=0x555556e04840@(G/w32)  __PVT__b [LV] => VARSCOPE 0x555556e09500 <e6138> {h8ao} @dt=0x555556e04840@(G/w32)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__b [T] [scopep=0x555556d1c000] -> VAR 0x555556d81560 <e7989> {h8ao} @dt=0x555556e04840@(G/w32)  __PVT__b [VSTATIC]  VAR
+    1:2:2:2:3: ASSIGNDLY 0x555556d174a0 <e5303> {h22aj} @dt=0x555556e04840@(G/w32)
+    1:2:2:2:3:1: CONST 0x555556d200f0 <e4969> {h22am} @dt=0x555556e04840@(G/w32)  32'h0
+    1:2:2:2:3:2: VARREF 0x555556d1e680 <e4970> {h22ah} @dt=0x555556e04840@(G/w32)  __PVT__b [LV] => VARSCOPE 0x555556e09500 <e6138> {h8ao} @dt=0x555556e04840@(G/w32)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__b [T] [scopep=0x555556d1c000] -> VAR 0x555556d81560 <e7989> {h8ao} @dt=0x555556e04840@(G/w32)  __PVT__b [VSTATIC]  VAR
+    1:2:2: ASSIGNW 0x555556d17540 <e6140> {h28ao} @dt=0x555556e04840@(G/w32)
+    1:2:2:1: VARREF 0x555556d1e750 <e4994> {h28aq} @dt=0x555556e04840@(G/w32)  __PVT__b [RV] <- VARSCOPE 0x555556e09500 <e6138> {h8ao} @dt=0x555556e04840@(G/w32)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__b [T] [scopep=0x555556d1c000] -> VAR 0x555556d81560 <e7989> {h8ao} @dt=0x555556e04840@(G/w32)  __PVT__b [VSTATIC]  VAR
+    1:2:2:2: VARREF 0x555556d1e820 <e4995> {h28ak} @dt=0x555556e04840@(G/w32)  __PVT__opt [LV] => VARSCOPE 0x555556e09680 <e6132> {h5ay} @dt=0x555556e04840@(G/w32)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__opt [T] [scopep=0x555556d1c000] -> VAR 0x555556d81320 <e7987> {h5ay} @dt=0x555556e04840@(G/w32)  __PVT__opt OUTPUT [VSTATIC]  WIRE
+    1:2:2: ASSIGNW 0x555556d175e0 <e6165> {h50ao} @dt=0x555556d42840@(G/w1)
+    1:2:2:1: VARREF 0x555556d1e8f0 <e6085> {h50ao} @dt=0x555556d42840@(G/w1)  __PVT__clk [RV] <- VARSCOPE 0x555556e09800 <e6126> {h3aq} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__clk [T] [scopep=0x555556d1c000] -> VAR 0x555556d810e0 <e7976> {h3aq} @dt=0x555556d42840@(G/w1)  __PVT__clk INPUT [VSTATIC]  WIRE
+    1:2:2:2: VARREF 0x555556d292b0 <e6793> {h50ao} @dt=0x555556d42840@(G/w1)  __PVT__clock [LV] => VARSCOPE 0x555556e09bc0 <e6123> {j28aj} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__clock [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dca360 <e8000> {j28aj} @dt=0x555556d42840@(G/w1)  __PVT__clock INPUT PORT
+    1:2:2: ASSIGNW 0x555556d17680 <e6166> {h49ap} @dt=0x555556d42840@(G/w1)
+    1:2:2:1: CONST 0x555556d201e0 <e6074> {h49ap} @dt=0x555556d42840@(G/w1)  1'h1
+    1:2:2:2: VARREF 0x555556d29380 <e6799> {h49ap} @dt=0x555556d42840@(G/w1)  __PVT__enable [LV] => VARSCOPE 0x555556e09c80 <e6120> {j27aj} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__enable [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dca240 <e8001> {j27aj} @dt=0x555556d42840@(G/w1)  __PVT__enable INPUT PORT
+    1:2:2: ASSIGNW 0x555556d17720 <e6167> {h48ap} @dt=0x555556d0c900@(G/w64)
+    1:2:2:1: VARREF 0x555556d1e9c0 <e6063> {h48ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_mask [RV] <- VARSCOPE 0x555556e08e40 <e6161> {h37ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__w_mask [T] [scopep=0x555556d1c000] -> VAR 0x555556d81d40 <e7996> {h37ao} @dt=0x555556d0c900@(G/w64)  __PVT__w_mask [VSTATIC]  VAR
+    1:2:2:2: VARREF 0x555556d29450 <e6805> {h48ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_mask [LV] => VARSCOPE 0x555556e09d40 <e6117> {j25ap} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__w_mask [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dca120 <e8002> {j25ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_mask INPUT PORT
+    1:2:2: ASSIGNW 0x555556d177c0 <e6168> {h47ap} @dt=0x555556d0c900@(G/w64)
+    1:2:2:1: VARREF 0x555556d1ea90 <e6052> {h47ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_data [RV] <- VARSCOPE 0x555556e08f00 <e6158> {h36ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__w_data [T] [scopep=0x555556d1c000] -> VAR 0x555556d81c20 <e7995> {h36ao} @dt=0x555556d0c900@(G/w64)  __PVT__w_data [VSTATIC]  VAR
+    1:2:2:2: VARREF 0x555556d29520 <e6811> {h47ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_data [LV] => VARSCOPE 0x555556e09e00 <e6114> {j24ap} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__w_data [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dca000 <e8003> {j24ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_data INPUT PORT
+    1:2:2: ASSIGNW 0x555556d17860 <e6169> {h46aq} @dt=0x555556d0c900@(G/w64)
+    1:2:2:1: VARREF 0x555556d1eb60 <e6041> {h46aq} @dt=0x555556d0c900@(G/w64)  __PVT__w_index [RV] <- VARSCOPE 0x555556e08fc0 <e6155> {h35ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__w_index [T] [scopep=0x555556d1c000] -> VAR 0x555556d81b00 <e7994> {h35ao} @dt=0x555556d0c900@(G/w64)  __PVT__w_index [VSTATIC]  VAR
+    1:2:2:2: VARREF 0x555556d295f0 <e6817> {h46aq} @dt=0x555556d0c900@(G/w64)  __PVT__w_index [LV] => VARSCOPE 0x555556e09ec0 <e6111> {j23ap} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__w_index [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dafe60 <e8004> {j23ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_index INPUT PORT
+    1:2:2: ASSIGNW 0x555556d17900 <e6170> {h45ar} @dt=0x555556d42840@(G/w1)
+    1:2:2:1: VARREF 0x555556d1ec30 <e6030> {h45ar} @dt=0x555556d42840@(G/w1)  __PVT__w_enable [RV] <- VARSCOPE 0x555556e09080 <e6152> {h34ah} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__w_enable [T] [scopep=0x555556d1c000] -> VAR 0x555556d819e0 <e7993> {h34ah} @dt=0x555556d42840@(G/w1)  __PVT__w_enable [VSTATIC]  VAR
+    1:2:2:2: VARREF 0x555556d296c0 <e6823> {h45ar} @dt=0x555556d42840@(G/w1)  __PVT__w_enable [LV] => VARSCOPE 0x555556e0a000 <e6108> {j22ap} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__w_enable [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dafd40 <e8005> {j22ap} @dt=0x555556d42840@(G/w1)  __PVT__w_enable INPUT PORT
+    1:2:2: ASSIGNW 0x555556d179a0 <e6171> {h43ar} @dt=0x555556d0c900@(G/w64)
+    1:2:2:1: VARREF 0x555556d29790 <e6829> {h43ar} @dt=0x555556d0c900@(G/w64)  __PVT__r_data [RV] <- VARSCOPE 0x555556e0a0c0 <e6105> {j19at} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__r_data [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dafc20 <e8006> {j19at} @dt=0x555556d0c900@(G/w64)  __PVT__r_data OUTPUT PORT
+    1:2:2:2: VARREF 0x555556d1ed00 <e6020> {h43ar} @dt=0x555556d0c900@(G/w64)  __PVT__r_data [LV] => VARSCOPE 0x555556e09140 <e6149> {h32ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__r_data [T] [scopep=0x555556d1c000] -> VAR 0x555556d818c0 <e7992> {h32ao} @dt=0x555556d0c900@(G/w64)  __PVT__r_data [VSTATIC]  VAR
+    1:2:2: ASSIGNW 0x555556d17a40 <e6172> {h42ar} @dt=0x555556d0c900@(G/w64)
+    1:2:2:1: VARREF 0x555556d1edd0 <e6008> {h42ar} @dt=0x555556d0c900@(G/w64)  __PVT__r_index [RV] <- VARSCOPE 0x555556e09200 <e6146> {h31ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__r_index [T] [scopep=0x555556d1c000] -> VAR 0x555556d817a0 <e7991> {h31ao} @dt=0x555556d0c900@(G/w64)  __PVT__r_index [VSTATIC]  VAR
+    1:2:2:2: VARREF 0x555556d29860 <e6835> {h42ar} @dt=0x555556d0c900@(G/w64)  __PVT__r_index [LV] => VARSCOPE 0x555556e0a180 <e6102> {j18at} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__r_index [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dafb00 <e8007> {j18at} @dt=0x555556d0c900@(G/w64)  __PVT__r_index INPUT PORT
+    1:2:2: ASSIGNW 0x555556d17ae0 <e6173> {h41ar} @dt=0x555556d42840@(G/w1)
+    1:2:2:1: VARREF 0x555556d1eea0 <e5997> {h41ar} @dt=0x555556d42840@(G/w1)  __PVT__r_enable [RV] <- VARSCOPE 0x555556e092c0 <e6143> {h30ah} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__r_enable [T] [scopep=0x555556d1c000] -> VAR 0x555556d81680 <e7990> {h30ah} @dt=0x555556d42840@(G/w1)  __PVT__r_enable [VSTATIC]  VAR
+    1:2:2:2: VARREF 0x555556d29930 <e6841> {h41ar} @dt=0x555556d42840@(G/w1)  __PVT__r_enable [LV] => VARSCOPE 0x555556e0a240 <e6099> {j17at} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__r_enable [T] [scopep=0x555556d1c0e0] -> VAR 0x555556daf9e0 <e8008> {j17at} @dt=0x555556d42840@(G/w1)  __PVT__r_enable INPUT PORT
+    1:2:2: ALWAYS 0x555556dd1810 <e6174> {h54ad}
+    1:2:2:1: SENTREE 0x555556dd18c0 <e3244> {h54ak}
+    1:2:2:1:1: SENITEM 0x555556dd1970 <e2349> {h54am} [POS]
+    1:2:2:1:1:1: VARREF 0x555556d1ef70 <e4533> {h54au} @dt=0x555556d42840@(G/w1)  __PVT__clk [RV] <- VARSCOPE 0x555556e09800 <e6126> {h3aq} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__clk [T] [scopep=0x555556d1c000] -> VAR 0x555556d810e0 <e7976> {h3aq} @dt=0x555556d42840@(G/w1)  __PVT__clk INPUT [VSTATIC]  WIRE
+    1:2:2:2: IF 0x555556dd1a20 <e5312> {h55af}
+    1:2:2:2:1: NOT 0x555556dd1ad0 <e4625> {h55aj} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:1:1: VARREF 0x555556d1f040 <e4624> {h55ak} @dt=0x555556d42840@(G/w1)  __PVT__rst_n [RV] <- VARSCOPE 0x555556e09740 <e6129> {h4aq} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__rst_n [T] [scopep=0x555556d1c000] -> VAR 0x555556d81200 <e7975> {h4aq} @dt=0x555556d42840@(G/w1)  __PVT__rst_n INPUT [VSTATIC]  WIRE
+    1:2:2:2:2: ASSIGNDLY 0x555556d17b80 <e5309> {h56aq} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:2:1: CONST 0x555556d202d0 <e5012> {h56at} @dt=0x555556d42840@(G/w1)  1'h0
+    1:2:2:2:2:2: VARREF 0x555556d1f110 <e5013> {h56ah} @dt=0x555556d42840@(G/w1)  __PVT__r_enable [LV] => VARSCOPE 0x555556e092c0 <e6143> {h30ah} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__r_enable [T] [scopep=0x555556d1c000] -> VAR 0x555556d81680 <e7990> {h30ah} @dt=0x555556d42840@(G/w1)  __PVT__r_enable [VSTATIC]  VAR
+    1:2:2:2:2: ASSIGNDLY 0x555556d17c20 <e5017> {h57aq} @dt=0x555556d0c900@(G/w64)
+    1:2:2:2:2:1: CONST 0x555556d203c0 <e5015> {h57at} @dt=0x555556d0c900@(G/w64)  64'h0
+    1:2:2:2:2:2: VARREF 0x555556d1f1e0 <e5016> {h57ah} @dt=0x555556d0c900@(G/w64)  __PVT__r_index [LV] => VARSCOPE 0x555556e09200 <e6146> {h31ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__r_index [T] [scopep=0x555556d1c000] -> VAR 0x555556d817a0 <e7991> {h31ao} @dt=0x555556d0c900@(G/w64)  __PVT__r_index [VSTATIC]  VAR
+    1:2:2:2:2: ASSIGNDLY 0x555556d17cc0 <e5020> {h58aq} @dt=0x555556d42840@(G/w1)
+    1:2:2:2:2:1: CONST 0x555556d204b0 <e5018> {h58at} @dt=0x555556d42840@(G/w1)  1'h0
+    1:2:2:2:2:2: VARREF 0x555556d1f2b0 <e5019> {h58ah} @dt=0x555556d42840@(G/w1)  __PVT__w_enable [LV] => VARSCOPE 0x555556e09080 <e6152> {h34ah} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__w_enable [T] [scopep=0x555556d1c000] -> VAR 0x555556d819e0 <e7993> {h34ah} @dt=0x555556d42840@(G/w1)  __PVT__w_enable [VSTATIC]  VAR
+    1:2:2:2:2: ASSIGNDLY 0x555556d17d60 <e5023> {h59aq} @dt=0x555556d0c900@(G/w64)
+    1:2:2:2:2:1: CONST 0x555556d205a0 <e5021> {h59at} @dt=0x555556d0c900@(G/w64)  64'h0
+    1:2:2:2:2:2: VARREF 0x555556d1f380 <e5022> {h59ah} @dt=0x555556d0c900@(G/w64)  __PVT__w_index [LV] => VARSCOPE 0x555556e08fc0 <e6155> {h35ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__w_index [T] [scopep=0x555556d1c000] -> VAR 0x555556d81b00 <e7994> {h35ao} @dt=0x555556d0c900@(G/w64)  __PVT__w_index [VSTATIC]  VAR
+    1:2:2:2:2: ASSIGNDLY 0x555556d17e00 <e5026> {h60aq} @dt=0x555556d0c900@(G/w64)
+    1:2:2:2:2:1: CONST 0x555556d20690 <e5024> {h60at} @dt=0x555556d0c900@(G/w64)  64'h0
+    1:2:2:2:2:2: VARREF 0x555556d1f450 <e5025> {h60ah} @dt=0x555556d0c900@(G/w64)  __PVT__w_data [LV] => VARSCOPE 0x555556e08f00 <e6158> {h36ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__w_data [T] [scopep=0x555556d1c000] -> VAR 0x555556d81c20 <e7995> {h36ao} @dt=0x555556d0c900@(G/w64)  __PVT__w_data [VSTATIC]  VAR
+    1:2:2:2:2: ASSIGNDLY 0x555556d17ea0 <e5029> {h61aq} @dt=0x555556d0c900@(G/w64)
+    1:2:2:2:2:1: CONST 0x555556d20780 <e5027> {h61at} @dt=0x555556d0c900@(G/w64)  64'h0
+    1:2:2:2:2:2: VARREF 0x555556d1f520 <e5028> {h61ah} @dt=0x555556d0c900@(G/w64)  __PVT__w_mask [LV] => VARSCOPE 0x555556e08e40 <e6161> {h37ao} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top->__PVT__w_mask [T] [scopep=0x555556d1c000] -> VAR 0x555556d81d40 <e7996> {h37ao} @dt=0x555556d0c900@(G/w64)  __PVT__w_mask [VSTATIC]  VAR
+    1: MODULE 0x555556dae120 <e3768> {i2ai}  DifftestTrapEvent  L3 [LIB] [1ps]
+    1:2: VAR 0x555556dae240 <e7985> {i3ar} @dt=0x555556d42840@(G/w1)  __PVT__clock INPUT PORT
+    1:2: VAR 0x555556dae360 <e7984> {i4ar} @dt=0x555556d42840@(G/w1)  __PVT__enable INPUT PORT
+    1:2: VAR 0x555556dae480 <e7983> {i5ar} @dt=0x555556d42840@(G/w1)  __PVT__io_hasTrap INPUT PORT
+    1:2: VAR 0x555556dae5a0 <e7982> {i6ar} @dt=0x555556d0c900@(G/w64)  __PVT__io_cycleCnt INPUT PORT
+    1:2: VAR 0x555556dae6c0 <e7981> {i7ar} @dt=0x555556d0c900@(G/w64)  __PVT__io_instrCnt INPUT PORT
+    1:2: VAR 0x555556dae7e0 <e7980> {i8ar} @dt=0x555556d42840@(G/w1)  __PVT__io_hasWFI INPUT PORT
+    1:2: VAR 0x555556dae900 <e7979> {i9ar} @dt=0x555556e04840@(G/w32)  __PVT__io_code INPUT PORT
+    1:2: VAR 0x555556daea20 <e7978> {i10ar} @dt=0x555556d0c900@(G/w64)  __PVT__io_pc INPUT PORT
+    1:2: VAR 0x555556daeb40 <e7977> {i11ar} @dt=0x555556d4db00@(G/w8)  __PVT__io_coreid INPUT PORT
+    1:2: SCOPE 0x555556d1c1c0 <e8009> {d36av}  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent [abovep=0x555556dadea0] [cellp=0x555556d54d80] [modp=0x555556dae120]
+    1:2:1: VARSCOPE 0x555556e08cc0 <e6178> {i3ar} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__clock [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae240 <e7985> {i3ar} @dt=0x555556d42840@(G/w1)  __PVT__clock INPUT PORT
+    1:2:1: VARSCOPE 0x555556e08c00 <e6181> {i4ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__enable [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae360 <e7984> {i4ar} @dt=0x555556d42840@(G/w1)  __PVT__enable INPUT PORT
+    1:2:1: VARSCOPE 0x555556e08b40 <e6184> {i5ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_hasTrap [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae480 <e7983> {i5ar} @dt=0x555556d42840@(G/w1)  __PVT__io_hasTrap INPUT PORT
+    1:2:1: VARSCOPE 0x555556e08a80 <e6187> {i6ar} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_cycleCnt [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae5a0 <e7982> {i6ar} @dt=0x555556d0c900@(G/w64)  __PVT__io_cycleCnt INPUT PORT
+    1:2:1: VARSCOPE 0x555556e089c0 <e6190> {i7ar} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_instrCnt [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae6c0 <e7981> {i7ar} @dt=0x555556d0c900@(G/w64)  __PVT__io_instrCnt INPUT PORT
+    1:2:1: VARSCOPE 0x555556e08900 <e6193> {i8ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_hasWFI [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae7e0 <e7980> {i8ar} @dt=0x555556d42840@(G/w1)  __PVT__io_hasWFI INPUT PORT
+    1:2:1: VARSCOPE 0x555556e08840 <e6196> {i9ar} @dt=0x555556e04840@(G/w32)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_code [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae900 <e7979> {i9ar} @dt=0x555556e04840@(G/w32)  __PVT__io_code INPUT PORT
+    1:2:1: VARSCOPE 0x555556e08780 <e6199> {i10ar} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_pc [T] [scopep=0x555556d1c1c0] -> VAR 0x555556daea20 <e7978> {i10ar} @dt=0x555556d0c900@(G/w64)  __PVT__io_pc INPUT PORT
+    1:2:1: VARSCOPE 0x555556e086c0 <e6202> {i11ar} @dt=0x555556d4db00@(G/w8)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_coreid [T] [scopep=0x555556d1c1c0] -> VAR 0x555556daeb40 <e7977> {i11ar} @dt=0x555556d4db00@(G/w8)  __PVT__io_coreid INPUT PORT
+    1:2:1: VARSCOPE 0x555556e31680 <e7679> {i17at} @dt=0x555556d6cfc0@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->io_hasTrap [T] [scopep=0x555556d1c1c0] -> VAR 0x555556e2f0e0 <e7676> {i17at} @dt=0x555556d6cfc0@(G/w1)  io_hasTrap INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e31740 <e7684> {i18at} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->io_cycleCnt [T] [scopep=0x555556d1c1c0] -> VAR 0x555556e2f200 <e7681> {i18at} @dt=0x555556d0d140@(G/sw64)  io_cycleCnt INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e31800 <e7689> {i19at} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->io_instrCnt [T] [scopep=0x555556d1c1c0] -> VAR 0x555556e2f320 <e7686> {i19at} @dt=0x555556d0d140@(G/sw64)  io_instrCnt INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e318c0 <e7694> {i20at} @dt=0x555556d6cfc0@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->io_hasWFI [T] [scopep=0x555556d1c1c0] -> VAR 0x555556e2f440 <e7691> {i20at} @dt=0x555556d6cfc0@(G/w1)  io_hasWFI INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e31980 <e7699> {i21at} @dt=0x555556d6ce40@(G/sw32)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->io_code [T] [scopep=0x555556d1c1c0] -> VAR 0x555556e2f560 <e7696> {i21at} @dt=0x555556d6ce40@(G/sw32)  io_code INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e31a40 <e7704> {i22at} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->io_pc [T] [scopep=0x555556d1c1c0] -> VAR 0x555556e2f680 <e7701> {i22at} @dt=0x555556d0d140@(G/sw64)  io_pc INPUT [FUNC] [VAUTOM]  PORT
+    1:2:1: VARSCOPE 0x555556e31b00 <e7709> {i23at} @dt=0x555556d4d380@(G/sw8)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->io_coreid [T] [scopep=0x555556d1c1c0] -> VAR 0x555556e2f7a0 <e7706> {i23at} @dt=0x555556d4d380@(G/sw8)  io_coreid INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2: CFUNC 0x555556e274a0 <e7756> {i16be}  __Vdpiimwrap_v_difftest_TrapEvent_TOP__SimTop__u_DifftestTrapEvent [STATIC] [DPIIW]
+    1:2:2:1: VAR 0x555556e2f0e0 <e7676> {i17at} @dt=0x555556d6cfc0@(G/w1)  io_hasTrap INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e2f200 <e7681> {i18at} @dt=0x555556d0d140@(G/sw64)  io_cycleCnt INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e2f320 <e7686> {i19at} @dt=0x555556d0d140@(G/sw64)  io_instrCnt INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e2f440 <e7691> {i20at} @dt=0x555556d6cfc0@(G/w1)  io_hasWFI INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e2f560 <e7696> {i21at} @dt=0x555556d6ce40@(G/sw32)  io_code INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e2f680 <e7701> {i22at} @dt=0x555556d0d140@(G/sw64)  io_pc INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:1: VAR 0x555556e2f7a0 <e7706> {i23at} @dt=0x555556d4d380@(G/sw8)  io_coreid INPUT [FUNC] [VAUTOM]  PORT
+    1:2:2:3: CSTMT 0x555556e2d540 <e7710> {i17at}
+    1:2:2:3:1: TEXT 0x555556e36000 <e7711> {i17at} "svBit io_hasTrap__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2d5e0 <e7714> {i17at}
+    1:2:2:3:1: TEXT 0x555556e360d0 <e7713> {i17at} "for (size_t io_hasTrap__Vidx = 0; io_hasTrap__Vidx < 1; ++io_hasTrap__Vidx) io_hasTrap__Vcvt = io_hasTrap;..."
+    1:2:2:3: CSTMT 0x555556e2d680 <e7717> {i18at}
+    1:2:2:3:1: TEXT 0x555556e361a0 <e7716> {i18at} "long long io_cycleCnt__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2d720 <e7720> {i18at}
+    1:2:2:3:1: TEXT 0x555556e36270 <e7719> {i18at} "for (size_t io_cycleCnt__Vidx = 0; io_cycleCnt__Vidx < 1; ++io_cycleCnt__Vidx) io_cycleCnt__Vcvt = io_cycleCnt;..."
+    1:2:2:3: CSTMT 0x555556e2d7c0 <e7723> {i19at}
+    1:2:2:3:1: TEXT 0x555556e36340 <e7722> {i19at} "long long io_instrCnt__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2d860 <e7726> {i19at}
+    1:2:2:3:1: TEXT 0x555556e36410 <e7725> {i19at} "for (size_t io_instrCnt__Vidx = 0; io_instrCnt__Vidx < 1; ++io_instrCnt__Vidx) io_instrCnt__Vcvt = io_instrCnt;..."
+    1:2:2:3: CSTMT 0x555556e2d900 <e7729> {i20at}
+    1:2:2:3:1: TEXT 0x555556e364e0 <e7728> {i20at} "svBit io_hasWFI__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2d9a0 <e7732> {i20at}
+    1:2:2:3:1: TEXT 0x555556e365b0 <e7731> {i20at} "for (size_t io_hasWFI__Vidx = 0; io_hasWFI__Vidx < 1; ++io_hasWFI__Vidx) io_hasWFI__Vcvt = io_hasWFI;..."
+    1:2:2:3: CSTMT 0x555556e2da40 <e7735> {i21at}
+    1:2:2:3:1: TEXT 0x555556e36680 <e7734> {i21at} "int io_code__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2dae0 <e7738> {i21at}
+    1:2:2:3:1: TEXT 0x555556e36750 <e7737> {i21at} "for (size_t io_code__Vidx = 0; io_code__Vidx < 1; ++io_code__Vidx) io_code__Vcvt = io_code;..."
+    1:2:2:3: CSTMT 0x555556e2db80 <e7741> {i22at}
+    1:2:2:3:1: TEXT 0x555556e36820 <e7740> {i22at} "long long io_pc__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2dc20 <e7744> {i22at}
+    1:2:2:3:1: TEXT 0x555556e368f0 <e7743> {i22at} "for (size_t io_pc__Vidx = 0; io_pc__Vidx < 1; ++io_pc__Vidx) io_pc__Vcvt = io_pc;..."
+    1:2:2:3: CSTMT 0x555556e2dcc0 <e7747> {i23at}
+    1:2:2:3:1: TEXT 0x555556e369c0 <e7746> {i23at} "char io_coreid__Vcvt;..."
+    1:2:2:3: CSTMT 0x555556e2dd60 <e7750> {i23at}
+    1:2:2:3:1: TEXT 0x555556e36a90 <e7749> {i23at} "for (size_t io_coreid__Vidx = 0; io_coreid__Vidx < 1; ++io_coreid__Vidx) io_coreid__Vcvt = io_coreid;..."
+    1:2:2:3: STMTEXPR 0x555556e2de00 <e7755> {i16be}
+    1:2:2:3:1: CCALL 0x555556d1cee0 <e7754> {i16be} @dt=0x555556d404d0@(w0)void v_difftest_TrapEvent => CFUNC 0x555556e27340 <e7668> {i16be}  v_difftest_TrapEvent [DPIIP]
+    1:2:2: ALWAYS 0x555556dd1b80 <e6224> {i27ad}
+    1:2:2:1: SENTREE 0x555556dd1c30 <e3251> {i27ak}
+    1:2:2:1:1: SENITEM 0x555556dd1ce0 <e2668> {i27am} [POS]
+    1:2:2:1:1:1: VARREF 0x555556d1f5f0 <e4280> {i27au} @dt=0x555556d42840@(G/w1)  __PVT__clock [RV] <- VARSCOPE 0x555556e08cc0 <e6178> {i3ar} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__clock [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae240 <e7985> {i3ar} @dt=0x555556d42840@(G/w1)  __PVT__clock INPUT PORT
+    1:2:2:2: IF 0x555556dd1d90 <e5315> {i28af}
+    1:2:2:2:1: VARREF 0x555556d1f6c0 <e4307> {i28aj} @dt=0x555556d42840@(G/w1)  __PVT__enable [RV] <- VARSCOPE 0x555556e08c00 <e6181> {i4ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__enable [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae360 <e7984> {i4ar} @dt=0x555556d42840@(G/w1)  __PVT__enable INPUT PORT
+    1:2:2:2:2: COMMENT 0x555556e36b60 <e7765> {i29ah}  Function: v_difftest_TrapEvent
+    1:2:2:2:2: STMTEXPR 0x555556e2dea0 <e7770> {i29ah}
+    1:2:2:2:2:1: CCALL 0x555556d1cfc0 <e7769> {i29ah} @dt=0x555556d404d0@(w0)void __Vdpiimwrap_v_difftest_TrapEvent_TOP__SimTop__u_DifftestTrapEvent => CFUNC 0x555556e274a0 <e7756> {i16be}  __Vdpiimwrap_v_difftest_TrapEvent_TOP__SimTop__u_DifftestTrapEvent [STATIC] [DPIIW]
+    1:2:2:2:2:1:2: VARREF 0x555556d1f790 <e7771> {i29bd} @dt=0x555556d42840@(G/w1)  __PVT__io_hasTrap [RV] <- VARSCOPE 0x555556e08b40 <e6184> {i5ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_hasTrap [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae480 <e7983> {i5ar} @dt=0x555556d42840@(G/w1)  __PVT__io_hasTrap INPUT PORT
+    1:2:2:2:2:1:2: VARREF 0x555556d1f860 <e7773> {i29bp} @dt=0x555556d0c900@(G/w64)  __PVT__io_cycleCnt [RV] <- VARSCOPE 0x555556e08a80 <e6187> {i6ar} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_cycleCnt [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae5a0 <e7982> {i6ar} @dt=0x555556d0c900@(G/w64)  __PVT__io_cycleCnt INPUT PORT
+    1:2:2:2:2:1:2: VARREF 0x555556d1f930 <e7775> {i29cc} @dt=0x555556d0c900@(G/w64)  __PVT__io_instrCnt [RV] <- VARSCOPE 0x555556e089c0 <e6190> {i7ar} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_instrCnt [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae6c0 <e7981> {i7ar} @dt=0x555556d0c900@(G/w64)  __PVT__io_instrCnt INPUT PORT
+    1:2:2:2:2:1:2: VARREF 0x555556d1fa00 <e7777> {i29cp} @dt=0x555556d42840@(G/w1)  __PVT__io_hasWFI [RV] <- VARSCOPE 0x555556e08900 <e6193> {i8ar} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_hasWFI [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae7e0 <e7980> {i8ar} @dt=0x555556d42840@(G/w1)  __PVT__io_hasWFI INPUT PORT
+    1:2:2:2:2:1:2: VARREF 0x555556d1fad0 <e7779> {i29da} @dt=0x555556e04840@(G/w32)  __PVT__io_code [RV] <- VARSCOPE 0x555556e08840 <e6196> {i9ar} @dt=0x555556e04840@(G/w32)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_code [T] [scopep=0x555556d1c1c0] -> VAR 0x555556dae900 <e7979> {i9ar} @dt=0x555556e04840@(G/w32)  __PVT__io_code INPUT PORT
+    1:2:2:2:2:1:2: VARREF 0x555556d1fba0 <e7781> {i29dj} @dt=0x555556d0c900@(G/w64)  __PVT__io_pc [RV] <- VARSCOPE 0x555556e08780 <e6199> {i10ar} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_pc [T] [scopep=0x555556d1c1c0] -> VAR 0x555556daea20 <e7978> {i10ar} @dt=0x555556d0c900@(G/w64)  __PVT__io_pc INPUT PORT
+    1:2:2:2:2:1:2: VARREF 0x555556d1fc70 <e7783> {i29dq} @dt=0x555556d4db00@(G/w8)  __PVT__io_coreid [RV] <- VARSCOPE 0x555556e086c0 <e6202> {i11ar} @dt=0x555556d4db00@(G/w8)  TOP.__PVT__SimTop.__PVT__u_DifftestTrapEvent->__PVT__io_coreid [T] [scopep=0x555556d1c1c0] -> VAR 0x555556daeb40 <e7977> {i11ar} @dt=0x555556d4db00@(G/w8)  __PVT__io_coreid INPUT PORT
+    1: MODULE 0x555556daf8c0 <e3769> {j15ai}  MemRWHelper  L4 [LIB] [1ps]
+    1:2: VAR 0x555556daf9e0 <e8008> {j17at} @dt=0x555556d42840@(G/w1)  __PVT__r_enable INPUT PORT
+    1:2: VAR 0x555556dafb00 <e8007> {j18at} @dt=0x555556d0c900@(G/w64)  __PVT__r_index INPUT PORT
+    1:2: VAR 0x555556dafc20 <e8006> {j19at} @dt=0x555556d0c900@(G/w64)  __PVT__r_data OUTPUT PORT
+    1:2: VAR 0x555556dafd40 <e8005> {j22ap} @dt=0x555556d42840@(G/w1)  __PVT__w_enable INPUT PORT
+    1:2: VAR 0x555556dafe60 <e8004> {j23ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_index INPUT PORT
+    1:2: VAR 0x555556dca000 <e8003> {j24ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_data INPUT PORT
+    1:2: VAR 0x555556dca120 <e8002> {j25ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_mask INPUT PORT
+    1:2: VAR 0x555556dca240 <e8001> {j27aj} @dt=0x555556d42840@(G/w1)  __PVT__enable INPUT PORT
+    1:2: VAR 0x555556dca360 <e8000> {j28aj} @dt=0x555556d42840@(G/w1)  __PVT__clock INPUT PORT
+    1:2: SCOPE 0x555556d1c0e0 <e8010> {h40ap}  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem [abovep=0x555556d1c000] [cellp=0x555556dae000] [modp=0x555556daf8c0]
+    1:2:1: VARSCOPE 0x555556e0a240 <e6099> {j17at} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__r_enable [T] [scopep=0x555556d1c0e0] -> VAR 0x555556daf9e0 <e8008> {j17at} @dt=0x555556d42840@(G/w1)  __PVT__r_enable INPUT PORT
+    1:2:1: VARSCOPE 0x555556e0a180 <e6102> {j18at} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__r_index [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dafb00 <e8007> {j18at} @dt=0x555556d0c900@(G/w64)  __PVT__r_index INPUT PORT
+    1:2:1: VARSCOPE 0x555556e0a0c0 <e6105> {j19at} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__r_data [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dafc20 <e8006> {j19at} @dt=0x555556d0c900@(G/w64)  __PVT__r_data OUTPUT PORT
+    1:2:1: VARSCOPE 0x555556e0a000 <e6108> {j22ap} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__w_enable [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dafd40 <e8005> {j22ap} @dt=0x555556d42840@(G/w1)  __PVT__w_enable INPUT PORT
+    1:2:1: VARSCOPE 0x555556e09ec0 <e6111> {j23ap} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__w_index [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dafe60 <e8004> {j23ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_index INPUT PORT
+    1:2:1: VARSCOPE 0x555556e09e00 <e6114> {j24ap} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__w_data [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dca000 <e8003> {j24ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_data INPUT PORT
+    1:2:1: VARSCOPE 0x555556e09d40 <e6117> {j25ap} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__w_mask [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dca120 <e8002> {j25ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_mask INPUT PORT
+    1:2:1: VARSCOPE 0x555556e09c80 <e6120> {j27aj} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__enable [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dca240 <e8001> {j27aj} @dt=0x555556d42840@(G/w1)  __PVT__enable INPUT PORT
+    1:2:1: VARSCOPE 0x555556e09bc0 <e6123> {j28aj} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__clock [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dca360 <e8000> {j28aj} @dt=0x555556d42840@(G/w1)  __PVT__clock INPUT PORT
+    1:2:1: VARSCOPE 0x555556e31bc0 <e7803> {j2bh} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__Vfunc_difftest_ram_read__0__Vfuncout [T] [scopep=0x555556d1c0e0] -> VAR 0x555556e34120 <e7800> {j2bh} @dt=0x555556d0d140@(G/sw64)  __Vfunc_difftest_ram_read__0__Vfuncout BLOCKTEMP
+    1:2:2: ALWAYS 0x555556dd0c60 <e2973> {j67ad}
+    1:2:2:1: SENTREE 0x555556dd0d10 <e3258> {j67ak}
+    1:2:2:1:1: SENITEM 0x555556dd0dc0 <e2930> {j67am} [POS]
+    1:2:2:1:1:1: VARREF 0x555556e156c0 <e4138> {j67au} @dt=0x555556d42840@(G/w1)  __PVT__clock [RV] <- VARSCOPE 0x555556e09bc0 <e6123> {j28aj} u4=0x1 @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__clock [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dca360 <e8000> {j28aj} @dt=0x555556d42840@(G/w1)  __PVT__clock INPUT PORT
+    1:2:2:2: IF 0x555556dd0e70 <e5327> {j68af}
+    1:2:2:2:1: VARREF 0x555556e15790 <e4186> {j68aj} @dt=0x555556d42840@(G/w1)  __PVT__enable [RV] <- VARSCOPE 0x555556e09c80 <e6120> {j27aj} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__enable [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dca240 <e8001> {j27aj} @dt=0x555556d42840@(G/w1)  __PVT__enable INPUT PORT
+    1:2:2:2:2: IF 0x555556dd0f20 <e5324> {j71ab}
+    1:2:2:2:2:1: VARREF 0x555556e15860 <e4156> {j71af} @dt=0x555556d42840@(G/w1)  __PVT__r_enable [RV] <- VARSCOPE 0x555556e0a240 <e6099> {j17at} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__r_enable [T] [scopep=0x555556d1c0e0] -> VAR 0x555556daf9e0 <e8008> {j17at} @dt=0x555556d42840@(G/w1)  __PVT__r_enable INPUT PORT
+    1:2:2:2:2:2: COMMENT 0x555556e36c30 <e7804> {j72an}  Function: difftest_ram_read
+    1:2:2:2:2:2: STMTEXPR 0x555556e2df40 <e7809> {j72an}
+    1:2:2:2:2:2:1: CCALL 0x555556d1d0a0 <e7808> {j72an} @dt=0x555556d404d0@(w0)void __Vdpiimwrap_difftest_ram_read_TOP____024unit => CFUNC 0x555556e26f20 <e7617> {j2bh}  __Vdpiimwrap_difftest_ram_read_TOP____024unit [STATIC] [DPIIW]
+    1:2:2:2:2:2:1:2: VARREF 0x555556e15930 <e7810> {j72bf} @dt=0x555556d0c900@(G/w64)  __PVT__r_index [RV] <- VARSCOPE 0x555556e0a180 <e6102> {j18at} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__r_index [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dafb00 <e8007> {j18at} @dt=0x555556d0c900@(G/w64)  __PVT__r_index INPUT PORT
+    1:2:2:2:2:2:1:2: VARREF 0x555556e36d00 <e7813> {j72an} @dt=0x555556d0d140@(G/sw64)  __Vfunc_difftest_ram_read__0__Vfuncout [LV] => VARSCOPE 0x555556e31bc0 <e7803> {j2bh} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__Vfunc_difftest_ram_read__0__Vfuncout [T] [scopep=0x555556d1c0e0] -> VAR 0x555556e34120 <e7800> {j2bh} @dt=0x555556d0d140@(G/sw64)  __Vfunc_difftest_ram_read__0__Vfuncout BLOCKTEMP
+    1:2:2:2:2:2: ASSIGNDLY 0x555556d17220 <e7814> {j72ak} @dt=0x555556d0c900@(G/w64)
+    1:2:2:2:2:2:1: VARREF 0x555556e36dd0 <e7818> {j72an} @dt=0x555556d0d140@(G/sw64)  __Vfunc_difftest_ram_read__0__Vfuncout [RV] <- VARSCOPE 0x555556e31bc0 <e7803> {j2bh} @dt=0x555556d0d140@(G/sw64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__Vfunc_difftest_ram_read__0__Vfuncout [T] [scopep=0x555556d1c0e0] -> VAR 0x555556e34120 <e7800> {j2bh} @dt=0x555556d0d140@(G/sw64)  __Vfunc_difftest_ram_read__0__Vfuncout BLOCKTEMP
+    1:2:2:2:2:2:2: VARREF 0x555556e15a00 <e5054> {j72ad} @dt=0x555556d0c900@(G/w64)  __PVT__r_data [LV] => VARSCOPE 0x555556e0a0c0 <e6105> {j19at} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__r_data [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dafc20 <e8006> {j19at} @dt=0x555556d0c900@(G/w64)  __PVT__r_data OUTPUT PORT
+    1:2:2:2:2: IF 0x555556dd0fd0 <e2967> {j82ab}
+    1:2:2:2:2:1: VARREF 0x555556e15ad0 <e4185> {j82af} @dt=0x555556d42840@(G/w1)  __PVT__w_enable [RV] <- VARSCOPE 0x555556e0a000 <e6108> {j22ap} @dt=0x555556d42840@(G/w1)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__w_enable [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dafd40 <e8005> {j22ap} @dt=0x555556d42840@(G/w1)  __PVT__w_enable INPUT PORT
+    1:2:2:2:2:2: COMMENT 0x555556e36ea0 <e7822> {j83ad}  Function: difftest_ram_write
+    1:2:2:2:2:2: STMTEXPR 0x555556e38000 <e7827> {j83ad}
+    1:2:2:2:2:2:1: CCALL 0x555556d1d180 <e7826> {j83ad} @dt=0x555556d404d0@(w0)void __Vdpiimwrap_difftest_ram_write_TOP____024unit => CFUNC 0x555556e271e0 <e7662> {j7be}  __Vdpiimwrap_difftest_ram_write_TOP____024unit [STATIC] [DPIIW]
+    1:2:2:2:2:2:1:2: VARREF 0x555556e15ba0 <e7828> {j83aw} @dt=0x555556d0c900@(G/w64)  __PVT__w_index [RV] <- VARSCOPE 0x555556e09ec0 <e6111> {j23ap} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__w_index [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dafe60 <e8004> {j23ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_index INPUT PORT
+    1:2:2:2:2:2:1:2: VARREF 0x555556e15c70 <e7830> {j83bf} @dt=0x555556d0c900@(G/w64)  __PVT__w_data [RV] <- VARSCOPE 0x555556e09e00 <e6114> {j24ap} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__w_data [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dca000 <e8003> {j24ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_data INPUT PORT
+    1:2:2:2:2:2:1:2: VARREF 0x555556e15d40 <e7832> {j83bn} @dt=0x555556d0c900@(G/w64)  __PVT__w_mask [RV] <- VARSCOPE 0x555556e09d40 <e6117> {j25ap} @dt=0x555556d0c900@(G/w64)  TOP.__PVT__SimTop.__PVT__u_top.__PVT__mem->__PVT__w_mask [T] [scopep=0x555556d1c0e0] -> VAR 0x555556dca120 <e8002> {j25ap} @dt=0x555556d0c900@(G/w64)  __PVT__w_mask INPUT PORT
+    1:2: VAR 0x555556e34120 <e7800> {j2bh} @dt=0x555556d0d140@(G/sw64)  __Vfunc_difftest_ram_read__0__Vfuncout BLOCKTEMP
+    3: TYPETABLE 0x555556ccc600 <e2> {a0aa}
+		detailed  ->  BASICDTYPE 0x555556d6cfc0 <e4672> {g9aj} @dt=this@(G/w1)  bit [GENERIC] kwd=bit
+		detailed  ->  BASICDTYPE 0x555556d42840 <e104> {c50aw} @dt=this@(G/w1)  logic [GENERIC] kwd=logic
+		detailed  ->  BASICDTYPE 0x555556e026c0 <e4404> {h12at} @dt=this@(G/sw2)  logic [GENERIC] kwd=logic range=[1:0]
+		detailed  ->  BASICDTYPE 0x555556d8e9c0 <e4338> {h7ad} @dt=this@(G/w4)  logic [GENERIC] kwd=logic range=[3:0]
+		detailed  ->  BASICDTYPE 0x555556d4db00 <e4732> {d7ar} @dt=this@(G/w8)  logic [GENERIC] kwd=logic range=[7:0]
+		detailed  ->  BASICDTYPE 0x555556d4d380 <e4627> {e18az} @dt=this@(G/sw8)  byte [GENERIC] kwd=byte range=[7:0]
+		detailed  ->  BASICDTYPE 0x555556e04840 <e4919> {d43au} @dt=this@(G/w32)  logic [GENERIC] kwd=logic range=[31:0]
+		detailed  ->  BASICDTYPE 0x555556d6ce40 <e4668> {g7az} @dt=this@(G/sw32)  int [GENERIC] kwd=int range=[31:0]
+		detailed  ->  BASICDTYPE 0x555556d0c900 <e4799> {d27ad} @dt=this@(G/w64)  logic [GENERIC] kwd=logic range=[63:0]
+		detailed  ->  BASICDTYPE 0x555556d6cc00 <e4662> {f25ak} @dt=this@(G/str)  string [GENERIC] kwd=string
+		detailed  ->  BASICDTYPE 0x555556d0d140 <e4631> {e19ak} @dt=this@(G/sw64)  longint [GENERIC] kwd=longint range=[63:0]
+    3:1: BASICDTYPE 0x555556d42840 <e104> {c50aw} @dt=this@(G/w1)  logic [GENERIC] kwd=logic
+    3:1: VOIDDTYPE 0x555556d404d0 <e127> {c51av} @dt=this@(w0)void
+    3:1: BASICDTYPE 0x555556d8e9c0 <e4338> {h7ad} @dt=this@(G/w4)  logic [GENERIC] kwd=logic range=[3:0]
+    3:1: BASICDTYPE 0x555556e026c0 <e4404> {h12at} @dt=this@(G/sw2)  logic [GENERIC] kwd=logic range=[1:0]
+    3:1: BASICDTYPE 0x555556d4d380 <e4627> {e18az} @dt=this@(G/sw8)  byte [GENERIC] kwd=byte range=[7:0]
+    3:1: BASICDTYPE 0x555556d0d140 <e4631> {e19ak} @dt=this@(G/sw64)  longint [GENERIC] kwd=longint range=[63:0]
+    3:1: BASICDTYPE 0x555556d6cc00 <e4662> {f25ak} @dt=this@(G/str)  string [GENERIC] kwd=string
+    3:1: BASICDTYPE 0x555556d6ce40 <e4668> {g7az} @dt=this@(G/sw32)  int [GENERIC] kwd=int range=[31:0]
+    3:1: BASICDTYPE 0x555556d6cfc0 <e4672> {g9aj} @dt=this@(G/w1)  bit [GENERIC] kwd=bit
+    3:1: BASICDTYPE 0x555556d4db00 <e4732> {d7ar} @dt=this@(G/w8)  logic [GENERIC] kwd=logic range=[7:0]
+    3:1: BASICDTYPE 0x555556d0c900 <e4799> {d27ad} @dt=this@(G/w64)  logic [GENERIC] kwd=logic range=[63:0]
+    3:1: BASICDTYPE 0x555556e04840 <e4919> {d43au} @dt=this@(G/w32)  logic [GENERIC] kwd=logic range=[31:0]
+    3: CONSTPOOL 0x555556cde000 <e7> {a0aa}
+    3:1: MODULE 0x555556ce0000 <e6> {a0aa}  @CONST-POOL@  L0 [NONE]
+    3:1:2: SCOPE 0x555556ce2000 <e8011#> {a0aa}  TOP [abovep=0] [cellp=0] [modp=0x555556ce0000]

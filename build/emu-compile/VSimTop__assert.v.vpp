@@ -1,0 +1,48 @@
+`begin_keywords "1800-2023"
+`line 1 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 1
+
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+
+`line 15 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+ 
+
+`line 17 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+ 
+import "DPI-C" function void xs_assert
+(
+  input  longint    line
+);
+
+`line 23 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0
+import "DPI-C" function void xs_assert_v2
+(
+  input  string     filename,
+  input  longint    line
+);
+
+
+
+`line 31 "/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" 0

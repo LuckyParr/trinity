@@ -1,0 +1,3132 @@
+<?xml version="1.0" ?>
+<!-- DESCRIPTION: Verilator output: XML representation of netlist -->
+<verilator_xml>
+  <files>
+    <file id="j" filename="../vsrc/sim_ram/MemRWHelper.v" language="1800-2023"/>
+    <file id="h" filename="../vsrc/top.sv" language="1800-2023"/>
+    <file id="i" filename="/nfs/home/jinpeize/trinity/build/rtl/DifftestTrapEvent.v" language="1800-2023"/>
+    <file id="d" filename="/nfs/home/jinpeize/trinity/build/rtl/SimTop.sv" language="1800-2023"/>
+    <file id="g" filename="/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/SimJTAG.v" language="1800-2023"/>
+    <file id="f" filename="/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/assert.v" language="1800-2023"/>
+    <file id="e" filename="/nfs/home/jinpeize/trinity/difftest/src/test/vsrc/common/ref.v" language="1800-2023"/>
+    <file id="c" filename="/usr/local/share/verilator/include/verilated_std.sv" language="1800-2023"/>
+    <file id="a" filename="&lt;built-in&gt;" language="1800-2023"/>
+    <file id="b" filename="&lt;command-line&gt;" language="1800-2023"/>
+  </files>
+  <module_files>
+    <file id="d" filename="/nfs/home/jinpeize/trinity/build/rtl/SimTop.sv" language="1800-2023"/>
+    <file id="h" filename="../vsrc/top.sv" language="1800-2023"/>
+    <file id="i" filename="/nfs/home/jinpeize/trinity/build/rtl/DifftestTrapEvent.v" language="1800-2023"/>
+    <file id="j" filename="../vsrc/sim_ram/MemRWHelper.v" language="1800-2023"/>
+  </module_files>
+  <cells>
+    <cell loc="d,1,8,1,14" name="$root" submodname="$root" hier="$root">
+      <cell loc="d,1,8,1,14" name="__PVT__SimTop" submodname="SimTop" hier="$root.__PVT__SimTop">
+        <cell loc="d,22,7,22,12" name="__PVT__u_top" submodname="top" hier="$root.__PVT__SimTop.__PVT__u_top">
+          <cell loc="h,40,15,40,18" name="__PVT__mem" submodname="MemRWHelper" hier="$root.__PVT__SimTop.__PVT__u_top.__PVT__mem"/>
+        </cell>
+        <cell loc="d,36,21,36,40" name="__PVT__u_DifftestTrapEvent" submodname="DifftestTrapEvent" hier="$root.__PVT__SimTop.__PVT__u_DifftestTrapEvent"/>
+      </cell>
+      <cell loc="a,0,0,0,0" name="__PVT____024unit" submodname="__024unit" hier="$root.__PVT____024unit"/>
+    </cell>
+  </cells>
+  <cells>
+    <cell loc="d,1,8,1,14" name="SimTop" submodname="SimTop" hier="SimTop">
+      <cell loc="d,22,7,22,12" name="__PVT__u_top" submodname="top" hier="SimTop.__PVT__u_top">
+        <cell loc="h,40,15,40,18" name="__PVT__mem" submodname="MemRWHelper" hier="SimTop.__PVT__u_top.__PVT__mem"/>
+      </cell>
+      <cell loc="d,36,21,36,40" name="__PVT__u_DifftestTrapEvent" submodname="DifftestTrapEvent" hier="SimTop.__PVT__u_DifftestTrapEvent"/>
+    </cell>
+  </cells>
+  <netlist>
+    <module loc="d,1,8,1,14" name="$root" origName="$root" topModule="1" public="true">
+      <var loc="d,2,16,2,21" name="reset" dtype_id="1" dir="input" pinIndex="1" vartype="logic" origName="reset" public="true"/>
+      <var loc="d,3,16,3,21" name="clock" dtype_id="1" dir="input" pinIndex="2" vartype="logic" origName="clock" public="true"/>
+      <var loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="1" dir="input" pinIndex="3" vartype="logic" origName="difftest_logCtrl_begin" public="true"/>
+      <var loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="1" dir="input" pinIndex="4" vartype="logic" origName="difftest_logCtrl_end" public="true"/>
+      <var loc="d,6,17,6,40" name="difftest_uart_out_valid" dtype_id="1" dir="output" pinIndex="5" vartype="logic" origName="difftest_uart_out_valid" public="true"/>
+      <var loc="d,7,23,7,43" name="difftest_uart_out_ch" dtype_id="2" dir="output" pinIndex="6" vartype="logic" origName="difftest_uart_out_ch" public="true"/>
+      <var loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="1" dir="input" pinIndex="7" vartype="logic" origName="difftest_uart_in_valid" public="true"/>
+      <var loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="2" dir="input" pinIndex="8" vartype="logic" origName="difftest_uart_in_ch" public="true"/>
+      <var loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="1" dir="input" pinIndex="9" vartype="logic" origName="difftest_perfCtrl_clean" public="true"/>
+      <var loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="1" dir="input" pinIndex="10" vartype="logic" origName="difftest_perfCtrl_dump" public="true"/>
+      <var loc="d,14,17,14,30" name="difftest_exit" dtype_id="1" dir="output" pinIndex="11" vartype="logic" origName="difftest_exit" public="true"/>
+      <var loc="d,15,17,15,30" name="difftest_step" dtype_id="1" dir="output" pinIndex="12" vartype="logic" origName="difftest_step" public="true"/>
+      <var loc="d,1,8,1,14" name="__VstlExecute" dtype_id="3" vartype="bit" origName="__VstlExecute"/>
+      <var loc="d,1,8,1,14" name="__VstlFirstIteration" dtype_id="3" vartype="bit" origName="__VstlFirstIteration"/>
+      <var loc="d,1,8,1,14" name="__VstlContinue" dtype_id="3" vartype="bit" origName="__VstlContinue"/>
+      <var loc="d,1,8,1,14" name="__VicoExecute" dtype_id="3" vartype="bit" origName="__VicoExecute"/>
+      <var loc="d,1,8,1,14" name="__VicoFirstIteration" dtype_id="3" vartype="bit" origName="__VicoFirstIteration"/>
+      <var loc="d,1,8,1,14" name="__VicoContinue" dtype_id="3" vartype="bit" origName="__VicoContinue"/>
+      <var loc="d,1,8,1,14" name="__Vtrigprevexpr___TOP__SimTop__clock__0" dtype_id="1" vartype="logic" origName="__Vtrigprevexpr___TOP__SimTop__clock__0"/>
+      <var loc="d,1,8,1,14" name="__Vtrigprevexpr___TOP__SimTop__u_top__clk__0" dtype_id="1" vartype="logic" origName="__Vtrigprevexpr___TOP__SimTop__u_top____PVT__clk__0"/>
+      <var loc="d,1,8,1,14" name="__Vtrigprevexpr___TOP__SimTop__u_DifftestTrapEvent__clock__0" dtype_id="1" vartype="logic" origName="__Vtrigprevexpr___TOP__SimTop__u_DifftestTrapEvent____PVT__clock__0"/>
+      <var loc="d,1,8,1,14" name="__Vtrigprevexpr___TOP__SimTop__u_top__mem__clock__0" dtype_id="1" vartype="logic" origName="__Vtrigprevexpr___TOP__SimTop__u_top__mem____PVT__clock__0"/>
+      <var loc="d,1,8,1,14" name="__VactExecute" dtype_id="3" vartype="bit" origName="__VactExecute"/>
+      <var loc="d,1,8,1,14" name="__VactFirstIteration" dtype_id="3" vartype="bit" origName="__VactFirstIteration"/>
+      <var loc="d,1,8,1,14" name="__VactContinue" dtype_id="3" vartype="bit" origName="__VactContinue"/>
+      <var loc="d,1,8,1,14" name="__VnbaExecute" dtype_id="3" vartype="bit" origName="__VnbaExecute"/>
+      <var loc="d,1,8,1,14" name="__VnbaFirstIteration" dtype_id="3" vartype="bit" origName="__VnbaFirstIteration"/>
+      <var loc="d,1,8,1,14" name="__VnbaContinue" dtype_id="3" vartype="bit" origName="__VnbaContinue"/>
+      <var loc="d,1,8,1,14" name="__VstlIterCount" dtype_id="4" vartype="bit" origName="__VstlIterCount"/>
+      <var loc="d,1,8,1,14" name="__VicoIterCount" dtype_id="4" vartype="bit" origName="__VicoIterCount"/>
+      <var loc="d,1,8,1,14" name="__VactIterCount" dtype_id="4" vartype="bit" origName="__VactIterCount"/>
+      <var loc="d,1,8,1,14" name="__VnbaIterCount" dtype_id="4" vartype="bit" origName="__VnbaIterCount"/>
+      <var loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5" vartype="" origName="__Vm_traceActivity"/>
+      <var loc="d,1,8,1,14" name="__VstlTriggered" dtype_id="6" vartype="VlTriggerVec" origName="__VstlTriggered"/>
+      <var loc="d,1,8,1,14" name="__VicoTriggered" dtype_id="7" vartype="VlTriggerVec" origName="__VicoTriggered"/>
+      <var loc="d,1,8,1,14" name="__VactTriggered" dtype_id="8" vartype="VlTriggerVec" origName="__VactTriggered"/>
+      <var loc="d,1,8,1,14" name="__VpreTriggered" dtype_id="8" vartype="VlTriggerVec" origName="__VpreTriggered"/>
+      <var loc="d,1,8,1,14" name="__VnbaTriggered" dtype_id="8" vartype="VlTriggerVec" origName="__VnbaTriggered"/>
+      <instance loc="d,1,8,1,14" name="SimTop" defName="SimTop" origName="SimTop"/>
+      <instance loc="a,0,0,0,0" name="$unit" defName="__024unit" origName="__024unit"/>
+      <topscope loc="d,1,8,1,14">
+        <scope loc="d,1,8,1,14" name="TOP"/>
+      </topscope>
+      <cfunc loc="e,18,30,18,40" name="pte_helper">
+        <var loc="e,19,18,19,22" name="satp" dtype_id="9" dir="input" vartype="longint" origName="satp"/>
+        <creset loc="e,19,18,19,22">
+          <varref loc="e,19,18,19,22" name="satp" dtype_id="9"/>
+        </creset>
+        <var loc="e,20,18,20,21" name="vpn" dtype_id="9" dir="input" vartype="longint" origName="vpn"/>
+        <creset loc="e,20,18,20,21">
+          <varref loc="e,20,18,20,21" name="vpn" dtype_id="9"/>
+        </creset>
+        <var loc="e,21,18,21,21" name="pte" dtype_id="9" dir="output" vartype="longint" origName="pte"/>
+        <creset loc="e,21,18,21,21">
+          <varref loc="e,21,18,21,21" name="pte" dtype_id="9"/>
+        </creset>
+        <var loc="e,22,18,22,23" name="level" dtype_id="10" dir="output" vartype="byte" origName="level"/>
+        <creset loc="e,22,18,22,23">
+          <varref loc="e,22,18,22,23" name="level" dtype_id="10"/>
+        </creset>
+      </cfunc>
+      <cfunc loc="e,45,33,45,43" name="amo_helper">
+        <var loc="e,46,17,46,20" name="cmd" dtype_id="10" dir="input" vartype="byte" origName="cmd"/>
+        <creset loc="e,46,17,46,20">
+          <varref loc="e,46,17,46,20" name="cmd" dtype_id="10"/>
+        </creset>
+        <var loc="e,47,17,47,21" name="addr" dtype_id="9" dir="input" vartype="longint" origName="addr"/>
+        <creset loc="e,47,17,47,21">
+          <varref loc="e,47,17,47,21" name="addr" dtype_id="9"/>
+        </creset>
+        <var loc="e,48,17,48,22" name="wdata" dtype_id="9" dir="input" vartype="longint" origName="wdata"/>
+        <creset loc="e,48,17,48,22">
+          <varref loc="e,48,17,48,22" name="wdata" dtype_id="9"/>
+        </creset>
+        <var loc="e,49,17,49,21" name="mask" dtype_id="10" dir="input" vartype="byte" origName="mask"/>
+        <creset loc="e,49,17,49,21">
+          <varref loc="e,49,17,49,21" name="mask" dtype_id="10"/>
+        </creset>
+      </cfunc>
+      <cfunc loc="f,18,30,18,39" name="xs_assert">
+        <var loc="f,20,21,20,25" name="line" dtype_id="9" dir="input" vartype="longint" origName="line"/>
+        <creset loc="f,20,21,20,25">
+          <varref loc="f,20,21,20,25" name="line" dtype_id="9"/>
+        </creset>
+      </cfunc>
+      <cfunc loc="f,23,30,23,42" name="xs_assert_v2">
+        <var loc="f,25,21,25,29" name="filename" dtype_id="11" dir="input" vartype="string" origName="filename"/>
+        <creset loc="f,25,21,25,29">
+          <varref loc="f,25,21,25,29" name="filename" dtype_id="11"/>
+        </creset>
+        <var loc="f,26,21,26,25" name="line" dtype_id="9" dir="input" vartype="longint" origName="line"/>
+        <creset loc="f,26,21,26,25">
+          <varref loc="f,26,21,26,25" name="line" dtype_id="9"/>
+        </creset>
+      </cfunc>
+      <cfunc loc="g,7,29,7,38" name="jtag_tick">
+        <var loc="g,9,13,9,21" name="jtag_TCK" dtype_id="3" dir="output" vartype="bit" origName="jtag_TCK"/>
+        <creset loc="g,9,13,9,21">
+          <varref loc="g,9,13,9,21" name="jtag_TCK" dtype_id="3"/>
+        </creset>
+        <var loc="g,10,13,10,21" name="jtag_TMS" dtype_id="3" dir="output" vartype="bit" origName="jtag_TMS"/>
+        <creset loc="g,10,13,10,21">
+          <varref loc="g,10,13,10,21" name="jtag_TMS" dtype_id="3"/>
+        </creset>
+        <var loc="g,11,13,11,21" name="jtag_TDI" dtype_id="3" dir="output" vartype="bit" origName="jtag_TDI"/>
+        <creset loc="g,11,13,11,21">
+          <varref loc="g,11,13,11,21" name="jtag_TDI" dtype_id="3"/>
+        </creset>
+        <var loc="g,12,13,12,23" name="jtag_TRSTn" dtype_id="3" dir="output" vartype="bit" origName="jtag_TRSTn"/>
+        <creset loc="g,12,13,12,23">
+          <varref loc="g,12,13,12,23" name="jtag_TRSTn" dtype_id="3"/>
+        </creset>
+        <var loc="g,14,13,14,21" name="jtag_TDO" dtype_id="3" dir="input" vartype="bit" origName="jtag_TDO"/>
+        <creset loc="g,14,13,14,21">
+          <varref loc="g,14,13,14,21" name="jtag_TDO" dtype_id="3"/>
+        </creset>
+      </cfunc>
+      <cfunc loc="j,2,33,2,50" name="difftest_ram_read">
+        <var loc="j,2,65,2,69" name="rIdx" dtype_id="9" dir="input" vartype="longint" origName="rIdx"/>
+        <creset loc="j,2,65,2,69">
+          <varref loc="j,2,65,2,69" name="rIdx" dtype_id="9"/>
+        </creset>
+      </cfunc>
+      <cfunc loc="j,7,30,7,48" name="difftest_ram_write">
+        <var loc="j,9,18,9,23" name="index" dtype_id="9" dir="input" vartype="longint" origName="index"/>
+        <creset loc="j,9,18,9,23">
+          <varref loc="j,9,18,9,23" name="index" dtype_id="9"/>
+        </creset>
+        <var loc="j,10,18,10,22" name="data" dtype_id="9" dir="input" vartype="longint" origName="data"/>
+        <creset loc="j,10,18,10,22">
+          <varref loc="j,10,18,10,22" name="data" dtype_id="9"/>
+        </creset>
+        <var loc="j,11,18,11,22" name="mask" dtype_id="9" dir="input" vartype="longint" origName="mask"/>
+        <creset loc="j,11,18,11,22">
+          <varref loc="j,11,18,11,22" name="mask" dtype_id="9"/>
+        </creset>
+      </cfunc>
+      <cfunc loc="i,16,30,16,50" name="v_difftest_TrapEvent">
+        <var loc="i,17,19,17,29" name="io_hasTrap" dtype_id="3" dir="input" vartype="bit" origName="io_hasTrap"/>
+        <creset loc="i,17,19,17,29">
+          <varref loc="i,17,19,17,29" name="io_hasTrap" dtype_id="3"/>
+        </creset>
+        <var loc="i,18,19,18,30" name="io_cycleCnt" dtype_id="9" dir="input" vartype="longint" origName="io_cycleCnt"/>
+        <creset loc="i,18,19,18,30">
+          <varref loc="i,18,19,18,30" name="io_cycleCnt" dtype_id="9"/>
+        </creset>
+        <var loc="i,19,19,19,30" name="io_instrCnt" dtype_id="9" dir="input" vartype="longint" origName="io_instrCnt"/>
+        <creset loc="i,19,19,19,30">
+          <varref loc="i,19,19,19,30" name="io_instrCnt" dtype_id="9"/>
+        </creset>
+        <var loc="i,20,19,20,28" name="io_hasWFI" dtype_id="3" dir="input" vartype="bit" origName="io_hasWFI"/>
+        <creset loc="i,20,19,20,28">
+          <varref loc="i,20,19,20,28" name="io_hasWFI" dtype_id="3"/>
+        </creset>
+        <var loc="i,21,19,21,26" name="io_code" dtype_id="12" dir="input" vartype="int" origName="io_code"/>
+        <creset loc="i,21,19,21,26">
+          <varref loc="i,21,19,21,26" name="io_code" dtype_id="12"/>
+        </creset>
+        <var loc="i,22,19,22,24" name="io_pc" dtype_id="9" dir="input" vartype="longint" origName="io_pc"/>
+        <creset loc="i,22,19,22,24">
+          <varref loc="i,22,19,22,24" name="io_pc" dtype_id="9"/>
+        </creset>
+        <var loc="i,23,19,23,28" name="io_coreid" dtype_id="10" dir="input" vartype="byte" origName="io_coreid"/>
+        <creset loc="i,23,19,23,28">
+          <varref loc="i,23,19,23,28" name="io_coreid" dtype_id="10"/>
+        </creset>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="trace_init_sub__TOP__0">
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <tracepushprefix loc="d,1,8,1,14"/>
+        <stmtexpr loc="d,1,8,1,14">
+          <ccall loc="d,1,8,1,14" dtype_id="13" func="trace_init_sub__TOP__SimTop__0"/>
+        </stmtexpr>
+        <tracepopprefix loc="d,1,8,1,14"/>
+        <tracedecl loc="d,2,16,2,21" name="reset" dtype_id="1"/>
+        <tracedecl loc="d,3,16,3,21" name="clock" dtype_id="1"/>
+        <tracedecl loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="1"/>
+        <tracedecl loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="1"/>
+        <tracedecl loc="d,6,17,6,40" name="difftest_uart_out_valid" dtype_id="1"/>
+        <tracedecl loc="d,7,23,7,43" name="difftest_uart_out_ch" dtype_id="2"/>
+        <tracedecl loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="1"/>
+        <tracedecl loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="2"/>
+        <tracedecl loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="1"/>
+        <tracedecl loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="1"/>
+        <tracedecl loc="d,14,17,14,30" name="difftest_exit" dtype_id="1"/>
+        <tracedecl loc="d,15,17,15,30" name="difftest_step" dtype_id="1"/>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="trace_init_sub__TOP__SimTop__0">
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <tracedecl loc="d,2,16,2,21" name="reset" dtype_id="1"/>
+        <tracedecl loc="d,3,16,3,21" name="clock" dtype_id="1"/>
+        <tracedecl loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="1"/>
+        <tracedecl loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="1"/>
+        <tracedecl loc="d,6,17,6,40" name="difftest_uart_out_valid" dtype_id="1"/>
+        <tracedecl loc="d,7,23,7,43" name="difftest_uart_out_ch" dtype_id="2"/>
+        <tracedecl loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="1"/>
+        <tracedecl loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="2"/>
+        <tracedecl loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="1"/>
+        <tracedecl loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="1"/>
+        <tracedecl loc="d,14,17,14,30" name="difftest_exit" dtype_id="1"/>
+        <tracedecl loc="d,15,17,15,30" name="difftest_step" dtype_id="1"/>
+        <tracepushprefix loc="d,22,7,22,12"/>
+        <stmtexpr loc="d,22,7,22,12">
+          <ccall loc="d,22,7,22,12" dtype_id="13" func="trace_init_sub__TOP__SimTop__u_top__0"/>
+        </stmtexpr>
+        <tracepopprefix loc="d,22,7,22,12"/>
+        <tracedecl loc="d,27,14,27,17" name="cnt" dtype_id="14"/>
+        <tracepushprefix loc="d,36,21,36,40"/>
+        <stmtexpr loc="d,36,21,36,40">
+          <ccall loc="d,36,21,36,40" dtype_id="13" func="trace_init_sub__TOP__SimTop__u_DifftestTrapEvent__0"/>
+        </stmtexpr>
+        <tracepopprefix loc="d,36,21,36,40"/>
+      </cfunc>
+      <cfunc loc="d,22,7,22,12" name="trace_init_sub__TOP__SimTop__u_top__0">
+        <cstmt loc="d,22,7,22,12">
+          <text loc="d,22,7,22,12"/>
+        </cstmt>
+        <tracedecl loc="h,3,16,3,19" name="clk" dtype_id="1"/>
+        <tracedecl loc="h,4,16,4,21" name="rst_n" dtype_id="1"/>
+        <tracedecl loc="h,5,24,5,27" name="opt" dtype_id="15"/>
+        <tracedecl loc="h,7,14,7,15" name="a" dtype_id="16"/>
+        <tracedecl loc="h,8,14,8,15" name="b" dtype_id="15"/>
+        <tracedecl loc="h,30,7,30,15" name="r_enable" dtype_id="1"/>
+        <tracedecl loc="h,31,14,31,21" name="r_index" dtype_id="14"/>
+        <tracedecl loc="h,32,14,32,20" name="r_data" dtype_id="14"/>
+        <tracedecl loc="h,34,7,34,15" name="w_enable" dtype_id="1"/>
+        <tracedecl loc="h,35,14,35,21" name="w_index" dtype_id="14"/>
+        <tracedecl loc="h,36,14,36,20" name="w_data" dtype_id="14"/>
+        <tracedecl loc="h,37,14,37,20" name="w_mask" dtype_id="14"/>
+        <tracedecl loc="h,38,7,38,13" name="enable" dtype_id="1"/>
+        <tracepushprefix loc="h,40,15,40,18"/>
+        <stmtexpr loc="h,40,15,40,18">
+          <ccall loc="h,40,15,40,18" dtype_id="13" func="trace_init_sub__TOP__SimTop__u_top__mem__0"/>
+        </stmtexpr>
+        <tracepopprefix loc="h,40,15,40,18"/>
+      </cfunc>
+      <cfunc loc="d,36,21,36,40" name="trace_init_sub__TOP__SimTop__u_DifftestTrapEvent__0">
+        <cstmt loc="d,36,21,36,40">
+          <text loc="d,36,21,36,40"/>
+        </cstmt>
+        <tracedecl loc="i,3,17,3,22" name="clock" dtype_id="1"/>
+        <tracedecl loc="i,4,17,4,23" name="enable" dtype_id="1"/>
+        <tracedecl loc="i,5,17,5,27" name="io_hasTrap" dtype_id="1"/>
+        <tracedecl loc="i,6,17,6,28" name="io_cycleCnt" dtype_id="14"/>
+        <tracedecl loc="i,7,17,7,28" name="io_instrCnt" dtype_id="14"/>
+        <tracedecl loc="i,8,17,8,26" name="io_hasWFI" dtype_id="1"/>
+        <tracedecl loc="i,9,17,9,24" name="io_code" dtype_id="15"/>
+        <tracedecl loc="i,10,17,10,22" name="io_pc" dtype_id="14"/>
+        <tracedecl loc="i,11,17,11,26" name="io_coreid" dtype_id="2"/>
+      </cfunc>
+      <cfunc loc="h,40,15,40,18" name="trace_init_sub__TOP__SimTop__u_top__mem__0">
+        <cstmt loc="h,40,15,40,18">
+          <text loc="h,40,15,40,18"/>
+        </cstmt>
+        <tracedecl loc="j,17,19,17,27" name="r_enable" dtype_id="1"/>
+        <tracedecl loc="j,18,19,18,26" name="r_index" dtype_id="14"/>
+        <tracedecl loc="j,19,19,19,25" name="r_data" dtype_id="14"/>
+        <tracedecl loc="j,22,15,22,23" name="w_enable" dtype_id="1"/>
+        <tracedecl loc="j,23,15,23,22" name="w_index" dtype_id="14"/>
+        <tracedecl loc="j,24,15,24,21" name="w_data" dtype_id="14"/>
+        <tracedecl loc="j,25,15,25,21" name="w_mask" dtype_id="14"/>
+        <tracedecl loc="j,27,9,27,15" name="enable" dtype_id="1"/>
+        <tracedecl loc="j,28,9,28,14" name="clock" dtype_id="1"/>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="trace_init_top">
+        <stmtexpr loc="a,0,0,0,0">
+          <ccall loc="a,0,0,0,0" dtype_id="13" func="trace_init_sub__TOP__0"/>
+        </stmtexpr>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval_static"/>
+      <cfunc loc="a,0,0,0,0" name="_eval_initial">
+        <stmtexpr loc="d,1,8,1,14">
+          <ccall loc="d,1,8,1,14" dtype_id="13" func="_eval_initial__TOP__SimTop"/>
+        </stmtexpr>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+          <arraysel loc="d,1,8,1,14" dtype_id="17">
+            <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+            <const loc="d,1,8,1,14" name="32&apos;h3" dtype_id="15"/>
+          </arraysel>
+        </assign>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+          <arraysel loc="d,1,8,1,14" dtype_id="17">
+            <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+            <const loc="d,1,8,1,14" name="32&apos;h2" dtype_id="15"/>
+          </arraysel>
+        </assign>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+          <arraysel loc="d,1,8,1,14" dtype_id="17">
+            <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+            <const loc="d,1,8,1,14" name="32&apos;h1" dtype_id="15"/>
+          </arraysel>
+        </assign>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+          <arraysel loc="d,1,8,1,14" dtype_id="17">
+            <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+            <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+          </arraysel>
+        </assign>
+        <stmtexpr loc="d,22,7,22,12">
+          <ccall loc="d,22,7,22,12" dtype_id="13" func="_eval_initial__TOP__SimTop__u_top"/>
+        </stmtexpr>
+        <assign loc="d,28,20,28,25" dtype_id="17">
+          <varref loc="d,28,20,28,25" name="clock" dtype_id="17"/>
+          <varref loc="d,28,20,28,25" name="__Vtrigprevexpr___TOP__SimTop__clock__0" dtype_id="17"/>
+        </assign>
+        <assign loc="h,9,20,9,23" dtype_id="17">
+          <varref loc="h,9,20,9,23" name="clk" dtype_id="17"/>
+          <varref loc="h,9,20,9,23" name="__Vtrigprevexpr___TOP__SimTop__u_top__clk__0" dtype_id="17"/>
+        </assign>
+        <assign loc="i,27,20,27,25" dtype_id="17">
+          <varref loc="i,27,20,27,25" name="clock" dtype_id="17"/>
+          <varref loc="i,27,20,27,25" name="__Vtrigprevexpr___TOP__SimTop__u_DifftestTrapEvent__clock__0" dtype_id="17"/>
+        </assign>
+        <assign loc="j,67,20,67,25" dtype_id="17">
+          <varref loc="j,67,20,67,25" name="clock" dtype_id="17"/>
+          <varref loc="j,67,20,67,25" name="__Vtrigprevexpr___TOP__SimTop__u_top__mem__clock__0" dtype_id="17"/>
+        </assign>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval_final"/>
+      <cfunc loc="a,0,0,0,0" name="_eval_settle">
+        <var loc="d,1,8,1,14" name="__Vtemp_1" dtype_id="4" vartype="bit" origName="__Vtemp_1"/>
+        <assign loc="d,1,8,1,14" dtype_id="4">
+          <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+          <varref loc="d,1,8,1,14" name="__VstlIterCount" dtype_id="4"/>
+        </assign>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+          <varref loc="d,1,8,1,14" name="__VstlFirstIteration" dtype_id="17"/>
+        </assign>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+          <varref loc="d,1,8,1,14" name="__VstlContinue" dtype_id="17"/>
+        </assign>
+        <while loc="a,0,0,0,0">
+          <begin>
+          </begin>
+          <begin>
+            <varref loc="a,0,0,0,0" name="__VstlContinue" dtype_id="17"/>
+          </begin>
+          <begin>
+            <if loc="a,0,0,0,0">
+              <lt loc="a,0,0,0,0" dtype_id="17">
+                <const loc="a,0,0,0,0" name="32&apos;h64" dtype_id="15"/>
+                <varref loc="a,0,0,0,0" name="__VstlIterCount" dtype_id="4"/>
+              </lt>
+              <begin>
+                <textblock loc="a,0,0,0,0">
+                  <text loc="a,0,0,0,0"/>
+                  <stmtexpr loc="a,0,0,0,0">
+                    <ccall loc="a,0,0,0,0" dtype_id="13" func="_dump_triggers__stl"/>
+                  </stmtexpr>
+                  <text loc="a,0,0,0,0"/>
+                  <text loc="a,0,0,0,0"/>
+                  <text loc="a,0,0,0,0"/>
+                </textblock>
+              </begin>
+            </if>
+            <assign loc="d,1,8,1,14" dtype_id="4">
+              <add loc="d,1,8,1,14" dtype_id="4">
+                <ccast loc="d,1,8,1,14" dtype_id="15">
+                  <const loc="d,1,8,1,14" name="32&apos;h1" dtype_id="15"/>
+                </ccast>
+                <varref loc="d,1,8,1,14" name="__VstlIterCount" dtype_id="4"/>
+              </add>
+              <varref loc="d,1,8,1,14" name="__Vtemp_1" dtype_id="4"/>
+            </assign>
+            <assign loc="d,1,8,1,14" dtype_id="4">
+              <varref loc="d,1,8,1,14" name="__Vtemp_1" dtype_id="4"/>
+              <varref loc="d,1,8,1,14" name="__VstlIterCount" dtype_id="4"/>
+            </assign>
+            <assign loc="d,1,8,1,14" dtype_id="17">
+              <const loc="d,1,8,1,14" name="1&apos;h0" dtype_id="17"/>
+              <varref loc="d,1,8,1,14" name="__VstlContinue" dtype_id="17"/>
+            </assign>
+            <if loc="a,0,0,0,0">
+              <ccall loc="a,0,0,0,0" dtype_id="17" func="_eval_phase__stl"/>
+              <begin>
+                <assign loc="d,1,8,1,14" dtype_id="17">
+                  <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+                  <varref loc="d,1,8,1,14" name="__VstlContinue" dtype_id="17"/>
+                </assign>
+              </begin>
+            </if>
+            <assign loc="d,1,8,1,14" dtype_id="17">
+              <const loc="d,1,8,1,14" name="1&apos;h0" dtype_id="17"/>
+              <varref loc="d,1,8,1,14" name="__VstlFirstIteration" dtype_id="17"/>
+            </assign>
+          </begin>
+        </while>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval_triggers__stl">
+        <stmtexpr loc="d,1,8,1,14">
+          <cmethodhard loc="d,1,8,1,14" name="set" dtype_id="13">
+            <varref loc="d,1,8,1,14" name="__VstlTriggered" dtype_id="17"/>
+            <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            <ccast loc="d,1,8,1,14" dtype_id="17">
+              <varref loc="d,1,8,1,14" name="__VstlFirstIteration" dtype_id="17"/>
+            </ccast>
+          </cmethodhard>
+        </stmtexpr>
+        <textblock loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+          <text loc="d,1,8,1,14"/>
+          <stmtexpr loc="a,0,0,0,0">
+            <ccall loc="a,0,0,0,0" dtype_id="13" func="_dump_triggers__stl"/>
+          </stmtexpr>
+          <text loc="d,1,8,1,14"/>
+          <text loc="d,1,8,1,14"/>
+        </textblock>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_dump_triggers__stl">
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="17">
+            <const loc="d,1,8,1,14" name="32&apos;h1" dtype_id="15"/>
+            <not loc="d,1,8,1,14" dtype_id="17">
+              <cmethodhard loc="d,1,8,1,14" name="any" dtype_id="17">
+                <varref loc="d,1,8,1,14" name="__VstlTriggered" dtype_id="17"/>
+              </cmethodhard>
+            </not>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h1" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VstlTriggered" dtype_id="17"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval_stl">
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h1" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VstlTriggered" dtype_id="17"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <stmtexpr loc="d,15,17,15,30">
+              <ccall loc="d,15,17,15,30" dtype_id="13" func="_stl_sequent__TOP__0"/>
+            </stmtexpr>
+            <assign loc="d,15,17,15,30" dtype_id="17">
+              <const loc="d,15,17,15,30" name="1&apos;h1" dtype_id="17"/>
+              <arraysel loc="d,15,17,15,30" dtype_id="17">
+                <varref loc="d,15,17,15,30" name="__Vm_traceActivity" dtype_id="5"/>
+                <const loc="d,15,17,15,30" name="32&apos;h3" dtype_id="15"/>
+              </arraysel>
+            </assign>
+            <assign loc="d,15,17,15,30" dtype_id="17">
+              <const loc="d,15,17,15,30" name="1&apos;h1" dtype_id="17"/>
+              <arraysel loc="d,15,17,15,30" dtype_id="17">
+                <varref loc="d,15,17,15,30" name="__Vm_traceActivity" dtype_id="5"/>
+                <const loc="d,15,17,15,30" name="32&apos;h2" dtype_id="15"/>
+              </arraysel>
+            </assign>
+            <assign loc="d,15,17,15,30" dtype_id="17">
+              <const loc="d,15,17,15,30" name="1&apos;h1" dtype_id="17"/>
+              <arraysel loc="d,15,17,15,30" dtype_id="17">
+                <varref loc="d,15,17,15,30" name="__Vm_traceActivity" dtype_id="5"/>
+                <const loc="d,15,17,15,30" name="32&apos;h1" dtype_id="15"/>
+              </arraysel>
+            </assign>
+            <assign loc="d,15,17,15,30" dtype_id="17">
+              <const loc="d,15,17,15,30" name="1&apos;h1" dtype_id="17"/>
+              <arraysel loc="d,15,17,15,30" dtype_id="17">
+                <varref loc="d,15,17,15,30" name="__Vm_traceActivity" dtype_id="5"/>
+                <const loc="d,15,17,15,30" name="32&apos;h0" dtype_id="15"/>
+              </arraysel>
+            </assign>
+            <stmtexpr loc="d,40,20,40,23">
+              <ccall loc="d,40,20,40,23" dtype_id="13" func="_stl_sequent__TOP__SimTop__0"/>
+            </stmtexpr>
+            <stmtexpr loc="h,28,14,28,15">
+              <ccall loc="h,28,14,28,15" dtype_id="13" func="_stl_sequent__TOP__SimTop__u_top__0"/>
+            </stmtexpr>
+          </begin>
+        </if>
+      </cfunc>
+      <cfunc loc="d,15,17,15,30" name="_stl_sequent__TOP__0">
+        <contassign loc="d,15,17,15,30" dtype_id="17">
+          <varref loc="d,15,17,15,30" name="difftest_step" dtype_id="17"/>
+          <varref loc="d,15,17,15,30" name="difftest_step" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,14,17,14,30" dtype_id="17">
+          <varref loc="d,14,17,14,30" name="difftest_exit" dtype_id="17"/>
+          <varref loc="d,14,17,14,30" name="difftest_exit" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,12,16,12,38" dtype_id="17">
+          <varref loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="17"/>
+          <varref loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,11,16,11,39" dtype_id="17">
+          <varref loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="17"/>
+          <varref loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,9,22,9,41" dtype_id="19">
+          <varref loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="19"/>
+          <varref loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="19"/>
+        </contassign>
+        <contassign loc="d,8,16,8,38" dtype_id="17">
+          <varref loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="17"/>
+          <varref loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,7,23,7,43" dtype_id="19">
+          <varref loc="d,7,23,7,43" name="difftest_uart_out_ch" dtype_id="19"/>
+          <varref loc="d,7,23,7,43" name="difftest_uart_out_ch" dtype_id="19"/>
+        </contassign>
+        <contassign loc="d,6,17,6,40" dtype_id="17">
+          <varref loc="d,6,17,6,40" name="difftest_uart_out_valid" dtype_id="17"/>
+          <varref loc="d,6,17,6,40" name="difftest_uart_out_valid" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,5,16,5,36" dtype_id="17">
+          <varref loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="17"/>
+          <varref loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,4,16,4,38" dtype_id="17">
+          <varref loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="17"/>
+          <varref loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,2,16,2,21" dtype_id="17">
+          <varref loc="d,2,16,2,21" name="reset" dtype_id="17"/>
+          <varref loc="d,2,16,2,21" name="reset" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,3,16,3,21" dtype_id="17">
+          <varref loc="d,3,16,3,21" name="clock" dtype_id="17"/>
+          <varref loc="d,3,16,3,21" name="clock" dtype_id="17"/>
+        </contassign>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval_phase__stl">
+        <stmtexpr loc="a,0,0,0,0">
+          <ccall loc="a,0,0,0,0" dtype_id="13" func="_eval_triggers__stl"/>
+        </stmtexpr>
+        <assign loc="a,0,0,0,0" dtype_id="17">
+          <cmethodhard loc="a,0,0,0,0" name="any" dtype_id="17">
+            <varref loc="a,0,0,0,0" name="__VstlTriggered" dtype_id="17"/>
+          </cmethodhard>
+          <varref loc="a,0,0,0,0" name="__VstlExecute" dtype_id="17"/>
+        </assign>
+        <if loc="a,0,0,0,0">
+          <varref loc="a,0,0,0,0" name="__VstlExecute" dtype_id="17"/>
+          <begin>
+            <stmtexpr loc="a,0,0,0,0">
+              <ccall loc="a,0,0,0,0" dtype_id="13" func="_eval_stl"/>
+            </stmtexpr>
+          </begin>
+        </if>
+        <creturn loc="a,0,0,0,0">
+          <varref loc="a,0,0,0,0" name="__VstlExecute" dtype_id="17"/>
+        </creturn>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval_triggers__ico">
+        <stmtexpr loc="d,1,8,1,14">
+          <cmethodhard loc="d,1,8,1,14" name="set" dtype_id="13">
+            <varref loc="d,1,8,1,14" name="__VicoTriggered" dtype_id="17"/>
+            <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            <ccast loc="d,1,8,1,14" dtype_id="17">
+              <varref loc="d,1,8,1,14" name="__VicoFirstIteration" dtype_id="17"/>
+            </ccast>
+          </cmethodhard>
+        </stmtexpr>
+        <textblock loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+          <text loc="d,1,8,1,14"/>
+          <stmtexpr loc="a,0,0,0,0">
+            <ccall loc="a,0,0,0,0" dtype_id="13" func="_dump_triggers__ico"/>
+          </stmtexpr>
+          <text loc="d,1,8,1,14"/>
+          <text loc="d,1,8,1,14"/>
+        </textblock>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_dump_triggers__ico">
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="17">
+            <const loc="d,1,8,1,14" name="32&apos;h1" dtype_id="15"/>
+            <not loc="d,1,8,1,14" dtype_id="17">
+              <cmethodhard loc="d,1,8,1,14" name="any" dtype_id="17">
+                <varref loc="d,1,8,1,14" name="__VicoTriggered" dtype_id="17"/>
+              </cmethodhard>
+            </not>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h1" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VicoTriggered" dtype_id="17"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval_ico">
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h1" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VicoTriggered" dtype_id="17"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <stmtexpr loc="d,12,16,12,38">
+              <ccall loc="d,12,16,12,38" dtype_id="13" func="_ico_sequent__TOP__0"/>
+            </stmtexpr>
+            <assign loc="d,12,16,12,38" dtype_id="17">
+              <const loc="d,12,16,12,38" name="1&apos;h1" dtype_id="17"/>
+              <arraysel loc="d,12,16,12,38" dtype_id="17">
+                <varref loc="d,12,16,12,38" name="__Vm_traceActivity" dtype_id="5"/>
+                <const loc="d,12,16,12,38" name="32&apos;h1" dtype_id="15"/>
+              </arraysel>
+            </assign>
+            <stmtexpr loc="d,24,8,24,13">
+              <ccall loc="d,24,8,24,13" dtype_id="13" func="_ico_sequent__TOP__SimTop__0"/>
+            </stmtexpr>
+            <stmtexpr loc="h,50,14,50,17">
+              <ccall loc="h,50,14,50,17" dtype_id="13" func="_ico_sequent__TOP__SimTop__u_top__0"/>
+            </stmtexpr>
+          </begin>
+        </if>
+      </cfunc>
+      <cfunc loc="d,12,16,12,38" name="_ico_sequent__TOP__0">
+        <contassign loc="d,12,16,12,38" dtype_id="17">
+          <varref loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="17"/>
+          <varref loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,11,16,11,39" dtype_id="17">
+          <varref loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="17"/>
+          <varref loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,9,22,9,41" dtype_id="19">
+          <varref loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="19"/>
+          <varref loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="19"/>
+        </contassign>
+        <contassign loc="d,8,16,8,38" dtype_id="17">
+          <varref loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="17"/>
+          <varref loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,5,16,5,36" dtype_id="17">
+          <varref loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="17"/>
+          <varref loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,4,16,4,38" dtype_id="17">
+          <varref loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="17"/>
+          <varref loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,2,16,2,21" dtype_id="17">
+          <varref loc="d,2,16,2,21" name="reset" dtype_id="17"/>
+          <varref loc="d,2,16,2,21" name="reset" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,3,16,3,21" dtype_id="17">
+          <varref loc="d,3,16,3,21" name="clock" dtype_id="17"/>
+          <varref loc="d,3,16,3,21" name="clock" dtype_id="17"/>
+        </contassign>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval_phase__ico">
+        <stmtexpr loc="a,0,0,0,0">
+          <ccall loc="a,0,0,0,0" dtype_id="13" func="_eval_triggers__ico"/>
+        </stmtexpr>
+        <assign loc="a,0,0,0,0" dtype_id="17">
+          <cmethodhard loc="a,0,0,0,0" name="any" dtype_id="17">
+            <varref loc="a,0,0,0,0" name="__VicoTriggered" dtype_id="17"/>
+          </cmethodhard>
+          <varref loc="a,0,0,0,0" name="__VicoExecute" dtype_id="17"/>
+        </assign>
+        <if loc="a,0,0,0,0">
+          <varref loc="a,0,0,0,0" name="__VicoExecute" dtype_id="17"/>
+          <begin>
+            <stmtexpr loc="a,0,0,0,0">
+              <ccall loc="a,0,0,0,0" dtype_id="13" func="_eval_ico"/>
+            </stmtexpr>
+          </begin>
+        </if>
+        <creturn loc="a,0,0,0,0">
+          <varref loc="a,0,0,0,0" name="__VicoExecute" dtype_id="17"/>
+        </creturn>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval_triggers__act">
+        <stmtexpr loc="d,1,8,1,14">
+          <cmethodhard loc="d,1,8,1,14" name="set" dtype_id="13">
+            <varref loc="d,1,8,1,14" name="__VactTriggered" dtype_id="20"/>
+            <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            <and loc="d,28,12,28,19" dtype_id="17">
+              <ccast loc="d,28,20,28,25" dtype_id="17">
+                <varref loc="d,28,20,28,25" name="clock" dtype_id="17"/>
+              </ccast>
+              <not loc="d,28,12,28,19" dtype_id="17">
+                <ccast loc="d,28,12,28,19" dtype_id="17">
+                  <varref loc="d,28,12,28,19" name="__Vtrigprevexpr___TOP__SimTop__clock__0" dtype_id="17"/>
+                </ccast>
+              </not>
+            </and>
+          </cmethodhard>
+        </stmtexpr>
+        <stmtexpr loc="d,1,8,1,14">
+          <cmethodhard loc="d,1,8,1,14" name="set" dtype_id="13">
+            <varref loc="d,1,8,1,14" name="__VactTriggered" dtype_id="20"/>
+            <const loc="d,1,8,1,14" name="32&apos;h1" dtype_id="15"/>
+            <and loc="h,9,12,9,19" dtype_id="17">
+              <ccast loc="h,9,20,9,23" dtype_id="17">
+                <varref loc="h,9,20,9,23" name="clk" dtype_id="17"/>
+              </ccast>
+              <not loc="h,9,12,9,19" dtype_id="17">
+                <ccast loc="h,9,12,9,19" dtype_id="17">
+                  <varref loc="h,9,12,9,19" name="__Vtrigprevexpr___TOP__SimTop__u_top__clk__0" dtype_id="17"/>
+                </ccast>
+              </not>
+            </and>
+          </cmethodhard>
+        </stmtexpr>
+        <stmtexpr loc="d,1,8,1,14">
+          <cmethodhard loc="d,1,8,1,14" name="set" dtype_id="13">
+            <varref loc="d,1,8,1,14" name="__VactTriggered" dtype_id="20"/>
+            <const loc="d,1,8,1,14" name="32&apos;h2" dtype_id="15"/>
+            <and loc="i,27,12,27,19" dtype_id="17">
+              <ccast loc="i,27,20,27,25" dtype_id="17">
+                <varref loc="i,27,20,27,25" name="clock" dtype_id="17"/>
+              </ccast>
+              <not loc="i,27,12,27,19" dtype_id="17">
+                <ccast loc="i,27,12,27,19" dtype_id="17">
+                  <varref loc="i,27,12,27,19" name="__Vtrigprevexpr___TOP__SimTop__u_DifftestTrapEvent__clock__0" dtype_id="17"/>
+                </ccast>
+              </not>
+            </and>
+          </cmethodhard>
+        </stmtexpr>
+        <stmtexpr loc="d,1,8,1,14">
+          <cmethodhard loc="d,1,8,1,14" name="set" dtype_id="13">
+            <varref loc="d,1,8,1,14" name="__VactTriggered" dtype_id="20"/>
+            <const loc="d,1,8,1,14" name="32&apos;h3" dtype_id="15"/>
+            <and loc="j,67,12,67,19" dtype_id="17">
+              <ccast loc="j,67,20,67,25" dtype_id="17">
+                <varref loc="j,67,20,67,25" name="clock" dtype_id="17"/>
+              </ccast>
+              <not loc="j,67,12,67,19" dtype_id="17">
+                <ccast loc="j,67,12,67,19" dtype_id="17">
+                  <varref loc="j,67,12,67,19" name="__Vtrigprevexpr___TOP__SimTop__u_top__mem__clock__0" dtype_id="17"/>
+                </ccast>
+              </not>
+            </and>
+          </cmethodhard>
+        </stmtexpr>
+        <assign loc="d,28,20,28,25" dtype_id="17">
+          <varref loc="d,28,20,28,25" name="clock" dtype_id="17"/>
+          <varref loc="d,28,20,28,25" name="__Vtrigprevexpr___TOP__SimTop__clock__0" dtype_id="17"/>
+        </assign>
+        <assign loc="h,9,20,9,23" dtype_id="17">
+          <varref loc="h,9,20,9,23" name="clk" dtype_id="17"/>
+          <varref loc="h,9,20,9,23" name="__Vtrigprevexpr___TOP__SimTop__u_top__clk__0" dtype_id="17"/>
+        </assign>
+        <assign loc="i,27,20,27,25" dtype_id="17">
+          <varref loc="i,27,20,27,25" name="clock" dtype_id="17"/>
+          <varref loc="i,27,20,27,25" name="__Vtrigprevexpr___TOP__SimTop__u_DifftestTrapEvent__clock__0" dtype_id="17"/>
+        </assign>
+        <assign loc="j,67,20,67,25" dtype_id="17">
+          <varref loc="j,67,20,67,25" name="clock" dtype_id="17"/>
+          <varref loc="j,67,20,67,25" name="__Vtrigprevexpr___TOP__SimTop__u_top__mem__clock__0" dtype_id="17"/>
+        </assign>
+        <textblock loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+          <text loc="d,1,8,1,14"/>
+          <stmtexpr loc="a,0,0,0,0">
+            <ccall loc="a,0,0,0,0" dtype_id="13" func="_dump_triggers__act"/>
+          </stmtexpr>
+          <text loc="d,1,8,1,14"/>
+          <text loc="d,1,8,1,14"/>
+        </textblock>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_dump_triggers__act">
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="17">
+            <const loc="d,1,8,1,14" name="32&apos;h1" dtype_id="15"/>
+            <not loc="d,1,8,1,14" dtype_id="17">
+              <cmethodhard loc="d,1,8,1,14" name="any" dtype_id="17">
+                <varref loc="d,1,8,1,14" name="__VactTriggered" dtype_id="20"/>
+              </cmethodhard>
+            </not>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h1" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VactTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h2" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VactTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h4" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VactTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h8" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VactTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_dump_triggers__nba">
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="17">
+            <const loc="d,1,8,1,14" name="32&apos;h1" dtype_id="15"/>
+            <not loc="d,1,8,1,14" dtype_id="17">
+              <cmethodhard loc="d,1,8,1,14" name="any" dtype_id="17">
+                <varref loc="d,1,8,1,14" name="__VnbaTriggered" dtype_id="20"/>
+              </cmethodhard>
+            </not>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h1" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VnbaTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h2" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VnbaTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h4" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VnbaTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h8" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VnbaTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <text loc="d,1,8,1,14"/>
+          </begin>
+        </if>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval_act"/>
+      <cfunc loc="a,0,0,0,0" name="_eval_nba">
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h4" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VnbaTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <stmtexpr loc="i,28,5,28,7">
+              <ccall loc="i,28,5,28,7" dtype_id="13" func="_nba_sequent__TOP__SimTop__u_DifftestTrapEvent__0"/>
+            </stmtexpr>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h2" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VnbaTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <stmtexpr loc="h,15,7,15,8">
+              <ccall loc="h,15,7,15,8" dtype_id="13" func="_nba_sequent__TOP__SimTop__u_top__0"/>
+            </stmtexpr>
+            <assign loc="h,15,7,15,8" dtype_id="17">
+              <const loc="h,15,7,15,8" name="1&apos;h1" dtype_id="17"/>
+              <arraysel loc="h,15,7,15,8" dtype_id="17">
+                <varref loc="h,15,7,15,8" name="__Vm_traceActivity" dtype_id="5"/>
+                <const loc="h,15,7,15,8" name="32&apos;h2" dtype_id="15"/>
+              </arraysel>
+            </assign>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h1" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VnbaTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <stmtexpr loc="d,30,7,30,10">
+              <ccall loc="d,30,7,30,10" dtype_id="13" func="_nba_sequent__TOP__SimTop__0"/>
+            </stmtexpr>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h8" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VnbaTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <stmtexpr loc="j,72,3,72,9">
+              <ccall loc="j,72,3,72,9" dtype_id="13" func="_nba_sequent__TOP__SimTop__u_top__mem__0"/>
+            </stmtexpr>
+            <stmtexpr loc="h,43,17,43,23">
+              <ccall loc="h,43,17,43,23" dtype_id="13" func="_nba_sequent__TOP__SimTop__u_top__1"/>
+            </stmtexpr>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <and loc="d,1,8,1,14" dtype_id="14">
+            <const loc="d,1,8,1,14" name="64&apos;h2" dtype_id="14"/>
+            <cmethodhard loc="d,1,8,1,14" name="word" dtype_id="18">
+              <varref loc="d,1,8,1,14" name="__VnbaTriggered" dtype_id="20"/>
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+            </cmethodhard>
+          </and>
+          <begin>
+            <stmtexpr loc="h,41,17,41,25">
+              <ccall loc="h,41,17,41,25" dtype_id="13" func="_nba_sequent__TOP__SimTop__u_top__2"/>
+            </stmtexpr>
+            <assign loc="h,41,17,41,25" dtype_id="17">
+              <const loc="h,41,17,41,25" name="1&apos;h1" dtype_id="17"/>
+              <arraysel loc="h,41,17,41,25" dtype_id="17">
+                <varref loc="h,41,17,41,25" name="__Vm_traceActivity" dtype_id="5"/>
+                <const loc="h,41,17,41,25" name="32&apos;h3" dtype_id="15"/>
+              </arraysel>
+            </assign>
+          </begin>
+        </if>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval_phase__act">
+        <stmtexpr loc="a,0,0,0,0">
+          <ccall loc="a,0,0,0,0" dtype_id="13" func="_eval_triggers__act"/>
+        </stmtexpr>
+        <assign loc="a,0,0,0,0" dtype_id="17">
+          <cmethodhard loc="a,0,0,0,0" name="any" dtype_id="17">
+            <varref loc="a,0,0,0,0" name="__VactTriggered" dtype_id="20"/>
+          </cmethodhard>
+          <varref loc="a,0,0,0,0" name="__VactExecute" dtype_id="17"/>
+        </assign>
+        <if loc="a,0,0,0,0">
+          <varref loc="a,0,0,0,0" name="__VactExecute" dtype_id="17"/>
+          <begin>
+            <stmtexpr loc="a,0,0,0,0">
+              <cmethodhard loc="a,0,0,0,0" name="andNot" dtype_id="13">
+                <varref loc="a,0,0,0,0" name="__VpreTriggered" dtype_id="20"/>
+                <varref loc="a,0,0,0,0" name="__VactTriggered" dtype_id="20"/>
+                <varref loc="a,0,0,0,0" name="__VnbaTriggered" dtype_id="20"/>
+              </cmethodhard>
+            </stmtexpr>
+            <stmtexpr loc="a,0,0,0,0">
+              <cmethodhard loc="a,0,0,0,0" name="thisOr" dtype_id="13">
+                <varref loc="a,0,0,0,0" name="__VnbaTriggered" dtype_id="20"/>
+                <varref loc="a,0,0,0,0" name="__VactTriggered" dtype_id="20"/>
+              </cmethodhard>
+            </stmtexpr>
+            <stmtexpr loc="a,0,0,0,0">
+              <ccall loc="a,0,0,0,0" dtype_id="13" func="_eval_act"/>
+            </stmtexpr>
+          </begin>
+        </if>
+        <creturn loc="a,0,0,0,0">
+          <varref loc="a,0,0,0,0" name="__VactExecute" dtype_id="17"/>
+        </creturn>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval_phase__nba">
+        <assign loc="a,0,0,0,0" dtype_id="17">
+          <cmethodhard loc="a,0,0,0,0" name="any" dtype_id="17">
+            <varref loc="a,0,0,0,0" name="__VnbaTriggered" dtype_id="20"/>
+          </cmethodhard>
+          <varref loc="a,0,0,0,0" name="__VnbaExecute" dtype_id="17"/>
+        </assign>
+        <if loc="a,0,0,0,0">
+          <varref loc="a,0,0,0,0" name="__VnbaExecute" dtype_id="17"/>
+          <begin>
+            <stmtexpr loc="a,0,0,0,0">
+              <ccall loc="a,0,0,0,0" dtype_id="13" func="_eval_nba"/>
+            </stmtexpr>
+            <stmtexpr loc="a,0,0,0,0">
+              <cmethodhard loc="a,0,0,0,0" name="clear" dtype_id="13">
+                <varref loc="a,0,0,0,0" name="__VnbaTriggered" dtype_id="20"/>
+              </cmethodhard>
+            </stmtexpr>
+          </begin>
+        </if>
+        <creturn loc="a,0,0,0,0">
+          <varref loc="a,0,0,0,0" name="__VnbaExecute" dtype_id="17"/>
+        </creturn>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_eval">
+        <var loc="d,1,8,1,14" name="__Vtemp_1" dtype_id="4" vartype="bit" origName="__Vtemp_1"/>
+        <var loc="d,1,8,1,14" name="__Vtemp_2" dtype_id="4" vartype="bit" origName="__Vtemp_2"/>
+        <var loc="d,1,8,1,14" name="__Vtemp_3" dtype_id="4" vartype="bit" origName="__Vtemp_3"/>
+        <assign loc="d,1,8,1,14" dtype_id="4">
+          <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+          <varref loc="d,1,8,1,14" name="__VicoIterCount" dtype_id="4"/>
+        </assign>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+          <varref loc="d,1,8,1,14" name="__VicoFirstIteration" dtype_id="17"/>
+        </assign>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+          <varref loc="d,1,8,1,14" name="__VicoContinue" dtype_id="17"/>
+        </assign>
+        <while loc="a,0,0,0,0">
+          <begin>
+          </begin>
+          <begin>
+            <varref loc="a,0,0,0,0" name="__VicoContinue" dtype_id="17"/>
+          </begin>
+          <begin>
+            <if loc="a,0,0,0,0">
+              <lt loc="a,0,0,0,0" dtype_id="17">
+                <const loc="a,0,0,0,0" name="32&apos;h64" dtype_id="15"/>
+                <varref loc="a,0,0,0,0" name="__VicoIterCount" dtype_id="4"/>
+              </lt>
+              <begin>
+                <textblock loc="a,0,0,0,0">
+                  <text loc="a,0,0,0,0"/>
+                  <stmtexpr loc="a,0,0,0,0">
+                    <ccall loc="a,0,0,0,0" dtype_id="13" func="_dump_triggers__ico"/>
+                  </stmtexpr>
+                  <text loc="a,0,0,0,0"/>
+                  <text loc="a,0,0,0,0"/>
+                  <text loc="a,0,0,0,0"/>
+                </textblock>
+              </begin>
+            </if>
+            <assign loc="d,1,8,1,14" dtype_id="4">
+              <add loc="d,1,8,1,14" dtype_id="4">
+                <ccast loc="d,1,8,1,14" dtype_id="15">
+                  <const loc="d,1,8,1,14" name="32&apos;h1" dtype_id="15"/>
+                </ccast>
+                <varref loc="d,1,8,1,14" name="__VicoIterCount" dtype_id="4"/>
+              </add>
+              <varref loc="d,1,8,1,14" name="__Vtemp_1" dtype_id="4"/>
+            </assign>
+            <assign loc="d,1,8,1,14" dtype_id="4">
+              <varref loc="d,1,8,1,14" name="__Vtemp_1" dtype_id="4"/>
+              <varref loc="d,1,8,1,14" name="__VicoIterCount" dtype_id="4"/>
+            </assign>
+            <assign loc="d,1,8,1,14" dtype_id="17">
+              <const loc="d,1,8,1,14" name="1&apos;h0" dtype_id="17"/>
+              <varref loc="d,1,8,1,14" name="__VicoContinue" dtype_id="17"/>
+            </assign>
+            <if loc="a,0,0,0,0">
+              <ccall loc="a,0,0,0,0" dtype_id="17" func="_eval_phase__ico"/>
+              <begin>
+                <assign loc="d,1,8,1,14" dtype_id="17">
+                  <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+                  <varref loc="d,1,8,1,14" name="__VicoContinue" dtype_id="17"/>
+                </assign>
+              </begin>
+            </if>
+            <assign loc="d,1,8,1,14" dtype_id="17">
+              <const loc="d,1,8,1,14" name="1&apos;h0" dtype_id="17"/>
+              <varref loc="d,1,8,1,14" name="__VicoFirstIteration" dtype_id="17"/>
+            </assign>
+          </begin>
+        </while>
+        <assign loc="d,1,8,1,14" dtype_id="4">
+          <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+          <varref loc="d,1,8,1,14" name="__VnbaIterCount" dtype_id="4"/>
+        </assign>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+          <varref loc="d,1,8,1,14" name="__VnbaFirstIteration" dtype_id="17"/>
+        </assign>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+          <varref loc="d,1,8,1,14" name="__VnbaContinue" dtype_id="17"/>
+        </assign>
+        <while loc="a,0,0,0,0">
+          <begin>
+          </begin>
+          <begin>
+            <varref loc="a,0,0,0,0" name="__VnbaContinue" dtype_id="17"/>
+          </begin>
+          <begin>
+            <if loc="a,0,0,0,0">
+              <lt loc="a,0,0,0,0" dtype_id="17">
+                <const loc="a,0,0,0,0" name="32&apos;h64" dtype_id="15"/>
+                <varref loc="a,0,0,0,0" name="__VnbaIterCount" dtype_id="4"/>
+              </lt>
+              <begin>
+                <textblock loc="a,0,0,0,0">
+                  <text loc="a,0,0,0,0"/>
+                  <stmtexpr loc="a,0,0,0,0">
+                    <ccall loc="a,0,0,0,0" dtype_id="13" func="_dump_triggers__nba"/>
+                  </stmtexpr>
+                  <text loc="a,0,0,0,0"/>
+                  <text loc="a,0,0,0,0"/>
+                  <text loc="a,0,0,0,0"/>
+                </textblock>
+              </begin>
+            </if>
+            <assign loc="d,1,8,1,14" dtype_id="4">
+              <add loc="d,1,8,1,14" dtype_id="4">
+                <ccast loc="d,1,8,1,14" dtype_id="15">
+                  <const loc="d,1,8,1,14" name="32&apos;h1" dtype_id="15"/>
+                </ccast>
+                <varref loc="d,1,8,1,14" name="__VnbaIterCount" dtype_id="4"/>
+              </add>
+              <varref loc="d,1,8,1,14" name="__Vtemp_2" dtype_id="4"/>
+            </assign>
+            <assign loc="d,1,8,1,14" dtype_id="4">
+              <varref loc="d,1,8,1,14" name="__Vtemp_2" dtype_id="4"/>
+              <varref loc="d,1,8,1,14" name="__VnbaIterCount" dtype_id="4"/>
+            </assign>
+            <assign loc="d,1,8,1,14" dtype_id="17">
+              <const loc="d,1,8,1,14" name="1&apos;h0" dtype_id="17"/>
+              <varref loc="d,1,8,1,14" name="__VnbaContinue" dtype_id="17"/>
+            </assign>
+            <assign loc="d,1,8,1,14" dtype_id="4">
+              <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+              <varref loc="d,1,8,1,14" name="__VactIterCount" dtype_id="4"/>
+            </assign>
+            <assign loc="d,1,8,1,14" dtype_id="17">
+              <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+              <varref loc="d,1,8,1,14" name="__VactFirstIteration" dtype_id="17"/>
+            </assign>
+            <assign loc="d,1,8,1,14" dtype_id="17">
+              <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+              <varref loc="d,1,8,1,14" name="__VactContinue" dtype_id="17"/>
+            </assign>
+            <while loc="a,0,0,0,0">
+              <begin>
+              </begin>
+              <begin>
+                <varref loc="a,0,0,0,0" name="__VactContinue" dtype_id="17"/>
+              </begin>
+              <begin>
+                <if loc="a,0,0,0,0">
+                  <lt loc="a,0,0,0,0" dtype_id="17">
+                    <const loc="a,0,0,0,0" name="32&apos;h64" dtype_id="15"/>
+                    <varref loc="a,0,0,0,0" name="__VactIterCount" dtype_id="4"/>
+                  </lt>
+                  <begin>
+                    <textblock loc="a,0,0,0,0">
+                      <text loc="a,0,0,0,0"/>
+                      <stmtexpr loc="a,0,0,0,0">
+                        <ccall loc="a,0,0,0,0" dtype_id="13" func="_dump_triggers__act"/>
+                      </stmtexpr>
+                      <text loc="a,0,0,0,0"/>
+                      <text loc="a,0,0,0,0"/>
+                      <text loc="a,0,0,0,0"/>
+                    </textblock>
+                  </begin>
+                </if>
+                <assign loc="d,1,8,1,14" dtype_id="4">
+                  <add loc="d,1,8,1,14" dtype_id="4">
+                    <ccast loc="d,1,8,1,14" dtype_id="15">
+                      <const loc="d,1,8,1,14" name="32&apos;h1" dtype_id="15"/>
+                    </ccast>
+                    <varref loc="d,1,8,1,14" name="__VactIterCount" dtype_id="4"/>
+                  </add>
+                  <varref loc="d,1,8,1,14" name="__Vtemp_3" dtype_id="4"/>
+                </assign>
+                <assign loc="d,1,8,1,14" dtype_id="4">
+                  <varref loc="d,1,8,1,14" name="__Vtemp_3" dtype_id="4"/>
+                  <varref loc="d,1,8,1,14" name="__VactIterCount" dtype_id="4"/>
+                </assign>
+                <assign loc="d,1,8,1,14" dtype_id="17">
+                  <const loc="d,1,8,1,14" name="1&apos;h0" dtype_id="17"/>
+                  <varref loc="d,1,8,1,14" name="__VactContinue" dtype_id="17"/>
+                </assign>
+                <if loc="a,0,0,0,0">
+                  <ccall loc="a,0,0,0,0" dtype_id="17" func="_eval_phase__act"/>
+                  <begin>
+                    <assign loc="d,1,8,1,14" dtype_id="17">
+                      <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+                      <varref loc="d,1,8,1,14" name="__VactContinue" dtype_id="17"/>
+                    </assign>
+                  </begin>
+                </if>
+                <assign loc="d,1,8,1,14" dtype_id="17">
+                  <const loc="d,1,8,1,14" name="1&apos;h0" dtype_id="17"/>
+                  <varref loc="d,1,8,1,14" name="__VactFirstIteration" dtype_id="17"/>
+                </assign>
+              </begin>
+            </while>
+            <if loc="a,0,0,0,0">
+              <ccall loc="a,0,0,0,0" dtype_id="17" func="_eval_phase__nba"/>
+              <begin>
+                <assign loc="d,1,8,1,14" dtype_id="17">
+                  <const loc="d,1,8,1,14" name="1&apos;h1" dtype_id="17"/>
+                  <varref loc="d,1,8,1,14" name="__VnbaContinue" dtype_id="17"/>
+                </assign>
+              </begin>
+            </if>
+            <assign loc="d,1,8,1,14" dtype_id="17">
+              <const loc="d,1,8,1,14" name="1&apos;h0" dtype_id="17"/>
+              <varref loc="d,1,8,1,14" name="__VnbaFirstIteration" dtype_id="17"/>
+            </assign>
+          </begin>
+        </while>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="trace_register">
+        <text loc="d,1,8,1,14"/>
+        <addrofcfunc loc="d,1,8,1,14" dtype_id="21"/>
+        <text loc="d,1,8,1,14"/>
+        <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+        <text loc="d,1,8,1,14"/>
+        <text loc="d,1,8,1,14"/>
+        <addrofcfunc loc="d,1,8,1,14" dtype_id="21"/>
+        <text loc="d,1,8,1,14"/>
+        <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+        <text loc="d,1,8,1,14"/>
+        <text loc="d,1,8,1,14"/>
+        <addrofcfunc loc="d,1,8,1,14" dtype_id="21"/>
+        <text loc="d,1,8,1,14"/>
+        <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+        <text loc="d,1,8,1,14"/>
+        <text loc="d,1,8,1,14"/>
+        <addrofcfunc loc="d,1,8,1,14" dtype_id="21"/>
+        <text loc="d,1,8,1,14"/>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="trace_const_0">
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <stmtexpr loc="d,1,8,1,14">
+          <ccall loc="d,1,8,1,14" dtype_id="13" func="trace_const_0_sub_0"/>
+        </stmtexpr>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="trace_const_0_sub_0">
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <traceinc loc="h,38,7,38,13" dtype_id="1">
+          <varref loc="h,38,7,38,13" name="enable" dtype_id="17"/>
+        </traceinc>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="trace_full_0">
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <stmtexpr loc="d,1,8,1,14">
+          <ccall loc="d,1,8,1,14" dtype_id="13" func="trace_full_0_sub_0"/>
+        </stmtexpr>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="trace_chg_0">
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <stmtexpr loc="d,1,8,1,14">
+          <ccall loc="d,1,8,1,14" dtype_id="13" func="trace_chg_0_sub_0"/>
+        </stmtexpr>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="trace_full_0_sub_0">
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <traceinc loc="d,6,17,6,40" dtype_id="1">
+          <varref loc="d,6,17,6,40" name="difftest_uart_out_valid" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,7,23,7,43" dtype_id="2">
+          <varref loc="d,7,23,7,43" name="difftest_uart_out_ch" dtype_id="19"/>
+        </traceinc>
+        <traceinc loc="d,14,17,14,30" dtype_id="1">
+          <varref loc="d,14,17,14,30" name="difftest_exit" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,15,17,15,30" dtype_id="1">
+          <varref loc="d,15,17,15,30" name="difftest_step" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="i,4,17,4,23" dtype_id="1">
+          <varref loc="i,4,17,4,23" name="enable" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="i,5,17,5,27" dtype_id="1">
+          <varref loc="i,5,17,5,27" name="io_hasTrap" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="i,7,17,7,28" dtype_id="14">
+          <varref loc="i,7,17,7,28" name="io_instrCnt" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="i,8,17,8,26" dtype_id="1">
+          <varref loc="i,8,17,8,26" name="io_hasWFI" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="i,9,17,9,24" dtype_id="15">
+          <varref loc="i,9,17,9,24" name="io_code" dtype_id="15"/>
+        </traceinc>
+        <traceinc loc="i,10,17,10,22" dtype_id="14">
+          <varref loc="i,10,17,10,22" name="io_pc" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="i,11,17,11,26" dtype_id="2">
+          <varref loc="i,11,17,11,26" name="io_coreid" dtype_id="19"/>
+        </traceinc>
+        <traceinc loc="j,27,9,27,15" dtype_id="1">
+          <varref loc="j,27,9,27,15" name="enable" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,2,16,2,21" dtype_id="1">
+          <varref loc="d,2,16,2,21" name="reset" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,3,16,3,21" dtype_id="1">
+          <varref loc="d,3,16,3,21" name="clock" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,4,16,4,38" dtype_id="1">
+          <varref loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,5,16,5,36" dtype_id="1">
+          <varref loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,8,16,8,38" dtype_id="1">
+          <varref loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,9,22,9,41" dtype_id="2">
+          <varref loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="19"/>
+        </traceinc>
+        <traceinc loc="d,11,16,11,39" dtype_id="1">
+          <varref loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,12,16,12,38" dtype_id="1">
+          <varref loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="h,3,16,3,19" dtype_id="1">
+          <varref loc="h,3,16,3,19" name="clk" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="h,4,16,4,21" dtype_id="1">
+          <varref loc="h,4,16,4,21" name="rst_n" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="i,3,17,3,22" dtype_id="1">
+          <varref loc="i,3,17,3,22" name="clock" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="j,28,9,28,14" dtype_id="1">
+          <varref loc="j,28,9,28,14" name="clock" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="h,5,24,5,27" dtype_id="15">
+          <varref loc="h,5,24,5,27" name="opt" dtype_id="15"/>
+        </traceinc>
+        <traceinc loc="h,7,14,7,15" dtype_id="16">
+          <varref loc="h,7,14,7,15" name="a" dtype_id="20"/>
+        </traceinc>
+        <traceinc loc="h,8,14,8,15" dtype_id="15">
+          <varref loc="h,8,14,8,15" name="b" dtype_id="15"/>
+        </traceinc>
+        <traceinc loc="h,30,7,30,15" dtype_id="1">
+          <varref loc="h,30,7,30,15" name="r_enable" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="h,31,14,31,21" dtype_id="14">
+          <varref loc="h,31,14,31,21" name="r_index" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="h,34,7,34,15" dtype_id="1">
+          <varref loc="h,34,7,34,15" name="w_enable" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="h,35,14,35,21" dtype_id="14">
+          <varref loc="h,35,14,35,21" name="w_index" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="h,36,14,36,20" dtype_id="14">
+          <varref loc="h,36,14,36,20" name="w_data" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="h,37,14,37,20" dtype_id="14">
+          <varref loc="h,37,14,37,20" name="w_mask" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="j,17,19,17,27" dtype_id="1">
+          <varref loc="j,17,19,17,27" name="r_enable" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="j,18,19,18,26" dtype_id="14">
+          <varref loc="j,18,19,18,26" name="r_index" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="j,22,15,22,23" dtype_id="1">
+          <varref loc="j,22,15,22,23" name="w_enable" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="j,23,15,23,22" dtype_id="14">
+          <varref loc="j,23,15,23,22" name="w_index" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="j,24,15,24,21" dtype_id="14">
+          <varref loc="j,24,15,24,21" name="w_data" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="j,25,15,25,21" dtype_id="14">
+          <varref loc="j,25,15,25,21" name="w_mask" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="d,2,16,2,21" dtype_id="1">
+          <varref loc="d,2,16,2,21" name="reset" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,3,16,3,21" dtype_id="1">
+          <varref loc="d,3,16,3,21" name="clock" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,4,16,4,38" dtype_id="1">
+          <varref loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,5,16,5,36" dtype_id="1">
+          <varref loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,6,17,6,40" dtype_id="1">
+          <varref loc="d,6,17,6,40" name="difftest_uart_out_valid" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,7,23,7,43" dtype_id="2">
+          <varref loc="d,7,23,7,43" name="difftest_uart_out_ch" dtype_id="19"/>
+        </traceinc>
+        <traceinc loc="d,8,16,8,38" dtype_id="1">
+          <varref loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,9,22,9,41" dtype_id="2">
+          <varref loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="19"/>
+        </traceinc>
+        <traceinc loc="d,11,16,11,39" dtype_id="1">
+          <varref loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,12,16,12,38" dtype_id="1">
+          <varref loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,14,17,14,30" dtype_id="1">
+          <varref loc="d,14,17,14,30" name="difftest_exit" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,15,17,15,30" dtype_id="1">
+          <varref loc="d,15,17,15,30" name="difftest_step" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,27,14,27,17" dtype_id="14">
+          <varref loc="d,27,14,27,17" name="cnt" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="h,32,14,32,20" dtype_id="14">
+          <varref loc="h,32,14,32,20" name="r_data" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="i,6,17,6,28" dtype_id="14">
+          <varref loc="i,6,17,6,28" name="io_cycleCnt" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="j,19,19,19,25" dtype_id="14">
+          <varref loc="j,19,19,19,25" name="r_data" dtype_id="14"/>
+        </traceinc>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="trace_chg_0_sub_0">
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <if loc="d,1,8,1,14">
+          <arraysel loc="d,1,8,1,14" dtype_id="17">
+            <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+            <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+          </arraysel>
+          <begin>
+            <traceinc loc="d,6,17,6,40" dtype_id="1">
+              <varref loc="d,6,17,6,40" name="difftest_uart_out_valid" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="d,7,23,7,43" dtype_id="2">
+              <varref loc="d,7,23,7,43" name="difftest_uart_out_ch" dtype_id="19"/>
+            </traceinc>
+            <traceinc loc="d,14,17,14,30" dtype_id="1">
+              <varref loc="d,14,17,14,30" name="difftest_exit" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="d,15,17,15,30" dtype_id="1">
+              <varref loc="d,15,17,15,30" name="difftest_step" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="i,4,17,4,23" dtype_id="1">
+              <varref loc="i,4,17,4,23" name="enable" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="i,5,17,5,27" dtype_id="1">
+              <varref loc="i,5,17,5,27" name="io_hasTrap" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="i,7,17,7,28" dtype_id="14">
+              <varref loc="i,7,17,7,28" name="io_instrCnt" dtype_id="14"/>
+            </traceinc>
+            <traceinc loc="i,8,17,8,26" dtype_id="1">
+              <varref loc="i,8,17,8,26" name="io_hasWFI" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="i,9,17,9,24" dtype_id="15">
+              <varref loc="i,9,17,9,24" name="io_code" dtype_id="15"/>
+            </traceinc>
+            <traceinc loc="i,10,17,10,22" dtype_id="14">
+              <varref loc="i,10,17,10,22" name="io_pc" dtype_id="14"/>
+            </traceinc>
+            <traceinc loc="i,11,17,11,26" dtype_id="2">
+              <varref loc="i,11,17,11,26" name="io_coreid" dtype_id="19"/>
+            </traceinc>
+            <traceinc loc="j,27,9,27,15" dtype_id="1">
+              <varref loc="j,27,9,27,15" name="enable" dtype_id="17"/>
+            </traceinc>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <arraysel loc="d,1,8,1,14" dtype_id="17">
+            <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+            <const loc="d,1,8,1,14" name="32&apos;h1" dtype_id="15"/>
+          </arraysel>
+          <begin>
+            <traceinc loc="d,2,16,2,21" dtype_id="1">
+              <varref loc="d,2,16,2,21" name="reset" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="d,3,16,3,21" dtype_id="1">
+              <varref loc="d,3,16,3,21" name="clock" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="d,4,16,4,38" dtype_id="1">
+              <varref loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="d,5,16,5,36" dtype_id="1">
+              <varref loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="d,8,16,8,38" dtype_id="1">
+              <varref loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="d,9,22,9,41" dtype_id="2">
+              <varref loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="19"/>
+            </traceinc>
+            <traceinc loc="d,11,16,11,39" dtype_id="1">
+              <varref loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="d,12,16,12,38" dtype_id="1">
+              <varref loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="h,3,16,3,19" dtype_id="1">
+              <varref loc="h,3,16,3,19" name="clk" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="h,4,16,4,21" dtype_id="1">
+              <varref loc="h,4,16,4,21" name="rst_n" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="i,3,17,3,22" dtype_id="1">
+              <varref loc="i,3,17,3,22" name="clock" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="j,28,9,28,14" dtype_id="1">
+              <varref loc="j,28,9,28,14" name="clock" dtype_id="17"/>
+            </traceinc>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <arraysel loc="d,1,8,1,14" dtype_id="17">
+            <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+            <const loc="d,1,8,1,14" name="32&apos;h2" dtype_id="15"/>
+          </arraysel>
+          <begin>
+            <traceinc loc="h,5,24,5,27" dtype_id="15">
+              <varref loc="h,5,24,5,27" name="opt" dtype_id="15"/>
+            </traceinc>
+            <traceinc loc="h,7,14,7,15" dtype_id="16">
+              <varref loc="h,7,14,7,15" name="a" dtype_id="20"/>
+            </traceinc>
+            <traceinc loc="h,8,14,8,15" dtype_id="15">
+              <varref loc="h,8,14,8,15" name="b" dtype_id="15"/>
+            </traceinc>
+            <traceinc loc="h,30,7,30,15" dtype_id="1">
+              <varref loc="h,30,7,30,15" name="r_enable" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="h,31,14,31,21" dtype_id="14">
+              <varref loc="h,31,14,31,21" name="r_index" dtype_id="14"/>
+            </traceinc>
+            <traceinc loc="h,34,7,34,15" dtype_id="1">
+              <varref loc="h,34,7,34,15" name="w_enable" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="h,35,14,35,21" dtype_id="14">
+              <varref loc="h,35,14,35,21" name="w_index" dtype_id="14"/>
+            </traceinc>
+            <traceinc loc="h,36,14,36,20" dtype_id="14">
+              <varref loc="h,36,14,36,20" name="w_data" dtype_id="14"/>
+            </traceinc>
+            <traceinc loc="h,37,14,37,20" dtype_id="14">
+              <varref loc="h,37,14,37,20" name="w_mask" dtype_id="14"/>
+            </traceinc>
+          </begin>
+        </if>
+        <if loc="d,1,8,1,14">
+          <arraysel loc="d,1,8,1,14" dtype_id="17">
+            <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+            <const loc="d,1,8,1,14" name="32&apos;h3" dtype_id="15"/>
+          </arraysel>
+          <begin>
+            <traceinc loc="j,17,19,17,27" dtype_id="1">
+              <varref loc="j,17,19,17,27" name="r_enable" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="j,18,19,18,26" dtype_id="14">
+              <varref loc="j,18,19,18,26" name="r_index" dtype_id="14"/>
+            </traceinc>
+            <traceinc loc="j,22,15,22,23" dtype_id="1">
+              <varref loc="j,22,15,22,23" name="w_enable" dtype_id="17"/>
+            </traceinc>
+            <traceinc loc="j,23,15,23,22" dtype_id="14">
+              <varref loc="j,23,15,23,22" name="w_index" dtype_id="14"/>
+            </traceinc>
+            <traceinc loc="j,24,15,24,21" dtype_id="14">
+              <varref loc="j,24,15,24,21" name="w_data" dtype_id="14"/>
+            </traceinc>
+            <traceinc loc="j,25,15,25,21" dtype_id="14">
+              <varref loc="j,25,15,25,21" name="w_mask" dtype_id="14"/>
+            </traceinc>
+          </begin>
+        </if>
+        <traceinc loc="d,2,16,2,21" dtype_id="1">
+          <varref loc="d,2,16,2,21" name="reset" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,3,16,3,21" dtype_id="1">
+          <varref loc="d,3,16,3,21" name="clock" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,4,16,4,38" dtype_id="1">
+          <varref loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,5,16,5,36" dtype_id="1">
+          <varref loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,6,17,6,40" dtype_id="1">
+          <varref loc="d,6,17,6,40" name="difftest_uart_out_valid" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,7,23,7,43" dtype_id="2">
+          <varref loc="d,7,23,7,43" name="difftest_uart_out_ch" dtype_id="19"/>
+        </traceinc>
+        <traceinc loc="d,8,16,8,38" dtype_id="1">
+          <varref loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,9,22,9,41" dtype_id="2">
+          <varref loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="19"/>
+        </traceinc>
+        <traceinc loc="d,11,16,11,39" dtype_id="1">
+          <varref loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,12,16,12,38" dtype_id="1">
+          <varref loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,14,17,14,30" dtype_id="1">
+          <varref loc="d,14,17,14,30" name="difftest_exit" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,15,17,15,30" dtype_id="1">
+          <varref loc="d,15,17,15,30" name="difftest_step" dtype_id="17"/>
+        </traceinc>
+        <traceinc loc="d,27,14,27,17" dtype_id="14">
+          <varref loc="d,27,14,27,17" name="cnt" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="h,32,14,32,20" dtype_id="14">
+          <varref loc="h,32,14,32,20" name="r_data" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="i,6,17,6,28" dtype_id="14">
+          <varref loc="i,6,17,6,28" name="io_cycleCnt" dtype_id="14"/>
+        </traceinc>
+        <traceinc loc="j,19,19,19,25" dtype_id="14">
+          <varref loc="j,19,19,19,25" name="r_data" dtype_id="14"/>
+        </traceinc>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="trace_cleanup">
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <cstmt loc="d,1,8,1,14">
+          <text loc="d,1,8,1,14"/>
+        </cstmt>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h0" dtype_id="17"/>
+          <arraysel loc="d,1,8,1,14" dtype_id="17">
+            <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+            <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+          </arraysel>
+        </assign>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h0" dtype_id="17"/>
+          <arraysel loc="d,1,8,1,14" dtype_id="17">
+            <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+            <const loc="d,1,8,1,14" name="32&apos;h1" dtype_id="15"/>
+          </arraysel>
+        </assign>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h0" dtype_id="17"/>
+          <arraysel loc="d,1,8,1,14" dtype_id="17">
+            <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+            <const loc="d,1,8,1,14" name="32&apos;h2" dtype_id="15"/>
+          </arraysel>
+        </assign>
+        <assign loc="d,1,8,1,14" dtype_id="17">
+          <const loc="d,1,8,1,14" name="1&apos;h0" dtype_id="17"/>
+          <arraysel loc="d,1,8,1,14" dtype_id="17">
+            <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+            <const loc="d,1,8,1,14" name="32&apos;h3" dtype_id="15"/>
+          </arraysel>
+        </assign>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="_eval_debug_assertions">
+        <if loc="d,2,16,2,21">
+          <and loc="d,2,16,2,21" dtype_id="1">
+            <varref loc="d,2,16,2,21" name="reset" dtype_id="1"/>
+            <const loc="d,2,16,2,21" name="8&apos;hfe" dtype_id="2"/>
+          </and>
+          <begin>
+            <cstmt loc="d,2,16,2,21">
+              <text loc="d,2,16,2,21"/>
+            </cstmt>
+          </begin>
+        </if>
+        <if loc="d,3,16,3,21">
+          <and loc="d,3,16,3,21" dtype_id="1">
+            <varref loc="d,3,16,3,21" name="clock" dtype_id="1"/>
+            <const loc="d,3,16,3,21" name="8&apos;hfe" dtype_id="2"/>
+          </and>
+          <begin>
+            <cstmt loc="d,3,16,3,21">
+              <text loc="d,3,16,3,21"/>
+            </cstmt>
+          </begin>
+        </if>
+        <if loc="d,4,16,4,38">
+          <and loc="d,4,16,4,38" dtype_id="1">
+            <varref loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="1"/>
+            <const loc="d,4,16,4,38" name="8&apos;hfe" dtype_id="2"/>
+          </and>
+          <begin>
+            <cstmt loc="d,4,16,4,38">
+              <text loc="d,4,16,4,38"/>
+            </cstmt>
+          </begin>
+        </if>
+        <if loc="d,5,16,5,36">
+          <and loc="d,5,16,5,36" dtype_id="1">
+            <varref loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="1"/>
+            <const loc="d,5,16,5,36" name="8&apos;hfe" dtype_id="2"/>
+          </and>
+          <begin>
+            <cstmt loc="d,5,16,5,36">
+              <text loc="d,5,16,5,36"/>
+            </cstmt>
+          </begin>
+        </if>
+        <if loc="d,8,16,8,38">
+          <and loc="d,8,16,8,38" dtype_id="1">
+            <varref loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="1"/>
+            <const loc="d,8,16,8,38" name="8&apos;hfe" dtype_id="2"/>
+          </and>
+          <begin>
+            <cstmt loc="d,8,16,8,38">
+              <text loc="d,8,16,8,38"/>
+            </cstmt>
+          </begin>
+        </if>
+        <if loc="d,11,16,11,39">
+          <and loc="d,11,16,11,39" dtype_id="1">
+            <varref loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="1"/>
+            <const loc="d,11,16,11,39" name="8&apos;hfe" dtype_id="2"/>
+          </and>
+          <begin>
+            <cstmt loc="d,11,16,11,39">
+              <text loc="d,11,16,11,39"/>
+            </cstmt>
+          </begin>
+        </if>
+        <if loc="d,12,16,12,38">
+          <and loc="d,12,16,12,38" dtype_id="1">
+            <varref loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="1"/>
+            <const loc="d,12,16,12,38" name="8&apos;hfe" dtype_id="2"/>
+          </and>
+          <begin>
+            <cstmt loc="d,12,16,12,38">
+              <text loc="d,12,16,12,38"/>
+            </cstmt>
+          </begin>
+        </if>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="_ctor_var_reset">
+        <creset loc="d,2,16,2,21">
+          <varref loc="d,2,16,2,21" name="reset" dtype_id="1"/>
+        </creset>
+        <creset loc="d,3,16,3,21">
+          <varref loc="d,3,16,3,21" name="clock" dtype_id="1"/>
+        </creset>
+        <creset loc="d,4,16,4,38">
+          <varref loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="1"/>
+        </creset>
+        <creset loc="d,5,16,5,36">
+          <varref loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="1"/>
+        </creset>
+        <creset loc="d,6,17,6,40">
+          <varref loc="d,6,17,6,40" name="difftest_uart_out_valid" dtype_id="1"/>
+        </creset>
+        <creset loc="d,7,23,7,43">
+          <varref loc="d,7,23,7,43" name="difftest_uart_out_ch" dtype_id="2"/>
+        </creset>
+        <creset loc="d,8,16,8,38">
+          <varref loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="1"/>
+        </creset>
+        <creset loc="d,9,22,9,41">
+          <varref loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="2"/>
+        </creset>
+        <creset loc="d,11,16,11,39">
+          <varref loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="1"/>
+        </creset>
+        <creset loc="d,12,16,12,38">
+          <varref loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="1"/>
+        </creset>
+        <creset loc="d,14,17,14,30">
+          <varref loc="d,14,17,14,30" name="difftest_exit" dtype_id="1"/>
+        </creset>
+        <creset loc="d,15,17,15,30">
+          <varref loc="d,15,17,15,30" name="difftest_step" dtype_id="1"/>
+        </creset>
+        <creset loc="d,1,8,1,14">
+          <varref loc="d,1,8,1,14" name="__Vtrigprevexpr___TOP__SimTop__clock__0" dtype_id="1"/>
+        </creset>
+        <creset loc="d,1,8,1,14">
+          <varref loc="d,1,8,1,14" name="__Vtrigprevexpr___TOP__SimTop__u_top__clk__0" dtype_id="1"/>
+        </creset>
+        <creset loc="d,1,8,1,14">
+          <varref loc="d,1,8,1,14" name="__Vtrigprevexpr___TOP__SimTop__u_DifftestTrapEvent__clock__0" dtype_id="1"/>
+        </creset>
+        <creset loc="d,1,8,1,14">
+          <varref loc="d,1,8,1,14" name="__Vtrigprevexpr___TOP__SimTop__u_top__mem__clock__0" dtype_id="1"/>
+        </creset>
+        <creset loc="d,1,8,1,14">
+          <varref loc="d,1,8,1,14" name="__Vm_traceActivity" dtype_id="5"/>
+        </creset>
+      </cfunc>
+      <cuse loc="d,1,8,1,14" name="SimTop"/>
+      <cuse loc="a,0,0,0,0" name="$unit"/>
+    </module>
+    <module loc="d,1,8,1,14" name="SimTop" origName="SimTop" topModule="1">
+      <var loc="d,3,16,3,21" name="clock" dtype_id="1" dir="input" pinIndex="2" vartype="logic" origName="clock"/>
+      <var loc="d,2,16,2,21" name="reset" dtype_id="1" dir="input" pinIndex="1" vartype="logic" origName="reset"/>
+      <var loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="1" dir="input" pinIndex="3" vartype="logic" origName="difftest_logCtrl_begin"/>
+      <var loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="1" dir="input" pinIndex="4" vartype="logic" origName="difftest_logCtrl_end"/>
+      <var loc="d,6,17,6,40" name="difftest_uart_out_valid" dtype_id="1" dir="output" pinIndex="5" vartype="logic" origName="difftest_uart_out_valid">
+        <const loc="d,21,36,21,40" name="1&apos;h0" dtype_id="17"/>
+      </var>
+      <var loc="d,7,23,7,43" name="difftest_uart_out_ch" dtype_id="2" dir="output" pinIndex="6" vartype="logic" origName="difftest_uart_out_ch">
+        <const loc="d,20,33,20,37" name="8&apos;h0" dtype_id="19"/>
+      </var>
+      <var loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="1" dir="input" pinIndex="7" vartype="logic" origName="difftest_uart_in_valid"/>
+      <var loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="2" dir="input" pinIndex="8" vartype="logic" origName="difftest_uart_in_ch"/>
+      <var loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="1" dir="input" pinIndex="9" vartype="logic" origName="difftest_perfCtrl_clean"/>
+      <var loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="1" dir="input" pinIndex="10" vartype="logic" origName="difftest_perfCtrl_dump"/>
+      <var loc="d,14,17,14,30" name="difftest_exit" dtype_id="1" dir="output" pinIndex="11" vartype="logic" origName="difftest_exit">
+        <const loc="d,19,26,19,30" name="1&apos;h0" dtype_id="17"/>
+      </var>
+      <var loc="d,15,17,15,30" name="difftest_step" dtype_id="1" dir="output" pinIndex="12" vartype="logic" origName="difftest_step">
+        <const loc="d,18,26,18,30" name="1&apos;h1" dtype_id="17"/>
+      </var>
+      <var loc="h,4,16,4,21" name="__Vcellinp__u_top__rst_n" dtype_id="1" vartype="logic" origName="__Vcellinp__u_top__rst_n"/>
+      <var loc="d,27,14,27,17" name="cnt" dtype_id="14" vartype="logic" origName="cnt"/>
+      <var loc="d,27,14,27,17" name="__Vdly__cnt" dtype_id="14" vartype="logic" origName="__Vdly__cnt"/>
+      <instance loc="d,22,7,22,12" name="u_top" defName="top" origName="u_top">
+        <port loc="d,25,8,25,11" name="opt" direction="out" portIndex="3"/>
+      </instance>
+      <instance loc="d,36,21,36,40" name="u_DifftestTrapEvent" defName="DifftestTrapEvent" origName="u_DifftestTrapEvent"/>
+      <scope loc="d,1,8,1,14" name="SimTop"/>
+      <cfunc loc="d,1,8,1,14" name="_eval_initial__TOP__SimTop">
+        <contassign loc="d,45,20,45,23" dtype_id="19">
+          <const loc="d,45,20,45,23" name="8&apos;h0" dtype_id="19"/>
+          <varref loc="d,45,20,45,23" name="io_coreid" dtype_id="19"/>
+        </contassign>
+        <contassign loc="d,44,20,44,23" dtype_id="14">
+          <const loc="d,44,20,44,23" name="64&apos;h0" dtype_id="14"/>
+          <varref loc="d,44,20,44,23" name="io_pc" dtype_id="14"/>
+        </contassign>
+        <contassign loc="d,43,20,43,23" dtype_id="15">
+          <const loc="d,43,20,43,23" name="32&apos;h0" dtype_id="15"/>
+          <varref loc="d,43,20,43,23" name="io_code" dtype_id="15"/>
+        </contassign>
+        <contassign loc="d,42,20,42,23" dtype_id="17">
+          <const loc="d,42,20,42,23" name="1&apos;h0" dtype_id="17"/>
+          <varref loc="d,42,20,42,23" name="io_hasWFI" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,41,20,41,23" dtype_id="14">
+          <const loc="d,41,20,41,23" name="64&apos;h0" dtype_id="14"/>
+          <varref loc="d,41,20,41,23" name="io_instrCnt" dtype_id="14"/>
+        </contassign>
+        <contassign loc="d,39,20,39,24" dtype_id="17">
+          <const loc="d,39,20,39,24" name="1&apos;h0" dtype_id="17"/>
+          <varref loc="d,39,20,39,24" name="io_hasTrap" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,38,20,38,24" dtype_id="17">
+          <const loc="d,38,20,38,24" name="1&apos;h1" dtype_id="17"/>
+          <varref loc="d,38,20,38,24" name="enable" dtype_id="17"/>
+        </contassign>
+        <assign loc="d,18,24,18,25" dtype_id="17">
+          <const loc="d,18,26,18,30" name="1&apos;h1" dtype_id="17"/>
+          <varref loc="d,18,10,18,23" name="difftest_step" dtype_id="17"/>
+        </assign>
+        <assign loc="d,19,24,19,25" dtype_id="17">
+          <const loc="d,19,26,19,30" name="1&apos;h0" dtype_id="17"/>
+          <varref loc="d,19,10,19,23" name="difftest_exit" dtype_id="17"/>
+        </assign>
+        <assign loc="d,20,31,20,32" dtype_id="19">
+          <const loc="d,20,33,20,37" name="8&apos;h0" dtype_id="19"/>
+          <varref loc="d,20,10,20,30" name="difftest_uart_out_ch" dtype_id="19"/>
+        </assign>
+        <assign loc="d,21,34,21,35" dtype_id="17">
+          <const loc="d,21,36,21,40" name="1&apos;h0" dtype_id="17"/>
+          <varref loc="d,21,10,21,33" name="difftest_uart_out_valid" dtype_id="17"/>
+        </assign>
+      </cfunc>
+      <cfunc loc="d,40,20,40,23" name="_stl_sequent__TOP__SimTop__0">
+        <contassign loc="d,40,20,40,23" dtype_id="14">
+          <varref loc="d,40,20,40,23" name="cnt" dtype_id="14"/>
+          <varref loc="d,40,20,40,23" name="io_cycleCnt" dtype_id="14"/>
+        </contassign>
+        <contassign loc="d,24,8,24,13" dtype_id="17">
+          <and loc="d,24,14,24,15" dtype_id="17">
+            <const loc="d,24,14,24,15" name="32&apos;h1" dtype_id="15"/>
+            <not loc="d,24,14,24,15" dtype_id="17">
+              <ccast loc="d,24,15,24,20" dtype_id="17">
+                <varref loc="d,24,15,24,20" name="reset" dtype_id="17"/>
+              </ccast>
+            </not>
+          </and>
+          <varref loc="d,24,8,24,13" name="__Vcellinp__u_top__rst_n" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,37,20,37,25" dtype_id="17">
+          <varref loc="d,37,20,37,25" name="clock" dtype_id="17"/>
+          <varref loc="d,37,20,37,25" name="clock" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,23,14,23,19" dtype_id="17">
+          <varref loc="d,23,14,23,19" name="clock" dtype_id="17"/>
+          <varref loc="d,23,14,23,19" name="clk" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,24,14,24,15" dtype_id="17">
+          <varref loc="d,24,14,24,15" name="__Vcellinp__u_top__rst_n" dtype_id="17"/>
+          <varref loc="d,24,14,24,15" name="rst_n" dtype_id="17"/>
+        </contassign>
+      </cfunc>
+      <cfunc loc="d,24,8,24,13" name="_ico_sequent__TOP__SimTop__0">
+        <contassign loc="d,24,8,24,13" dtype_id="17">
+          <and loc="d,24,14,24,15" dtype_id="17">
+            <const loc="d,24,14,24,15" name="32&apos;h1" dtype_id="15"/>
+            <not loc="d,24,14,24,15" dtype_id="17">
+              <ccast loc="d,24,15,24,20" dtype_id="17">
+                <varref loc="d,24,15,24,20" name="reset" dtype_id="17"/>
+              </ccast>
+            </not>
+          </and>
+          <varref loc="d,24,8,24,13" name="__Vcellinp__u_top__rst_n" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,37,20,37,25" dtype_id="17">
+          <varref loc="d,37,20,37,25" name="clock" dtype_id="17"/>
+          <varref loc="d,37,20,37,25" name="clock" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,23,14,23,19" dtype_id="17">
+          <varref loc="d,23,14,23,19" name="clock" dtype_id="17"/>
+          <varref loc="d,23,14,23,19" name="clk" dtype_id="17"/>
+        </contassign>
+        <contassign loc="d,24,14,24,15" dtype_id="17">
+          <varref loc="d,24,14,24,15" name="__Vcellinp__u_top__rst_n" dtype_id="17"/>
+          <varref loc="d,24,14,24,15" name="rst_n" dtype_id="17"/>
+        </contassign>
+      </cfunc>
+      <cfunc loc="d,30,7,30,10" name="_nba_sequent__TOP__SimTop__0">
+        <assignpre loc="d,30,7,30,10" dtype_id="14">
+          <varref loc="d,30,7,30,10" name="cnt" dtype_id="14"/>
+          <varref loc="d,30,7,30,10" name="__Vdly__cnt" dtype_id="14"/>
+        </assignpre>
+        <assigndly loc="d,30,11,30,13" dtype_id="14">
+          <cond loc="d,30,14,30,17" dtype_id="14">
+            <ccast loc="d,29,9,29,14" dtype_id="17">
+              <varref loc="d,29,9,29,14" name="reset" dtype_id="17"/>
+            </ccast>
+            <const loc="d,30,14,30,17" name="64&apos;h0" dtype_id="14"/>
+            <add loc="d,33,17,33,18" dtype_id="14">
+              <const loc="d,33,19,33,23" name="64&apos;h1" dtype_id="14"/>
+              <varref loc="d,33,13,33,16" name="cnt" dtype_id="14"/>
+            </add>
+          </cond>
+          <varref loc="d,30,7,30,10" name="__Vdly__cnt" dtype_id="14"/>
+        </assigndly>
+        <assignpost loc="d,30,7,30,10" dtype_id="14">
+          <varref loc="d,30,7,30,10" name="__Vdly__cnt" dtype_id="14"/>
+          <varref loc="d,30,7,30,10" name="cnt" dtype_id="14"/>
+        </assignpost>
+        <contassign loc="d,40,20,40,23" dtype_id="14">
+          <varref loc="d,40,20,40,23" name="cnt" dtype_id="14"/>
+          <varref loc="d,40,20,40,23" name="io_cycleCnt" dtype_id="14"/>
+        </contassign>
+      </cfunc>
+      <cfunc loc="d,1,8,1,14" name="_ctor_var_reset">
+        <creset loc="d,2,16,2,21">
+          <varref loc="d,2,16,2,21" name="reset" dtype_id="1"/>
+        </creset>
+        <creset loc="d,3,16,3,21">
+          <varref loc="d,3,16,3,21" name="clock" dtype_id="1"/>
+        </creset>
+        <creset loc="d,4,16,4,38">
+          <varref loc="d,4,16,4,38" name="difftest_logCtrl_begin" dtype_id="1"/>
+        </creset>
+        <creset loc="d,5,16,5,36">
+          <varref loc="d,5,16,5,36" name="difftest_logCtrl_end" dtype_id="1"/>
+        </creset>
+        <creset loc="d,6,17,6,40">
+          <varref loc="d,6,17,6,40" name="difftest_uart_out_valid" dtype_id="1"/>
+        </creset>
+        <creset loc="d,7,23,7,43">
+          <varref loc="d,7,23,7,43" name="difftest_uart_out_ch" dtype_id="2"/>
+        </creset>
+        <creset loc="d,8,16,8,38">
+          <varref loc="d,8,16,8,38" name="difftest_uart_in_valid" dtype_id="1"/>
+        </creset>
+        <creset loc="d,9,22,9,41">
+          <varref loc="d,9,22,9,41" name="difftest_uart_in_ch" dtype_id="2"/>
+        </creset>
+        <creset loc="d,11,16,11,39">
+          <varref loc="d,11,16,11,39" name="difftest_perfCtrl_clean" dtype_id="1"/>
+        </creset>
+        <creset loc="d,12,16,12,38">
+          <varref loc="d,12,16,12,38" name="difftest_perfCtrl_dump" dtype_id="1"/>
+        </creset>
+        <creset loc="d,14,17,14,30">
+          <varref loc="d,14,17,14,30" name="difftest_exit" dtype_id="1"/>
+        </creset>
+        <creset loc="d,15,17,15,30">
+          <varref loc="d,15,17,15,30" name="difftest_step" dtype_id="1"/>
+        </creset>
+        <creset loc="h,4,16,4,21">
+          <varref loc="h,4,16,4,21" name="__Vcellinp__u_top__rst_n" dtype_id="1"/>
+        </creset>
+        <creset loc="d,27,14,27,17">
+          <varref loc="d,27,14,27,17" name="cnt" dtype_id="14"/>
+        </creset>
+        <creset loc="d,27,14,27,17">
+          <varref loc="d,27,14,27,17" name="__Vdly__cnt" dtype_id="14"/>
+        </creset>
+      </cfunc>
+      <cuse loc="d,36,21,36,40" name="DifftestTrapEvent"/>
+      <cuse loc="d,22,7,22,12" name="top"/>
+    </module>
+    <package loc="a,0,0,0,0" name="$unit" origName="__024unit">
+      <scope loc="a,0,0,0,0" name="$unit"/>
+      <cfunc loc="e,18,30,18,40" name="__Vdpiimwrap_pte_helper_TOP__$unit">
+        <var loc="e,19,18,19,22" name="satp" dtype_id="9" dir="input" vartype="longint" origName="satp"/>
+        <creset loc="e,19,18,19,22">
+          <varref loc="e,19,18,19,22" name="satp" dtype_id="9"/>
+        </creset>
+        <var loc="e,20,18,20,21" name="vpn" dtype_id="9" dir="input" vartype="longint" origName="vpn"/>
+        <creset loc="e,20,18,20,21">
+          <varref loc="e,20,18,20,21" name="vpn" dtype_id="9"/>
+        </creset>
+        <var loc="e,21,18,21,21" name="pte" dtype_id="9" dir="output" vartype="longint" origName="pte"/>
+        <creset loc="e,21,18,21,21">
+          <varref loc="e,21,18,21,21" name="pte" dtype_id="9"/>
+        </creset>
+        <var loc="e,22,18,22,23" name="level" dtype_id="10" dir="output" vartype="byte" origName="level"/>
+        <creset loc="e,22,18,22,23">
+          <varref loc="e,22,18,22,23" name="level" dtype_id="10"/>
+        </creset>
+        <var loc="e,18,30,18,40" name="pte_helper__Vfuncrtn" dtype_id="10" dir="output" vartype="byte" origName="pte_helper"/>
+        <creset loc="e,18,30,18,40">
+          <varref loc="e,18,30,18,40" name="pte_helper__Vfuncrtn" dtype_id="10"/>
+        </creset>
+        <cstmt loc="e,19,18,19,22">
+          <text loc="e,19,18,19,22"/>
+        </cstmt>
+        <cstmt loc="e,19,18,19,22">
+          <text loc="e,19,18,19,22"/>
+        </cstmt>
+        <cstmt loc="e,20,18,20,21">
+          <text loc="e,20,18,20,21"/>
+        </cstmt>
+        <cstmt loc="e,20,18,20,21">
+          <text loc="e,20,18,20,21"/>
+        </cstmt>
+        <cstmt loc="e,21,18,21,21">
+          <text loc="e,21,18,21,21"/>
+        </cstmt>
+        <cstmt loc="e,22,18,22,23">
+          <text loc="e,22,18,22,23"/>
+        </cstmt>
+        <cstmt loc="e,18,30,18,40">
+          <text loc="e,18,30,18,40"/>
+        </cstmt>
+        <text loc="e,18,30,18,40"/>
+        <stmtexpr loc="e,18,30,18,40">
+          <ccall loc="e,18,30,18,40" dtype_id="13" func="pte_helper"/>
+        </stmtexpr>
+        <assign loc="e,21,18,21,21" dtype_id="9">
+          <cexpr loc="e,21,18,21,21" dtype_id="14">
+            <text loc="e,21,18,21,21"/>
+          </cexpr>
+          <varref loc="e,21,18,21,21" name="pte" dtype_id="9"/>
+        </assign>
+        <assign loc="e,22,18,22,23" dtype_id="22">
+          <and loc="e,22,18,22,23" dtype_id="19">
+            <const loc="e,22,18,22,23" name="32&apos;hff" dtype_id="15"/>
+            <cexpr loc="e,22,18,22,23" dtype_id="19">
+              <text loc="e,22,18,22,23"/>
+            </cexpr>
+          </and>
+          <varref loc="e,22,18,22,23" name="level" dtype_id="22"/>
+        </assign>
+        <assign loc="e,18,30,18,40" dtype_id="22">
+          <and loc="e,18,30,18,40" dtype_id="19">
+            <const loc="e,18,30,18,40" name="32&apos;hff" dtype_id="15"/>
+            <cexpr loc="e,18,30,18,40" dtype_id="19">
+              <text loc="e,18,30,18,40"/>
+            </cexpr>
+          </and>
+          <varref loc="e,18,30,18,40" name="pte_helper__Vfuncrtn" dtype_id="22"/>
+        </assign>
+      </cfunc>
+      <cfunc loc="e,45,33,45,43" name="__Vdpiimwrap_amo_helper_TOP__$unit">
+        <var loc="e,46,17,46,20" name="cmd" dtype_id="10" dir="input" vartype="byte" origName="cmd"/>
+        <creset loc="e,46,17,46,20">
+          <varref loc="e,46,17,46,20" name="cmd" dtype_id="10"/>
+        </creset>
+        <var loc="e,47,17,47,21" name="addr" dtype_id="9" dir="input" vartype="longint" origName="addr"/>
+        <creset loc="e,47,17,47,21">
+          <varref loc="e,47,17,47,21" name="addr" dtype_id="9"/>
+        </creset>
+        <var loc="e,48,17,48,22" name="wdata" dtype_id="9" dir="input" vartype="longint" origName="wdata"/>
+        <creset loc="e,48,17,48,22">
+          <varref loc="e,48,17,48,22" name="wdata" dtype_id="9"/>
+        </creset>
+        <var loc="e,49,17,49,21" name="mask" dtype_id="10" dir="input" vartype="byte" origName="mask"/>
+        <creset loc="e,49,17,49,21">
+          <varref loc="e,49,17,49,21" name="mask" dtype_id="10"/>
+        </creset>
+        <var loc="e,45,33,45,43" name="amo_helper__Vfuncrtn" dtype_id="9" dir="output" vartype="longint" origName="amo_helper"/>
+        <creset loc="e,45,33,45,43">
+          <varref loc="e,45,33,45,43" name="amo_helper__Vfuncrtn" dtype_id="9"/>
+        </creset>
+        <cstmt loc="e,46,17,46,20">
+          <text loc="e,46,17,46,20"/>
+        </cstmt>
+        <cstmt loc="e,46,17,46,20">
+          <text loc="e,46,17,46,20"/>
+        </cstmt>
+        <cstmt loc="e,47,17,47,21">
+          <text loc="e,47,17,47,21"/>
+        </cstmt>
+        <cstmt loc="e,47,17,47,21">
+          <text loc="e,47,17,47,21"/>
+        </cstmt>
+        <cstmt loc="e,48,17,48,22">
+          <text loc="e,48,17,48,22"/>
+        </cstmt>
+        <cstmt loc="e,48,17,48,22">
+          <text loc="e,48,17,48,22"/>
+        </cstmt>
+        <cstmt loc="e,49,17,49,21">
+          <text loc="e,49,17,49,21"/>
+        </cstmt>
+        <cstmt loc="e,49,17,49,21">
+          <text loc="e,49,17,49,21"/>
+        </cstmt>
+        <cstmt loc="e,45,33,45,43">
+          <text loc="e,45,33,45,43"/>
+        </cstmt>
+        <text loc="e,45,33,45,43"/>
+        <stmtexpr loc="e,45,33,45,43">
+          <ccall loc="e,45,33,45,43" dtype_id="13" func="amo_helper"/>
+        </stmtexpr>
+        <assign loc="e,45,33,45,43" dtype_id="9">
+          <cexpr loc="e,45,33,45,43" dtype_id="14">
+            <text loc="e,45,33,45,43"/>
+          </cexpr>
+          <varref loc="e,45,33,45,43" name="amo_helper__Vfuncrtn" dtype_id="9"/>
+        </assign>
+      </cfunc>
+      <cfunc loc="f,18,30,18,39" name="__Vdpiimwrap_xs_assert_TOP__$unit">
+        <var loc="f,20,21,20,25" name="line" dtype_id="9" dir="input" vartype="longint" origName="line"/>
+        <creset loc="f,20,21,20,25">
+          <varref loc="f,20,21,20,25" name="line" dtype_id="9"/>
+        </creset>
+        <cstmt loc="f,20,21,20,25">
+          <text loc="f,20,21,20,25"/>
+        </cstmt>
+        <cstmt loc="f,20,21,20,25">
+          <text loc="f,20,21,20,25"/>
+        </cstmt>
+        <stmtexpr loc="f,18,30,18,39">
+          <ccall loc="f,18,30,18,39" dtype_id="13" func="xs_assert"/>
+        </stmtexpr>
+      </cfunc>
+      <cfunc loc="f,23,30,23,42" name="__Vdpiimwrap_xs_assert_v2_TOP__$unit">
+        <var loc="f,25,21,25,29" name="filename" dtype_id="11" dir="input" vartype="string" origName="filename"/>
+        <creset loc="f,25,21,25,29">
+          <varref loc="f,25,21,25,29" name="filename" dtype_id="11"/>
+        </creset>
+        <var loc="f,26,21,26,25" name="line" dtype_id="9" dir="input" vartype="longint" origName="line"/>
+        <creset loc="f,26,21,26,25">
+          <varref loc="f,26,21,26,25" name="line" dtype_id="9"/>
+        </creset>
+        <cstmt loc="f,25,21,25,29">
+          <text loc="f,25,21,25,29"/>
+        </cstmt>
+        <cstmt loc="f,25,21,25,29">
+          <text loc="f,25,21,25,29"/>
+        </cstmt>
+        <cstmt loc="f,26,21,26,25">
+          <text loc="f,26,21,26,25"/>
+        </cstmt>
+        <cstmt loc="f,26,21,26,25">
+          <text loc="f,26,21,26,25"/>
+        </cstmt>
+        <stmtexpr loc="f,23,30,23,42">
+          <ccall loc="f,23,30,23,42" dtype_id="13" func="xs_assert_v2"/>
+        </stmtexpr>
+      </cfunc>
+      <cfunc loc="g,7,29,7,38" name="__Vdpiimwrap_jtag_tick_TOP__$unit">
+        <var loc="g,9,13,9,21" name="jtag_TCK" dtype_id="3" dir="output" vartype="bit" origName="jtag_TCK"/>
+        <creset loc="g,9,13,9,21">
+          <varref loc="g,9,13,9,21" name="jtag_TCK" dtype_id="3"/>
+        </creset>
+        <var loc="g,10,13,10,21" name="jtag_TMS" dtype_id="3" dir="output" vartype="bit" origName="jtag_TMS"/>
+        <creset loc="g,10,13,10,21">
+          <varref loc="g,10,13,10,21" name="jtag_TMS" dtype_id="3"/>
+        </creset>
+        <var loc="g,11,13,11,21" name="jtag_TDI" dtype_id="3" dir="output" vartype="bit" origName="jtag_TDI"/>
+        <creset loc="g,11,13,11,21">
+          <varref loc="g,11,13,11,21" name="jtag_TDI" dtype_id="3"/>
+        </creset>
+        <var loc="g,12,13,12,23" name="jtag_TRSTn" dtype_id="3" dir="output" vartype="bit" origName="jtag_TRSTn"/>
+        <creset loc="g,12,13,12,23">
+          <varref loc="g,12,13,12,23" name="jtag_TRSTn" dtype_id="3"/>
+        </creset>
+        <var loc="g,14,13,14,21" name="jtag_TDO" dtype_id="3" dir="input" vartype="bit" origName="jtag_TDO"/>
+        <creset loc="g,14,13,14,21">
+          <varref loc="g,14,13,14,21" name="jtag_TDO" dtype_id="3"/>
+        </creset>
+        <var loc="g,7,29,7,38" name="jtag_tick__Vfuncrtn" dtype_id="12" dir="output" vartype="int" origName="jtag_tick"/>
+        <creset loc="g,7,29,7,38">
+          <varref loc="g,7,29,7,38" name="jtag_tick__Vfuncrtn" dtype_id="12"/>
+        </creset>
+        <cstmt loc="g,9,13,9,21">
+          <text loc="g,9,13,9,21"/>
+        </cstmt>
+        <cstmt loc="g,10,13,10,21">
+          <text loc="g,10,13,10,21"/>
+        </cstmt>
+        <cstmt loc="g,11,13,11,21">
+          <text loc="g,11,13,11,21"/>
+        </cstmt>
+        <cstmt loc="g,12,13,12,23">
+          <text loc="g,12,13,12,23"/>
+        </cstmt>
+        <cstmt loc="g,14,13,14,21">
+          <text loc="g,14,13,14,21"/>
+        </cstmt>
+        <cstmt loc="g,14,13,14,21">
+          <text loc="g,14,13,14,21"/>
+        </cstmt>
+        <cstmt loc="g,7,29,7,38">
+          <text loc="g,7,29,7,38"/>
+        </cstmt>
+        <text loc="g,7,29,7,38"/>
+        <stmtexpr loc="g,7,29,7,38">
+          <ccall loc="g,7,29,7,38" dtype_id="13" func="jtag_tick"/>
+        </stmtexpr>
+        <assign loc="g,9,13,9,21" dtype_id="17">
+          <and loc="g,9,13,9,21" dtype_id="17">
+            <const loc="g,9,13,9,21" name="32&apos;h1" dtype_id="15"/>
+            <sel loc="g,9,13,9,21" dtype_id="17">
+              <cexpr loc="g,9,13,9,21" dtype_id="15">
+                <text loc="g,9,13,9,21"/>
+              </cexpr>
+              <const loc="g,9,13,9,21" name="32&apos;h0" dtype_id="15"/>
+              <const loc="g,9,13,9,21" name="32&apos;h1" dtype_id="15"/>
+            </sel>
+          </and>
+          <varref loc="g,9,13,9,21" name="jtag_TCK" dtype_id="17"/>
+        </assign>
+        <assign loc="g,10,13,10,21" dtype_id="17">
+          <and loc="g,10,13,10,21" dtype_id="17">
+            <const loc="g,10,13,10,21" name="32&apos;h1" dtype_id="15"/>
+            <sel loc="g,10,13,10,21" dtype_id="17">
+              <cexpr loc="g,10,13,10,21" dtype_id="15">
+                <text loc="g,10,13,10,21"/>
+              </cexpr>
+              <const loc="g,10,13,10,21" name="32&apos;h0" dtype_id="15"/>
+              <const loc="g,10,13,10,21" name="32&apos;h1" dtype_id="15"/>
+            </sel>
+          </and>
+          <varref loc="g,10,13,10,21" name="jtag_TMS" dtype_id="17"/>
+        </assign>
+        <assign loc="g,11,13,11,21" dtype_id="17">
+          <and loc="g,11,13,11,21" dtype_id="17">
+            <const loc="g,11,13,11,21" name="32&apos;h1" dtype_id="15"/>
+            <sel loc="g,11,13,11,21" dtype_id="17">
+              <cexpr loc="g,11,13,11,21" dtype_id="15">
+                <text loc="g,11,13,11,21"/>
+              </cexpr>
+              <const loc="g,11,13,11,21" name="32&apos;h0" dtype_id="15"/>
+              <const loc="g,11,13,11,21" name="32&apos;h1" dtype_id="15"/>
+            </sel>
+          </and>
+          <varref loc="g,11,13,11,21" name="jtag_TDI" dtype_id="17"/>
+        </assign>
+        <assign loc="g,12,13,12,23" dtype_id="17">
+          <and loc="g,12,13,12,23" dtype_id="17">
+            <const loc="g,12,13,12,23" name="32&apos;h1" dtype_id="15"/>
+            <sel loc="g,12,13,12,23" dtype_id="17">
+              <cexpr loc="g,12,13,12,23" dtype_id="15">
+                <text loc="g,12,13,12,23"/>
+              </cexpr>
+              <const loc="g,12,13,12,23" name="32&apos;h0" dtype_id="15"/>
+              <const loc="g,12,13,12,23" name="32&apos;h1" dtype_id="15"/>
+            </sel>
+          </and>
+          <varref loc="g,12,13,12,23" name="jtag_TRSTn" dtype_id="17"/>
+        </assign>
+        <assign loc="g,7,29,7,38" dtype_id="12">
+          <cexpr loc="g,7,29,7,38" dtype_id="15">
+            <text loc="g,7,29,7,38"/>
+          </cexpr>
+          <varref loc="g,7,29,7,38" name="jtag_tick__Vfuncrtn" dtype_id="12"/>
+        </assign>
+      </cfunc>
+      <cfunc loc="j,2,33,2,50" name="__Vdpiimwrap_difftest_ram_read_TOP__$unit">
+        <var loc="j,2,65,2,69" name="rIdx" dtype_id="9" dir="input" vartype="longint" origName="rIdx"/>
+        <creset loc="j,2,65,2,69">
+          <varref loc="j,2,65,2,69" name="rIdx" dtype_id="9"/>
+        </creset>
+        <var loc="j,2,33,2,50" name="difftest_ram_read__Vfuncrtn" dtype_id="9" dir="output" vartype="longint" origName="difftest_ram_read"/>
+        <creset loc="j,2,33,2,50">
+          <varref loc="j,2,33,2,50" name="difftest_ram_read__Vfuncrtn" dtype_id="9"/>
+        </creset>
+        <cstmt loc="j,2,65,2,69">
+          <text loc="j,2,65,2,69"/>
+        </cstmt>
+        <cstmt loc="j,2,65,2,69">
+          <text loc="j,2,65,2,69"/>
+        </cstmt>
+        <cstmt loc="j,2,33,2,50">
+          <text loc="j,2,33,2,50"/>
+        </cstmt>
+        <text loc="j,2,33,2,50"/>
+        <stmtexpr loc="j,2,33,2,50">
+          <ccall loc="j,2,33,2,50" dtype_id="13" func="difftest_ram_read"/>
+        </stmtexpr>
+        <assign loc="j,2,33,2,50" dtype_id="9">
+          <cexpr loc="j,2,33,2,50" dtype_id="14">
+            <text loc="j,2,33,2,50"/>
+          </cexpr>
+          <varref loc="j,2,33,2,50" name="difftest_ram_read__Vfuncrtn" dtype_id="9"/>
+        </assign>
+      </cfunc>
+      <cfunc loc="j,7,30,7,48" name="__Vdpiimwrap_difftest_ram_write_TOP__$unit">
+        <var loc="j,9,18,9,23" name="index" dtype_id="9" dir="input" vartype="longint" origName="index"/>
+        <creset loc="j,9,18,9,23">
+          <varref loc="j,9,18,9,23" name="index" dtype_id="9"/>
+        </creset>
+        <var loc="j,10,18,10,22" name="data" dtype_id="9" dir="input" vartype="longint" origName="data"/>
+        <creset loc="j,10,18,10,22">
+          <varref loc="j,10,18,10,22" name="data" dtype_id="9"/>
+        </creset>
+        <var loc="j,11,18,11,22" name="mask" dtype_id="9" dir="input" vartype="longint" origName="mask"/>
+        <creset loc="j,11,18,11,22">
+          <varref loc="j,11,18,11,22" name="mask" dtype_id="9"/>
+        </creset>
+        <cstmt loc="j,9,18,9,23">
+          <text loc="j,9,18,9,23"/>
+        </cstmt>
+        <cstmt loc="j,9,18,9,23">
+          <text loc="j,9,18,9,23"/>
+        </cstmt>
+        <cstmt loc="j,10,18,10,22">
+          <text loc="j,10,18,10,22"/>
+        </cstmt>
+        <cstmt loc="j,10,18,10,22">
+          <text loc="j,10,18,10,22"/>
+        </cstmt>
+        <cstmt loc="j,11,18,11,22">
+          <text loc="j,11,18,11,22"/>
+        </cstmt>
+        <cstmt loc="j,11,18,11,22">
+          <text loc="j,11,18,11,22"/>
+        </cstmt>
+        <stmtexpr loc="j,7,30,7,48">
+          <ccall loc="j,7,30,7,48" dtype_id="13" func="difftest_ram_write"/>
+        </stmtexpr>
+      </cfunc>
+      <cfunc loc="a,0,0,0,0" name="_ctor_var_reset"/>
+    </package>
+    <module loc="h,1,8,1,11" name="top" origName="top">
+      <var loc="h,3,16,3,19" name="clk" dtype_id="1" dir="input" pinIndex="1" vartype="logic" origName="clk"/>
+      <var loc="h,4,16,4,21" name="rst_n" dtype_id="1" dir="input" pinIndex="2" vartype="logic" origName="rst_n"/>
+      <var loc="h,7,14,7,15" name="a" dtype_id="16" vartype="logic" origName="a"/>
+      <var loc="h,30,7,30,15" name="r_enable" dtype_id="1" vartype="logic" origName="r_enable"/>
+      <var loc="h,34,7,34,15" name="w_enable" dtype_id="1" vartype="logic" origName="w_enable"/>
+      <var loc="h,38,7,38,13" name="enable" dtype_id="1" vartype="logic" origName="enable"/>
+      <var loc="h,7,14,7,15" name="__Vdly__a" dtype_id="16" vartype="logic" origName="__Vdly__a"/>
+      <var loc="h,30,7,30,15" name="__Vdly__r_enable" dtype_id="1" vartype="logic" origName="__Vdly__r_enable"/>
+      <var loc="h,34,7,34,15" name="__Vdly__w_enable" dtype_id="1" vartype="logic" origName="__Vdly__w_enable"/>
+      <var loc="h,5,24,5,27" name="opt" dtype_id="15" dir="output" pinIndex="3" vartype="logic" origName="opt"/>
+      <var loc="h,8,14,8,15" name="b" dtype_id="15" vartype="logic" origName="b"/>
+      <var loc="h,8,14,8,15" name="__Vdly__b" dtype_id="15" vartype="logic" origName="__Vdly__b"/>
+      <var loc="h,31,14,31,21" name="r_index" dtype_id="14" vartype="logic" origName="r_index"/>
+      <var loc="h,32,14,32,20" name="r_data" dtype_id="14" vartype="logic" origName="r_data"/>
+      <var loc="h,35,14,35,21" name="w_index" dtype_id="14" vartype="logic" origName="w_index"/>
+      <var loc="h,36,14,36,20" name="w_data" dtype_id="14" vartype="logic" origName="w_data"/>
+      <var loc="h,37,14,37,20" name="w_mask" dtype_id="14" vartype="logic" origName="w_mask"/>
+      <var loc="h,31,14,31,21" name="__Vdly__r_index" dtype_id="14" vartype="logic" origName="__Vdly__r_index"/>
+      <var loc="h,35,14,35,21" name="__Vdly__w_index" dtype_id="14" vartype="logic" origName="__Vdly__w_index"/>
+      <var loc="h,36,14,36,20" name="__Vdly__w_data" dtype_id="14" vartype="logic" origName="__Vdly__w_data"/>
+      <var loc="h,37,14,37,20" name="__Vdly__w_mask" dtype_id="14" vartype="logic" origName="__Vdly__w_mask"/>
+      <instance loc="h,40,15,40,18" name="mem" defName="MemRWHelper" origName="mem"/>
+      <scope loc="d,22,7,22,12" name="SimTop.u_top"/>
+      <cfunc loc="d,22,7,22,12" name="_eval_initial__TOP__SimTop__u_top">
+        <contassign loc="h,49,15,49,19" dtype_id="17">
+          <const loc="h,49,15,49,19" name="1&apos;h1" dtype_id="17"/>
+          <varref loc="h,49,15,49,19" name="enable" dtype_id="17"/>
+        </contassign>
+      </cfunc>
+      <cfunc loc="h,28,14,28,15" name="_stl_sequent__TOP__SimTop__u_top__0">
+        <contassign loc="h,28,14,28,15" dtype_id="15">
+          <varref loc="h,28,16,28,17" name="b" dtype_id="15"/>
+          <varref loc="h,28,10,28,13" name="opt" dtype_id="15"/>
+        </contassign>
+        <contassign loc="h,48,15,48,21" dtype_id="14">
+          <varref loc="h,48,15,48,21" name="w_mask" dtype_id="14"/>
+          <varref loc="h,48,15,48,21" name="w_mask" dtype_id="14"/>
+        </contassign>
+        <contassign loc="h,47,15,47,21" dtype_id="14">
+          <varref loc="h,47,15,47,21" name="w_data" dtype_id="14"/>
+          <varref loc="h,47,15,47,21" name="w_data" dtype_id="14"/>
+        </contassign>
+        <contassign loc="h,46,16,46,23" dtype_id="14">
+          <varref loc="h,46,16,46,23" name="w_index" dtype_id="14"/>
+          <varref loc="h,46,16,46,23" name="w_index" dtype_id="14"/>
+        </contassign>
+        <contassign loc="h,45,17,45,25" dtype_id="17">
+          <varref loc="h,45,17,45,25" name="w_enable" dtype_id="17"/>
+          <varref loc="h,45,17,45,25" name="w_enable" dtype_id="17"/>
+        </contassign>
+        <contassign loc="h,43,17,43,23" dtype_id="14">
+          <varref loc="h,43,17,43,23" name="r_data" dtype_id="14"/>
+          <varref loc="h,43,17,43,23" name="r_data" dtype_id="14"/>
+        </contassign>
+        <contassign loc="h,42,17,42,24" dtype_id="14">
+          <varref loc="h,42,17,42,24" name="r_index" dtype_id="14"/>
+          <varref loc="h,42,17,42,24" name="r_index" dtype_id="14"/>
+        </contassign>
+        <contassign loc="h,41,17,41,25" dtype_id="17">
+          <varref loc="h,41,17,41,25" name="r_enable" dtype_id="17"/>
+          <varref loc="h,41,17,41,25" name="r_enable" dtype_id="17"/>
+        </contassign>
+        <contassign loc="h,50,14,50,17" dtype_id="17">
+          <varref loc="h,50,14,50,17" name="clk" dtype_id="17"/>
+          <varref loc="h,50,14,50,17" name="clock" dtype_id="17"/>
+        </contassign>
+      </cfunc>
+      <cfunc loc="h,50,14,50,17" name="_ico_sequent__TOP__SimTop__u_top__0">
+        <contassign loc="h,50,14,50,17" dtype_id="17">
+          <varref loc="h,50,14,50,17" name="clk" dtype_id="17"/>
+          <varref loc="h,50,14,50,17" name="clock" dtype_id="17"/>
+        </contassign>
+      </cfunc>
+      <cfunc loc="h,15,7,15,8" name="_nba_sequent__TOP__SimTop__u_top__0">
+        <assignpre loc="h,15,7,15,8" dtype_id="20">
+          <varref loc="h,15,7,15,8" name="a" dtype_id="20"/>
+          <varref loc="h,15,7,15,8" name="__Vdly__a" dtype_id="20"/>
+        </assignpre>
+        <assignpre loc="h,25,7,25,8" dtype_id="15">
+          <varref loc="h,25,7,25,8" name="b" dtype_id="15"/>
+          <varref loc="h,25,7,25,8" name="__Vdly__b" dtype_id="15"/>
+        </assignpre>
+        <assignpre loc="h,61,7,61,13" dtype_id="14">
+          <varref loc="h,61,7,61,13" name="w_mask" dtype_id="14"/>
+          <varref loc="h,61,7,61,13" name="__Vdly__w_mask" dtype_id="14"/>
+        </assignpre>
+        <assignpre loc="h,60,7,60,13" dtype_id="14">
+          <varref loc="h,60,7,60,13" name="w_data" dtype_id="14"/>
+          <varref loc="h,60,7,60,13" name="__Vdly__w_data" dtype_id="14"/>
+        </assignpre>
+        <assignpre loc="h,59,7,59,14" dtype_id="14">
+          <varref loc="h,59,7,59,14" name="w_index" dtype_id="14"/>
+          <varref loc="h,59,7,59,14" name="__Vdly__w_index" dtype_id="14"/>
+        </assignpre>
+        <assignpre loc="h,58,7,58,15" dtype_id="17">
+          <varref loc="h,58,7,58,15" name="w_enable" dtype_id="17"/>
+          <varref loc="h,58,7,58,15" name="__Vdly__w_enable" dtype_id="17"/>
+        </assignpre>
+        <assignpre loc="h,57,7,57,14" dtype_id="14">
+          <varref loc="h,57,7,57,14" name="r_index" dtype_id="14"/>
+          <varref loc="h,57,7,57,14" name="__Vdly__r_index" dtype_id="14"/>
+        </assignpre>
+        <assignpre loc="h,56,7,56,15" dtype_id="17">
+          <varref loc="h,56,7,56,15" name="r_enable" dtype_id="17"/>
+          <varref loc="h,56,7,56,15" name="__Vdly__r_enable" dtype_id="17"/>
+        </assignpre>
+        <assigndly loc="h,15,9,15,11" dtype_id="20">
+          <and loc="h,15,12,15,13" dtype_id="20">
+            <const loc="h,15,12,15,13" name="32&apos;hf" dtype_id="15"/>
+            <cond loc="h,15,12,15,13" dtype_id="20">
+              <ccast loc="h,10,10,10,15" dtype_id="17">
+                <varref loc="h,10,10,10,15" name="rst_n" dtype_id="17"/>
+              </ccast>
+              <cond loc="h,15,12,15,13" dtype_id="20">
+                <and loc="h,12,19,12,20" dtype_id="17">
+                  <const loc="h,12,19,12,20" name="32&apos;h1" dtype_id="15"/>
+                  <sel loc="h,12,19,12,20" dtype_id="17">
+                    <ccast loc="h,12,18,12,19" dtype_id="20">
+                      <varref loc="h,12,18,12,19" name="a" dtype_id="20"/>
+                    </ccast>
+                    <const loc="h,12,20,12,21" name="2&apos;h3" dtype_id="23"/>
+                    <const loc="h,12,19,12,20" name="32&apos;h1" dtype_id="15"/>
+                  </sel>
+                </and>
+                <ccast loc="h,15,12,15,13" dtype_id="20">
+                  <varref loc="h,15,12,15,13" name="a" dtype_id="20"/>
+                </ccast>
+                <add loc="h,13,14,13,15" dtype_id="20">
+                  <ccast loc="h,13,16,13,20" dtype_id="20">
+                    <const loc="h,13,16,13,20" name="4&apos;h1" dtype_id="20"/>
+                  </ccast>
+                  <ccast loc="h,13,12,13,13" dtype_id="20">
+                    <varref loc="h,13,12,13,13" name="a" dtype_id="20"/>
+                  </ccast>
+                </add>
+              </cond>
+              <const loc="h,11,12,11,15" name="4&apos;h0" dtype_id="20"/>
+            </cond>
+          </and>
+          <varref loc="h,15,7,15,8" name="__Vdly__a" dtype_id="20"/>
+        </assigndly>
+        <if loc="h,21,5,21,7">
+          <varref loc="h,21,10,21,15" name="rst_n" dtype_id="17"/>
+          <begin>
+            <if loc="h,23,14,23,16">
+              <and loc="h,23,19,23,20" dtype_id="17">
+                <const loc="h,23,19,23,20" name="32&apos;h1" dtype_id="15"/>
+                <sel loc="h,23,19,23,20" dtype_id="17">
+                  <ccast loc="h,23,18,23,19" dtype_id="20">
+                    <varref loc="h,23,18,23,19" name="a" dtype_id="20"/>
+                  </ccast>
+                  <const loc="h,23,20,23,21" name="2&apos;h3" dtype_id="23"/>
+                  <const loc="h,23,19,23,20" name="32&apos;h1" dtype_id="15"/>
+                </sel>
+              </and>
+              <begin>
+                <assigndly loc="h,25,9,25,11" dtype_id="15">
+                  <const loc="h,25,12,25,15" name="32&apos;h1" dtype_id="15"/>
+                  <varref loc="h,25,7,25,8" name="__Vdly__b" dtype_id="15"/>
+                </assigndly>
+              </begin>
+            </if>
+          </begin>
+          <begin>
+            <assigndly loc="h,22,9,22,11" dtype_id="15">
+              <const loc="h,22,12,22,15" name="32&apos;h0" dtype_id="15"/>
+              <varref loc="h,22,7,22,8" name="__Vdly__b" dtype_id="15"/>
+            </assigndly>
+          </begin>
+        </if>
+        <if loc="h,55,5,55,7">
+          <and loc="h,55,9,55,10" dtype_id="17">
+            <const loc="h,55,9,55,10" name="32&apos;h1" dtype_id="15"/>
+            <not loc="h,55,9,55,10" dtype_id="17">
+              <ccast loc="h,55,10,55,15" dtype_id="17">
+                <varref loc="h,55,10,55,15" name="rst_n" dtype_id="17"/>
+              </ccast>
+            </not>
+          </and>
+          <begin>
+            <assigndly loc="h,56,16,56,18" dtype_id="17">
+              <const loc="h,56,19,56,22" name="1&apos;h0" dtype_id="17"/>
+              <varref loc="h,56,7,56,15" name="__Vdly__r_enable" dtype_id="17"/>
+            </assigndly>
+            <assigndly loc="h,57,16,57,18" dtype_id="14">
+              <const loc="h,57,19,57,22" name="64&apos;h0" dtype_id="14"/>
+              <varref loc="h,57,7,57,14" name="__Vdly__r_index" dtype_id="14"/>
+            </assigndly>
+            <assigndly loc="h,58,16,58,18" dtype_id="17">
+              <const loc="h,58,19,58,22" name="1&apos;h0" dtype_id="17"/>
+              <varref loc="h,58,7,58,15" name="__Vdly__w_enable" dtype_id="17"/>
+            </assigndly>
+            <assigndly loc="h,59,16,59,18" dtype_id="14">
+              <const loc="h,59,19,59,22" name="64&apos;h0" dtype_id="14"/>
+              <varref loc="h,59,7,59,14" name="__Vdly__w_index" dtype_id="14"/>
+            </assigndly>
+            <assigndly loc="h,60,16,60,18" dtype_id="14">
+              <const loc="h,60,19,60,22" name="64&apos;h0" dtype_id="14"/>
+              <varref loc="h,60,7,60,13" name="__Vdly__w_data" dtype_id="14"/>
+            </assigndly>
+            <assigndly loc="h,61,16,61,18" dtype_id="14">
+              <const loc="h,61,19,61,22" name="64&apos;h0" dtype_id="14"/>
+              <varref loc="h,61,7,61,13" name="__Vdly__w_mask" dtype_id="14"/>
+            </assigndly>
+          </begin>
+        </if>
+        <assignpost loc="h,15,7,15,8" dtype_id="20">
+          <varref loc="h,15,7,15,8" name="__Vdly__a" dtype_id="20"/>
+          <varref loc="h,15,7,15,8" name="a" dtype_id="20"/>
+        </assignpost>
+        <assignpost loc="h,25,7,25,8" dtype_id="15">
+          <varref loc="h,25,7,25,8" name="__Vdly__b" dtype_id="15"/>
+          <varref loc="h,25,7,25,8" name="b" dtype_id="15"/>
+        </assignpost>
+        <assignpost loc="h,56,7,56,15" dtype_id="17">
+          <varref loc="h,56,7,56,15" name="__Vdly__r_enable" dtype_id="17"/>
+          <varref loc="h,56,7,56,15" name="r_enable" dtype_id="17"/>
+        </assignpost>
+        <assignpost loc="h,57,7,57,14" dtype_id="14">
+          <varref loc="h,57,7,57,14" name="__Vdly__r_index" dtype_id="14"/>
+          <varref loc="h,57,7,57,14" name="r_index" dtype_id="14"/>
+        </assignpost>
+        <assignpost loc="h,58,7,58,15" dtype_id="17">
+          <varref loc="h,58,7,58,15" name="__Vdly__w_enable" dtype_id="17"/>
+          <varref loc="h,58,7,58,15" name="w_enable" dtype_id="17"/>
+        </assignpost>
+        <assignpost loc="h,59,7,59,14" dtype_id="14">
+          <varref loc="h,59,7,59,14" name="__Vdly__w_index" dtype_id="14"/>
+          <varref loc="h,59,7,59,14" name="w_index" dtype_id="14"/>
+        </assignpost>
+        <assignpost loc="h,60,7,60,13" dtype_id="14">
+          <varref loc="h,60,7,60,13" name="__Vdly__w_data" dtype_id="14"/>
+          <varref loc="h,60,7,60,13" name="w_data" dtype_id="14"/>
+        </assignpost>
+        <assignpost loc="h,61,7,61,13" dtype_id="14">
+          <varref loc="h,61,7,61,13" name="__Vdly__w_mask" dtype_id="14"/>
+          <varref loc="h,61,7,61,13" name="w_mask" dtype_id="14"/>
+        </assignpost>
+        <contassign loc="h,28,14,28,15" dtype_id="15">
+          <varref loc="h,28,16,28,17" name="b" dtype_id="15"/>
+          <varref loc="h,28,10,28,13" name="opt" dtype_id="15"/>
+        </contassign>
+      </cfunc>
+      <cfunc loc="h,43,17,43,23" name="_nba_sequent__TOP__SimTop__u_top__1">
+        <contassign loc="h,43,17,43,23" dtype_id="14">
+          <varref loc="h,43,17,43,23" name="r_data" dtype_id="14"/>
+          <varref loc="h,43,17,43,23" name="r_data" dtype_id="14"/>
+        </contassign>
+      </cfunc>
+      <cfunc loc="h,41,17,41,25" name="_nba_sequent__TOP__SimTop__u_top__2">
+        <contassign loc="h,41,17,41,25" dtype_id="17">
+          <varref loc="h,41,17,41,25" name="r_enable" dtype_id="17"/>
+          <varref loc="h,41,17,41,25" name="r_enable" dtype_id="17"/>
+        </contassign>
+        <contassign loc="h,42,17,42,24" dtype_id="14">
+          <varref loc="h,42,17,42,24" name="r_index" dtype_id="14"/>
+          <varref loc="h,42,17,42,24" name="r_index" dtype_id="14"/>
+        </contassign>
+        <contassign loc="h,45,17,45,25" dtype_id="17">
+          <varref loc="h,45,17,45,25" name="w_enable" dtype_id="17"/>
+          <varref loc="h,45,17,45,25" name="w_enable" dtype_id="17"/>
+        </contassign>
+        <contassign loc="h,46,16,46,23" dtype_id="14">
+          <varref loc="h,46,16,46,23" name="w_index" dtype_id="14"/>
+          <varref loc="h,46,16,46,23" name="w_index" dtype_id="14"/>
+        </contassign>
+        <contassign loc="h,47,15,47,21" dtype_id="14">
+          <varref loc="h,47,15,47,21" name="w_data" dtype_id="14"/>
+          <varref loc="h,47,15,47,21" name="w_data" dtype_id="14"/>
+        </contassign>
+        <contassign loc="h,48,15,48,21" dtype_id="14">
+          <varref loc="h,48,15,48,21" name="w_mask" dtype_id="14"/>
+          <varref loc="h,48,15,48,21" name="w_mask" dtype_id="14"/>
+        </contassign>
+      </cfunc>
+      <cfunc loc="h,1,8,1,11" name="_ctor_var_reset">
+        <creset loc="h,3,16,3,19">
+          <varref loc="h,3,16,3,19" name="clk" dtype_id="1"/>
+        </creset>
+        <creset loc="h,4,16,4,21">
+          <varref loc="h,4,16,4,21" name="rst_n" dtype_id="1"/>
+        </creset>
+        <creset loc="h,5,24,5,27">
+          <varref loc="h,5,24,5,27" name="opt" dtype_id="15"/>
+        </creset>
+        <creset loc="h,7,14,7,15">
+          <varref loc="h,7,14,7,15" name="a" dtype_id="16"/>
+        </creset>
+        <creset loc="h,8,14,8,15">
+          <varref loc="h,8,14,8,15" name="b" dtype_id="15"/>
+        </creset>
+        <creset loc="h,30,7,30,15">
+          <varref loc="h,30,7,30,15" name="r_enable" dtype_id="1"/>
+        </creset>
+        <creset loc="h,31,14,31,21">
+          <varref loc="h,31,14,31,21" name="r_index" dtype_id="14"/>
+        </creset>
+        <creset loc="h,32,14,32,20">
+          <varref loc="h,32,14,32,20" name="r_data" dtype_id="14"/>
+        </creset>
+        <creset loc="h,34,7,34,15">
+          <varref loc="h,34,7,34,15" name="w_enable" dtype_id="1"/>
+        </creset>
+        <creset loc="h,35,14,35,21">
+          <varref loc="h,35,14,35,21" name="w_index" dtype_id="14"/>
+        </creset>
+        <creset loc="h,36,14,36,20">
+          <varref loc="h,36,14,36,20" name="w_data" dtype_id="14"/>
+        </creset>
+        <creset loc="h,37,14,37,20">
+          <varref loc="h,37,14,37,20" name="w_mask" dtype_id="14"/>
+        </creset>
+        <creset loc="h,38,7,38,13">
+          <varref loc="h,38,7,38,13" name="enable" dtype_id="1"/>
+        </creset>
+        <creset loc="h,7,14,7,15">
+          <varref loc="h,7,14,7,15" name="__Vdly__a" dtype_id="16"/>
+        </creset>
+        <creset loc="h,8,14,8,15">
+          <varref loc="h,8,14,8,15" name="__Vdly__b" dtype_id="15"/>
+        </creset>
+        <creset loc="h,30,7,30,15">
+          <varref loc="h,30,7,30,15" name="__Vdly__r_enable" dtype_id="1"/>
+        </creset>
+        <creset loc="h,31,14,31,21">
+          <varref loc="h,31,14,31,21" name="__Vdly__r_index" dtype_id="14"/>
+        </creset>
+        <creset loc="h,34,7,34,15">
+          <varref loc="h,34,7,34,15" name="__Vdly__w_enable" dtype_id="1"/>
+        </creset>
+        <creset loc="h,35,14,35,21">
+          <varref loc="h,35,14,35,21" name="__Vdly__w_index" dtype_id="14"/>
+        </creset>
+        <creset loc="h,36,14,36,20">
+          <varref loc="h,36,14,36,20" name="__Vdly__w_data" dtype_id="14"/>
+        </creset>
+        <creset loc="h,37,14,37,20">
+          <varref loc="h,37,14,37,20" name="__Vdly__w_mask" dtype_id="14"/>
+        </creset>
+      </cfunc>
+      <cuse loc="h,40,15,40,18" name="MemRWHelper"/>
+    </module>
+    <module loc="i,2,8,2,25" name="DifftestTrapEvent" origName="DifftestTrapEvent">
+      <var loc="i,3,17,3,22" name="clock" dtype_id="1" dir="input" pinIndex="1" vartype="logic" origName="clock"/>
+      <var loc="i,4,17,4,23" name="enable" dtype_id="1" dir="input" pinIndex="2" vartype="logic" origName="enable"/>
+      <var loc="i,5,17,5,27" name="io_hasTrap" dtype_id="1" dir="input" pinIndex="3" vartype="logic" origName="io_hasTrap"/>
+      <var loc="i,8,17,8,26" name="io_hasWFI" dtype_id="1" dir="input" pinIndex="6" vartype="logic" origName="io_hasWFI"/>
+      <var loc="i,11,17,11,26" name="io_coreid" dtype_id="2" dir="input" pinIndex="9" vartype="logic" origName="io_coreid"/>
+      <var loc="i,9,17,9,24" name="io_code" dtype_id="15" dir="input" pinIndex="7" vartype="logic" origName="io_code"/>
+      <var loc="i,6,17,6,28" name="io_cycleCnt" dtype_id="14" dir="input" pinIndex="4" vartype="logic" origName="io_cycleCnt"/>
+      <var loc="i,7,17,7,28" name="io_instrCnt" dtype_id="14" dir="input" pinIndex="5" vartype="logic" origName="io_instrCnt"/>
+      <var loc="i,10,17,10,22" name="io_pc" dtype_id="14" dir="input" pinIndex="8" vartype="logic" origName="io_pc"/>
+      <scope loc="d,36,21,36,40" name="SimTop.u_DifftestTrapEvent"/>
+      <cfunc loc="i,16,30,16,50" name="__Vdpiimwrap_v_difftest_TrapEvent_TOP__SimTop__u_DifftestTrapEvent">
+        <var loc="i,17,19,17,29" name="io_hasTrap" dtype_id="3" dir="input" vartype="bit" origName="io_hasTrap"/>
+        <creset loc="i,17,19,17,29">
+          <varref loc="i,17,19,17,29" name="io_hasTrap" dtype_id="3"/>
+        </creset>
+        <var loc="i,18,19,18,30" name="io_cycleCnt" dtype_id="9" dir="input" vartype="longint" origName="io_cycleCnt"/>
+        <creset loc="i,18,19,18,30">
+          <varref loc="i,18,19,18,30" name="io_cycleCnt" dtype_id="9"/>
+        </creset>
+        <var loc="i,19,19,19,30" name="io_instrCnt" dtype_id="9" dir="input" vartype="longint" origName="io_instrCnt"/>
+        <creset loc="i,19,19,19,30">
+          <varref loc="i,19,19,19,30" name="io_instrCnt" dtype_id="9"/>
+        </creset>
+        <var loc="i,20,19,20,28" name="io_hasWFI" dtype_id="3" dir="input" vartype="bit" origName="io_hasWFI"/>
+        <creset loc="i,20,19,20,28">
+          <varref loc="i,20,19,20,28" name="io_hasWFI" dtype_id="3"/>
+        </creset>
+        <var loc="i,21,19,21,26" name="io_code" dtype_id="12" dir="input" vartype="int" origName="io_code"/>
+        <creset loc="i,21,19,21,26">
+          <varref loc="i,21,19,21,26" name="io_code" dtype_id="12"/>
+        </creset>
+        <var loc="i,22,19,22,24" name="io_pc" dtype_id="9" dir="input" vartype="longint" origName="io_pc"/>
+        <creset loc="i,22,19,22,24">
+          <varref loc="i,22,19,22,24" name="io_pc" dtype_id="9"/>
+        </creset>
+        <var loc="i,23,19,23,28" name="io_coreid" dtype_id="10" dir="input" vartype="byte" origName="io_coreid"/>
+        <creset loc="i,23,19,23,28">
+          <varref loc="i,23,19,23,28" name="io_coreid" dtype_id="10"/>
+        </creset>
+        <cstmt loc="i,17,19,17,29">
+          <text loc="i,17,19,17,29"/>
+        </cstmt>
+        <cstmt loc="i,17,19,17,29">
+          <text loc="i,17,19,17,29"/>
+        </cstmt>
+        <cstmt loc="i,18,19,18,30">
+          <text loc="i,18,19,18,30"/>
+        </cstmt>
+        <cstmt loc="i,18,19,18,30">
+          <text loc="i,18,19,18,30"/>
+        </cstmt>
+        <cstmt loc="i,19,19,19,30">
+          <text loc="i,19,19,19,30"/>
+        </cstmt>
+        <cstmt loc="i,19,19,19,30">
+          <text loc="i,19,19,19,30"/>
+        </cstmt>
+        <cstmt loc="i,20,19,20,28">
+          <text loc="i,20,19,20,28"/>
+        </cstmt>
+        <cstmt loc="i,20,19,20,28">
+          <text loc="i,20,19,20,28"/>
+        </cstmt>
+        <cstmt loc="i,21,19,21,26">
+          <text loc="i,21,19,21,26"/>
+        </cstmt>
+        <cstmt loc="i,21,19,21,26">
+          <text loc="i,21,19,21,26"/>
+        </cstmt>
+        <cstmt loc="i,22,19,22,24">
+          <text loc="i,22,19,22,24"/>
+        </cstmt>
+        <cstmt loc="i,22,19,22,24">
+          <text loc="i,22,19,22,24"/>
+        </cstmt>
+        <cstmt loc="i,23,19,23,28">
+          <text loc="i,23,19,23,28"/>
+        </cstmt>
+        <cstmt loc="i,23,19,23,28">
+          <text loc="i,23,19,23,28"/>
+        </cstmt>
+        <stmtexpr loc="i,16,30,16,50">
+          <ccall loc="i,16,30,16,50" dtype_id="13" func="v_difftest_TrapEvent"/>
+        </stmtexpr>
+      </cfunc>
+      <cfunc loc="i,28,5,28,7" name="_nba_sequent__TOP__SimTop__u_DifftestTrapEvent__0">
+        <if loc="i,28,5,28,7">
+          <varref loc="i,28,9,28,15" name="enable" dtype_id="17"/>
+          <begin>
+            <comment loc="i,29,7,29,27" name="Function: v_difftest_TrapEvent"/>
+            <stmtexpr loc="i,29,7,29,27">
+              <ccall loc="i,29,7,29,27" dtype_id="13" func="__Vdpiimwrap_v_difftest_TrapEvent_TOP__SimTop__u_DifftestTrapEvent">
+                <varref loc="i,29,29,29,39" name="io_hasTrap" dtype_id="17"/>
+                <varref loc="i,29,41,29,52" name="io_cycleCnt" dtype_id="14"/>
+                <varref loc="i,29,54,29,65" name="io_instrCnt" dtype_id="14"/>
+                <ccast loc="i,29,67,29,76" dtype_id="17">
+                  <varref loc="i,29,67,29,76" name="io_hasWFI" dtype_id="17"/>
+                </ccast>
+                <varref loc="i,29,78,29,85" name="io_code" dtype_id="15"/>
+                <varref loc="i,29,87,29,92" name="io_pc" dtype_id="14"/>
+                <ccast loc="i,29,94,29,103" dtype_id="19">
+                  <varref loc="i,29,94,29,103" name="io_coreid" dtype_id="19"/>
+                </ccast>
+              </ccall>
+            </stmtexpr>
+          </begin>
+        </if>
+      </cfunc>
+      <cfunc loc="i,2,8,2,25" name="_ctor_var_reset">
+        <creset loc="i,3,17,3,22">
+          <varref loc="i,3,17,3,22" name="clock" dtype_id="1"/>
+        </creset>
+        <creset loc="i,4,17,4,23">
+          <varref loc="i,4,17,4,23" name="enable" dtype_id="1"/>
+        </creset>
+        <creset loc="i,5,17,5,27">
+          <varref loc="i,5,17,5,27" name="io_hasTrap" dtype_id="1"/>
+        </creset>
+        <creset loc="i,6,17,6,28">
+          <varref loc="i,6,17,6,28" name="io_cycleCnt" dtype_id="14"/>
+        </creset>
+        <creset loc="i,7,17,7,28">
+          <varref loc="i,7,17,7,28" name="io_instrCnt" dtype_id="14"/>
+        </creset>
+        <creset loc="i,8,17,8,26">
+          <varref loc="i,8,17,8,26" name="io_hasWFI" dtype_id="1"/>
+        </creset>
+        <creset loc="i,9,17,9,24">
+          <varref loc="i,9,17,9,24" name="io_code" dtype_id="15"/>
+        </creset>
+        <creset loc="i,10,17,10,22">
+          <varref loc="i,10,17,10,22" name="io_pc" dtype_id="14"/>
+        </creset>
+        <creset loc="i,11,17,11,26">
+          <varref loc="i,11,17,11,26" name="io_coreid" dtype_id="2"/>
+        </creset>
+      </cfunc>
+    </module>
+    <module loc="j,15,8,15,19" name="MemRWHelper" origName="MemRWHelper">
+      <var loc="j,28,9,28,14" name="clock" dtype_id="1" dir="input" pinIndex="9" vartype="logic" origName="clock"/>
+      <var loc="j,17,19,17,27" name="r_enable" dtype_id="1" dir="input" pinIndex="1" vartype="logic" origName="r_enable"/>
+      <var loc="j,22,15,22,23" name="w_enable" dtype_id="1" dir="input" pinIndex="4" vartype="logic" origName="w_enable"/>
+      <var loc="j,27,9,27,15" name="enable" dtype_id="1" dir="input" pinIndex="8" vartype="logic" origName="enable"/>
+      <var loc="j,18,19,18,26" name="r_index" dtype_id="14" dir="input" pinIndex="2" vartype="logic" origName="r_index"/>
+      <var loc="j,19,19,19,25" name="r_data" dtype_id="14" dir="output" pinIndex="3" vartype="logic" origName="r_data"/>
+      <var loc="j,23,15,23,22" name="w_index" dtype_id="14" dir="input" pinIndex="5" vartype="logic" origName="w_index"/>
+      <var loc="j,24,15,24,21" name="w_data" dtype_id="14" dir="input" pinIndex="6" vartype="logic" origName="w_data"/>
+      <var loc="j,25,15,25,21" name="w_mask" dtype_id="14" dir="input" pinIndex="7" vartype="logic" origName="w_mask"/>
+      <var loc="j,2,33,2,50" name="__Vfunc_difftest_ram_read__0__Vfuncout" dtype_id="9" vartype="longint" origName="__Vfunc_difftest_ram_read__0__Vfuncout"/>
+      <var loc="j,19,19,19,25" name="__Vdly__r_data" dtype_id="14" vartype="logic" origName="__Vdly__r_data"/>
+      <scope loc="h,40,15,40,18" name="SimTop.u_top.mem"/>
+      <cfunc loc="j,72,3,72,9" name="_nba_sequent__TOP__SimTop__u_top__mem__0">
+        <assignpre loc="j,72,3,72,9" dtype_id="14">
+          <varref loc="j,72,3,72,9" name="r_data" dtype_id="14"/>
+          <varref loc="j,72,3,72,9" name="__Vdly__r_data" dtype_id="14"/>
+        </assignpre>
+        <if loc="j,68,5,68,7">
+          <varref loc="j,68,9,68,15" name="enable" dtype_id="17"/>
+          <begin>
+            <if loc="j,71,1,71,3">
+              <varref loc="j,71,5,71,13" name="r_enable" dtype_id="17"/>
+              <begin>
+                <comment loc="j,72,13,72,30" name="Function: difftest_ram_read"/>
+                <stmtexpr loc="j,72,13,72,30">
+                  <ccall loc="j,72,13,72,30" dtype_id="13" func="__Vdpiimwrap_difftest_ram_read_TOP____024unit">
+                    <varref loc="j,72,31,72,38" name="r_index" dtype_id="14"/>
+                    <varref loc="j,72,13,72,30" name="__Vfunc_difftest_ram_read__0__Vfuncout" dtype_id="9"/>
+                  </ccall>
+                </stmtexpr>
+                <assigndly loc="j,72,10,72,12" dtype_id="14">
+                  <varref loc="j,72,13,72,30" name="__Vfunc_difftest_ram_read__0__Vfuncout" dtype_id="9"/>
+                  <varref loc="j,72,3,72,9" name="__Vdly__r_data" dtype_id="14"/>
+                </assigndly>
+              </begin>
+            </if>
+            <if loc="j,82,1,82,3">
+              <varref loc="j,82,5,82,13" name="w_enable" dtype_id="17"/>
+              <begin>
+                <comment loc="j,83,3,83,21" name="Function: difftest_ram_write"/>
+                <stmtexpr loc="j,83,3,83,21">
+                  <ccall loc="j,83,3,83,21" dtype_id="13" func="__Vdpiimwrap_difftest_ram_write_TOP____024unit">
+                    <varref loc="j,83,22,83,29" name="w_index" dtype_id="14"/>
+                    <varref loc="j,83,31,83,37" name="w_data" dtype_id="14"/>
+                    <varref loc="j,83,39,83,45" name="w_mask" dtype_id="14"/>
+                  </ccall>
+                </stmtexpr>
+              </begin>
+            </if>
+          </begin>
+        </if>
+        <assignpost loc="j,72,3,72,9" dtype_id="14">
+          <varref loc="j,72,3,72,9" name="__Vdly__r_data" dtype_id="14"/>
+          <varref loc="j,72,3,72,9" name="r_data" dtype_id="14"/>
+        </assignpost>
+      </cfunc>
+      <cfunc loc="j,15,8,15,19" name="_ctor_var_reset">
+        <creset loc="j,17,19,17,27">
+          <varref loc="j,17,19,17,27" name="r_enable" dtype_id="1"/>
+        </creset>
+        <creset loc="j,18,19,18,26">
+          <varref loc="j,18,19,18,26" name="r_index" dtype_id="14"/>
+        </creset>
+        <creset loc="j,19,19,19,25">
+          <varref loc="j,19,19,19,25" name="r_data" dtype_id="14"/>
+        </creset>
+        <creset loc="j,22,15,22,23">
+          <varref loc="j,22,15,22,23" name="w_enable" dtype_id="1"/>
+        </creset>
+        <creset loc="j,23,15,23,22">
+          <varref loc="j,23,15,23,22" name="w_index" dtype_id="14"/>
+        </creset>
+        <creset loc="j,24,15,24,21">
+          <varref loc="j,24,15,24,21" name="w_data" dtype_id="14"/>
+        </creset>
+        <creset loc="j,25,15,25,21">
+          <varref loc="j,25,15,25,21" name="w_mask" dtype_id="14"/>
+        </creset>
+        <creset loc="j,27,9,27,15">
+          <varref loc="j,27,9,27,15" name="enable" dtype_id="1"/>
+        </creset>
+        <creset loc="j,28,9,28,14">
+          <varref loc="j,28,9,28,14" name="clock" dtype_id="1"/>
+        </creset>
+        <creset loc="j,2,33,2,50">
+          <varref loc="j,2,33,2,50" name="__Vfunc_difftest_ram_read__0__Vfuncout" dtype_id="9"/>
+        </creset>
+        <creset loc="j,19,19,19,25">
+          <varref loc="j,19,19,19,25" name="__Vdly__r_data" dtype_id="14"/>
+        </creset>
+      </cfunc>
+    </module>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop__Syms.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop__Syms.h"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop__Dpi.h"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop__Dpi.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop.h"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_$root.h"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_SimTop.h"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_$unit.h"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_top.h"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_DifftestTrapEvent.h"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_MemRWHelper.h"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_$root__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_$root__DepSet_h278d43d2__0__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_$root__DepSet_hd5918264__0__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_$root__DepSet_h278d43d2__0.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_$root__DepSet_hd5918264__0.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_SimTop__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_SimTop__DepSet_h092b29f4__0__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_SimTop__DepSet_hf648961e__0__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_SimTop__DepSet_hf648961e__0.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_$unit__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_$unit__DepSet_hab1093f9__0__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_$unit__DepSet_hd90c3539__0.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_top__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_top__DepSet_h408aef70__0__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_top__DepSet_h3292ddc2__0__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_top__DepSet_h408aef70__0.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_top__DepSet_h3292ddc2__0.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_DifftestTrapEvent__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_DifftestTrapEvent__DepSet_h5a4bab11__0__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_DifftestTrapEvent__DepSet_h5a4bab11__0.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_DifftestTrapEvent__DepSet_h01878c60__0.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_MemRWHelper__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_MemRWHelper__DepSet_h173c2e34__0__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop_MemRWHelper__DepSet_h90153ece__0.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop__Trace__0__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop__TraceDecls__0__Slow.cpp"/>
+    <cfile loc="a,0,0,0,0" name="/nfs/home/jinpeize/trinity/build/emu-compile/VSimTop__Trace__0.cpp"/>
+    <typetable loc="a,0,0,0,0">
+      <basicdtype loc="c,50,22,50,24" id="1" name="logic"/>
+      <voiddtype loc="c,51,21,51,30" id="13"/>
+      <basicdtype loc="h,7,3,7,6" id="16" name="logic" left="3" right="0"/>
+      <basicdtype loc="h,12,19,12,20" id="24" name="logic" left="1" right="0" signed="true"/>
+      <basicdtype loc="e,18,25,18,29" id="10" name="byte" left="7" right="0" signed="true"/>
+      <basicdtype loc="e,19,10,19,17" id="9" name="longint" left="63" right="0" signed="true"/>
+      <basicdtype loc="f,25,10,25,16" id="11" name="string"/>
+      <basicdtype loc="g,7,25,7,28" id="12" name="int" left="31" right="0" signed="true"/>
+      <basicdtype loc="g,9,9,9,12" id="3" name="bit"/>
+      <basicdtype loc="d,7,17,7,18" id="2" name="logic" left="7" right="0"/>
+      <basicdtype loc="d,27,3,27,6" id="14" name="logic" left="63" right="0"/>
+      <basicdtype loc="d,43,20,43,23" id="15" name="logic" left="31" right="0"/>
+      <basicdtype loc="d,1,8,1,14" id="6" name="VlTriggerVec"/>
+      <basicdtype loc="d,1,8,1,14" id="18" name="QData" left="63" right="0"/>
+      <basicdtype loc="d,1,8,1,14" id="4" name="bit" left="31" right="0"/>
+      <basicdtype loc="d,1,8,1,14" id="7" name="VlTriggerVec"/>
+      <basicdtype loc="d,1,8,1,14" id="8" name="VlTriggerVec" left="3" right="0"/>
+      <basicdtype loc="d,1,8,1,14" id="25" name="bit"/>
+      <unpackarraydtype loc="d,1,8,1,14" id="5" sub_dtype_id="25">
+        <range loc="d,1,8,1,14">
+          <const loc="d,1,8,1,14" name="32&apos;h3" dtype_id="15"/>
+          <const loc="d,1,8,1,14" name="32&apos;h0" dtype_id="15"/>
+        </range>
+      </unpackarraydtype>
+      <basicdtype loc="d,1,8,1,14" id="21" name="chandle" left="63" right="0"/>
+      <basicdtype loc="d,1,8,1,14" id="17" name="logic" left="31" right="0"/>
+      <basicdtype loc="d,9,22,9,41" id="19" name="logic" left="31" right="0"/>
+      <basicdtype loc="d,1,8,1,14" id="20" name="logic" left="31" right="0"/>
+      <basicdtype loc="e,22,18,22,23" id="22" name="logic" left="31" right="0" signed="true"/>
+      <basicdtype loc="h,12,20,12,21" id="23" name="logic" left="31" right="0" signed="true"/>
+    </typetable>
+    <constpool>
+      <module loc="a,0,0,0,0" name="@CONST-POOL@" origName="@CONST-POOL@">
+        <scope loc="a,0,0,0,0" name="TOP"/>
+      </module>
+    </constpool>
+  </netlist>
+</verilator_xml>
