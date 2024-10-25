@@ -1,5 +1,5 @@
 /build/**
 .vscode
-./dump/**
-/build/emu
-/build/time.log
+**/*.vcd
+**/emu
+**/time.log
