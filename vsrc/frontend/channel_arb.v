@@ -3,7 +3,7 @@ module channel_arb (
     input wire [18:0] pc_index,                // 19-bit input for pc_index (Channel 1)
     input wire pc_index_valid,                 // Valid signal for pc_index
     input wire [511:0] fetch_burst_read_inst,  // 512-bit data output for pc channel burst read
-    output reg [511:0] arb2pc_fetch_burst_read_inst, // Output burst read data for pc channel
+    output reg [511:0] arb2ib_read_inst, // Output burst read data for pc channel
     output reg pc_index_ready,                       // Ready signal for pc channel
 
     // SW Channel Inputs and Outputs
@@ -40,7 +40,7 @@ module channel_arb (
         sw_write_mask = 64'b0;
         sw_write_data = 64'b0;
         arb2lw_read_data = 64'b0;
-        arb2pc_fetch_burst_read_inst = 512'b0;
+        arb2ib_read_inst = 512'b0;
 
         // Default ready signals
         pc_index_ready = 1'b0;
@@ -71,7 +71,7 @@ module channel_arb (
                 ddr_index = pc_index;
                 chip_enable = 1'b1;
                 write_enable = 1'b0;             // Read operation for burst mode
-                arb2pc_fetch_burst_read_inst = fetch_burst_read_inst;
+                arb2ib_read_inst = fetch_burst_read_inst;
                 burst_mode = 1'b1;
                 pc_index_ready = 1'b1;                 // Indicate PC channel is ready
             end
