@@ -16,11 +16,11 @@ module simddr (
     input wire write_enable,                // Write enable signal (1 for write, 0 for read)
     input wire burst_mode,                  // Burst mode control (1 for 512-bit, 0 for 64-bit)
     input wire [18:0] address,              // Address input (19 bits to address 524,288 entries)
-    input wire [63:0] access_write_mask,    // Write Mask
+    input wire [63:0] sw_write_mask,    // Write Mask
     input wire [511:0] l2_burst_write_data, // 512-bit data input for burst write operations
-    input wire [63:0] access_write_data,    // 64-bit data input for single access write
+    input wire [63:0] sw_write_data,    // 64-bit data input for single access write
     output reg [511:0] fetch_burst_read_inst, // 512-bit data output for burst read operations
-    output reg [63:0] access_read_data,     // 64-bit data output for single access read
+    output reg [63:0] lw_read_data,     // 64-bit data output for single access read
     output reg ready                        // Ready signal, high when data is available (read) or written (write)
 );
 
@@ -45,7 +45,7 @@ module simddr (
             ready <= 1'b0;
             operation_in_progress <= 1'b0;
             fetch_burst_read_inst <= 512'b0;
-            access_read_data <= 64'b0;
+            lw_read_data <= 64'b0;
         end else begin
             if (chip_enable && operation_in_progress) begin  // Operations only proceed when chip_enable is high
                 if (burst_mode && cycle_counter == 8'd79) begin  // After 80 cycles in burst mode
@@ -89,13 +89,13 @@ module simddr (
                     
                     if (!write_enable) begin
                         // Single 64-bit read from memory for single access mode
-                        // access_read_data <= memory[address];
-                        access_read_data[63:0] <= difftest_ram_read(concat_address);
+                        // lw_read_data <= memory[address];
+                        lw_read_data[63:0] <= difftest_ram_read(concat_address);
 
                     end else if (write_enable) begin
                         // Single 64-bit write to memory for single access mode
-                        // memory[address] <= access_write_data;
-                        difftest_ram_write(concat_address,access_write_data ,access_write_mask);
+                        // memory[address] <= sw_write_data;
+                        difftest_ram_write(concat_address,sw_write_data ,sw_write_mask);
                     end
                 end else begin
                     cycle_counter <= cycle_counter + 1;  // Increment cycle counter for both modes

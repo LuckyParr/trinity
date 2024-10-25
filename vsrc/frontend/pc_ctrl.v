@@ -2,7 +2,7 @@ module pc_ctrl (
     input wire clk,                          // Clock signal
     input wire rst_n,                        // Active-low reset signal
     input wire fetch_inst,                   // Fetch instruction signal, pulse signal for PC increment
-    input wire pc_index_done,                // Signal indicating DDR operation is complete
+    input wire pc_index_ready,                // Signal indicating DDR operation is complete
     input wire interrupt_valid,              // Interrupt valid signal
     input wire [47:0] interrupt_addr,        // 48-bit interrupt address
     input wire [47:0] boot_addr,             // 48-bit boot address
@@ -37,8 +37,8 @@ module pc_ctrl (
                 can_fetch_inst <= 1'b0;     // Clear can_fetch_inst when fetch_inst is asserted
             end
 
-            // Set can_fetch_inst when pc_index_done indicates operation completion
-            if (pc_index_done) begin
+            // Set can_fetch_inst when pc_index_ready indicates operation completion
+            if (pc_index_ready) begin
                 pc_index_valid <= 1'b0;     // Clear pc_index_valid on completion
                 can_fetch_inst <= 1'b1;     // Set can_fetch_inst to allow new fetch
             end
