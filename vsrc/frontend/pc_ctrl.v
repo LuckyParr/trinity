@@ -1,39 +1,48 @@
 module pc_ctrl (
     input wire clk,                          // Clock signal
-    input wire reset,                        // Reset signal
-    input wire access_busy,                  // Access busy signal, prevents PC from incrementing when high
-    input wire fetch_inst,                   // Fetch instruction signal, PC increments by 8 when high and access_busy is 0
+    input wire rst_n,                        // Active-low reset signal
+    input wire fetch_inst,                   // Fetch instruction signal, pulse signal for PC increment
+    input wire pc_index_done,                // Signal indicating DDR operation is complete
+    input wire interrupt_valid,              // Interrupt valid signal
     input wire [47:0] interrupt_addr,        // 48-bit interrupt address
-    input wire interrupt_valid,              // 1-bit interrupt valid signal
-    output reg [18:0] pc_out                 // Lower 19 bits of the PC
+    input wire [47:0] boot_addr,             // 48-bit boot address
+
+    output reg [18:0] pc_index,              // Selected bits [21:3] of the PC for DDR index
+    output reg pc_index_valid,               // Valid signal for PC index
+    output reg can_fetch_inst                // Indicates if a new instruction can be fetched
 );
 
-    reg [44:0] pc;                           // 45-bit Program Counter
-    reg [47:0] boot_addr;                    // Internal 48-bit boot address, default 0
+    reg [47:0] pc;                           // 48-bit Program Counter
 
-    // Initialize boot_addr to 0 (can be set to other values later if needed)
-    initial begin
-        boot_addr = 48'b0;                   // Default boot address is 0
-    end
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            // Reset PC to boot address, and clear other signals on negative edge of rst_n
+            pc <= boot_addr;
+            pc_index_valid <= 1'b0;
+            pc_index <= 19'b0;
+            can_fetch_inst <= 1'b0;
+        end else begin
+            // Output the selected bits [21:3] of the current PC as pc_index
+            pc_index <= pc[21:3];
 
-    // Select the appropriate address based on interrupt_valid
-    wire [47:0] addr_select = interrupt_valid ? interrupt_addr : boot_addr;
+            // Handle interrupt logic
+            if (interrupt_valid) begin
+                pc <= interrupt_addr;       // Set PC to interrupt address if interrupt_valid is high
+                pc_index_valid <= 1'b1;     // Set pc_index_valid to indicate new index is ready
+                can_fetch_inst <= 1'b0;     // Clear can_fetch_inst during interrupt processing
+            end else if (fetch_inst) begin
+                // Normal PC increment on fetch_inst pulse
+                pc <= pc + 64;              // Increment PC by 64
+                pc_index_valid <= 1'b1;     // Set pc_index_valid to indicate new index is ready
+                can_fetch_inst <= 1'b0;     // Clear can_fetch_inst when fetch_inst is asserted
+            end
 
-    // PC update logic
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
-            pc <= 45'b0;                     // Reset PC to 0 on reset
-        end else if (interrupt_valid) begin
-            pc <= interrupt_addr[47:3];      // Set PC to interrupt address if interrupt_valid is 1
-        end else if (!access_busy && fetch_inst) begin
-            pc <= pc + 8;                    // Increment PC by 8 when !access_busy and fetch_inst are both true
+            // Set can_fetch_inst when pc_index_done indicates operation completion
+            if (pc_index_done) begin
+                pc_index_valid <= 1'b0;     // Clear pc_index_valid on completion
+                can_fetch_inst <= 1'b1;     // Set can_fetch_inst to allow new fetch
+            end
         end
-        // If access_busy is 1 or fetch_inst is 0, the PC stays the same
-    end
-
-    // Output the lower 19 bits of the PC as pc_out
-    always @(pc) begin
-        pc_out = pc[18:0];
     end
 
 endmodule
