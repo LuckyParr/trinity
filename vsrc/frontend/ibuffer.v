@@ -3,6 +3,7 @@ module ibuffer (
     input wire rst_n,
     input wire pc_index_ready,                  // Signal indicating readiness from `pc_index`
     input wire [511:0] arb2ib_read_inst,        // 512-bit input data from arbiter (16 instructions, 32 bits each)
+    input wire fifo_read_en,                    // External read enable signal for FIFO
 
     output reg fetch_inst,                      // Output pulse when FIFO count decreases from 4 to 3
     output wire [31:0] fifo_data_out,           // 32-bit output data from the FIFO
