@@ -21,7 +21,8 @@ module simddr (
     input wire [63:0] sw_write_data,    // 64-bit data input for single access write
     output reg [511:0] fetch_burst_read_inst, // 512-bit data output for burst read operations
     output reg [63:0] lw_read_data,     // 64-bit data output for single access read
-    output reg ready                        // Ready signal, high when data is available (read) or written (write)
+    output wire ddr_operation_done,
+    output reg ddr_ready                        // Ready signal, high when data is available (read) or written (write)
 );
 
     // reg [63:0] memory [0:524287];           // 64-bit DDR memory array (524,288 entries, each 64-bit)
@@ -36,13 +37,22 @@ module simddr (
     //         memory[i] = 64'hA0A0_B0B0_C0C0_D0D0 + i;
     //     end
     // end
+    reg ddr_ready_dly;
+    always @(posedge clk or negedge rst_n) begin
+        if (~rst_n) begin 
+            ddr_ready_dly <= 1'b1;
+        end else begin
+            ddr_ready_dly <= ddr_ready;
+        end
+
+    assign ddr_operation_done = ddr_ready & (!ddr_ready_dly);
 
     // State machine to handle both burst and single access read/write operations
     wire [63:0] concat_address = {45'b0, address};
     always @(posedge clk or negedge rst_n) begin
         if (~rst_n) begin
             cycle_counter <= 8'b0;
-            ready <= 1'b0;
+            ddr_ready <= 1'b1;
             operation_in_progress <= 1'b0;
             fetch_burst_read_inst <= 512'b0;
             lw_read_data <= 64'b0;
@@ -50,7 +60,7 @@ module simddr (
             if (chip_enable && operation_in_progress) begin  // Operations only proceed when chip_enable is high
                 if (burst_mode && cycle_counter == 8'd79) begin  // After 80 cycles in burst mode
                     cycle_counter <= 8'b0;        // rst_n cycle counter
-                    ready <= 1'b1;                // Signal that the operation is complete
+                    ddr_ready <= 1'b1;                // Signal that the operation is complete
                     operation_in_progress <= 1'b0;  // End the operation
                     
                     if (!write_enable) begin
@@ -84,7 +94,7 @@ module simddr (
                     end
                 end else if (!burst_mode && cycle_counter == 8'd63) begin  // After 64 cycles for single access
                     cycle_counter <= 8'b0;        // rst_n cycle counter
-                    ready <= 1'b1;                // Signal that the operation is complete
+                    ddr_ready <= 1'b1;                // Signal that the operation is complete
                     operation_in_progress <= 1'b0;  // End the operation
                     
                     if (!write_enable) begin
@@ -99,13 +109,13 @@ module simddr (
                     end
                 end else begin
                     cycle_counter <= cycle_counter + 1;  // Increment cycle counter for both modes
-                    ready <= 1'b0;                       // Data not ready during the wait
+                    ddr_ready <= 1'b0;                       // Data not ddr_ready during the wait
                 end
             end else if (chip_enable && !operation_in_progress && (!write_enable || write_enable)) begin
                 // Start a new read or write operation if chip_enable is 1
                 cycle_counter <= 8'b0;            // rst_n cycle counter
                 operation_in_progress <= 1'b1;    // Mark operation as in progress
-                ready <= 1'b0;                    // rst_n ready signal
+                ddr_ready <= 1'b0;                    // rst_n ddr_ready signal
             end
         end
     end

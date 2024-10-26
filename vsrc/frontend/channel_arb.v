@@ -1,4 +1,6 @@
 module channel_arb (
+    input wire ddr_operation_done,
+    output wire arb_operation_done,
     // PC Channel Inputs and Outputs
     input wire [18:0] pc_index,                // 19-bit input for pc_index (Channel 1)
     input wire pc_index_valid,                 // Valid signal for pc_index
@@ -29,6 +31,7 @@ module channel_arb (
     output reg chip_enable,                    // Enables chip for one cycle when a channel is selected
     output reg write_enable                    // Write enable signal (1 for write, 0 for read)
 );
+    assign arb_operation_done = ddr_operation_done;
 
     always @(*) begin
         // Default output values
@@ -63,7 +66,7 @@ module channel_arb (
                 ddr_index = lw_index;
                 chip_enable = 1'b1;
                 write_enable = 1'b0;             // Read operation
-                arb2lw_read_data = lw_read_data;
+                //arb2lw_read_data = lw_read_data;
                 burst_mode = 1'b0;
                 lw_index_ready = 1'b1;                 // Indicate LW channel is ready
             end else if (pc_index_valid) begin
@@ -71,7 +74,7 @@ module channel_arb (
                 ddr_index = pc_index;
                 chip_enable = 1'b1;
                 write_enable = 1'b0;             // Read operation for burst mode
-                arb2ib_read_inst = fetch_burst_read_inst;
+                //arb2ib_read_inst = fetch_burst_read_inst;
                 burst_mode = 1'b1;
                 pc_index_ready = 1'b1;                 // Indicate PC channel is ready
             end
