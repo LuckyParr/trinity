@@ -4,6 +4,7 @@ module ibuffer (
     input wire pc_index_ready,                  // Signal indicating readiness from `pc_index`
     input wire [511:0] arb2ib_read_inst,        // 512-bit input data from arbiter (16 instructions, 32 bits each)
     input wire fifo_read_en,                    // External read enable signal for FIFO
+    input wire clear_ibuffer,                   // Clear signal for ibuffer
 
     output reg fetch_inst,                      // Output pulse when FIFO count decreases from 4 to 3
     output wire [31:0] fifo_data_out,           // 32-bit output data from the FIFO
@@ -18,13 +19,14 @@ module ibuffer (
     wire [4:0] fifo_count;                      // Count of entries in the FIFO
     reg [4:0] fifo_count_prev;                  // Previous FIFO count to detect transition from 4 to 3
 
-    // Instantiate the 32x24 FIFO
+    // Instantiate the 32x24 FIFO with clear functionality
     fifo_32x24 fifo_inst (
         .clk(clk),
         .rst_n(rst_n),
         .data_in(inst_buffer[write_index]),     // 32-bit input to FIFO
         .write_en(write_enable),
         .read_en(fifo_read_en),
+        .clear_ibuffer(clear_ibuffer),          // Pass clear signal to FIFO
         .data_out(fifo_data_out),
         .empty(fifo_empty),
         .full(fifo_full),
@@ -44,7 +46,7 @@ module ibuffer (
 
     // Store 16 instructions into inst_buffer when pc_index_ready rises from 0 to 1
     always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
+        if (!rst_n || clear_ibuffer) begin
             write_index <= 4'b0;
             write_enable <= 1'b0;
             fetch_inst <= 1'b0;
