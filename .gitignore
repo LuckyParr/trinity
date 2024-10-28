@@ -2,4 +2,5 @@
 .vscode
 **/*.vcd
 **/emu
-**/time.log
+build/time.log
+

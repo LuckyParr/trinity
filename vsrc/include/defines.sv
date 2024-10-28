@@ -4,25 +4,25 @@
 
 `define RESULT_RANGE 63:0
 `define RESULT_WIDTH 64
-`define ALU_TYPE_RANGE 9:0
+`define ALU_TYPE_RANGE 10:0
 /*
     0 = ADD
     1 = SET LESS THAN
-    2 = SET LESS THEN UNSIGNED
-    3 = XOR
-    4 = OR
-    5 = AND
-    6 = SHIFT LEFT LOGICAL
-    7 = SHIFT RIGHT LOGICAL
-    8 = SHIFT RIGHT ARH
-    9 = SUB
-    
+    2 = XOR
+    3 = OR
+    4 = AND
+    5 = SHIFT LEFT LOGICAL
+    6 = SHIFT RIGHT LOGICAL
+    7 = SHIFT RIGHT ARH
+    8 = SUB
+    9 = LUI
+    10 = AUIPC
 */
 `define ALU_TYPE_WIDTH 10
 `define PC_RANGE 47:0
 `define PC_WIDTH 48
 `define INSTR_RANGE 31:0
-`define CX_TYPE_RANGE 7:0
+`define CX_TYPE_RANGE 5:0
 /*
     0 = JAL
     1 = JALR
@@ -30,8 +30,6 @@
     3 = BNE
     4 = BLT
     5 = BGE
-    6 = BLTU
-    7 = BGEU
 */
 
 `define MULDIV_TYPE_RANGE 12:0
@@ -50,3 +48,50 @@
     11 = REMW
     12 = REMUW
 */
+`define LS_SIZE_RANGE 3:0
+/*
+    0 = B
+    1 = HALF WORD
+    2 = WORD
+    3 = DOUBLE WORD
+*/
+
+`define IS_ADD 0
+`define IS_SLT 1
+`define IS_XOR 2
+`define IS_OR 3
+`define IS_AND 4 
+`define IS_SLL 5 
+`define IS_SRL 6
+`define IS_SRA 7
+`define IS_SUB 8
+`define IS_LUI 9
+`define IS_AUIPC 10
+
+`define IS_JAL 10
+`define IS_JALR 10
+`define IS_BEQ 10
+`define IS_BNE 10
+`define IS_BLT 10
+`define IS_BGE 10
+
+
+`define MUL 0 
+`define MULH 1 
+`define MULHSU 2 
+`define MULHU 3 
+`define DIV 4 
+`define DIVU 5 
+`define REM 6 
+`define REMU 7 
+`define MULW 8 
+`define DIVW 9 
+`define DIVUW 10
+`define REMW 11
+`define REMUW 12
+
+`define IS_B 0 
+`define IS_H 1 
+`define IS_W 2 
+`define IS_D 3 
+

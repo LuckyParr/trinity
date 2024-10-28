@@ -1,9 +1,14 @@
 `include "defines.sv"
 module alu (
-    input wire [`LREG_RANGE] src1,
-    input wire [`LREG_RANGE] src2,
+    input wire [`SRC_RANGE] src1,
+    input wire [`SRC_RANGE] src2,
+    input wire [`SRC_RANGE] imm,
+    input wire [`PC_RANGE] pc,
     input wire valid,
     input  wire [`ALU_TYPE_RANGE] alu_type,
+    input wire is_word,
+    input wire is_unsigned,
+    input wire is_imm,
     output wire [     `SRC_RANGE] result
 );
     /*
@@ -20,23 +25,50 @@ module alu (
 */
     wire is_add = alu_type[0];
     wire is_set_lt = alu_type[1];
-    wire is_set_ltu = alu_type[2];
-    wire is_xor = alu_type[3];
-    wire is_or = alu_type[4];
-    wire is_and = alu_type[5];
-    wire is_sll = alu_type[6];
-    wire is_srl = alu_type[7];
-    wire is_sra = alu_type[8];
-    wire is_sub = alu_type[9];
+    wire is_set_ltu = alu_type[1] & is_unsigned;
+    wire is_xor = alu_type[2];
+    wire is_or = alu_type[3];
+    wire is_and = alu_type[4];
+    wire is_sll = alu_type[5];
+    wire is_srl = alu_type[6];
+    wire is_sra = alu_type[7];
+    wire is_sub = alu_type[8];
+    wire is_lui = alu_type[9];
+    wire is_auipc = alu_type[10];
 
-    // wire 
-    wire [`SRC_RANGE] src2_qual = is_sub ? ~src2 + 64'b1 : src2;
-    wire [`SRC_RANGE] add_sub_result =  src1 + src2_qual;
+    wire [`SRC_RANGE] src1_qual = is_auipc ? {16'b0, pc} : src1;
+
+    reg [`SRC_RANGE] src2_qual ;
+    always @(*) begin
+        src2_qual = 'b0;
+        if(is_imm | is_auipc) begin
+            if(is_word) begin
+                src2_qual = imm[31:0];
+            end 
+            else begin
+                src2_qual = imm;
+            end
+        end
+        else begin
+            if(is_sub) begin
+                if(is_word) begin
+                    src2_qual = {32'b0, ~src2[31:0] + 64'b1};
+                end else begin
+                    src2_qual = ~src2 + 64'b1;
+                end
+            end 
+            else begin
+                src2_qual = src2;
+            end
+        end
+    end
+
+    wire [`SRC_RANGE] add_sub_result_w = src1[31:0] + src2_qual[31:0];
+    wire [`SRC_RANGE] add_sub_result =  is_word? {32{add_sub_result_w[31]}, add_sub_result_w[31:0]} : src1 + src2_qual;
 
     reg is_less ;
     wire is_lessu = src1 < src2_qual ;
 
-    reg 
     always @(*) begin
         case(src1[`SRC_WIDTH-1], src2_qual[`SRC_WIDTH-1]) 
             2'b00: is_less = src1[`SRC_WIDTH-2:0 ] < src2_qual[`SRC_WIDTH-2:0 ];
@@ -50,17 +82,21 @@ module alu (
     wire [`SRC_RANGE] or_result = src1 | src2_qual;
     wire [`SRC_RANGE] and_result = src1 & src2_qual;
 
-    wire [`SRC_RANGE] sll_result = src1 << src2_qual[5:0];
-    wire [`SRC_RANGE] srl_result = src1 >> src2_qual[5:0];
-    wire [`SRC_RANGE] sra_result = src1 >>> src2_qual[5:0];
+    wire [31:0] sll_result_w = src1[31:0] << src2_qual[4:0] ;
+    wire [31:0] srl_result_w = src1[31:0] >> src2_qual[4:0] ;
+    wire [31:0] sra_result_w = src1[31:0] >>> src2_qual[4:0] ;
+    wire [`SRC_RANGE] sll_result = is_word? { {32{sll_result_w[31]}}, sll_result_w[31:0]} :src1 << src2_qual[5:0];
+    wire [`SRC_RANGE] srl_result = is_word? { {32{srl_result_w[31]}}, srl_result_w[31:0]} :src1 >> src2_qual[5:0];
+    wire [`SRC_RANGE] sra_result = is_word? { {32{srl_result_w[31]}}, sra_result_w[31:0]} :src1 >>> src2_qual[5:0];
     
     assign result[`RESULT_RANGE] = (is_set_lt ? {63'b0, is_less} :
                     is_set_ltu ? {63'b0, is_lessu} :
-                    is_add | is_sub ? add_sub_result :
+                    (is_add | is_sub | is_auipc)? add_sub_result :
                     is_xor ? xor_result :
                     is_or ? or_result :
                     is_and ? and_result :
                     is_sll ? sll_result :
                     is_srl ? srl_result :
-                    is_sra ? sra_result) & {64{valid}} ;
+                    is_sra ? sra_result :
+                    is_lui ? imm ) & {64{valid}}  ;
 endmodule

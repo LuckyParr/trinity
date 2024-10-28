@@ -38,18 +38,7 @@ module top #(
   reg enable;
 
   wire [63:0] temp = 64'h1;
-  // MemRWHelper mem (
-  //     .r_enable(a[3]),  //input 1
-  //     .r_index (temp),   //input 64
-  //     .r_data  (r_data),    //output 64
 
-  //     .w_enable(w_enable),  //input 1
-  //     .w_index(w_index),  //input 64
-  //     .w_data(w_data),  //input 64
-  //     .w_mask(w_mask),  //input 64
-  //     .enable(1'b1),  //input 1
-  //     .clock(clk)  //input 1
-  // );
 
 
   always @(posedge clk) begin
