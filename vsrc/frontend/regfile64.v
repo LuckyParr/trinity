@@ -6,8 +6,8 @@ module regfile64 (
     input wire [4:0] rd,                // Write register address
     input wire [63:0] rd_data,          // Data to be written to rd
     input wire reg_write,               // Write enable signal for rd
-    output reg [63:0] rs1_data,         // Data from rs1 register
-    output reg [63:0] rs2_data          // Data from rs2 register
+    output reg [63:0] rs1_regdata,      // Data from rs1 register
+    output reg [63:0] rs2_regdata       // Data from rs2 register
 );
 
     reg [63:0] registers [31:0];        // 32 registers, 64 bits each
@@ -25,9 +25,19 @@ module regfile64 (
         end
     end
 
-    // Combinational read logic
+    // Combinational read logic with forwarding
     always @(*) begin
-        rs1_data = registers[rs1];
-        rs2_data = registers[rs2];
+        // Forward rd_data if reg_write is active and addresses match
+        if (reg_write && rd == rs1 && rd != 5'b0) begin
+            rs1_regdata = rd_data;
+        end else begin
+            rs1_regdata = registers[rs1];
+        end
+
+        if (reg_write && rd == rs2 && rd != 5'b0) begin
+            rs2_regdata = rd_data;
+        end else begin
+            rs2_regdata = registers[rs2];
+        end
     end
 endmodule

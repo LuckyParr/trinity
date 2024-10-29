@@ -46,8 +46,6 @@ module decoder (
     localparam OPCODE_ALU_ITYPE_WORD  = 7'b0011011;
     localparam OPCODE_ALU_RTYPE_WORD  = 7'b0111011;
 
-
-
     reg [11:0] imm_itype;
     reg [11:0] imm_stype;
     reg [12:0] imm_btype;

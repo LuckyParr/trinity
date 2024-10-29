@@ -19,7 +19,8 @@ module pc_ctrl (
     //ports with channel_arb
     output reg pc_index_valid,               // Valid signal for PC index
     output wire [18:0] pc_index,              // Selected bits [21:3] of the PC for DDR index
-    input wire pc_index_ready                // Signal indicating DDR operation is complete
+    input wire pc_index_ready,                // Signal indicating DDR operation is complete
+    input wire pc_operation_done
 );
 
     reg [47:0] pc;                           // 48-bit Program Counter
@@ -34,26 +35,29 @@ module pc_ctrl (
             can_fetch_inst <= 1'b0;
             clear_ibuffer <=1'b0;
         end else if (interrupt_valid) begin
-                // Handle interrupt logic
+                //Update pc:  Handle interrupt logic
                 pc <= interrupt_addr;       // Set PC to interrupt address if interrupt_valid is high
                 pc_index_valid <= 1'b1;     // Set pc_index_valid to indicate new index is ready
                 can_fetch_inst <= 1'b0;     // Clear can_fetch_inst during interrupt processing
                 clear_ibuffer <= 1'b1;
         end else if (branch_addr_valid)begin
-                // Handle branch logic
+                //Update pc: Handle branch logic
                 pc_index_valid <= 1'b1;
                 pc <= branch_addr;
                 can_fetch_inst <= 1'b0;
                 clear_ibuffer <= 1'b1;
         end else if (fetch_inst) begin
-                // Normal PC increment on fetch_inst pulse
+                //Update pc: Normal PC increment on fetch_inst pulse
                 pc <= pc + 64;              // Increment PC by 64
                 pc_index_valid <= 1'b1;     // Set pc_index_valid to indicate new index is ready
                 can_fetch_inst <= 1'b0;     // Clear can_fetch_inst when fetch_inst is asserted
-        end else if (pc_index_ready) begin
+        end else if (pc_index_valid && pc_index_ready) begin  //handshake, indicate fetch inst req to ddr sent
                 // Set can_fetch_inst when pc_index_ready indicates operation completion
                 pc_index_valid <= 1'b0;     // Clear pc_index_valid on completion
-                can_fetch_inst <= 1'b1;     // Set can_fetch_inst to allow new fetch
+                can_fetch_inst <= 1'b0;     // Set can_fetch_inst to allow new fetch
+        end else if (pc_operation_done) begin
+                can_fetch_inst <= 1'b1;
+        end
             end
         end
     end
