@@ -118,15 +118,19 @@ module decoder (
                 OPCODE_LUI   : 
                     imm = imm_utype_64;
                     alu_type = `IS_LUI;
+                    need_to_wb = 1'b1;
                 OPCODE_AUIPC : 
                     imm = imm_utype_64;
                     alu_type = `IS_AUIPC;
+                    need_to_wb = 1'b1;
                OPCODE_JAL   : 
                     imm = imm_jtype_64;
                     cx_type = `IS_JAL;
+                    need_to_wb = 1'b1;
                 OPCODE_JALR  : 
                     imm = imm_itype_64_s;
                     cx_type = `IS_JALR;
+                    need_to_wb = 1'b1;
                 OPCODE_BRANCH: 
                     case(funct3)
                         000:
@@ -152,24 +156,25 @@ module decoder (
                         endcase
                 OPCODE_LOAD  : 
                     is_load = 1'b1;
+                    need_to_wb = 1'b1;
                     case(funct3)
-                        000 ：
+                        000 :
                             imm = imm_itype_64_s;
                             ls_size = `IS_B;
-                        001 ：
+                        001 :
                             imm = imm_itype_64_s;
                             ls_size = `IS_H;
-                        010 ：
+                        010 :
                             imm = imm_itype_64_s;
                             ls_size = `IS_W;
                         011 :  // RV64I extention
                             imm = imm_itype_64_s;
                             ls_size = `IS_D;                            
-                        100 ：
+                        100 :
                             imm = imm_itype_64_u;
                             ls_size = `IS_B;
                             is_unsigned = 1'b1;
-                        101 ：
+                        101 :
                             imm = imm_itype_64_u;
                             ls_size = `IS_H;
                             is_unsigned = 1'b1;
@@ -193,6 +198,7 @@ module decoder (
                         endcase
                 OPCODE_ALU_ITYPE : 
                             imm = imm_itype_64_s;
+                            need_to_wb = 1'b1;
                     case({funct7,funct3})
                         ???????000:
                             is_imm = 1'b1;
@@ -224,6 +230,7 @@ module decoder (
                             alu_type = `IS_SRA;
                         endcase
                 OPCODE_ALU_RTYPE : 
+                    need_to_wb = 1'b1;
                     case({funct7,funct3})
                         0000000000:
                             alu_type = `IS_ADD;
@@ -251,6 +258,7 @@ module decoder (
                 OPCODE_ENV   : 
                 OPCODE_ALU_ITYPE_WORD :
                     is_word = 1'b1;
+                    need_to_wb = 1'b1;
                     case({funct7,funct3})
                     ???????000:
                             is_imm = 1'b1;
@@ -267,6 +275,7 @@ module decoder (
                     endcase                  
                 OPCODE_ALU_RTYPE_WORD :
                     is_word = 1'b1;
+                    need_to_wb = 1'b1;
                     case({funct7,funct3})
                         0000000000:
                             alu_type = `IS_ADD;

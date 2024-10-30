@@ -1,14 +1,4 @@
 
-import "DPI-C" function longint difftest_ram_read(input longint rIdx);
-
-import "DPI-C" function void difftest_ram_write
-(
-  input  longint index,
-  input  longint data,
-  input  longint mask
-);
-
-
 module simddr (
     input wire clk,                         // Clock signal
     input wire rst_n,                       // rst_n signal
@@ -24,6 +14,16 @@ module simddr (
     output wire ddr_operation_done,
     output reg ddr_ready                        // Ready signal, high when data is available (read) or written (write)
 );
+
+import "DPI-C" function longint difftest_ram_read(input longint rIdx);
+
+import "DPI-C" function void difftest_ram_write
+(
+  input  longint index,
+  input  longint data,
+  input  longint mask
+);
+
 
     // reg [63:0] memory [0:524287];           // 64-bit DDR memory array (524,288 entries, each 64-bit)
 
@@ -44,9 +44,8 @@ module simddr (
         end else begin
             ddr_ready_dly <= ddr_ready;
         end
-
+    end
     assign ddr_operation_done = ddr_ready & (!ddr_ready_dly);
-
     // State machine to handle both burst and single access read/write operations
     wire [63:0] concat_address = {45'b0, ddr_index};
     always @(posedge clk or negedge rst_n) begin

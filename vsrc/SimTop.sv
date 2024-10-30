@@ -32,16 +32,33 @@ module SimTop (
             cnt <= cnt + 1'b1;
         end
     end
-    DifftestTrapEvent u_DifftestTrapEvent (
-        .clock      (clock),
-        .enable     (1'b1),
-        .io_hasTrap (1'b0),
-        .io_cycleCnt(cnt),
-        .io_instrCnt('b0),
-        .io_hasWFI  ('b0),
-        .io_code    ('b0),
-        .io_pc      ('b0),
-        .io_coreid  ('b0)
-    );
+
+    // DifftestTrapEvent u_DifftestTrapEvent (
+    //     .clock      (clock),
+    //     .enable     (1'b1),
+    //     .io_hasTrap (1'b0),
+    //     .io_cycleCnt(cnt),
+    //     .io_instrCnt('b0),
+    //     .io_hasWFI  ('b0),
+    //     .io_code    ('b0),
+    //     .io_pc      ('b0),
+    //     .io_coreid  ('b0)
+    // );
+
+
+    // DifftestArchEvent u_DifftestArchEvent (
+    //     .clock                            (clock),
+    //     .enable                           (1'b0),
+    //     .io_valid                         ('b0),
+    //     .io_interrupt                     ('b0),
+    //     .io_exception                     ('b0),
+    //     .io_exceptionPC                   ('b0),
+    //     .io_exceptionInst                 ('b0),
+    //     .io_hasNMI                        ('b0),
+    //     .io_virtualInterruptIsHvictlInject('b0),
+    //     .io_coreid                        (1'b0)
+    // );
+
+
 
 endmodule

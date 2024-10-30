@@ -1,75 +1,56 @@
 module top #(
 ) (
-    input wire clk,
-    input wire rst_n,
+    input  wire        clk,
+    input  wire        rst_n,
     output wire [31:0] opt
 );
-  reg [ 3:0] a;
-  reg [31:0] b;
-  always @(posedge clk) begin
-    if (~rst_n) begin
-      a <= 'b0;
-    end else if (a[3] != 1'b1) begin
-      a <= a + 1'b1;
-    end else begin
-      a <= a;
-    end
-  end
-//   import "DPI-C" function int dpic_test(int b);
 
-  always @(posedge clk) begin
-    if (~rst_n) begin
-      b <= 'b0;
-    end else if (a[3] == 1'b1) begin
-    //   b <= dpic_test(int'(a));
-      b <= 'b1;
-    end
-  end
-  assign opt = b;
-
-  reg r_enable;
-  reg [63:0] r_index;
-  reg [63:0] r_data;
-
-  reg w_enable;
-  reg [63:0] w_index;
-  reg [63:0] w_data;
-  reg [63:0] w_mask;
-  reg enable;
-
-  wire [63:0] temp = 64'h1;
-
-
-
-  always @(posedge clk) begin
-    if (~rst_n) begin
-      r_enable <= 'b0;
-      r_index  <= 'b0;
-      w_enable <= 'b0;
-      w_index  <= 'b0;
-      w_data   <= 'b0;
-      w_mask   <= 'b0;
-    end
-  end
 
   wire chip_enable = 1'b1;
 
-simddr u_simddr(
-    .clk                   (clk                   ),
-    .rst_n                 (rst_n                 ),
-    .chip_enable           (chip_enable           ),
-    .write_enable          (1'b0          ),
-    .burst_mode            (1'b1            ),
-    .address               (64'b0               ),
-    .access_write_mask     (64'b0     ),
-    .l2_burst_write_data   (64'b0   ),
-    .access_write_data     (64'b0     ),
-    .fetch_burst_read_inst ( ),
-    .access_read_data      (      ),
-    .ready                 (                 )
-);
+  simddr u_simddr (
+      .clk                   (clk),
+      .rst_n                 (rst_n),
+      .ddr_chip_enable       (ddr_chip_enable),
+      .ddr_index             (ddr_index),
+      .ddr_write_enable      (ddr_write_enable),
+      .ddr_burst_mode        (ddr_burst_mode),
+      .ddr_opstore_write_mask(ddr_opstore_write_mask),
+      .ddr_opstore_write_data(ddr_opstore_write_data),
+      .ddr_opload_read_data  (ddr_opload_read_data),
+      .ddr_pc_read_inst      (ddr_pc_read_inst),
+      .ddr_l2_write_data     (ddr_l2_write_data),
+      .ddr_operation_done    (ddr_operation_done),
+      .ddr_ready             (ddr_ready)
+  );
 
-initial begin
-  
-end
+
+
+  backend u_backend (
+      .clock      (clk),
+      .rst_n      (rst_n),
+      .rs1        (rs1),
+      .rs2        (rs2),
+      .rd         (rd),
+      .src1       (src1),
+      .src2       (src2),
+      .imm        (imm),
+      .src1_is_reg(src1_is_reg),
+      .src2_is_reg(src2_is_reg),
+      .need_to_wb (need_to_wb),
+      .cx_type    (cx_type),
+      .is_unsigned(is_unsigned),
+      .alu_type   (alu_type),
+      .is_word    (is_word),
+      .is_load    (is_load),
+      .is_imm     (is_imm),
+      .is_store   (is_store),
+      .ls_size    (ls_size),
+      .muldiv_type(muldiv_type),
+      .pc         (pc),
+      .instr      (instr),
+      .wb_valid   (wb_valid),
+      .wb_data    (wb_data)
+  );
+
 endmodule

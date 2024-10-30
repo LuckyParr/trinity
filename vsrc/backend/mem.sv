@@ -4,7 +4,7 @@ module mem (
     input wire                  rst_n,
     input wire                  is_load,
     input wire                  is_store,
-    // input wire ls_valid,
+
     input wire [    `SRC_RANGE] src2,
     input wire [ `RESULT_RANGE] ls_address,
     input wire [`LS_SIZE_RANGE] ls_size,
@@ -12,16 +12,19 @@ module mem (
     output reg                  read_valid,
     input  wire                 read_ready,
     output reg  [`RESULT_RANGE] read_address,
-    input  wire                 read_done,
+    input  wire                 opload_done,
     input  wire [`RESULT_RANGE] read_data,
-    // output reg read_size,
 
     output reg                  write_valid,
     input  wire                 write_ready,
     output reg  [`RESULT_RANGE] write_address,
     output reg  [   `SRC_RANGE] write_data,
     output reg  [         63:0] write_mask,
-    input  wire                 write_done
+    input  wire                 write_done,
+
+    //read data write back
+    input  wire [`RESULT_RANGE] read_data_wb,
+
 
 );
     /*
@@ -38,17 +41,20 @@ module mem (
     wire ls_valid = is_load | is_store;
     wire read_fire = read_valid & read_ready;
     wire write_fire = write_valid & write_ready;
-    reg  outstanding_load;
-    reg  outstanding_store;
+    reg  outstanding_load_q;
+    reg  outstanding_store_q;
+    wire outstanding_load_ns;
+    wire outstanding_store_ns;
 
+    assign outstanding_load_ns = ~outstanding_load_q & read_fire;
+    assign outstanding_store_ns = ~outstanding_store_q & write_fire;
+    
     always @(posedge clock or negedge rst_n) begin
         if (~rst_n) begin
-            outstanding_load <= 'b0;
-        end else if (read_fire & ~outstanding_load) begin
-            outstanding_load <= 'b1;
-        end else if (outstanding_load & read_done) begin
-            outstanding_load <= 'b0;
-        end
+            outstanding_load_q <= 'b0;
+        end else  begin
+            outstanding_load_q <= outstanding_load_ns;
+        end 
     end
 
 
@@ -89,7 +95,6 @@ module mem (
             write_address = {3'b0, ls_address[`RESULT_WIDTH-1:3]};
             write_mask    = write_mask_qual;
             write_data    = write_data_qual;
-
         end
 
     end

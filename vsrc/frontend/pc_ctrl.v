@@ -33,7 +33,8 @@ module pc_ctrl (
             pc_index_valid <= 1'b0;
             can_fetch_inst <= 1'b0;
             clear_ibuffer <=1'b0;
-        end else if (interrupt_valid) begin
+        end 
+        else if (interrupt_valid) begin
                 // Handle interrupt logic
                 pc <= interrupt_addr;       // Set PC to interrupt address if interrupt_valid is high
                 pc_index_valid <= 1'b1;     // Set pc_index_valid to indicate new index is ready
@@ -55,7 +56,7 @@ module pc_ctrl (
                 pc_index_valid <= 1'b0;     // Clear pc_index_valid on completion
                 can_fetch_inst <= 1'b1;     // Set can_fetch_inst to allow new fetch
             end
-        end
+
     end
 
 endmodule

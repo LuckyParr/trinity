@@ -22,7 +22,17 @@ module exu (
     input wire [               3:0] ls_size,
     input wire [`MULDIV_TYPE_RANGE] muldiv_type,
     input wire [         `PC_RANGE] pc,
-    input wire [      `INSTR_RANGE] instr
+    input wire [      `INSTR_RANGE] instr,
+
+    output wire             redirect_valid,
+    output wire [`PC_RANGE] redirect_target,
+
+    output wire [`RESULT_RANGE] ls_address,
+    output wire [`RESULT_RANGE] alu_result,
+    output wire [`RESULT_RANGE] bju_result,
+    output wire [`RESULT_RANGE] muldiv_result
+    
+
 
 );
     wire alu_valid = |alu_type;
@@ -31,5 +41,46 @@ module exu (
     wire muldiv_valid = |muldiv_type;
 
 
+    agu u_agu (
+        .src1      (src1),
+        .imm       (imm),
+        .is_load   (is_load),
+        .is_store  (is_store),
+        .ls_address(ls_address)
+    );
+
+    alu u_alu (
+        .src1       (src1),
+        .src2       (src2),
+        .imm        (imm),
+        .pc         (pc),
+        .valid      (alu_valid),
+        .alu_type   (alu_type),
+        .is_word    (is_word),
+        .is_unsigned(is_unsigned),
+        .is_imm     (is_imm),
+        .result     (alu_result)
+    );
+
+    bju u_bju (
+        .src1           (src1),
+        .src2           (src2),
+        .imm            (imm),
+        .pc             (pc),
+        .cx_type        (cx_type),
+        .valid          (bju_valid),
+        .is_unsigned    (is_unsigned),
+        .dest           (bju_result),
+        .redirect_valid (redirect_valid),
+        .redirect_target(redirect_target)
+    );
+
+    muldiv u_muldiv (
+        .src1       (src1),
+        .src2       (src2),
+        .valid      (muldiv_valid),
+        .muldiv_type(muldiv_type),
+        .result     (muldiv_result)
+    );
 
 endmodule
