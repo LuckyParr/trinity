@@ -1,7 +1,7 @@
 `include "defines.sv"
 module mem (
     input wire                  clock,
-    input wire                  rst_n,
+    input wire                  reset_n,
     input wire                  is_load,
     input wire                  is_store,
 
@@ -9,21 +9,22 @@ module mem (
     input wire [ `RESULT_RANGE] ls_address,
     input wire [`LS_SIZE_RANGE] ls_size,
 
-    output reg                  read_valid,
-    input  wire                 read_ready,
-    output reg  [`RESULT_RANGE] read_address,
-    input  wire                 opload_done,
-    input  wire [`RESULT_RANGE] read_data,
+    output reg                  opload_index_valid,
+    input  wire                 opload_index_ready,
+    output reg  [`RESULT_RANGE] opload_index,
 
-    output reg                  write_valid,
-    input  wire                 write_ready,
-    output reg  [`RESULT_RANGE] write_address,
-    output reg  [   `SRC_RANGE] write_data,
-    output reg  [         63:0] write_mask,
-    input  wire                 write_done,
+    input  wire                 opload_operation_done,
+    input  wire [`RESULT_RANGE] opload_read_data,
 
-    //read data write back
-    input  wire [`RESULT_RANGE] read_data_wb,
+    output reg                  opstore_index_valid,
+    input  wire                 opstore_index_ready,
+    output reg  [`RESULT_RANGE] opstore_index,
+    output reg  [   `SRC_RANGE] opstore_write_data,
+    output reg  [         63:0] opstore_write_mask,
+    input  wire                 opstore_operation_done,
+
+    //read data to wb stage
+    output  wire [`RESULT_RANGE] opload_read_data_wb
 
 
 );
@@ -39,8 +40,8 @@ module mem (
     wire size_2w = ls_size[3];
 
     wire ls_valid = is_load | is_store;
-    wire read_fire = read_valid & read_ready;
-    wire write_fire = write_valid & write_ready;
+    wire read_fire = opload_index_valid & opload_index_ready;
+    wire write_fire = opstore_index_valid & opstore_index_ready;
     reg  outstanding_load_q;
     reg  outstanding_store_q;
     wire outstanding_load_ns;
@@ -49,24 +50,31 @@ module mem (
     assign outstanding_load_ns = ~outstanding_load_q & read_fire;
     assign outstanding_store_ns = ~outstanding_store_q & write_fire;
     
-    always @(posedge clock or negedge rst_n) begin
-        if (~rst_n) begin
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
             outstanding_load_q <= 'b0;
         end else  begin
             outstanding_load_q <= outstanding_load_ns;
         end 
     end
 
-
-    always @(posedge clock or negedge rst_n) begin
-        if (~rst_n) begin
-            outstanding_store <= 'b0;
-        end else if (write_fire & ~outstanding_store) begin
-            outstanding_store <= 'b1;
-        end else if (outstanding_store & write_done) begin
-            outstanding_store <= 'b0;
-        end
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            outstanding_store_q <= 'b0;
+        end else  begin
+            outstanding_store_q <= outstanding_store_ns;
+        end 
     end
+
+    // always @(posedge clock or negedge reset_n) begin
+    //     if (~reset_n) begin
+    //         outstanding_store <= 'b0;
+    //     end else if (write_fire & ~outstanding_store) begin
+    //         outstanding_store <= 'b1;
+    //     end else if (outstanding_store & opstore_operation_done) begin
+    //         outstanding_store <= 'b0;
+    //     end
+    // end
     wire [          63:0] write_1b_mask = {56'b0, 8'b1};
     wire [          63:0] write_1h_mask = {48'b0, 16'b1};
     wire [          63:0] write_1w_mask = {32'b0, 32'b1};
@@ -74,27 +82,27 @@ module mem (
 
     wire [           2:0] shift_size = ls_address[2:0];
 
-    wire [          63:0] write_mask_qual = size_1b ? write_1b_mask << (shift_size * 8) : size_1h ? write_1h_mask << (shift_size * 8) : size_1w ? write_1w_mask << (shift_size * 8) : write_2w_mask;
+    wire [          63:0] opstore_write_mask_qual = size_1b ? write_1b_mask << (shift_size * 8) : size_1h ? write_1h_mask << (shift_size * 8) : size_1w ? write_1w_mask << (shift_size * 8) : write_2w_mask;
 
-    wire [`RESULET_RANGE] write_data_qual = src2 << (shift_size * 8);
+    wire [`RESULT_RANGE] opstore_write_data_qual = src2 << (shift_size * 8);
     always @(*) begin
-        read_valid    = 'b0;
-        read_address  = 'b0;
+        opload_index_valid    = 'b0;
+        opload_index  = 'b0;
 
-        write_valid   = 'b0;
-        write_address = 'b0;
-        write_data    = 'b0;
-        write_mask    = 'b0;
+        opstore_index_valid   = 'b0;
+        opstore_index = 'b0;
+        opstore_write_data    = 'b0;
+        opstore_write_mask    = 'b0;
 
-        if (is_load & ~outstanding_load) begin
-            read_valid   = 1'b1;
-            read_address = {3'b0, ls_address[`RESULT_WIDTH-1:3]};
+        if (is_load & ~outstanding_load_q) begin
+            opload_index_valid   = 1'b1;
+            opload_index = {3'b0, ls_address[`RESULT_WIDTH-1:3]};
         end
-        if (is_store & ~outstanding_store) begin
-            write_valid   = 1'b1;
-            write_address = {3'b0, ls_address[`RESULT_WIDTH-1:3]};
-            write_mask    = write_mask_qual;
-            write_data    = write_data_qual;
+        if (is_store & ~outstanding_store_q) begin
+            opstore_index_valid   = 1'b1;
+            opstore_index = {3'b0, ls_address[`RESULT_WIDTH-1:3]};
+            opstore_write_mask    = opstore_write_mask_qual;
+            opstore_write_data    = opstore_write_data_qual;
         end
 
     end

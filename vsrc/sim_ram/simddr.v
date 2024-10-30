@@ -1,7 +1,7 @@
 
 module simddr (
-    input wire clk,                         // Clock signal
-    input wire rst_n,                       // rst_n signal
+    input wire clock,                         // Clock signal
+    input wire reset_n,                       // reset_n signal
     input wire ddr_chip_enable,                 // Chip enable signal (1 to enable operations)
     input wire [18:0] ddr_index,              // Address input (19 bits to address 524,288 entries)
     input wire ddr_write_enable,                // Write enable signal (1 for write, 0 for read)
@@ -38,8 +38,8 @@ import "DPI-C" function void difftest_ram_write
     //     end
     // end
     reg ddr_ready_dly;
-    always @(posedge clk or negedge rst_n) begin
-        if (~rst_n) begin 
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin 
             ddr_ready_dly <= 1'b1;
         end else begin
             ddr_ready_dly <= ddr_ready;
@@ -48,8 +48,8 @@ import "DPI-C" function void difftest_ram_write
     assign ddr_operation_done = ddr_ready & (!ddr_ready_dly);
     // State machine to handle both burst and single access read/write operations
     wire [63:0] concat_address = {45'b0, ddr_index};
-    always @(posedge clk or negedge rst_n) begin
-        if (~rst_n) begin
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
             cycle_counter <= 8'b0;
             ddr_ready <= 1'b1;
             operation_in_progress <= 1'b0;
@@ -58,7 +58,7 @@ import "DPI-C" function void difftest_ram_write
         end else begin
             if (ddr_chip_enable && operation_in_progress) begin  // Operations only proceed when ddr_chip_enable is high
                 if (ddr_burst_mode && cycle_counter == 8'd79) begin  // After 80 cycles in burst mode
-                    cycle_counter <= 8'b0;        // rst_n cycle counter
+                    cycle_counter <= 8'b0;        // reset_n cycle counter
                     ddr_ready <= 1'b1;                // Signal that the operation is complete
                     operation_in_progress <= 1'b0;  // End the operation
                     
@@ -92,7 +92,7 @@ import "DPI-C" function void difftest_ram_write
                         // memory[ddr_index + 7] <= ddr_l2_write_data[511:448];
                     end
                 end else if (!ddr_burst_mode && cycle_counter == 8'd63) begin  // After 64 cycles for single access
-                    cycle_counter <= 8'b0;        // rst_n cycle counter
+                    cycle_counter <= 8'b0;        // reset_n cycle counter
                     ddr_ready <= 1'b1;                // Signal that the operation is complete
                     operation_in_progress <= 1'b0;  // End the operation
                     
@@ -112,9 +112,9 @@ import "DPI-C" function void difftest_ram_write
                 end
             end else if (ddr_chip_enable && !operation_in_progress && (!ddr_write_enable || ddr_write_enable)) begin
                 // Start a new read or write operation if ddr_chip_enable is 1
-                cycle_counter <= 8'b0;            // rst_n cycle counter
+                cycle_counter <= 8'b0;            // reset_n cycle counter
                 operation_in_progress <= 1'b1;    // Mark operation as in progress
-                ddr_ready <= 1'b0;                    // rst_n ddr_ready signal
+                ddr_ready <= 1'b0;                    // reset_n ddr_ready signal
             end
         end
     end

@@ -64,13 +64,13 @@ module alu (
     end
 
     wire [`SRC_RANGE] add_sub_result_w = src1[31:0] + src2_qual[31:0];
-    wire [`SRC_RANGE] add_sub_result =  is_word? {32{add_sub_result_w[31]}, add_sub_result_w[31:0]} : src1 + src2_qual;
+    wire [`SRC_RANGE] add_sub_result =  is_word? {{32{add_sub_result_w[31]}}, add_sub_result_w[31:0]} : src1 + src2_qual;
 
     reg is_less ;
     wire is_lessu = src1 < src2_qual ;
 
     always @(*) begin
-        case(src1[`SRC_WIDTH-1], src2_qual[`SRC_WIDTH-1]) 
+        case({src1[`SRC_WIDTH-1], src2_qual[`SRC_WIDTH-1]}) 
             2'b00: is_less = src1[`SRC_WIDTH-2:0 ] < src2_qual[`SRC_WIDTH-2:0 ];
             2'b01: is_less = 1'b0;
             2'b10: is_less = 1'b1;
@@ -98,5 +98,5 @@ module alu (
                     is_sll ? sll_result :
                     is_srl ? srl_result :
                     is_sra ? sra_result :
-                    is_lui ? imm ) & {64{valid}}  ;
+                    is_lui ? imm : 'b0) & {64{valid}}  ;
 endmodule

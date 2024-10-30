@@ -7,7 +7,8 @@ module channel_arb (
     output reg [511:0] pc_read_inst, // Output burst read data for pc channel
     output wire pc_operation_done,
 
-    // SW Channel Inputs and Outputs
+    
+    // LSU store Channel Inputs and Outputs
     input wire opstore_index_valid,                 // Valid signal for opstore_index
     input wire [18:0] opstore_index,                // 19-bit input for opstore_index (Channel 2)
     output reg opstore_index_ready,                       // Ready signal for opstore channel
@@ -15,12 +16,11 @@ module channel_arb (
     input wire [63:0] opstore_write_data,       // 64-bit data input for opstore channel write
     output wire opstore_operation_done,
 
-    // LW Channel Inputs and Outputs
+    // LSU load Channel Inputs and Outputs
     input wire opload_index_valid,                 // Valid signal for opload_index
     input wire [18:0] opload_index,                // 19-bit input for opload_index (Channel 3)
     output reg opload_index_ready,                       // Ready signal for lw channel
     output reg [63:0] opload_read_data,        // Output read data for lw channel
-    output wire opload_done,
     output wire opload_operation_done,
 
     // DDR Control Inputs and Outputs
