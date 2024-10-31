@@ -1,6 +1,6 @@
 module pc_ctrl (
-    input wire clk,                          // Clock signal
-    input wire rst_n,                        // Active-low reset signal
+    input wire clock,                          // Clock signal
+    input wire reset_n,                        // Active-low reset signal
 
     //boot and interrupt addr
     input wire [47:0] boot_addr,             // 48-bit boot address
@@ -8,8 +8,8 @@ module pc_ctrl (
     input wire [47:0] interrupt_addr,        // 48-bit interrupt address
 
     //port with pju
-    input wire branch_addr_valid,
-    input wire [47:0] branch_addr,
+    input wire redirect_valid,
+    input wire [47:0] redirect_target,
 
     //ports with ibbufer
     input wire fetch_inst,                   // Fetch instruction signal, pulse signal for PC increment
@@ -27,9 +27,9 @@ module pc_ctrl (
     // Output the selected bits [21:3] of the current PC as pc_index
     assign pc_index = pc[21:3];
 
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            // Reset PC to boot address, and clear other signals on negative edge of rst_n
+    always @(posedge clock or negedge reset_n) begin
+        if (!reset_n) begin
+            // Reset PC to boot address, and clear other signals on negative edge of reset_n
             pc <= boot_addr;
             pc_index_valid <= 1'b0;
             can_fetch_inst <= 1'b0;
@@ -40,10 +40,10 @@ module pc_ctrl (
                 pc_index_valid <= 1'b1;     // Set pc_index_valid to indicate new index is ready
                 can_fetch_inst <= 1'b0;     // Clear can_fetch_inst during interrupt processing
                 clear_ibuffer <= 1'b1;
-        end else if (branch_addr_valid)begin
+        end else if (redirect_valid)begin
                 //Update pc: Handle branch logic
                 pc_index_valid <= 1'b1;
-                pc <= branch_addr;
+                pc <= redirect_target;
                 can_fetch_inst <= 1'b0;
                 clear_ibuffer <= 1'b1;
         end else if (fetch_inst) begin

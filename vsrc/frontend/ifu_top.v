@@ -1,6 +1,6 @@
 module ifu_top (
-    input wire clk,
-    input wire rst_n,
+    input wire clock,
+    input wire reset_n,
 
     // Inputs for PC control
     input wire [47:0] boot_addr,               // 48-bit boot address
@@ -31,8 +31,8 @@ module ifu_top (
 
     // Instantiate the ibuffer module
     ibuffer ibuffer_inst (
-        .clk(clk),
-        .rst_n(rst_n),
+        .clock(clock),
+        .reset_n(reset_n),
         .pc_index_ready(pc_index_ready),
         .pc_read_inst(pc_read_inst),
         .fifo_read_en(fifo_read_en),

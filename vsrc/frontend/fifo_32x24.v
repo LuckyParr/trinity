@@ -1,6 +1,6 @@
 module fifo_32x24 (
-    input wire clk,
-    input wire rst_n,
+    input wire clock,
+    input wire reset_n,
     input wire [31:0] data_in,      // 32-bit data input
     input wire write_en,            // Write enable
     input wire read_en,             // Read enable
@@ -16,8 +16,8 @@ module fifo_32x24 (
     reg [4:0] read_ptr;             // Read pointer
     reg [4:0] write_ptr;            // Write pointer
 
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n || clear_ibuffer) begin
+    always @(posedge clock or negedge reset_n) begin
+        if (!reset_n || clear_ibuffer) begin
             // Reset or clear the FIFO
             read_ptr <= 5'b0;
             write_ptr <= 5'b0;

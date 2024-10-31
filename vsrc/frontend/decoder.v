@@ -1,6 +1,6 @@
 module decoder (
-    input wire clk,
-    input wire rst_n,
+    input wire clock,
+    input wire reset_n,
     input wire fifo_empty,                
     input wire [31:0] fifo_data_out,  
     input [63:0] rs1_regdata,

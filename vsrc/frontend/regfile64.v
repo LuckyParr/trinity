@@ -1,6 +1,6 @@
 module regfile64 (
-    input wire clk,
-    input wire rst_n,
+    input wire clock,
+    input wire reset_n,
     input wire [4:0] rs1,               // Read register 1 address
     input wire [4:0] rs2,               // Read register 2 address
     input wire [4:0] rd,                // Write register address
@@ -14,8 +14,8 @@ module regfile64 (
 
     // Reset all registers to 0 (optional)
     integer i;
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
+    always @(posedge clock or negedge reset_n) begin
+        if (!reset_n) begin
             for (i = 0; i < 32; i = i + 1) begin
                 registers[i] <= 64'b0;
             end

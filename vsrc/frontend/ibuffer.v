@@ -1,6 +1,6 @@
 module ibuffer (
-    input wire clk,
-    input wire rst_n,
+    input wire clock,
+    input wire reset_n,
     input wire pc_index_ready,                  // Signal indicating readiness from `pc_index`
     input wire [511:0] pc_read_inst,        // 512-bit input data from arbiter (16 instructions, 32 bits each)
     input wire fifo_read_en,                    // External read enable signal for FIFO
@@ -22,8 +22,8 @@ module ibuffer (
 
     // Instantiate the 32x24 FIFO with clear functionality
     fifo_32x24 fifo_inst (
-        .clk(clk),
-        .rst_n(rst_n),
+        .clock(clock),
+        .reset_n(reset_n),
         .data_in(inst_buffer[write_index]),     // 32-bit input to FIFO
         .write_en(write_enable),
         .read_en(fifo_read_en),
@@ -37,8 +37,8 @@ module ibuffer (
     reg [3:0] write_index;                      // Index for loading instructions into FIFO
 
     // Detect rising edge of pc_index_ready
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
+    always @(posedge clock or negedge reset_n) begin
+        if (!reset_n) begin
             pc_index_ready_prev <= 1'b0;
         end else begin
             pc_index_ready_prev <= pc_index_ready;
@@ -46,8 +46,8 @@ module ibuffer (
     end
 
     // Store 16 instructions into inst_buffer when pc_index_ready rises from 0 to 1
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n || clear_ibuffer) begin
+    always @(posedge clock or negedge reset_n) begin
+        if (!reset_n || clear_ibuffer) begin
             write_index <= 4'b0;
             write_enable <= 1'b0;
             fetch_inst <= 1'b0;
