@@ -42,7 +42,9 @@ module frontend (
     output wire [47:0] decoder_inst_out,
 
     //write back enable
-    input wire rd_write
+    input wire writeback_valid,
+    input wire [4:0] writeback_rd,
+    input wire [`RESULT_RANGE]writeback_data
 
 );
 
@@ -116,9 +118,9 @@ module frontend (
         .reset_n      (reset_n),
         .rs1          (rs1),
         .rs2          (rs2),
-        .rd           (rd),
-        .rd_write_data(rd_write_data),
-        .rd_write     (rd_write),
+        .rd           (writeback_rd),
+        .rd_write_data(writeback_data),
+        .rd_write     (writeback_valid),
         .rs1_read_data(rs1_read_data),
         .rs2_read_data(rs2_read_data)
     );

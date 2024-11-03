@@ -78,12 +78,14 @@ module core_top #(
     wire                      opload_operation_done;
 
 
+    wire [4:0] wb_rd;
+    
     frontend u_frontend (
         .clock            (clock),
         .reset_n          (reset_n),
         .redirect_valid   (redirect_valid),
         .redirect_target  (redirect_target),
-        .pc_index_valid (pc_index_valid),
+        .pc_index_valid   (pc_index_valid),
         .pc_index_ready   (pc_index_ready),
         .pc_operation_done(pc_operation_done),
         .pc_read_inst     (pc_read_inst),
@@ -110,7 +112,11 @@ module core_top #(
         .muldiv_type      (muldiv_type),
         .decoder_pc_out   (decoder_pc_out),
         .decoder_inst_out (decoder_inst_out),
-        .rd_write         (wb_valid)
+        //write back enable
+        .writeback_valid  (wb_valid),
+        .writeback_rd     (wb_rd),
+        .writeback_data   (wb_data)
+
     );
 
     backend u_backend (
@@ -137,6 +143,7 @@ module core_top #(
         .pc                    (pc),
         .instr                 (instr),
         .wb_valid              (wb_valid),
+        .wb_rd                 (wb_rd),
         .wb_data               (wb_data),
         .redirect_valid        (redirect_valid),
         .redirect_target       (redirect_target),

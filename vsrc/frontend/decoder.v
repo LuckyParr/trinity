@@ -9,8 +9,8 @@ module decoder (
     //to regfile read 
     output reg [ 4:0] rs1,
     output reg [ 4:0] rs2,
-    input      [63:0] rs1_read_data,
-    input      [63:0] rs2_read_data,
+    input  wire    [63:0] rs1_read_data,
+    input  wire    [63:0] rs2_read_data,
 
     output reg  [ 4:0] rd,
     output reg  [63:0] src1,
@@ -66,7 +66,8 @@ module decoder (
     reg [63:0] imm_utype_64;
     reg [63:0] imm_jtype_64;
 
-
+    assign src1             = rs1_read_data;
+    assign src2             = rs2_read_data;
     always @(*) begin
         if (!fifo_empty) begin
             imm_itype        = ibuffer_inst_out[31:20];
@@ -98,8 +99,6 @@ module decoder (
             rs1              = ibuffer_inst_out[19:15];
             rs2              = ibuffer_inst_out[24:20];
             rd               = ibuffer_inst_out[11:7];
-            src1             = 64'b0;
-            src2             = 64'b0;
             src1_is_reg      = 1'b0;
             src2_is_reg      = 1'b0;
             need_to_wb       = 1'b0;
@@ -113,8 +112,7 @@ module decoder (
             ls_size          = 4'b0;
             muldiv_type      = 12'b0;
 
-            src1             = rs1_read_data;
-            src2             = rs2_read_data;
+
 
             opcode           = ibuffer_inst_out[6:0];
             funct3           = ibuffer_inst_out[14:12];
@@ -231,7 +229,7 @@ module decoder (
                 OPCODE_ALU_ITYPE: begin
                     imm        = imm_itype_64_s;
                     need_to_wb = 1'b1;
-                    case ({
+                    casez ({
                         funct7, funct3
                     })
                         10'b??????000: begin
@@ -346,7 +344,7 @@ module decoder (
                 OPCODE_ALU_ITYPE_WORD: begin
                     is_word    = 1'b1;
                     need_to_wb = 1'b1;
-                    case ({
+                    casez ({
                         funct7, funct3
                     })
                         10'b??????000: begin

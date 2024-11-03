@@ -33,7 +33,10 @@ module regfile64 (
         end else begin
             rs1_read_data = registers[rs1];
         end
-
+    end
+    // Combinational read logic with forwarding
+    always @(*) begin
+        // Forward rd_write_data if rd_write is active and addresses match
         if (rd_write && rd == rs2 && rd != 5'b0) begin
             rs2_read_data = rd_write_data;
         end else begin

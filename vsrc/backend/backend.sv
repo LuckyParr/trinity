@@ -28,6 +28,7 @@ module backend (
     //write back lreg 
     output wire                 wb_valid,
     output wire [`RESULT_RANGE] wb_data,
+    output wire [4:0] wb_rd,
 
     //redirect
     output wire             redirect_valid,
@@ -208,7 +209,6 @@ module backend (
 
     wire [       `LREG_RANGE] wb_rs1;
     wire [       `LREG_RANGE] wb_rs2;
-    wire [       `LREG_RANGE] wb_rd;
     wire [        `SRC_RANGE] wb_src1;
     wire [        `SRC_RANGE] wb_src2;
     wire [        `SRC_RANGE] wb_imm;
@@ -270,7 +270,7 @@ module backend (
         .out_imm                (wb_imm),
         .out_src1_is_reg        (wb_src1_is_reg),
         .out_src2_is_reg        (wb_src2_is_reg),
-        .out_need_to_wb         (wb_need_to_wb),
+        .out_need_to_wb         (wb_valid),
         .out_cx_type            (wb_cx_type),
         .out_is_unsigned        (wb_is_unsigned),
         .out_alu_type           (wb_alu_type),
@@ -289,7 +289,7 @@ module backend (
         .out_opload_read_data_wb(wb_opload_read_data_wb)
     );
 
-
+    assign wb_data = wb_alu_result;
 
     wire commit_valid = wb_alu_type | wb_cx_type | wb_muldiv_type | wb_is_load | wb_is_store;
     DifftestInstrCommit u_DifftestInstrCommit (
