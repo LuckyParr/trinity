@@ -6,14 +6,19 @@ module ibuffer (
     input wire fifo_read_en,                    // External read enable signal for FIFO
     input wire clear_ibuffer,                   // Clear signal for ibuffer
     input wire can_fetch_inst,
+    input wire [47:0] pc,
 
+    output [31:0] wire ibuffer_inst_out,
+    output [47:0] wire ibuffer_pc_out,
     output reg fetch_inst,                      // Output pulse when FIFO count decreases from 4 to 3
-    output wire [31:0] fifo_data_out,           // 32-bit output data from the FIFO
     output wire fifo_empty                      // Signal indicating if the FIFO is empty
 );
+    wire [(32+48-1):0] fifo_inst_addr_out;           // 32-bit output data from the FIFO
+    assign ibuffer_inst_out = fifo_inst_addr_out[(32+48-1):48];
+    assign ibuffer_pc_out = fifo_inst_addr_out[47:0];
 
     // Internal signals
-    reg [31:0] inst_buffer [0:15];              // Buffer to store 16 instructions (32-bit each)
+    reg [(32+48-1):0] inst_buffer [0:15];              // Buffer to store 16 instructions (32-bit each)
     reg pc_index_ready_prev;                    // To detect rising edge of pc_index_ready
     reg write_enable;                           // Enable writing to FIFO
     wire fifo_full;                             // Full signal from FIFO
@@ -21,14 +26,14 @@ module ibuffer (
     reg [4:0] fifo_count_prev;                  // Previous FIFO count to detect transition from 4 to 3
 
     // Instantiate the 32x24 FIFO with clear functionality
-    fifo_32x24 fifo_inst (
+    fifo_depth24 fifo_inst (
         .clock(clock),
         .reset_n(reset_n),
         .data_in(inst_buffer[write_index]),     // 32-bit input to FIFO
         .write_en(write_enable),
         .read_en(fifo_read_en),
         .clear_ibuffer(clear_ibuffer),          // Pass clear signal to FIFO
-        .data_out(fifo_data_out),
+        .data_out(fifo_inst_addr_out),
         .empty(fifo_empty),
         .full(fifo_full),
         .count(fifo_count)
@@ -56,22 +61,22 @@ module ibuffer (
             // Detect rising edge of pc_index_ready
             if (pc_index_ready && !pc_index_ready_prev) begin
                 // Split pc_read_inst into 16 instructions and load them into inst_buffer
-                inst_buffer[0] <= pc_read_inst[31:0];
-                inst_buffer[1] <= pc_read_inst[63:32];
-                inst_buffer[2] <= pc_read_inst[95:64];
-                inst_buffer[3] <= pc_read_inst[127:96];
-                inst_buffer[4] <= pc_read_inst[159:128];
-                inst_buffer[5] <= pc_read_inst[191:160];
-                inst_buffer[6] <= pc_read_inst[223:192];
-                inst_buffer[7] <= pc_read_inst[255:224];
-                inst_buffer[8] <= pc_read_inst[287:256];
-                inst_buffer[9] <= pc_read_inst[319:288];
-                inst_buffer[10] <= pc_read_inst[351:320];
-                inst_buffer[11] <= pc_read_inst[383:352];
-                inst_buffer[12] <= pc_read_inst[415:384];
-                inst_buffer[13] <= pc_read_inst[447:416];
-                inst_buffer[14] <= pc_read_inst[479:448];
-                inst_buffer[15] <= pc_read_inst[511:480];
+                inst_buffer[0]  <= {pc_read_inst[31:0]    , (pc+48'd0)};
+                inst_buffer[1]  <= {pc_read_inst[63:32]   , (pc+48'd4)};
+                inst_buffer[2]  <= {pc_read_inst[95:64]   , (pc+48'd8)};
+                inst_buffer[3]  <= {pc_read_inst[127:96]  , (pc+48'd12)};
+                inst_buffer[4]  <= {pc_read_inst[159:128] , (pc+48'd16)};
+                inst_buffer[5]  <= {pc_read_inst[191:160] , (pc+48'd20)};
+                inst_buffer[6]  <= {pc_read_inst[223:192] , (pc+48'd24)};
+                inst_buffer[7]  <= {pc_read_inst[255:224] , (pc+48'd28)};
+                inst_buffer[8]  <= {pc_read_inst[287:256] , (pc+48'd32)};
+                inst_buffer[9]  <= {pc_read_inst[319:288] , (pc+48'd36)};
+                inst_buffer[10] <= {pc_read_inst[351:320] , (pc+48'd40)};
+                inst_buffer[11] <= {pc_read_inst[383:352] , (pc+48'd44)};
+                inst_buffer[12] <= {pc_read_inst[415:384] , (pc+48'd48)};
+                inst_buffer[13] <= {pc_read_inst[447:416] , (pc+48'd52)};
+                inst_buffer[14] <= {pc_read_inst[479:448] , (pc+48'd56)};
+                inst_buffer[15] <= {pc_read_inst[511:480] , (pc+48'd60)};
 
                 write_index <= 4'b0;             // Reset write_index
                 write_enable <= 1'b1;            // Start writing to FIFO

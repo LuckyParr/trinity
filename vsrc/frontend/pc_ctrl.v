@@ -11,19 +11,21 @@ module pc_ctrl (
     input wire redirect_valid,
     input wire [47:0] redirect_target,
 
-    //ports with ibbufer
+    //ports with ibuffer
     input wire fetch_inst,                   // Fetch instruction signal, pulse signal for PC increment
     output reg can_fetch_inst,                // Indicates if a new instruction can be fetched
     output reg clear_ibuffer,
+    output reg [47:0] pc,                     // 48-bit Program Counter
 
     //ports with channel_arb
     output reg pc_index_valid,               // Valid signal for PC index
     output wire [18:0] pc_index,              // Selected bits [21:3] of the PC for DDR index
     input wire pc_index_ready,                // Signal indicating DDR operation is complete
     input wire pc_operation_done
+
 );
 
-    reg [47:0] pc;                           // 48-bit Program Counter
+    
     // Output the selected bits [21:3] of the current PC as pc_index
     assign pc_index = pc[21:3];
 

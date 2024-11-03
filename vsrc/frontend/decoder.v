@@ -2,11 +2,13 @@ module decoder (
     input wire clock,
     input wire reset_n,
     input wire fifo_empty,                
-    input wire [31:0] fifo_data_out,  
+    input wire [31:0] ibuffer_inst_out, 
+    input wire [47:0] ibuffer_pc_out,
     input [63:0] rs1_regdata,
     input [63:0] rs2_regdata,
 
-
+    output wire [47:0] decoder_pc_out,
+    output wire [47:0] decoder_inst_out,
     output reg [4:0] rs1,
     output reg [4:0] rs2,
     output reg [4:0] rd,
@@ -27,6 +29,8 @@ module decoder (
     output reg [12:0] muldiv_type
 
 );
+    assign decoder_pc_out = ibuffer_pc_out;
+    assign decoder_inst_out = ibuffer_inst_out;
 
     reg [6:0] opcode;
     reg [2:0] funct3;
@@ -62,21 +66,21 @@ module decoder (
 
     always@(*)begin
         if(!fifo_empty)begin
-            imm_itype = fifo_data_out[31:20];
-            imm_stype = {fifo_data_out[31:25],fifo_data_out[11:7]} ;
+            imm_itype = ibuffer_inst_out[31:20];
+            imm_stype = {ibuffer_inst_out[31:25],ibuffer_inst_out[11:7]} ;
 
-            imm_btype[11] = fifo_data_out[7];
-            imm_btype[4:1] = fifo_data_out[11:8];
-            imm_btype[10:5] = fifo_data_out[30:25];
-            imm_btype[12] = fifo_data_out[31];
+            imm_btype[11] = ibuffer_inst_out[7];
+            imm_btype[4:1] = ibuffer_inst_out[11:8];
+            imm_btype[10:5] = ibuffer_inst_out[30:25];
+            imm_btype[12] = ibuffer_inst_out[31];
             imm_btype[0] = 1'b0;
 
-            imm_utype = fifo_data_out[31:12];
+            imm_utype = ibuffer_inst_out[31:12];
 
-            imm_jtype[19:12] =  fifo_data_out[19:12];
-            imm_jtype[11] =  fifo_data_out[20];
-            imm_jtype[10:1] =  fifo_data_out[30:21];
-            imm_jtype[20] =  fifo_data_out[31];
+            imm_jtype[19:12] =  ibuffer_inst_out[19:12];
+            imm_jtype[11] =  ibuffer_inst_out[20];
+            imm_jtype[10:1] =  ibuffer_inst_out[30:21];
+            imm_jtype[20] =  ibuffer_inst_out[31];
             imm_jtype[0] =  1'b0;
 
             imm_itype_64_s = {52{imm_itype[11]},imm_itype};
@@ -88,9 +92,9 @@ module decoder (
             imm_jtype_64 = {43{imm_jtype[20]},imm_jtype};
 
 
-            rs1 = fifo_data_out[19:15];
-            rs2 = fifo_data_out[24:20];
-            rd = fifo_data_out[11:7];
+            rs1 = ibuffer_inst_out[19:15];
+            rs2 = ibuffer_inst_out[24:20];
+            rd = ibuffer_inst_out[11:7];
             src1 = 64'b0;
             src2 = 64'b0;
             src1_is_reg = 1'b0;
@@ -109,9 +113,9 @@ module decoder (
             src1 = rs1_regdata;
             src2 = rs2_regdata;
 
-            opcode = fifo_data_out[6:0];
-            funct3 = fifo_data_out[14:12];
-            funct7 = fifo_data_out[31:25];
+            opcode = ibuffer_inst_out[6:0];
+            funct3 = ibuffer_inst_out[14:12];
+            funct7 = ibuffer_inst_out[31:25];
             case(opcode)
                 OPCODE_LUI   : 
                     imm = imm_utype_64;

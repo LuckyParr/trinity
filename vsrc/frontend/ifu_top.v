@@ -6,8 +6,8 @@ module ifu_top (
     input wire [47:0] boot_addr,               // 48-bit boot address
     input wire interrupt_valid,                // Interrupt valid signal
     input wire [47:0] interrupt_addr,          // 48-bit interrupt address
-    input wire branch_addr_valid,              // Branch address valid signal
-    input wire [47:0] branch_addr,             // 48-bit branch address
+    input wire redirect_valid,              // Branch address valid signal
+    input wire [47:0] redirect_target,             // 48-bit branch address
     input wire pc_index_ready,                 // Signal indicating DDR operation is complete
     input wire pc_operation_done,              // Signal indicating PC operation is done
 
@@ -17,7 +17,8 @@ module ifu_top (
     input wire clear_ibuffer_ext,              // External clear signal for ibuffer
 
     // Outputs from ibuffer
-    output wire [31:0] fifo_data_out,          // 32-bit output data from the FIFO
+    output wire [31:0] ibuffer_inst_out,
+    output wire [47:0] ibuffer_pc_out,
     output wire fifo_empty,                    // Signal indicating if the FIFO is empty
 
     // Outputs from pc_ctrl
@@ -33,13 +34,15 @@ module ifu_top (
     ibuffer ibuffer_inst (
         .clock(clock),
         .reset_n(reset_n),
+        .pc(pc),
         .pc_index_ready(pc_index_ready),
         .pc_read_inst(pc_read_inst),
         .fifo_read_en(fifo_read_en),
         .clear_ibuffer(clear_ibuffer | clear_ibuffer_ext), // OR external and internal clear signals
         .can_fetch_inst(can_fetch_inst),
         .fetch_inst(fetch_inst),
-        .fifo_data_out(fifo_data_out),
+        .ibuffer_inst_out (ibuffer_inst_out),
+        .ibuffer_pc_out (ibuffer_pc_out),
         .fifo_empty(fifo_empty)
     );
 
@@ -47,11 +50,12 @@ module ifu_top (
     pc_ctrl pc_ctrl_inst (
         .clk(clk),
         .rst_n(rst_n),
+        .pc(pc),
         .boot_addr(boot_addr),
         .interrupt_valid(interrupt_valid),
         .interrupt_addr(interrupt_addr),
-        .branch_addr_valid(branch_addr_valid),
-        .branch_addr(branch_addr),
+        .redirect_valid(redirect_valid),
+        .redirect_target(redirect_target),
         .fetch_inst(fetch_inst),
         .can_fetch_inst(can_fetch_inst),
         .clear_ibuffer(clear_ibuffer),
@@ -60,5 +64,8 @@ module ifu_top (
         .pc_index_ready(pc_index_ready),
         .pc_operation_done(pc_operation_done)
     );
+
+
+
 
 endmodule

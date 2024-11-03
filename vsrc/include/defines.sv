@@ -5,6 +5,9 @@
 `define RESULT_RANGE 63:0
 `define RESULT_WIDTH 64
 `define ALU_TYPE_RANGE 10:0
+
+`define IBUFFER_FIFO_WIDTH 32+48
+`define INST_CACHE_WIDTH 512
 /*
     0 = ADD
     1 = SET LESS THAN

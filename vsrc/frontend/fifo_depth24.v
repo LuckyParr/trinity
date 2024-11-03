@@ -1,18 +1,18 @@
-module fifo_32x24 (
+module fifo_depth24 (
     input wire clock,
     input wire reset_n,
-    input wire [31:0] data_in,      // 32-bit data input
+    input wire [(32+48-1):0] data_in,      // (32+48-1)-bit data input
     input wire write_en,            // Write enable
     input wire read_en,             // Read enable
     input wire clear_ibuffer,       // Clear signal for ibuffer
 
-    output reg [31:0] data_out,     // 32-bit data output
+    output reg [(32+48-1):0] data_out,     // (32+48-1)-bit data output
     output reg empty,               // FIFO empty flag
     output reg full,                // FIFO full flag
     output reg [4:0] count          // FIFO count
 );
 
-    reg [31:0] fifo [23:0];         // FIFO storage (32x24)
+    reg [(32+48-1):0] fifo [23:0];         // FIFO storage ((32+48-1)x24)
     reg [4:0] read_ptr;             // Read pointer
     reg [4:0] write_ptr;            // Write pointer
 
