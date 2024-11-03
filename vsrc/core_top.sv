@@ -78,8 +78,8 @@ module core_top #(
     wire                      opload_operation_done;
 
 
-    wire [4:0] wb_rd;
-    
+    wire [               4:0] wb_rd;
+
     frontend u_frontend (
         .clock            (clock),
         .reset_n          (reset_n),
@@ -118,30 +118,106 @@ module core_top #(
         .writeback_data   (wb_data)
 
     );
+    wire [       `LREG_RANGE] out_rs1;
+    wire [       `LREG_RANGE] out_rs2;
+    wire [       `LREG_RANGE] out_rd;
+    wire [        `SRC_RANGE] out_src1;
+    wire [        `SRC_RANGE] out_src2;
+    wire [        `SRC_RANGE] out_imm;
+    wire                      out_src1_is_reg;
+    wire                      out_src2_is_reg;
+    wire                      out_need_to_wb;
+    wire [    `CX_TYPE_RANGE] out_cx_type;
+    wire                      out_is_unsigned;
+    wire [   `ALU_TYPE_RANGE] out_alu_type;
+    wire                      out_is_word;
+    wire                      out_is_load;
+    wire                      out_is_imm;
+    wire                      out_is_store;
+    wire [               3:0] out_ls_size;
+    wire [`MULDIV_TYPE_RANGE] out_muldiv_type;
+    wire [         `PC_RANGE] out_pc;
+    wire [      `INSTR_RANGE] out_instr;
+    exu_mem_reg u_exu_mem_reg (
+        .clock                  (clock),
+        .reset_n                (reset_n),
+        .stall                  ('b0),
+        .rs1                    (rs1),
+        .rs2                    (rs2),
+        .rd                     (rd),
+        .src1                   (src1),
+        .src2                   (src2),
+        .imm                    (imm),
+        .src1_is_reg            (src1_is_reg),
+        .src2_is_reg            (src2_is_reg),
+        .need_to_wb             (need_to_wb),
+        .cx_type                (cx_type),
+        .is_unsigned            (is_unsigned),
+        .alu_type               (alu_type),
+        .is_word                (is_word),
+        .is_load                (is_load),
+        .is_imm                 (is_imm),
+        .is_store               (is_store),
+        .ls_size                (ls_size),
+        .muldiv_type            (muldiv_type),
+        .pc                     (decoder_pc_out),
+        .instr                  (decoder_inst_out),
+        .ls_address             ('b0),
+        .alu_result             ('b0),
+        .bju_result             ('b0),
+        .muldiv_result          ('b0),
+        .opload_read_data_wb    ('b0),
+        .out_rs1                (out_rs1),
+        .out_rs2                (out_rs2),
+        .out_rd                 (out_rd),
+        .out_src1               (out_src1),
+        .out_src2               (out_src2),
+        .out_imm                (out_imm),
+        .out_src1_is_reg        (out_src1_is_reg),
+        .out_src2_is_reg        (out_src2_is_reg),
+        .out_need_to_wb         (out_need_to_wb),
+        .out_cx_type            (out_cx_type),
+        .out_is_unsigned        (out_is_unsigned),
+        .out_alu_type           (out_alu_type),
+        .out_is_word            (out_is_word),
+        .out_is_load            (out_is_load),
+        .out_is_imm             (out_is_imm),
+        .out_is_store           (out_is_store),
+        .out_ls_size            (out_ls_size),
+        .out_muldiv_type        (out_muldiv_type),
+        .out_pc                 (out_pc),
+        .out_instr              (out_instr),
+        .out_ls_address         (),
+        .out_alu_result         (),
+        .out_bju_result         (),
+        .out_muldiv_result      (),
+        .out_opload_read_data_wb()
+    );
+
 
     backend u_backend (
         .clock                 (clock),
         .reset_n               (reset_n),
-        .rs1                   (rs1),
-        .rs2                   (rs2),
-        .rd                    (rd),
-        .src1                  (src1),
-        .src2                  (src2),
-        .imm                   (imm),
-        .src1_is_reg           (src1_is_reg),
-        .src2_is_reg           (src2_is_reg),
-        .need_to_wb            (need_to_wb),
-        .cx_type               (cx_type),
-        .is_unsigned           (is_unsigned),
-        .alu_type              (alu_type),
-        .is_word               (is_word),
-        .is_load               (is_load),
-        .is_imm                (is_imm),
-        .is_store              (is_store),
-        .ls_size               (ls_size),
-        .muldiv_type           (muldiv_type),
-        .pc                    (pc),
-        .instr                 (instr),
+        .rs1                   (out_rs1),
+        .rs2                   (out_rs2),
+        .rd                    (out_rd),
+        .src1                  (out_src1),
+        .src2                  (out_src2),
+        .imm                   (out_imm),
+        .src1_is_reg           (out_src1_is_reg),
+        .src2_is_reg           (out_src2_is_reg),
+        .need_to_wb            (out_need_to_wb),
+        .cx_type               (out_cx_type),
+        .is_unsigned           (out_is_unsigned),
+        .alu_type              (out_alu_type),
+        .is_word               (out_is_word),
+        .is_load               (out_is_load),
+        .is_imm                (out_is_imm),
+        .is_store              (out_is_store),
+        .ls_size               (out_ls_size),
+        .muldiv_type           (out_muldiv_type),
+        .pc                    (out_pc),
+        .instr                 (out_instr),
         .wb_valid              (wb_valid),
         .wb_rd                 (wb_rd),
         .wb_data               (wb_data),
