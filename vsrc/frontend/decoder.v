@@ -251,6 +251,22 @@ module decoder (
                             alu_type = `IS_OR;
                         0000000111:
                             alu_type = `IS_AND;
+                        0000001000:
+                            muldiv_type = `IS_MUL;
+                        0000001001:
+                            muldiv_type = `IS_MULH;
+                        0000001010:
+                            muldiv_type = `IS_MULHSU;
+                        0000001011:
+                            muldiv_type = `IS_MULHU;
+                        0000001100:
+                            muldiv_type = `IS_DIV;
+                        0000001101:
+                            muldiv_type = `IS_DIVU;
+                        0000001110:
+                            muldiv_type = `IS_REM;
+                        0000001111:
+                            muldiv_type = `IS_REMU;
                         endcase
                 OPCODE_FENCE : 
                 OPCODE_ENV   : 
@@ -285,6 +301,16 @@ module decoder (
                             alu_type = `IS_SRL;
                         0100000101:
                             alu_type = `IS_SRA;
+                        0000001000:
+                            muldiv_type = `IS_MULW;
+                        0000001100:
+                            muldiv_type = `IS_DIVW;
+                        0000001101:
+                            muldiv_type = `IS_DIVUW;
+                        0000001110:
+                            muldiv_type = `IS_REMW;
+                        0000001111:
+                            muldiv_type = `IS_REMUW;
                         endcase                            
                 default: 64'd0;
             endcase

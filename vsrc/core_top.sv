@@ -56,8 +56,8 @@ module core_top #(
     // PC Channel Inputs and Outputs
     wire                      pc_index_valid;  // Valid signal for pc_index
     wire [              18:0] pc_index;  // 19-bit input for pc_index (Channel 1)
-    reg                       pc_index_ready;  // Ready signal for pc channel
-    reg  [             511:0] pc_read_inst;  // Output burst read data for pc channel
+    wire                       pc_index_ready;  // Ready signal for pc channel
+    wire  [             511:0] pc_read_inst;  // Output burst read data for pc channel
     wire                      pc_operation_done;
 
     // LSU store Channel Inputs and Outputs

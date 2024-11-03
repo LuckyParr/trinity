@@ -76,19 +76,19 @@
 `define IS_BGE 10
 
 
-`define MUL 0 
-`define MULH 1 
-`define MULHSU 2 
-`define MULHU 3 
-`define DIV 4 
-`define DIVU 5 
-`define REM 6 
-`define REMU 7 
-`define MULW 8 
-`define DIVW 9 
-`define DIVUW 10
-`define REMW 11
-`define REMUW 12
+`define IS_MUL 0 
+`define IS_MULH 1 
+`define IS_MULHSU 2 
+`define IS_MULHU 3 
+`define IS_DIV 4 
+`define IS_DIVU 5 
+`define IS_REM 6 
+`define IS_REMU 7 
+`define IS_MULW 8 
+`define IS_DIVW 9 
+`define IS_DIVUW 10
+`define IS_REMW 11
+`define IS_REMUW 12
 
 `define IS_B 0 
 `define IS_H 1 
