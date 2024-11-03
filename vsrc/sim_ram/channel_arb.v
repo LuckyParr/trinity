@@ -72,7 +72,7 @@ module channel_arb (
                 ddr_index = opload_index;
                 ddr_chip_enable = 1'b1;
                 ddr_write_enable = 1'b0;             // Read operation
-                //opload_read_data = ddr_opload_read_data;
+                opload_read_data = ddr_opload_read_data;
                 ddr_burst_mode = 1'b0;
                 opload_index_ready = 1'b1;                 // Indicate LW channel is ready
             end else if (pc_index_valid) begin
@@ -80,7 +80,7 @@ module channel_arb (
                 ddr_index = pc_index;
                 ddr_chip_enable = 1'b1;
                 ddr_write_enable = 1'b0;             // Read operation for burst mode
-                //pc_read_inst = ddr_pc_read_inst;
+                pc_read_inst = ddr_pc_read_inst;
                 ddr_burst_mode = 1'b1;
                 pc_index_ready = 1'b1;                 // Indicate PC channel is ready
             end
