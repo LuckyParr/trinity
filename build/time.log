@@ -6511,3 +6511,56 @@ Command exited with non-zero status 1
 	Signals delivered: 0
 	Page size (bytes): 4096
 	Exit status: 1
+-e 
+[verilator] Generating C++ files...
+Sun, 03 Nov 2024 19:55:04 +0800
+Command exited with non-zero status 1
+	Command being timed: "verilator --exe -O0 --cc --top-module SimTop +define+VERILATOR=1 +define+PRINTF_COND=1 +define+RANDOMIZE_REG_INIT +define+RANDOMIZE_MEM_INIT +define+RANDOMIZE_GARBAGE_ASSIGN +define+RANDOMIZE_DELAY=0 -Wno-STMTDLY -Wno-WIDTH --max-num-width 150000 --assert --x-assign unique --output-split 30000 --output-split-cfuncs 30000 -I/nfs/home/xuyue/trinity/build/rtl -I/nfs/home/xuyue/trinity/build/generated-src -I../vsrc/ -I../vsrc/sim_ram/ -I../vsrc/frontend/ -I../vsrc/backend/ -I../vsrc/include/ -I../vsrc/fu/ -CFLAGS -I/nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common -I/nfs/home/xuyue/trinity/difftest_trinity/config -DNOOP_HOME=\"/nfs/home/xuyue/trinity\" -I/nfs/home/xuyue/trinity/build/generated-src -I/nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/plugin/include -I/nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/difftest -I/nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/plugin/spikedasm -I/nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/verilator -DVERILATOR -DNUM_CORES=1 --std=c++17 -DVERILATOR_4_210 -LDFLAGS -lz -lzstd -ldl -CFLAGS $(PGO_CFLAGS) -LDFLAGS $(PGO_LDFLAGS) -o /nfs/home/xuyue/trinity/build/emu +define+DIFFTEST --instr-count-dpi 1 --no-timing +define+VERILATOR_5 --quiet-stats --trace -Mdir /nfs/home/xuyue/trinity/build/emu-compile /nfs/home/xuyue/trinity/vsrc/SimTop.sv /nfs/home/xuyue/trinity/difftest_trinity/src/test/vsrc/common/ref.v /nfs/home/xuyue/trinity/difftest_trinity/src/test/vsrc/common/assert.v /nfs/home/xuyue/trinity/difftest_trinity/src/test/vsrc/common/SimJTAG.v /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/uart.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/main.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/compress.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/common.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/golden.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/flash.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/coverage.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/lightsss.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/device.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/keyboard.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/dut.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/ram.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/SimJTAG.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/vga.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/remote_bitbang.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/perf.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/sdcard.cpp /nfs/home/xuyue/trinity/build/generated-src/difftest-dpic.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/difftest/difftrace.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/difftest/difftest.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/difftest/refproxy.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/difftest/goldenmem.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/plugin/spikedasm/spikedasm.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/verilator/snapshot.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/verilator/emu.cpp"
+	User time (seconds): 0.10
+	System time (seconds): 0.04
+	Percent of CPU this job got: 42%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.36
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 24036
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 7201
+	Voluntary context switches: 425
+	Involuntary context switches: 3
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 2296
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1
+-e 
+[c++] Compiling C++ files...
+Sun, 03 Nov 2024 19:55:17 +0800
+	Command being timed: "make -s VM_PARALLEL_BUILDS=1 OPT_SLOW=-O0 OPT_FAST=-O3 PGO_CFLAGS= PGO_LDFLAGS= -C /nfs/home/xuyue/trinity/build/emu-compile -f /nfs/home/xuyue/trinity/build/emu-compile/VSimTop.mk"
+	User time (seconds): 41.91
+	System time (seconds): 12.52
+	Percent of CPU this job got: 986%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.51
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 174544
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 1658
+	Minor (reclaiming a frame) page faults: 1908573
+	Voluntary context switches: 23116
+	Involuntary context switches: 1107
+	Swaps: 0
+	File system inputs: 58880
+	File system outputs: 99152
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
