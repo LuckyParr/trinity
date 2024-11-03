@@ -23,16 +23,16 @@ module SimTop (
 
 
     // DDR Control Inputs and Outputs
-    wire ddr_chip_enable;                    // Enables chip for one cycle when a channel is selected
-    wire [18:0] ddr_index;               // 19-bit selected index to be sent to DDR
-    wire ddr_write_enable;                    // Write enable signal (1 for write; 0 for read)
-    wire ddr_burst_mode;                     // Burst mode signal; 1 when pc_index is selected
-    wire [63:0] ddr_opstore_write_mask;           // Output write mask for opstore channel
-    wire [63:0] ddr_opstore_write_data;           // Output write data for opstore channel
-    wire [63:0] ddr_opload_read_data;            // 64-bit data output for lw channel read
+    wire         ddr_chip_enable;  // Enables chip for one cycle when a channel is selected
+    wire [ 18:0] ddr_index;  // 19-bit selected index to be sent to DDR
+    wire         ddr_write_enable;  // Write enable signal (1 for write; 0 for read)
+    wire         ddr_burst_mode;  // Burst mode signal; 1 when pc_index is selected
+    wire [ 63:0] ddr_opstore_write_mask;  // Output write mask for opstore channel
+    wire [ 63:0] ddr_opstore_write_data;  // Output write data for opstore channel
+    wire [ 63:0] ddr_opload_read_data;  // 64-bit data output for lw channel read
     wire [511:0] ddr_pc_read_inst;  // 512-bit data output for pc channel burst read
-    wire ddr_operation_done;
-    wire ddr_ready;                      // Indicates if DDR is ready for new operation
+    wire         ddr_operation_done;
+    wire         ddr_ready;  // Indicates if DDR is ready for new operation
 
     core_top u_core_top (
         .clock                 (clock),
@@ -66,11 +66,20 @@ module SimTop (
         .ddr_ready             (ddr_ready)
     );
 
+    reg [63:0] cycle_cnt;
+    always @(posedge clock) begin
+        if (reset) begin
+            cycle_cnt <= 'b0;
+        end else begin
+            cycle_cnt <= cycle_cnt + 1'b1;
+        end
+
+    end
     DifftestTrapEvent u_DifftestTrapEvent (
         .clock      (clock),
         .enable     (1'b1),
         .io_hasTrap (1'b0),
-        .io_cycleCnt('b0),
+        .io_cycleCnt(cycle_cnt),
         .io_instrCnt('b0),
         .io_hasWFI  ('b0),
         .io_code    ('b0),
@@ -90,6 +99,30 @@ module SimTop (
         .io_hasNMI                        ('b0),
         .io_virtualInterruptIsHvictlInject('b0),
         .io_coreid                        (1'b0)
+    );
+
+    DifftestCSRState u_DifftestCSRState (
+        .clock           (clock),
+        .enable          ('b1),
+        .io_privilegeMode('b0),
+        .io_mstatus      ('b0),
+        .io_sstatus      ('b0),
+        .io_mepc         ('b0),
+        .io_sepc         ('b0),
+        .io_mtval        ('b0),
+        .io_stval        ('b0),
+        .io_mtvec        ('b0),
+        .io_stvec        ('b0),
+        .io_mcause       ('b0),
+        .io_scause       ('b0),
+        .io_satp         ('b0),
+        .io_mip          ('b0),
+        .io_mie          ('b0),
+        .io_mscratch     ('b0),
+        .io_sscratch     ('b0),
+        .io_mideleg      ('b0),
+        .io_medeleg      ('b0),
+        .io_coreid       ('b0)
     );
 
 

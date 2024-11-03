@@ -294,8 +294,8 @@ module backend (
     wire commit_valid = wb_alu_type | wb_cx_type | wb_muldiv_type | wb_is_load | wb_is_store;
     DifftestInstrCommit u_DifftestInstrCommit (
         .clock     (clock),
-        .enable    (1'b1),
-        .io_valid  (commit_valid),
+        .enable    (commit_valid),
+        .io_valid  ('b0), //unuse!!!!
         .io_skip   (1'b0),
         .io_isRVC  (1'b0),
         .io_rfwen  (wb_need_to_wb),
