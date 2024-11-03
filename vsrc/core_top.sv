@@ -44,6 +44,8 @@ module core_top #(
     wire [      `INSTR_RANGE] instr;
     wire                      wb_valid;
     wire [     `RESULT_RANGE] wb_data;
+    wire [              47:0] decoder_pc_out;
+    wire [              47:0] decoder_inst_out;
 
     //redirect
     wire                      redirect_valid;
@@ -56,8 +58,8 @@ module core_top #(
     // PC Channel Inputs and Outputs
     wire                      pc_index_valid;  // Valid signal for pc_index
     wire [              18:0] pc_index;  // 19-bit input for pc_index (Channel 1)
-    wire                       pc_index_ready;  // Ready signal for pc channel
-    wire  [             511:0] pc_read_inst;  // Output burst read data for pc channel
+    wire                      pc_index_ready;  // Ready signal for pc channel
+    wire [             511:0] pc_read_inst;  // Output burst read data for pc channel
     wire                      pc_operation_done;
 
     // LSU store Channel Inputs and Outputs
@@ -74,6 +76,42 @@ module core_top #(
     wire                      opload_index_ready;  // Ready signal for lw channel
     wire [              63:0] opload_read_data;  // Output read data for lw channel
     wire                      opload_operation_done;
+
+
+    frontend u_frontend (
+        .clock            (clock),
+        .reset_n          (reset_n),
+        .redirect_valid   (redirect_valid),
+        .redirect_target  (redirect_target),
+        .pc_index_valid (pc_index_valid),
+        .pc_index_ready   (pc_index_ready),
+        .pc_operation_done(pc_operation_done),
+        .pc_read_inst     (pc_read_inst),
+        .pc_index         (pc_index),
+        .fifo_read_en     (1'b1),
+        .clear_ibuffer_ext(redirect_valid),
+        .rs1              (rs1),
+        .rs2              (rs2),
+        .rd               (rd),
+        .src1             (src1),
+        .src2             (src2),
+        .imm              (imm),
+        .src1_is_reg      (src1_is_reg),
+        .src2_is_reg      (src2_is_reg),
+        .need_to_wb       (need_to_wb),
+        .cx_type          (cx_type),
+        .is_unsigned      (is_unsigned),
+        .alu_type         (alu_type),
+        .is_word          (is_word),
+        .is_imm           (is_imm),
+        .is_load          (is_load),
+        .is_store         (is_store),
+        .ls_size          (ls_size),
+        .muldiv_type      (muldiv_type),
+        .decoder_pc_out   (decoder_pc_out),
+        .decoder_inst_out (decoder_inst_out),
+        .rd_write         (wb_valid)
+    );
 
     backend u_backend (
         .clock                 (clock),

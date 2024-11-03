@@ -8,6 +8,7 @@ module ifu_top (
     input wire [47:0] interrupt_addr,          // 48-bit interrupt address
     input wire redirect_valid,              // Branch address valid signal
     input wire [47:0] redirect_target,             // 48-bit branch address
+    output wire pc_index_valid,
     input wire pc_index_ready,                 // Signal indicating DDR operation is complete
     input wire pc_operation_done,              // Signal indicating PC operation is done
 
@@ -30,6 +31,7 @@ module ifu_top (
     wire can_fetch_inst;                       // Signal from pc_ctrl to allow fetch in ibuffer
     wire clear_ibuffer;                        // Clear signal from pc_ctrl to ibuffer
 
+    wire [47:0] pc;
     // Instantiate the ibuffer module
     ibuffer ibuffer_inst (
         .clock(clock),
@@ -48,8 +50,8 @@ module ifu_top (
 
     // Instantiate the pc_ctrl module
     pc_ctrl pc_ctrl_inst (
-        .clk(clk),
-        .rst_n(rst_n),
+        .clock(clock),
+        .reset_n(reset_n),
         .pc(pc),
         .boot_addr(boot_addr),
         .interrupt_valid(interrupt_valid),
@@ -59,7 +61,7 @@ module ifu_top (
         .fetch_inst(fetch_inst),
         .can_fetch_inst(can_fetch_inst),
         .clear_ibuffer(clear_ibuffer),
-        .pc_index_valid(),
+        .pc_index_valid(pc_index_valid),
         .pc_index(pc_index),
         .pc_index_ready(pc_index_ready),
         .pc_operation_done(pc_operation_done)

@@ -8,8 +8,8 @@ module ibuffer (
     input wire can_fetch_inst,
     input wire [47:0] pc,
 
-    output [31:0] wire ibuffer_inst_out,
-    output [47:0] wire ibuffer_pc_out,
+    output wire [31:0]  ibuffer_inst_out,
+    output wire [47:0]  ibuffer_pc_out,
     output reg fetch_inst,                      // Output pulse when FIFO count decreases from 4 to 3
     output wire fifo_empty                      // Signal indicating if the FIFO is empty
 );
@@ -95,7 +95,7 @@ module ibuffer (
 
             // Generate fetch_inst pulse when FIFO count decreases from 4 to 3
             if(can_fetch_inst)begin
-                fetch_inst <= (fifo_count_prev == 5'd4 && fifo_count == 5'd3) ? 1'b1 : 1'b0;
+                fetch_inst <= ((fifo_count_prev == 5'd4 && fifo_count == 5'd3)||fifo_empty) ? 1'b1 : 1'b0;
             end
         end
     end

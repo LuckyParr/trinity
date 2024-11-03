@@ -56,7 +56,8 @@ import "DPI-C" function void difftest_ram_write
             ddr_pc_read_inst <= 512'b0;
             ddr_opload_read_data <= 64'b0;
         end else begin
-            if (ddr_chip_enable && operation_in_progress) begin  // Operations only proceed when ddr_chip_enable is high
+            //if (ddr_chip_enable && operation_in_progress) begin  // Operations only proceed when ddr_chip_enable is high
+            if (operation_in_progress) begin  // Operations only proceed when ddr_chip_enable is high
                 if (ddr_burst_mode && cycle_counter == 8'd79) begin  // After 80 cycles in burst mode
                     cycle_counter <= 8'b0;        // reset_n cycle counter
                     ddr_ready <= 1'b1;                // Signal that the operation is complete

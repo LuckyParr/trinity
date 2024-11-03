@@ -20,7 +20,7 @@ test_run: test_sim
 vcd:
 	gtkwave ./dump/sim.vcd
 
-diff:
+diff: 
 	cd difftest_trinity && make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 -j 16 EMU_TRACE=1
 
 run_diff: diff
