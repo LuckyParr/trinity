@@ -55,7 +55,10 @@ module backend (
     output wire [18:0] opload_index,          // 19-bit output for opload_index (Channel 3)
     input  reg         opload_index_ready,    // Ready signal for lw channel
     input  reg  [63:0] opload_read_data,      // input read data for lw channel
-    input  wire        opload_operation_done
+    input  wire        opload_operation_done,
+    // output instrcnt pulse
+    output reg         flop_commit_valid
+
 
 
 );
@@ -301,7 +304,7 @@ module backend (
 
     wire                commit_valid = ((|wb_alu_type) | (|wb_cx_type) | (|wb_muldiv_type) | wb_is_load | wb_is_store) & wb_valid;
 
-    reg                 flop_commit_valid;
+    // reg                 flop_commit_valid;
     reg                 flop_wb_need_to_wb;
     reg  [         4:0] flop_wb_rd;
     reg  [   `PC_RANGE] flop_wb_pc;

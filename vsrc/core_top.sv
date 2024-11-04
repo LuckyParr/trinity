@@ -14,7 +14,8 @@ module core_top #(
     input  wire [ 63:0] ddr_opload_read_data,    // 64-bit data output for lw channel read
     input  wire [511:0] ddr_pc_read_inst,        // 512-bit data output for pc channel burst read
     input  wire         ddr_operation_done,
-    input  wire         ddr_ready                // Indicates if DDR is ready for new operation
+    input  wire         ddr_ready  ,              // Indicates if DDR is ready for new operation
+    output reg          flop_commit_valid
 );
 
 
@@ -241,7 +242,8 @@ module core_top #(
         .opload_index          (opload_index),
         .opload_index_ready    (opload_index_ready),
         .opload_read_data      (opload_read_data),
-        .opload_operation_done (opload_operation_done)
+        .opload_operation_done (opload_operation_done),
+        .flop_commit_valid     (flop_commit_valid)
     );
 
 

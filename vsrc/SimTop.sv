@@ -33,6 +33,16 @@ module SimTop (
     wire [511:0] ddr_pc_read_inst;  // 512-bit data output for pc channel burst read
     wire         ddr_operation_done;
     wire         ddr_ready;  // Indicates if DDR is ready for new operation
+    wire         flop_commit_valid;
+    reg  [63:0]  commit_valid_cnt;
+
+    always @(posedge clock or negedge reset) begin
+        if(reset) begin
+            commit_valid_cnt <= 0;
+        end else if (flop_commit_valid)begin
+            commit_valid_cnt <= commit_valid_cnt + 1;
+        end
+    end
 
     core_top u_core_top (
         .clock                 (clock),
@@ -46,7 +56,8 @@ module SimTop (
         .ddr_opload_read_data  (ddr_opload_read_data),
         .ddr_pc_read_inst      (ddr_pc_read_inst),
         .ddr_operation_done    (ddr_operation_done),
-        .ddr_ready             (ddr_ready)
+        .ddr_ready             (ddr_ready),
+        .flop_commit_valid     (flop_commit_valid)
     );
 
 
@@ -77,10 +88,10 @@ module SimTop (
     end
     DifftestTrapEvent u_DifftestTrapEvent (
         .clock      (clock),
-        .enable     (1'b0),
+        .enable     (1'b1),
         .io_hasTrap (1'b0),
         .io_cycleCnt(cycle_cnt),
-        .io_instrCnt('b0),
+        .io_instrCnt(commit_valid_cnt),
         .io_hasWFI  ('b0),
         .io_code    ('b0),
         .io_pc      ('b0),
