@@ -8,6 +8,7 @@ module ibuffer (
     input wire clear_ibuffer,                   // Clear signal for ibuffer
     input wire can_fetch_inst,
     input wire [47:0] pc,
+    input wire cut_first_32_bit,
 
     output wire ibuffer_inst_valid,
     output wire [31:0]  ibuffer_inst_out,
@@ -89,7 +90,10 @@ module ibuffer (
             // Write instructions from inst_buffer to FIFO
             if (write_enable && !fifo_full) begin
                 write_index <= write_index + 1;
-                if (write_index == 4'd15) begin
+                if ((cut_first_32_bit == 1) && write_index == 4'd14) begin
+                    write_enable <= 1'b0;        // Stop writing after 16 instructions
+                end
+                if ((cut_first_32_bit == 0) && write_index == 4'd15) begin
                     write_enable <= 1'b0;        // Stop writing after 16 instructions
                 end
             end

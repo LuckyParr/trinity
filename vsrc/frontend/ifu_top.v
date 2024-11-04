@@ -33,14 +33,26 @@ module ifu_top (
     wire clear_ibuffer;                        // Clear signal from pc_ctrl to ibuffer
 
     wire [47:0] pc;
+    wire [511:0] selected_data;
+    wire cut_first_32_bit;
+
+cacheline_selector u_cacheline_selector(
+    .cache_line       (pc_read_inst       ),
+    .pc_bit_2         (pc[2]         ),
+    .cut_first_32_bit (cut_first_32_bit ),
+    .selected_data    (selected_data    )
+);
+
+
     // Instantiate the ibuffer module
     ibuffer ibuffer_inst (
         .clock(clock),
         .reset_n(reset_n),
         .pc(pc),
+        .cut_first_32_bit(cut_first_32_bit),
         .pc_index_ready(pc_index_ready),
         .pc_operation_done(pc_operation_done),
-        .pc_read_inst(pc_read_inst),
+        .pc_read_inst(selected_data),
         .fifo_read_en(fifo_read_en),
         .clear_ibuffer(clear_ibuffer | clear_ibuffer_ext), // OR external and internal clear signals
         .can_fetch_inst(can_fetch_inst),
