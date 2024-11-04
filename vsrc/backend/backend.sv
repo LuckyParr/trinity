@@ -301,7 +301,10 @@ module backend (
     );
 
     assign regfile_write_valid = wb_valid & wb_need_to_wb;
-    assign regfile_write_data  = wb_alu_result;
+    assign regfile_write_data  = (|wb_alu_type) ? wb_alu_result :
+                                 (|wb_cx_type)  ? wb_bju_result : 
+                                 (|wb_muldiv_type) ? wb_muldiv_result :
+                                 wb_is_load ? wb_opload_read_data_wb : 64'hDEADBEEF;
     assign regfile_write_rd    = wb_rd;
 
     wire                commit_valid = ((|wb_alu_type) | (|wb_cx_type) | (|wb_muldiv_type) | wb_is_load | wb_is_store) & wb_valid;
