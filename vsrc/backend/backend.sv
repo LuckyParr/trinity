@@ -291,14 +291,14 @@ module backend (
 
     assign wb_data = wb_alu_result;
 
-    wire commit_valid = wb_alu_type | wb_cx_type | wb_muldiv_type | wb_is_load | wb_is_store;
+    wire commit_valid = (|wb_alu_type) | (|wb_cx_type) | (|wb_muldiv_type) | wb_is_load | wb_is_store;
     DifftestInstrCommit u_DifftestInstrCommit (
         .clock     (clock),
         .enable    (commit_valid),
         .io_valid  ('b0), //unuse!!!!
         .io_skip   (1'b0),
         .io_isRVC  (1'b0),
-        .io_rfwen  (wb_need_to_wb),
+        .io_rfwen  (wb_valid),
         .io_fpwen  (1'b0),
         .io_vecwen (1'b0),
         .io_wpdest (wb_rd),

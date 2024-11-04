@@ -21,7 +21,7 @@
     9 = LUI
     10 = AUIPC
 */
-`define ALU_TYPE_WIDTH 10
+`define ALU_TYPE_WIDTH 11
 `define PC_RANGE 47:0
 `define PC_WIDTH 48
 `define INSTR_RANGE 31:0
@@ -71,12 +71,12 @@
 `define IS_LUI 9
 `define IS_AUIPC 10
 
-`define IS_JAL 10
-`define IS_JALR 10
-`define IS_BEQ 10
-`define IS_BNE 10
-`define IS_BLT 10
-`define IS_BGE 10
+`define IS_JAL 0
+`define IS_JALR 1
+`define IS_BEQ 2
+`define IS_BNE 3
+`define IS_BLT 4
+`define IS_BGE 5
 
 
 `define IS_MUL 0 
