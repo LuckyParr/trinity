@@ -7446,3 +7446,107 @@ Sun, 03 Nov 2024 23:02:35 +0800
 	Signals delivered: 0
 	Page size (bytes): 4096
 	Exit status: 0
+-e 
+[verilator] Generating C++ files...
+Mon, 04 Nov 2024 09:37:29 +0800
+	Command being timed: "verilator --exe -O0 --cc --top-module SimTop +define+VERILATOR=1 +define+PRINTF_COND=1 +define+RANDOMIZE_REG_INIT +define+RANDOMIZE_MEM_INIT +define+RANDOMIZE_GARBAGE_ASSIGN +define+RANDOMIZE_DELAY=0 -Wno-STMTDLY -Wno-WIDTH --max-num-width 150000 --assert --x-assign unique --output-split 30000 --output-split-cfuncs 30000 -I/nfs/home/jinpeize/trinity/build/rtl -I/nfs/home/jinpeize/trinity/build/generated-src -I../vsrc/ -I../vsrc/sim_ram/ -I../vsrc/frontend/ -I../vsrc/backend/ -I../vsrc/include/ -I../vsrc/fu/ -CFLAGS -I/nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common -I/nfs/home/jinpeize/trinity/difftest_trinity/config -DNOOP_HOME=\"/nfs/home/jinpeize/trinity\" -I/nfs/home/jinpeize/trinity/build/generated-src -I/nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/plugin/include -I/nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/difftest -DBASIC_DIFFTEST_ONLY -I/nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/plugin/spikedasm -I/nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/verilator -DVERILATOR -DNUM_CORES=1 --std=c++17 -DVERILATOR_4_210 -LDFLAGS -lz -lzstd -ldl -CFLAGS $(PGO_CFLAGS) -LDFLAGS $(PGO_LDFLAGS) -o /nfs/home/jinpeize/trinity/build/emu +define+DIFFTEST --instr-count-dpi 1 --no-timing +define+VERILATOR_5 --quiet-stats --trace -Mdir /nfs/home/jinpeize/trinity/build/emu-compile /nfs/home/jinpeize/trinity/vsrc/SimTop.sv /nfs/home/jinpeize/trinity/difftest_trinity/src/test/vsrc/common/ref.v /nfs/home/jinpeize/trinity/difftest_trinity/src/test/vsrc/common/assert.v /nfs/home/jinpeize/trinity/difftest_trinity/src/test/vsrc/common/SimJTAG.v /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/uart.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/main.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/compress.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/common.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/golden.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/flash.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/coverage.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/lightsss.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/device.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/keyboard.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/dut.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/ram.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/SimJTAG.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/vga.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/remote_bitbang.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/perf.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/sdcard.cpp /nfs/home/jinpeize/trinity/build/generated-src/difftest-dpic.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/difftest/difftrace.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/difftest/difftest.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/difftest/refproxy.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/difftest/goldenmem.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/plugin/spikedasm/spikedasm.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/verilator/snapshot.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/verilator/emu.cpp"
+	User time (seconds): 0.10
+	System time (seconds): 0.06
+	Percent of CPU this job got: 35%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.49
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 24980
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 7382
+	Voluntary context switches: 985
+	Involuntary context switches: 4
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 2712
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+-e 
+[c++] Compiling C++ files...
+Mon, 04 Nov 2024 09:37:29 +0800
+	Command being timed: "make -s VM_PARALLEL_BUILDS=1 OPT_SLOW=-O0 OPT_FAST=-O3 PGO_CFLAGS= PGO_LDFLAGS= -C /nfs/home/jinpeize/trinity/build/emu-compile -f /nfs/home/jinpeize/trinity/build/emu-compile/VSimTop.mk"
+	User time (seconds): 29.46
+	System time (seconds): 9.99
+	Percent of CPU this job got: 734%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.37
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 152912
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 2973
+	Minor (reclaiming a frame) page faults: 1520424
+	Voluntary context switches: 22072
+	Involuntary context switches: 736
+	Swaps: 0
+	File system inputs: 56920
+	File system outputs: 99464
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+-e 
+[verilator] Generating C++ files...
+Mon, 04 Nov 2024 09:43:59 +0800
+	Command being timed: "verilator --exe -O0 --cc --top-module SimTop +define+VERILATOR=1 +define+PRINTF_COND=1 +define+RANDOMIZE_REG_INIT +define+RANDOMIZE_MEM_INIT +define+RANDOMIZE_GARBAGE_ASSIGN +define+RANDOMIZE_DELAY=0 -Wno-STMTDLY -Wno-WIDTH --max-num-width 150000 --assert --x-assign unique --output-split 30000 --output-split-cfuncs 30000 -I/nfs/home/jinpeize/trinity/build/rtl -I/nfs/home/jinpeize/trinity/build/generated-src -I../vsrc/ -I../vsrc/sim_ram/ -I../vsrc/frontend/ -I../vsrc/backend/ -I../vsrc/include/ -I../vsrc/fu/ -CFLAGS -I/nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common -I/nfs/home/jinpeize/trinity/difftest_trinity/config -DNOOP_HOME=\"/nfs/home/jinpeize/trinity\" -I/nfs/home/jinpeize/trinity/build/generated-src -I/nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/plugin/include -I/nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/difftest -DBASIC_DIFFTEST_ONLY -I/nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/plugin/spikedasm -I/nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/verilator -DVERILATOR -DNUM_CORES=1 --std=c++17 -DVERILATOR_4_210 -LDFLAGS -lz -lzstd -ldl -CFLAGS $(PGO_CFLAGS) -LDFLAGS $(PGO_LDFLAGS) -o /nfs/home/jinpeize/trinity/build/emu +define+DIFFTEST --instr-count-dpi 1 --no-timing +define+VERILATOR_5 --quiet-stats --trace -Mdir /nfs/home/jinpeize/trinity/build/emu-compile /nfs/home/jinpeize/trinity/vsrc/SimTop.sv /nfs/home/jinpeize/trinity/difftest_trinity/src/test/vsrc/common/ref.v /nfs/home/jinpeize/trinity/difftest_trinity/src/test/vsrc/common/assert.v /nfs/home/jinpeize/trinity/difftest_trinity/src/test/vsrc/common/SimJTAG.v /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/uart.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/main.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/compress.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/common.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/golden.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/flash.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/coverage.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/lightsss.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/device.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/keyboard.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/dut.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/ram.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/SimJTAG.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/vga.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/remote_bitbang.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/perf.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/common/sdcard.cpp /nfs/home/jinpeize/trinity/build/generated-src/difftest-dpic.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/difftest/difftrace.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/difftest/difftest.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/difftest/refproxy.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/difftest/goldenmem.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/plugin/spikedasm/spikedasm.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/verilator/snapshot.cpp /nfs/home/jinpeize/trinity/difftest_trinity/src/test/csrc/verilator/emu.cpp"
+	User time (seconds): 0.14
+	System time (seconds): 0.04
+	Percent of CPU this job got: 36%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.51
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 25048
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 7370
+	Voluntary context switches: 978
+	Involuntary context switches: 4
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 2712
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+-e 
+[c++] Compiling C++ files...
+Mon, 04 Nov 2024 09:44:00 +0800
+	Command being timed: "make -s VM_PARALLEL_BUILDS=1 OPT_SLOW=-O0 OPT_FAST=-O3 PGO_CFLAGS= PGO_LDFLAGS= -C /nfs/home/jinpeize/trinity/build/emu-compile -f /nfs/home/jinpeize/trinity/build/emu-compile/VSimTop.mk"
+	User time (seconds): 19.55
+	System time (seconds): 7.07
+	Percent of CPU this job got: 488%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.45
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 152720
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 237
+	Minor (reclaiming a frame) page faults: 1011919
+	Voluntary context switches: 19092
+	Involuntary context switches: 629
+	Swaps: 0
+	File system inputs: 58336
+	File system outputs: 97416
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

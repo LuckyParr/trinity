@@ -58,11 +58,11 @@ module pc_ctrl (
             clear_ibuffer  <= 1'b1;
         end else if (fetch_inst_rising) begin
             //Update pc: Normal PC increment on fetch_inst pulse
+            pc             <= pc + 64;  // Increment PC by 64
             pc_index_valid <= 1'b1;  // Set pc_index_valid to indicate new index is ready
             can_fetch_inst <= 1'b0;  // Clear can_fetch_inst when fetch_inst is asserted
         end else if (pc_index_valid && pc_index_ready) begin  //handshake, indicate fetch inst req to ddr sent
             // Set can_fetch_inst when pc_index_ready indicates operation completion
-            pc             <= pc + 64;  // Increment PC by 64
             pc_index_valid <= 1'b0;  // Clear pc_index_valid on completion
             can_fetch_inst <= 1'b0;  // Set can_fetch_inst to allow new fetch
         end else if (pc_operation_done) begin
