@@ -64,7 +64,7 @@ module alu (
     end
 
     wire [`SRC_RANGE] add_sub_result_w = src1[31:0] + src2_qual[31:0];
-    wire [`SRC_RANGE] add_sub_result =  is_word? {{32{add_sub_result_w[31]}}, add_sub_result_w[31:0]} : src1 + src2_qual;
+    wire [`SRC_RANGE] add_sub_result =  is_word? {{32{add_sub_result_w[31]}}, add_sub_result_w[31:0]} : src1_qual + src2_qual;
 
     reg is_less ;
     wire is_lessu = src1 < src2_qual ;

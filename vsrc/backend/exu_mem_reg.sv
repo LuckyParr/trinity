@@ -1,6 +1,7 @@
 module exu_mem_reg (
-    input                    clock,
-    input                    reset_n,
+    input wire               clock,
+    input wire               reset_n,
+    input wire               valid,
     input wire               stall,
     input wire [`LREG_RANGE] rs1,
     input wire [`LREG_RANGE] rs2,
@@ -35,6 +36,7 @@ module exu_mem_reg (
     input wire [`RESULT_RANGE] opload_read_data_wb,
 
     // outputs
+    output reg               out_valid,
     output reg [`LREG_RANGE] out_rs1,
     output reg [`LREG_RANGE] out_rs2,
     output reg [`LREG_RANGE] out_rd,
@@ -69,6 +71,7 @@ module exu_mem_reg (
 
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
+            out_valid               <= 'b0;
             out_rs1                 <= 'b0;
             out_rs2                 <= 'b0;
             out_rd                  <= 'b0;
@@ -97,6 +100,7 @@ module exu_mem_reg (
             out_muldiv_result       <= 'b0;
             out_opload_read_data_wb <= 'b0;
         end else if (stall) begin
+            out_valid               <= out_valid;
             out_rs1                 <= out_rs1;
             out_rs2                 <= out_rs2;
             out_rd                  <= out_rd;
@@ -123,6 +127,7 @@ module exu_mem_reg (
             out_muldiv_result       <= out_muldiv_result;
             out_opload_read_data_wb <= out_opload_read_data_wb;
         end else begin
+            out_valid               <= valid;
             out_rs1                 <= rs1;
             out_rs2                 <= rs2;
             out_rd                  <= rd;

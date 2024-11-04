@@ -3,6 +3,7 @@ module decoder (
     input wire        clock,
     input wire        reset_n,
     input wire        fifo_empty,
+    input wire        ibuffer_inst_valid,
     input wire [31:0] ibuffer_inst_out,
     input wire [47:0] ibuffer_pc_out,
 
@@ -12,24 +13,24 @@ module decoder (
     input  wire [63:0] rs1_read_data,
     input  wire [63:0] rs2_read_data,
 
-    output reg  [ 4:0] rd,
-    output reg  [63:0] src1,
-    output reg  [63:0] src2,
-    output reg  [63:0] imm,
-    output reg         src1_is_reg,
-    output reg         src2_is_reg,
-    output reg         need_to_wb,
-    output reg  [`CX_TYPE_RANGE] cx_type,
-    output reg         is_unsigned,
-    output reg  [`ALU_TYPE_RANGE] alu_type,
-    output reg         is_word,
-    output reg         is_imm,
-    output reg         is_load,
-    output reg         is_store,
-    output reg  [ 3:0] ls_size,
+    output reg  [               4:0] rd,
+    output reg  [              63:0] src1,
+    output reg  [              63:0] src2,
+    output reg  [              63:0] imm,
+    output reg                       src1_is_reg,
+    output reg                       src2_is_reg,
+    output reg                       need_to_wb,
+    output reg  [    `CX_TYPE_RANGE] cx_type,
+    output reg                       is_unsigned,
+    output reg  [   `ALU_TYPE_RANGE] alu_type,
+    output reg                       is_word,
+    output reg                       is_imm,
+    output reg                       is_load,
+    output reg                       is_store,
+    output reg  [               3:0] ls_size,
     output reg  [`MULDIV_TYPE_RANGE] muldiv_type,
-    output wire [47:0] decoder_pc_out,
-    output wire [47:0] decoder_inst_out
+    output wire [              47:0] decoder_pc_out,
+    output wire [              47:0] decoder_inst_out
 
 );
     assign decoder_pc_out   = ibuffer_pc_out;
@@ -69,7 +70,7 @@ module decoder (
     assign src1 = rs1_read_data;
     assign src2 = rs2_read_data;
     always @(*) begin
-        if (!fifo_empty) begin
+        if (ibuffer_inst_valid) begin
             imm_itype        = ibuffer_inst_out[31:20];
             imm_stype        = {ibuffer_inst_out[31:25], ibuffer_inst_out[11:7]};
 
@@ -309,28 +310,28 @@ module decoder (
                             alu_type[`IS_AND] = 1'b1;
                         end
                         10'b0000001000: begin
-                            muldiv_type[`IS_MUL] =1'b1 ;
+                            muldiv_type[`IS_MUL] = 1'b1;
                         end
                         10'b0000001001: begin
-                            muldiv_type[`IS_MULH] =1'b1 ;
+                            muldiv_type[`IS_MULH] = 1'b1;
                         end
                         10'b0000001010: begin
-                            muldiv_type[`IS_MULHSU] =1'b1 ;
+                            muldiv_type[`IS_MULHSU] = 1'b1;
                         end
                         10'b0000001011: begin
-                            muldiv_type[`IS_MULHU] =1'b1 ;
+                            muldiv_type[`IS_MULHU] = 1'b1;
                         end
                         10'b0000001100: begin
-                            muldiv_type[`IS_DIV] =1'b1 ;
+                            muldiv_type[`IS_DIV] = 1'b1;
                         end
                         10'b0000001101: begin
-                            muldiv_type[`IS_DIVU] =1'b1 ;
+                            muldiv_type[`IS_DIVU] = 1'b1;
                         end
                         10'b0000001110: begin
-                            muldiv_type[`IS_REM] =1'b1 ;
+                            muldiv_type[`IS_REM] = 1'b1;
                         end
                         10'b0000001111: begin
-                            muldiv_type[`IS_REMU] =1'b1 ;
+                            muldiv_type[`IS_REMU] = 1'b1;
                         end
                         default: ;
                     endcase
@@ -348,20 +349,20 @@ module decoder (
                         funct7, funct3
                     })
                         10'b??????000: begin
-                            is_imm   = 1'b1;
-                            alu_type[`IS_ADD] =1'b1 ;
+                            is_imm            = 1'b1;
+                            alu_type[`IS_ADD] = 1'b1;
                         end
                         10'b0000000001: begin
-                            is_imm   = 1'b1;
-                            alu_type[`IS_SLL] =1'b1 ;
+                            is_imm            = 1'b1;
+                            alu_type[`IS_SLL] = 1'b1;
                         end
                         10'b0000000101: begin
-                            is_imm   = 1'b1;
-                            alu_type[`IS_SRL] =1'b1 ;
+                            is_imm            = 1'b1;
+                            alu_type[`IS_SRL] = 1'b1;
                         end
                         10'b0100000101: begin
-                            is_imm   = 1'b1;
-                            alu_type[`IS_SRA] =1'b1 ;
+                            is_imm            = 1'b1;
+                            alu_type[`IS_SRA] = 1'b1;
                         end
                         default: ;
                     endcase
@@ -373,19 +374,19 @@ module decoder (
                         funct7, funct3
                     })
                         10'b0000000000: begin
-                            alu_type[`IS_ADD] =1'b1 ;
+                            alu_type[`IS_ADD] = 1'b1;
                         end
                         10'b0100000000: begin
-                            alu_type[`IS_SUB] =1'b1 ;
+                            alu_type[`IS_SUB] = 1'b1;
                         end
                         10'b0000000001: begin
-                            alu_type[`IS_SLL] =1'b1 ;
+                            alu_type[`IS_SLL] = 1'b1;
                         end
                         10'b0000000101: begin
-                            alu_type[`IS_SRL] =1'b1 ;
+                            alu_type[`IS_SRL] = 1'b1;
                         end
                         10'b0100000101: begin
-                            alu_type[`IS_SRA] =1'b1 ;
+                            alu_type[`IS_SRA] = 1'b1;
                         end
                         10'b0000001000: begin
                             muldiv_type[`IS_MULW] = 1'b1;

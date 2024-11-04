@@ -31,7 +31,7 @@ module frontend (
     output wire        need_to_wb,
     output wire [ 5:0] cx_type,
     output wire        is_unsigned,
-    output wire [ 9:0] alu_type,
+    output wire [`ALU_TYPE_RANGE] alu_type,
     output wire        is_word,
     output wire        is_imm,
     output wire        is_load,
@@ -40,6 +40,7 @@ module frontend (
     output wire [12:0] muldiv_type,
     output wire [47:0] decoder_pc_out,
     output wire [47:0] decoder_inst_out,
+    output wire decoder_inst_valid,
 
     //write back enable
     input wire writeback_valid,
@@ -71,6 +72,7 @@ module frontend (
         .pc_read_inst     (pc_read_inst),
         .fifo_read_en     (fifo_read_en),
         .clear_ibuffer_ext(clear_ibuffer_ext),
+        .ibuffer_inst_valid(decoder_inst_valid),
         .ibuffer_inst_out (ibuffer_inst_out),
         .ibuffer_pc_out   (ibuffer_pc_out),
         .fifo_empty       (fifo_empty),
@@ -82,6 +84,7 @@ module frontend (
         .clock           (clock),
         .reset_n         (reset_n),
         .fifo_empty      (fifo_empty),
+        .ibuffer_inst_valid(decoder_inst_valid),
         .ibuffer_inst_out(ibuffer_inst_out),
         .ibuffer_pc_out  (ibuffer_pc_out),
         .rs1_read_data   (rs1_read_data),

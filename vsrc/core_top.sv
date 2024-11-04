@@ -42,8 +42,11 @@ module core_top #(
     wire [`MULDIV_TYPE_RANGE] muldiv_type;
     wire [         `PC_RANGE] pc;
     wire [      `INSTR_RANGE] instr;
-    wire                      wb_valid;
-    wire [     `RESULT_RANGE] wb_data;
+
+    wire                      regfile_write_valid;
+    wire [     `RESULT_RANGE] regfile_write_data;
+    wire [               4:0] regfile_write_rd;
+    wire                      decoder_inst_valid;
     wire [              47:0] decoder_pc_out;
     wire [              47:0] decoder_inst_out;
 
@@ -78,46 +81,47 @@ module core_top #(
     wire                      opload_operation_done;
 
 
-    wire [               4:0] wb_rd;
 
     frontend u_frontend (
-        .clock            (clock),
-        .reset_n          (reset_n),
-        .redirect_valid   (redirect_valid),
-        .redirect_target  (redirect_target),
-        .pc_index_valid   (pc_index_valid),
-        .pc_index_ready   (pc_index_ready),
-        .pc_operation_done(pc_operation_done),
-        .pc_read_inst     (pc_read_inst),
-        .pc_index         (pc_index),
-        .fifo_read_en     (1'b1),
-        .clear_ibuffer_ext(redirect_valid),
-        .rs1              (rs1),
-        .rs2              (rs2),
-        .rd               (rd),
-        .src1             (src1),
-        .src2             (src2),
-        .imm              (imm),
-        .src1_is_reg      (src1_is_reg),
-        .src2_is_reg      (src2_is_reg),
-        .need_to_wb       (need_to_wb),
-        .cx_type          (cx_type),
-        .is_unsigned      (is_unsigned),
-        .alu_type         (alu_type),
-        .is_word          (is_word),
-        .is_imm           (is_imm),
-        .is_load          (is_load),
-        .is_store         (is_store),
-        .ls_size          (ls_size),
-        .muldiv_type      (muldiv_type),
-        .decoder_pc_out   (decoder_pc_out),
-        .decoder_inst_out (decoder_inst_out),
+        .clock             (clock),
+        .reset_n           (reset_n),
+        .redirect_valid    (redirect_valid),
+        .redirect_target   (redirect_target),
+        .pc_index_valid    (pc_index_valid),
+        .pc_index_ready    (pc_index_ready),
+        .pc_operation_done (pc_operation_done),
+        .pc_read_inst      (pc_read_inst),
+        .pc_index          (pc_index),
+        .fifo_read_en      (1'b1),
+        .clear_ibuffer_ext (redirect_valid),
+        .rs1               (rs1),
+        .rs2               (rs2),
+        .rd                (rd),
+        .src1              (src1),
+        .src2              (src2),
+        .imm               (imm),
+        .src1_is_reg       (src1_is_reg),
+        .src2_is_reg       (src2_is_reg),
+        .need_to_wb        (need_to_wb),
+        .cx_type           (cx_type),
+        .is_unsigned       (is_unsigned),
+        .alu_type          (alu_type),
+        .is_word           (is_word),
+        .is_imm            (is_imm),
+        .is_load           (is_load),
+        .is_store          (is_store),
+        .ls_size           (ls_size),
+        .muldiv_type       (muldiv_type),
+        .decoder_inst_valid(decoder_inst_valid),
+        .decoder_pc_out    (decoder_pc_out),
+        .decoder_inst_out  (decoder_inst_out),
         //write back enable
-        .writeback_valid  (wb_valid),
-        .writeback_rd     (wb_rd),
-        .writeback_data   (wb_data)
+        .writeback_valid   (regfile_write_valid),
+        .writeback_rd      (regfile_write_rd),
+        .writeback_data    (regfile_write_data)
 
     );
+    wire                      out_valid;
     wire [       `LREG_RANGE] out_rs1;
     wire [       `LREG_RANGE] out_rs2;
     wire [       `LREG_RANGE] out_rd;
@@ -142,6 +146,7 @@ module core_top #(
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  ('b0),
+        .valid                  (decoder_inst_valid),
         .rs1                    (rs1),
         .rs2                    (rs2),
         .rd                     (rd),
@@ -167,6 +172,7 @@ module core_top #(
         .bju_result             ('b0),
         .muldiv_result          ('b0),
         .opload_read_data_wb    ('b0),
+        .out_valid              (out_valid),
         .out_rs1                (out_rs1),
         .out_rs2                (out_rs2),
         .out_rd                 (out_rd),
@@ -198,6 +204,7 @@ module core_top #(
     backend u_backend (
         .clock                 (clock),
         .reset_n               (reset_n),
+        .valid                 (out_valid),
         .rs1                   (out_rs1),
         .rs2                   (out_rs2),
         .rd                    (out_rd),
@@ -218,9 +225,9 @@ module core_top #(
         .muldiv_type           (out_muldiv_type),
         .pc                    (out_pc),
         .instr                 (out_instr),
-        .wb_valid              (wb_valid),
-        .wb_rd                 (wb_rd),
-        .wb_data               (wb_data),
+        .regfile_write_valid   (regfile_write_valid),
+        .regfile_write_rd      (regfile_write_rd),
+        .regfile_write_data    (regfile_write_data),
         .redirect_valid        (redirect_valid),
         .redirect_target       (redirect_target),
         .mem_stall             (mem_stall),

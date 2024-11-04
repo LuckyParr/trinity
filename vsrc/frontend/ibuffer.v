@@ -9,6 +9,7 @@ module ibuffer (
     input wire can_fetch_inst,
     input wire [47:0] pc,
 
+    output wire ibuffer_inst_valid,
     output wire [31:0]  ibuffer_inst_out,
     output wire [47:0]  ibuffer_pc_out,
     output reg fetch_inst,                      // Output pulse when FIFO count decreases from 4 to 3
@@ -25,7 +26,7 @@ module ibuffer (
     wire fifo_full;                             // Full signal from FIFO
     wire [4:0] fifo_count;                      // Count of entries in the FIFO
     reg [4:0] fifo_count_prev;                  // Previous FIFO count to detect transition from 4 to 3
-
+    
     // Instantiate the 32x24 FIFO with clear functionality
     fifo_depth24 fifo_inst (
         .clock(clock),
@@ -37,7 +38,8 @@ module ibuffer (
         .data_out(fifo_inst_addr_out),
         .empty(fifo_empty),
         .full(fifo_full),
-        .count(fifo_count)
+        .count(fifo_count),
+        .data_valid(ibuffer_inst_valid)
     );
 
     reg [3:0] write_index;                      // Index for loading instructions into FIFO

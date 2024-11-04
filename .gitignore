@@ -2,4 +2,4 @@
 .vscode
 **/*.vcd
 **/emu
-
+sig*

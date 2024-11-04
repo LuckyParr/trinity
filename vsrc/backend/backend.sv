@@ -2,6 +2,7 @@
 module backend (
     input wire               clock,
     input wire               reset_n,
+    input wire               valid,
     input wire [`LREG_RANGE] rs1,
     input wire [`LREG_RANGE] rs2,
     input wire [`LREG_RANGE] rd,
@@ -26,9 +27,9 @@ module backend (
     input wire [      `INSTR_RANGE] instr,
 
     //write back lreg 
-    output wire                 wb_valid,
-    output wire [`RESULT_RANGE] wb_data,
-    output wire [4:0] wb_rd,
+    output wire                 regfile_write_valid,
+    output wire [`RESULT_RANGE] regfile_write_data,
+    output wire [          4:0] regfile_write_rd,
 
     //redirect
     output wire             redirect_valid,
@@ -98,7 +99,7 @@ module backend (
     wire [     `RESULT_RANGE] muldiv_result;
 
 
-
+    wire                      mem_valid;
     wire [       `LREG_RANGE] mem_rs1;
     wire [       `LREG_RANGE] mem_rs2;
     wire [       `LREG_RANGE] mem_rd;
@@ -129,6 +130,7 @@ module backend (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  (),
+        .valid                  (valid),
         .rs1                    (rs1),
         .rs2                    (rs2),
         .rd                     (rd),
@@ -155,6 +157,7 @@ module backend (
         .muldiv_result          (muldiv_result),
         //note :sig below dont not to fill until mem stage done
         .opload_read_data_wb    ('b0),
+        .out_valid              (mem_valid),
         .out_rs1                (mem_rs1),
         .out_rs2                (mem_rs2),
         .out_rd                 (mem_rd),
@@ -206,9 +209,10 @@ module backend (
         .opstore_operation_done(opstore_operation_done),
         .opload_read_data_wb   (opload_read_data_wb)
     );
-
+    wire                      wb_valid;
     wire [       `LREG_RANGE] wb_rs1;
     wire [       `LREG_RANGE] wb_rs2;
+    wire [       `LREG_RANGE] wb_rd;
     wire [        `SRC_RANGE] wb_src1;
     wire [        `SRC_RANGE] wb_src2;
     wire [        `SRC_RANGE] wb_imm;
@@ -236,6 +240,7 @@ module backend (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  (1'b0),
+        .valid                  (mem_valid),
         .rs1                    (mem_rs1),
         .rs2                    (mem_rs2),
         .rd                     (mem_rd),
@@ -262,6 +267,7 @@ module backend (
         .muldiv_result          (mem_muldiv_result),
         //fill the load wb data
         .opload_read_data_wb    (opload_read_data_wb),
+        .out_valid              (wb_valid),
         .out_rs1                (wb_rs1),
         .out_rs2                (wb_rs2),
         .out_rd                 (wb_rd),
@@ -270,7 +276,7 @@ module backend (
         .out_imm                (wb_imm),
         .out_src1_is_reg        (wb_src1_is_reg),
         .out_src2_is_reg        (wb_src2_is_reg),
-        .out_need_to_wb         (wb_valid),
+        .out_need_to_wb         (wb_need_to_wb),
         .out_cx_type            (wb_cx_type),
         .out_is_unsigned        (wb_is_unsigned),
         .out_alu_type           (wb_alu_type),
@@ -289,22 +295,65 @@ module backend (
         .out_opload_read_data_wb(wb_opload_read_data_wb)
     );
 
-    assign wb_data = wb_alu_result;
+    assign regfile_write_valid = wb_valid & wb_need_to_wb;
+    assign regfile_write_data  = wb_alu_result;
+    assign regfile_write_rd    = wb_rd;
 
-    wire commit_valid = (|wb_alu_type) | (|wb_cx_type) | (|wb_muldiv_type) | wb_is_load | wb_is_store;
+    wire                commit_valid = ((|wb_alu_type) | (|wb_cx_type) | (|wb_muldiv_type) | wb_is_load | wb_is_store) & wb_valid;
+
+    reg                 flop_commit_valid;
+    reg                 flop_wb_need_to_wb;
+    reg  [         4:0] flop_wb_rd;
+    reg  [   `PC_RANGE] flop_wb_pc;
+    reg  [`INSTR_RANGE] flop_wb_instr;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            flop_commit_valid <= 'b0;
+        end else begin
+            flop_commit_valid <= commit_valid;
+        end
+    end
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            flop_wb_need_to_wb <= 'b0;
+        end else begin
+            flop_wb_need_to_wb <= wb_need_to_wb;
+        end
+    end
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            flop_wb_rd <= 'b0;
+        end else begin
+            flop_wb_rd <= wb_rd;
+        end
+    end
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            flop_wb_pc <= 'b0;
+        end else begin
+            flop_wb_pc <= wb_pc;
+        end
+    end
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            flop_wb_instr <= 'b0;
+        end else begin
+            flop_wb_instr <= wb_instr;
+        end
+    end
     DifftestInstrCommit u_DifftestInstrCommit (
         .clock     (clock),
-        .enable    (commit_valid),
-        .io_valid  ('b0), //unuse!!!!
+        .enable    (flop_commit_valid),
+        .io_valid  ('b0),                 //unuse!!!!
         .io_skip   (1'b0),
         .io_isRVC  (1'b0),
-        .io_rfwen  (wb_valid),
+        .io_rfwen  (flop_wb_need_to_wb),
         .io_fpwen  (1'b0),
         .io_vecwen (1'b0),
-        .io_wpdest (wb_rd),
-        .io_wdest  (wb_rd),
-        .io_pc     (wb_pc),
-        .io_instr  (wb_instr),
+        .io_wpdest (flop_wb_rd),
+        .io_wdest  (flop_wb_rd),
+        .io_pc     (flop_wb_pc),
+        .io_instr  (flop_wb_instr),
         .io_robIdx ('b0),
         .io_lqIdx  ('b0),
         .io_sqIdx  ('b0),
