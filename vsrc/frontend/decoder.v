@@ -6,7 +6,7 @@ module decoder (
     input wire        ibuffer_inst_valid,
     input wire [31:0] ibuffer_inst_out,
     input wire [47:0] ibuffer_pc_out,
-
+  
     //to regfile read 
     output reg  [ 4:0] rs1,
     output reg  [ 4:0] rs2,
