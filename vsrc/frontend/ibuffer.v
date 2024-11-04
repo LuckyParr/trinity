@@ -2,6 +2,7 @@ module ibuffer (
     input wire clock,
     input wire reset_n,
     input wire pc_index_ready,                  // Signal indicating readiness from `pc_index`
+    input wire pc_operation_done,
     input wire [511:0] pc_read_inst,        // 512-bit input data from arbiter (16 instructions, 32 bits each)
     input wire fifo_read_en,                    // External read enable signal for FIFO
     input wire clear_ibuffer,                   // Clear signal for ibuffer
@@ -59,7 +60,8 @@ module ibuffer (
             fifo_count_prev <= 5'b0;
         end else begin
             // Detect rising edge of pc_index_ready
-            if (pc_index_ready && !pc_index_ready_prev) begin
+            // if (pc_index_ready && !pc_index_ready_prev) begin
+            if (pc_operation_done) begin
                 // Split pc_read_inst into 16 instructions and load them into inst_buffer
                 inst_buffer[0]  <= {pc_read_inst[31:0]    , (pc+48'd0)};
                 inst_buffer[1]  <= {pc_read_inst[63:32]   , (pc+48'd4)};

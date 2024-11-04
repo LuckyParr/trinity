@@ -48,45 +48,49 @@ module channel_arb (
 
         ddr_opstore_write_mask = 64'b0;
         ddr_opstore_write_data = 64'b0;
-        opload_read_data       = 64'b0;
-        pc_read_inst           = 512'b0;
+
 
         // Default ready signals
         pc_index_ready         = 1'b0;
         opstore_index_ready    = 1'b0;
         opload_index_ready     = 1'b0;
+        if (opstore_index_valid) begin
+            // opstore channel selected for write
+            ddr_index              = opstore_index;
+            ddr_chip_enable        = 1'b1;
+            ddr_write_enable       = 1'b1;  // Write operation
+            ddr_opstore_write_mask = opstore_write_mask;
+            ddr_opstore_write_data = opstore_write_data;
+            ddr_burst_mode         = 1'b0;
+            opstore_index_ready    = 1'b1;  // Indicate SW channel is ready
+        end else if (opload_index_valid) begin
+            // opload channel selected for read
+            ddr_index          = opload_index;
+            ddr_chip_enable    = 1'b1;
+            ddr_write_enable   = 1'b0;  // Read operation
+            ddr_burst_mode     = 1'b0;
+            opload_index_ready = 1'b1;  // Indicate LW channel is ready
+        end else if (pc_index_valid) begin
+            // PC channel selected for burst read
+            ddr_index        = pc_index;
+            ddr_chip_enable  = 1'b1;
+            ddr_write_enable = 1'b0;  // Read operation for burst mode
+            ddr_burst_mode   = 1'b1;
+            pc_index_ready   = 1'b1;  // Indicate PC channel is ready
+        end
+    end
 
+    always @(*) begin
+        // Default output values
+        opload_read_data = 64'b0;
+        pc_read_inst     = 512'b0;
         if (ddr_ready) begin
             if (pc_operation_done) begin
                 pc_read_inst = ddr_pc_read_inst;
             end else if (opload_operation_done) begin
                 opload_read_data = ddr_opload_read_data;
-            end 
-            // Priority selection logic
-            else if (opstore_index_valid) begin
-                // opstore channel selected for write
-                ddr_index              = opstore_index;
-                ddr_chip_enable        = 1'b1;
-                ddr_write_enable       = 1'b1;  // Write operation
-                ddr_opstore_write_mask = opstore_write_mask;
-                ddr_opstore_write_data = opstore_write_data;
-                ddr_burst_mode         = 1'b0;
-                opstore_index_ready    = 1'b1;  // Indicate SW channel is ready
-            end else if (opload_index_valid) begin
-                // opload channel selected for read
-                ddr_index          = opload_index;
-                ddr_chip_enable    = 1'b1;
-                ddr_write_enable   = 1'b0;  // Read operation
-                ddr_burst_mode     = 1'b0;
-                opload_index_ready = 1'b1;  // Indicate LW channel is ready
-            end else if (pc_index_valid) begin
-                // PC channel selected for burst read
-                ddr_index        = pc_index;
-                ddr_chip_enable  = 1'b1;
-                ddr_write_enable = 1'b0;  // Read operation for burst mode
-                ddr_burst_mode   = 1'b1;
-                pc_index_ready   = 1'b1;  // Indicate PC channel is ready
-            end
+            end  // Priority selection logic
+
         end
     end
 endmodule

@@ -38,6 +38,7 @@ module ifu_top (
         .reset_n(reset_n),
         .pc(pc),
         .pc_index_ready(pc_index_ready),
+        .pc_operation_done(pc_operation_done),
         .pc_read_inst(pc_read_inst),
         .fifo_read_en(fifo_read_en),
         .clear_ibuffer(clear_ibuffer | clear_ibuffer_ext), // OR external and internal clear signals
