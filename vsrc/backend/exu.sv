@@ -1,5 +1,7 @@
 `include "defines.sv"
 module exu (
+    input wire clock,
+    input wire reset_n,
     input wire [       `LREG_RANGE] rs1,
     input wire [       `LREG_RANGE] rs2,
     input wire [       `LREG_RANGE] rd,
@@ -35,6 +37,41 @@ module exu (
 
 
 );
+    //forwarding logic
+    reg need_to_wb_dly;
+    always @(posedge clock or negedge reset_n) begin
+        if(~reset_n)begin
+            need_to_wb_dly <= 0;
+        end else
+            need_to_wb_dly <= need_to_wb; 
+    end
+
+    reg [`LREG_RANGE] rd_dly;
+    reg [`RESULT_RANGE] alu_result_dly;
+
+    always @(posedge clock or negedge reset_n) begin
+        if(~reset_n)begin
+            rd_dly <= 0;
+            alu_result_dly <= 0;
+        end else begin
+            rd_dly <= rd; 
+            alu_result_dly <= alu_result;
+        end
+    end
+
+     wire [        `SRC_RANGE] src1_muxed;
+     wire [        `SRC_RANGE] src2_muxed;
+     wire src1_need_forward;
+     wire src2_need_forward;
+     assign src1_need_forward = (need_to_wb_dly && (rd_dly == rs1));
+     assign src2_need_forward = (need_to_wb_dly && (rd_dly == rs2));
+     
+     assign src1_muxed = src1_need_forward?alu_result_dly:src1;
+     assign src2_muxed = src2_need_forward?alu_result_dly:src2;
+
+
+
+    //exu logic
     wire alu_valid = |alu_type;
     wire agu_valid = is_load | is_store;
     wire bju_valid = |cx_type;
@@ -50,8 +87,8 @@ module exu (
     );
 
     alu u_alu (
-        .src1       (src1),
-        .src2       (src2),
+        .src1       (src1_muxed),
+        .src2       (src2_muxed),
         .imm        (imm),
         .pc         (pc),
         .valid      (alu_valid),

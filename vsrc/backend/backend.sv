@@ -66,6 +66,8 @@ module backend (
 
 
     exu u_exu (
+        .clock (clock),
+        .reset_n (reset_n),
         .rs1            (rs1),
         .rs2            (rs2),
         .rd             (rd),
