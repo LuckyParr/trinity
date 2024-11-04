@@ -79,7 +79,7 @@ module exu (
 
 
     agu u_agu (
-        .src1      (src1),
+        .src1      (src1_muxed),
         .imm       (imm),
         .is_load   (is_load),
         .is_store  (is_store),
@@ -100,8 +100,8 @@ module exu (
     );
 
     bju u_bju (
-        .src1           (src1),
-        .src2           (src2),
+        .src1           (src1_muxed),
+        .src2           (src2_muxed),
         .imm            (imm),
         .pc             (pc),
         .cx_type        (cx_type),
@@ -113,8 +113,8 @@ module exu (
     );
 
     muldiv u_muldiv (
-        .src1       (src1),
-        .src2       (src2),
+        .src1       (src1_muxed),
+        .src2       (src2_muxed),
         .valid      (muldiv_valid),
         .muldiv_type(muldiv_type),
         .result     (muldiv_result)
