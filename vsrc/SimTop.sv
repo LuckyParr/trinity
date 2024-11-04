@@ -77,7 +77,7 @@ module SimTop (
     end
     DifftestTrapEvent u_DifftestTrapEvent (
         .clock      (clock),
-        .enable     (1'b1),
+        .enable     (1'b0),
         .io_hasTrap (1'b0),
         .io_cycleCnt(cycle_cnt),
         .io_instrCnt('b0),
@@ -103,7 +103,7 @@ module SimTop (
 
     DifftestCSRState u_DifftestCSRState (
         .clock           (clock),
-        .enable          ('b1),
+        .enable          (1'b1),
         .io_privilegeMode('b0),
         .io_mstatus      ('b0),
         .io_sstatus      ('b0),

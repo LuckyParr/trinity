@@ -3,7 +3,9 @@ INCDIR = -I./tb/ \
 	-I./vsrc/
 SIM_CPP = ./csrc/sim.cpp
 CSRC = ./csrc/dpic.cpp
-REF = $(NOOP_HOME)/r2r/riscv64-nemu-interpreter-so
+# REF = $(NOOP_HOME)/r2r/riscv64-nemu-interpreter-so
+REF = $(NOOP_HOME)/r2r/tri-riscv64-nemu-interpreter-so
+
 BIN = $(NOOP_HOME)/r2r/coremark-riscv64-nutshell.bin
 WAVE_PATH = $(NOOP_HOME)/dump/sim.vcd
 sim-verilog:
