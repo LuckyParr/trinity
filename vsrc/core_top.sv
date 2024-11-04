@@ -143,7 +143,7 @@ module core_top #(
     wire [`MULDIV_TYPE_RANGE] out_muldiv_type;
     wire [         `PC_RANGE] out_pc;
     wire [      `INSTR_RANGE] out_instr;
-    exu_mem_reg u_exu_mem_reg (
+    pipe_reg u_pipe_reg (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  ('b0),

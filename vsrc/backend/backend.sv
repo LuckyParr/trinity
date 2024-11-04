@@ -131,7 +131,7 @@ module backend (
     wire [     `RESULT_RANGE] mem_muldiv_result;
     wire [     `RESULT_RANGE] mem_opload_read_data_wb;
 
-    exu_mem_reg u_exu_mem_reg (
+    pipe_reg u_pipe_reg_dec2exu (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  (),
@@ -241,7 +241,7 @@ module backend (
     wire [     `RESULT_RANGE] wb_muldiv_result;
     wire [     `RESULT_RANGE] wb_opload_read_data_wb;
 
-    exu_mem_reg u_mem_wb_reg (
+    pipe_reg u_pipe_reg_wb2regf (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  (1'b0),

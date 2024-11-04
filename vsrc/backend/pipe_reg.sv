@@ -1,4 +1,4 @@
-module exu_mem_reg (
+module pipe_reg (
     input wire               clock,
     input wire               reset_n,
     input wire               valid,
