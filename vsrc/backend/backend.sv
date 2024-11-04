@@ -2,7 +2,7 @@
 module backend (
     input wire               clock,
     input wire               reset_n,
-    input wire               valid,
+    input wire               pipeval,
     input wire [`LREG_RANGE] rs1,
     input wire [`LREG_RANGE] rs2,
     input wire [`LREG_RANGE] rd,
@@ -63,8 +63,8 @@ module backend (
 
 );
 
-
-
+    wire exu_redirect_valid;
+    assign redirect_valid = exu_redirect_valid & pipeval;
     exu u_exu (
         .clock (clock),
         .reset_n (reset_n),
@@ -88,7 +88,7 @@ module backend (
         .muldiv_type    (muldiv_type),
         .pc             (pc),
         .instr          (instr),
-        .redirect_valid (redirect_valid),
+        .redirect_valid (exu_redirect_valid),
         .redirect_target(redirect_target),
         .ls_address     (ls_address),
         .alu_result     (alu_result),
@@ -131,11 +131,11 @@ module backend (
     wire [     `RESULT_RANGE] mem_muldiv_result;
     wire [     `RESULT_RANGE] mem_opload_read_data_wb;
 
-    pipe_reg u_pipe_reg_dec2exu (
+    pipe_reg u_pipe_reg_exu2mem (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  (),
-        .valid                  (valid),
+        .valid                  (pipeval),
         .rs1                    (rs1),
         .rs2                    (rs2),
         .rd                     (rd),
@@ -241,7 +241,7 @@ module backend (
     wire [     `RESULT_RANGE] wb_muldiv_result;
     wire [     `RESULT_RANGE] wb_opload_read_data_wb;
 
-    pipe_reg u_pipe_reg_wb2regf (
+    pipe_reg u_pipe_reg_mem2wb (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  (1'b0),

@@ -105,7 +105,7 @@ module exu (
         .imm            (imm),
         .pc             (pc),
         .cx_type        (cx_type),
-        .valid          (bju_valid),
+        .valid          (bju_valid ),
         .is_unsigned    (is_unsigned),
         .dest           (bju_result),
         .redirect_valid (redirect_valid),

@@ -143,7 +143,7 @@ module core_top #(
     wire [`MULDIV_TYPE_RANGE] out_muldiv_type;
     wire [         `PC_RANGE] out_pc;
     wire [      `INSTR_RANGE] out_instr;
-    pipe_reg u_pipe_reg (
+    pipe_reg u_pipe_reg_dec2exu (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  ('b0),
@@ -205,7 +205,7 @@ module core_top #(
     backend u_backend (
         .clock                 (clock),
         .reset_n               (reset_n),
-        .valid                 (out_valid),
+        .pipeval                 (out_valid),
         .rs1                   (out_rs1),
         .rs2                   (out_rs2),
         .rd                    (out_rd),
