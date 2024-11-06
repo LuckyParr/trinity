@@ -51,10 +51,10 @@ module backend (
     input  wire        opstore_operation_done,
 
     // LSU load Channel outputs and inputs
-    output wire        opload_index_valid,    // Valid signal for opload_index
-    output wire [18:0] opload_index,          // 19-bit output for opload_index (Channel 3)
-    input  reg         opload_index_ready,    // Ready signal for lw channel
-    input  reg  [63:0] opload_read_data,      // input read data for lw channel
+    output wire        opload_index_valid,     // Valid signal for opload_index
+    output wire [18:0] opload_index,           // 19-bit output for opload_index (Channel 3)
+    input  reg         opload_index_ready,     // Ready signal for lw channel
+    input  reg  [63:0] opload_read_data,       // input read data for lw channel
     input  wire        opload_operation_done,
     // output instrcnt pulse
     output reg         flop_commit_valid
@@ -66,8 +66,8 @@ module backend (
     wire exu_redirect_valid;
     assign redirect_valid = exu_redirect_valid & pipeval;
     exu u_exu (
-        .clock (clock),
-        .reset_n (reset_n),
+        .clock          (clock),
+        .reset_n        (reset_n),
         .rs1            (rs1),
         .rs2            (rs2),
         .rd             (rd),
@@ -301,10 +301,7 @@ module backend (
     );
 
     assign regfile_write_valid = wb_valid & wb_need_to_wb;
-    assign regfile_write_data  = (|wb_alu_type) ? wb_alu_result :
-                                 (|wb_cx_type)  ? wb_bju_result : 
-                                 (|wb_muldiv_type) ? wb_muldiv_result :
-                                 wb_is_load ? wb_opload_read_data_wb : 64'hDEADBEEF;
+    assign regfile_write_data  = (|wb_alu_type) ? wb_alu_result : (|wb_cx_type) ? wb_bju_result : (|wb_muldiv_type) ? wb_muldiv_result : wb_is_load ? wb_opload_read_data_wb : 64'hDEADBEEF;
     assign regfile_write_rd    = wb_rd;
 
     wire                commit_valid = ((|wb_alu_type) | (|wb_cx_type) | (|wb_muldiv_type) | wb_is_load | wb_is_store) & wb_valid;
@@ -349,11 +346,23 @@ module backend (
             flop_wb_instr <= wb_instr;
         end
     end
+
+    wire mmio_valid = (wb_is_load | wb_is_store) & wb_valid & ('h40600000 <= wb_ls_address <= 'h40700000);
+    reg  flop_mmio_valid;
+
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            flop_mmio_valid <= 'b0;
+        end else begin
+            flop_mmio_valid <= mmio_valid;
+        end
+    end
+
     DifftestInstrCommit u_DifftestInstrCommit (
         .clock     (clock),
         .enable    (flop_commit_valid),
         .io_valid  ('b0),                 //unuse!!!!
-        .io_skip   (1'b0),
+        .io_skip   (flop_mmio_valid),
         .io_isRVC  (1'b0),
         .io_rfwen  (flop_wb_need_to_wb),
         .io_fpwen  (1'b0),
