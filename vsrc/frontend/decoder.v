@@ -258,15 +258,15 @@ module decoder (
                             is_imm            = 1'b1;
                             alu_type[`IS_AND] = 1'b1;
                         end
-                        10'b0000000001: begin
+                        10'b000000?001: begin
                             is_imm            = 1'b1;
                             alu_type[`IS_SLL] = 1'b1;
                         end
-                        10'b0000000101: begin
+                        10'b000000?101: begin
                             is_imm            = 1'b1;
                             alu_type[`IS_SRL] = 1'b1;
                         end
-                        10'b0100000101: begin
+                        10'b010000?101: begin
                             is_imm            = 1'b1;
                             alu_type[`IS_SRA] = 1'b1;
                         end
