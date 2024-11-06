@@ -1,7 +1,8 @@
 `include "defines.sv"
 module exu (
-    input wire clock,
-    input wire reset_n,
+    input wire                      clock,
+    input wire                      reset_n,
+    input wire                      pipeval,
     input wire [       `LREG_RANGE] rs1,
     input wire [       `LREG_RANGE] rs2,
     input wire [       `LREG_RANGE] rd,
@@ -32,42 +33,13 @@ module exu (
     output wire [`RESULT_RANGE] ls_address,
     output wire [`RESULT_RANGE] alu_result,
     output wire [`RESULT_RANGE] bju_result,
-    output wire [`RESULT_RANGE] muldiv_result
+    output wire [`RESULT_RANGE] muldiv_result,
     
-
+    output wire [  `LREG_RANGE] ex_byp_rd,
+    output wire                 ex_byp_need_to_wb,
+    output wire [`RESULT_RANGE] ex_byp_result
 
 );
-    //forwarding logic
-    reg need_to_wb_dly;
-    always @(posedge clock or negedge reset_n) begin
-        if(~reset_n)begin
-            need_to_wb_dly <= 0;
-        end else
-            need_to_wb_dly <= need_to_wb; 
-    end
-
-    reg [`LREG_RANGE] rd_dly;
-    reg [`RESULT_RANGE] alu_result_dly;
-
-    always @(posedge clock or negedge reset_n) begin
-        if(~reset_n)begin
-            rd_dly <= 0;
-            alu_result_dly <= 0;
-        end else begin
-            rd_dly <= rd; 
-            alu_result_dly <= alu_result;
-        end
-    end
-
-     wire [        `SRC_RANGE] src1_muxed;
-     wire [        `SRC_RANGE] src2_muxed;
-     wire src1_need_forward;
-     wire src2_need_forward;
-     assign src1_need_forward = (need_to_wb_dly && (rd_dly == rs1));
-     assign src2_need_forward = (need_to_wb_dly && (rd_dly == rs2));
-     
-     assign src1_muxed = src1_need_forward?alu_result_dly:src1;
-     assign src2_muxed = src2_need_forward?alu_result_dly:src2;
 
 
 
@@ -79,7 +51,7 @@ module exu (
 
 
     agu u_agu (
-        .src1      (src1_muxed),
+        .src1      (src1),
         .imm       (imm),
         .is_load   (is_load),
         .is_store  (is_store),
@@ -87,8 +59,8 @@ module exu (
     );
 
     alu u_alu (
-        .src1       (src1_muxed),
-        .src2       (src2_muxed),
+        .src1       (src1),
+        .src2       (src2),
         .imm        (imm),
         .pc         (pc),
         .valid      (alu_valid),
@@ -100,12 +72,12 @@ module exu (
     );
 
     bju u_bju (
-        .src1           (src1_muxed),
-        .src2           (src2_muxed),
+        .src1           (src1),
+        .src2           (src2),
         .imm            (imm),
         .pc             (pc),
         .cx_type        (cx_type),
-        .valid          (bju_valid ),
+        .valid          (bju_valid),
         .is_unsigned    (is_unsigned),
         .dest           (bju_result),
         .redirect_valid (redirect_valid),
@@ -113,11 +85,15 @@ module exu (
     );
 
     muldiv u_muldiv (
-        .src1       (src1_muxed),
-        .src2       (src2_muxed),
+        .src1       (src1),
+        .src2       (src2),
         .valid      (muldiv_valid),
         .muldiv_type(muldiv_type),
         .result     (muldiv_result)
     );
 
+    //forwarding logic
+    assign ex_byp_rd         = rd;
+    assign ex_byp_need_to_wb = need_to_wb & pipeval & (alu_valid | muldiv_valid | bju_valid);
+    assign ex_byp_result     = alu_valid ? alu_result : muldiv_valid ? muldiv_result : bju_valid ? bju_result : 64'hDEADBEEF;
 endmodule

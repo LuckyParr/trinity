@@ -57,7 +57,16 @@ module backend (
     input  reg  [63:0] opload_read_data,       // input read data for lw channel
     input  wire        opload_operation_done,
     // output instrcnt pulse
-    output reg         flop_commit_valid
+    output reg         flop_commit_valid,
+
+
+    output wire [  `LREG_RANGE] ex_byp_rd,
+    output wire                 ex_byp_need_to_wb,
+    output wire [`RESULT_RANGE] ex_byp_result,
+
+    output wire [  `LREG_RANGE] mem_byp_rd,
+    output wire                 mem_byp_need_to_wb,
+    output wire [`RESULT_RANGE] mem_byp_result
 
 
 
@@ -65,35 +74,45 @@ module backend (
 
     wire exu_redirect_valid;
     assign redirect_valid = exu_redirect_valid & pipeval;
+
+
+
     exu u_exu (
-        .clock          (clock),
-        .reset_n        (reset_n),
-        .rs1            (rs1),
-        .rs2            (rs2),
-        .rd             (rd),
-        .src1           (src1),
-        .src2           (src2),
-        .imm            (imm),
-        .src1_is_reg    (src1_is_reg),
-        .src2_is_reg    (src2_is_reg),
-        .need_to_wb     (need_to_wb),
-        .cx_type        (cx_type),
-        .is_unsigned    (is_unsigned),
-        .alu_type       (alu_type),
-        .is_word        (is_word),
-        .is_load        (is_load),
-        .is_imm         (is_imm),
-        .is_store       (is_store),
-        .ls_size        (ls_size),
-        .muldiv_type    (muldiv_type),
-        .pc             (pc),
-        .instr          (instr),
-        .redirect_valid (exu_redirect_valid),
-        .redirect_target(redirect_target),
-        .ls_address     (ls_address),
-        .alu_result     (alu_result),
-        .bju_result     (bju_result),
-        .muldiv_result  (muldiv_result)
+        .clock             (clock),
+        .reset_n           (reset_n),
+        .pipeval(pipeval),
+        .rs1               (rs1),
+        .rs2               (rs2),
+        .rd                (rd),
+        .src1              (src1),
+        .src2              (src2),
+        .imm               (imm),
+        .src1_is_reg       (src1_is_reg),
+        .src2_is_reg       (src2_is_reg),
+        .need_to_wb        (need_to_wb),
+        .cx_type           (cx_type),
+        .is_unsigned       (is_unsigned),
+        .alu_type          (alu_type),
+        .is_word           (is_word),
+        .is_load           (is_load),
+        .is_imm            (is_imm),
+        .is_store          (is_store),
+        .ls_size           (ls_size),
+        .muldiv_type       (muldiv_type),
+        .pc                (pc),
+        .instr             (instr),
+        .redirect_valid    (exu_redirect_valid),
+        .redirect_target   (redirect_target),
+        .ls_address        (ls_address),
+        .alu_result        (alu_result),
+        .bju_result        (bju_result),
+        .muldiv_result     (muldiv_result),
+        .ex_byp_rd         (ex_byp_rd),
+        .ex_byp_need_to_wb (ex_byp_need_to_wb),
+        .ex_byp_result     (ex_byp_result)
+        // .mem_byp_rd        (mem_byp_rd),
+        // .mem_byp_need_to_wb(mem_byp_need_to_wb),
+        // .mem_byp_result    (mem_byp_result)
     );
 
 
@@ -347,7 +366,7 @@ module backend (
         end
     end
 
-    wire mmio_valid = (wb_is_load | wb_is_store) & wb_valid & ('h40600000 <= wb_ls_address <= 'h40700000);
+    wire mmio_valid = (wb_is_load | wb_is_store) & wb_valid & ('h30000000 <= wb_ls_address) & (wb_ls_address <= 'h40700000);
     reg  flop_mmio_valid;
 
     always @(posedge clock or negedge reset_n) begin
@@ -381,4 +400,10 @@ module backend (
         .io_coreid ('b0),
         .io_index  ('b0)
     );
+
+
+
+    assign mem_byp_rd         = mem_rd;
+    assign mem_byp_need_to_wb = mem_need_to_wb & mem_valid & ((|mem_alu_type) | (|mem_muldiv_type) | (|mem_cx_type)| mem_is_load) ;
+    assign mem_byp_result     = (|mem_alu_type) ? mem_alu_result : (|mem_muldiv_type) ? mem_muldiv_result :  (|mem_cx_type) ? mem_bju_result : mem_is_load ?  mem_opload_read_data_wb : 64'hDEADBEEF;
 endmodule

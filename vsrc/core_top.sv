@@ -14,7 +14,7 @@ module core_top #(
     input  wire [ 63:0] ddr_opload_read_data,    // 64-bit data output for lw channel read
     input  wire [511:0] ddr_pc_read_inst,        // 512-bit data output for pc channel burst read
     input  wire         ddr_operation_done,
-    input  wire         ddr_ready  ,              // Indicates if DDR is ready for new operation
+    input  wire         ddr_ready,               // Indicates if DDR is ready for new operation
     output reg          flop_commit_valid
 );
 
@@ -82,6 +82,13 @@ module core_top #(
     wire                      opload_operation_done;
 
 
+    wire [       `LREG_RANGE] ex_byp_rd;
+    wire                      ex_byp_need_to_wb;
+    wire [     `RESULT_RANGE] ex_byp_result;
+
+    wire [       `LREG_RANGE] mem_byp_rd;
+    wire                      mem_byp_need_to_wb;
+    wire [     `RESULT_RANGE] mem_byp_result;
 
     frontend u_frontend (
         .clock             (clock),
@@ -98,8 +105,8 @@ module core_top #(
         .rs1               (rs1),
         .rs2               (rs2),
         .rd                (rd),
-        .src1              (src1),
-        .src2              (src2),
+        .src1_muxed              (src1),
+        .src2_muxed              (src2),
         .imm               (imm),
         .src1_is_reg       (src1_is_reg),
         .src2_is_reg       (src2_is_reg),
@@ -119,7 +126,14 @@ module core_top #(
         //write back enable
         .writeback_valid   (regfile_write_valid),
         .writeback_rd      (regfile_write_rd),
-        .writeback_data    (regfile_write_data)
+        .writeback_data    (regfile_write_data),
+
+        .ex_byp_rd         (ex_byp_rd),
+        .ex_byp_need_to_wb (ex_byp_need_to_wb),
+        .ex_byp_result     (ex_byp_result),
+        .mem_byp_rd        (mem_byp_rd),
+        .mem_byp_need_to_wb(mem_byp_need_to_wb),
+        .mem_byp_result    (mem_byp_result)
 
     );
     wire                      out_valid;
@@ -205,7 +219,7 @@ module core_top #(
     backend u_backend (
         .clock                 (clock),
         .reset_n               (reset_n),
-        .pipeval                 (out_valid),
+        .pipeval               (out_valid),
         .rs1                   (out_rs1),
         .rs2                   (out_rs2),
         .rd                    (out_rd),
@@ -243,7 +257,13 @@ module core_top #(
         .opload_index_ready    (opload_index_ready),
         .opload_read_data      (opload_read_data),
         .opload_operation_done (opload_operation_done),
-        .flop_commit_valid     (flop_commit_valid)
+        .flop_commit_valid     (flop_commit_valid),
+        .ex_byp_rd             (ex_byp_rd),
+        .ex_byp_need_to_wb     (ex_byp_need_to_wb),
+        .ex_byp_result         (ex_byp_result),
+        .mem_byp_rd            (mem_byp_rd),
+        .mem_byp_need_to_wb    (mem_byp_need_to_wb),
+        .mem_byp_result        (mem_byp_result)
     );
 
 
