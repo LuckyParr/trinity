@@ -14,7 +14,9 @@ module ibuffer (
     output wire [31:0]  ibuffer_inst_out,
     output wire [47:0]  ibuffer_pc_out,
     output reg fetch_inst,                      // Output pulse when FIFO count decreases from 4 to 3
-    output wire fifo_empty                      // Signal indicating if the FIFO is empty
+    output wire fifo_empty,                      // Signal indicating if the FIFO is empty
+
+    input wire mem_stall
 );
     wire [(32+48-1):0] fifo_inst_addr_out;           // 32-bit output data from the FIFO
     assign ibuffer_inst_out = fifo_inst_addr_out[(32+48-1):48];
@@ -50,7 +52,8 @@ module ibuffer (
         .empty(fifo_empty),
         .full(fifo_full),
         .count(fifo_count),
-        .data_valid(ibuffer_inst_valid)
+        .data_valid(ibuffer_inst_valid),
+        .stall(mem_stall)
     );
 
     reg [3:0] write_index;                      // Index for loading instructions into FIFO

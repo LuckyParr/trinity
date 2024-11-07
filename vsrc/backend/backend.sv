@@ -78,38 +78,38 @@ module backend (
 
 
     exu u_exu (
-        .clock             (clock),
-        .reset_n           (reset_n),
-        .pipeval(pipeval),
-        .rs1               (rs1),
-        .rs2               (rs2),
-        .rd                (rd),
-        .src1              (src1),
-        .src2              (src2),
-        .imm               (imm),
-        .src1_is_reg       (src1_is_reg),
-        .src2_is_reg       (src2_is_reg),
-        .need_to_wb        (need_to_wb),
-        .cx_type           (cx_type),
-        .is_unsigned       (is_unsigned),
-        .alu_type          (alu_type),
-        .is_word           (is_word),
-        .is_load           (is_load),
-        .is_imm            (is_imm),
-        .is_store          (is_store),
-        .ls_size           (ls_size),
-        .muldiv_type       (muldiv_type),
-        .pc                (pc),
-        .instr             (instr),
-        .redirect_valid    (exu_redirect_valid),
-        .redirect_target   (redirect_target),
-        .ls_address        (ls_address),
-        .alu_result        (alu_result),
-        .bju_result        (bju_result),
-        .muldiv_result     (muldiv_result),
-        .ex_byp_rd         (ex_byp_rd),
-        .ex_byp_need_to_wb (ex_byp_need_to_wb),
-        .ex_byp_result     (ex_byp_result)
+        .clock            (clock),
+        .reset_n          (reset_n),
+        .pipeval          (pipeval),
+        .rs1              (rs1),
+        .rs2              (rs2),
+        .rd               (rd),
+        .src1             (src1),
+        .src2             (src2),
+        .imm              (imm),
+        .src1_is_reg      (src1_is_reg),
+        .src2_is_reg      (src2_is_reg),
+        .need_to_wb       (need_to_wb),
+        .cx_type          (cx_type),
+        .is_unsigned      (is_unsigned),
+        .alu_type         (alu_type),
+        .is_word          (is_word),
+        .is_load          (is_load),
+        .is_imm           (is_imm),
+        .is_store         (is_store),
+        .ls_size          (ls_size),
+        .muldiv_type      (muldiv_type),
+        .pc               (pc),
+        .instr            (instr),
+        .redirect_valid   (exu_redirect_valid),
+        .redirect_target  (redirect_target),
+        .ls_address       (ls_address),
+        .alu_result       (alu_result),
+        .bju_result       (bju_result),
+        .muldiv_result    (muldiv_result),
+        .ex_byp_rd        (ex_byp_rd),
+        .ex_byp_need_to_wb(ex_byp_need_to_wb),
+        .ex_byp_result    (ex_byp_result)
         // .mem_byp_rd        (mem_byp_rd),
         // .mem_byp_need_to_wb(mem_byp_need_to_wb),
         // .mem_byp_result    (mem_byp_result)
@@ -153,7 +153,7 @@ module backend (
     pipe_reg u_pipe_reg_exu2mem (
         .clock                  (clock),
         .reset_n                (reset_n),
-        .stall                  (),
+        .stall                  (mem_stall),
         .valid                  (pipeval),
         .rs1                    (rs1),
         .rs2                    (rs2),
@@ -232,7 +232,8 @@ module backend (
         .opstore_write_data    (opstore_write_data),
         .opstore_write_mask    (opstore_write_mask),
         .opstore_operation_done(opstore_operation_done),
-        .opload_read_data_wb   (opload_read_data_wb)
+        .opload_read_data_wb   (opload_read_data_wb),
+        .mem_stall             (mem_stall)
     );
     wire                      wb_valid;
     wire [       `LREG_RANGE] wb_rs1;
@@ -265,7 +266,7 @@ module backend (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  (1'b0),
-        .valid                  (mem_valid),
+        .valid                  (mem_valid & ~mem_stall),
         .rs1                    (mem_rs1),
         .rs2                    (mem_rs2),
         .rd                     (mem_rd),
@@ -407,6 +408,6 @@ module backend (
 
 
     assign mem_byp_rd         = mem_rd;
-    assign mem_byp_need_to_wb = mem_need_to_wb & mem_valid & ((|mem_alu_type) | (|mem_muldiv_type) | (|mem_cx_type)| mem_is_load) ;
-    assign mem_byp_result     = (|mem_alu_type) ? mem_alu_result : (|mem_muldiv_type) ? mem_muldiv_result :  (|mem_cx_type) ? mem_bju_result : mem_is_load ?  mem_opload_read_data_wb : 64'hDEADBEEF;
+    assign mem_byp_need_to_wb = mem_need_to_wb & mem_valid & ((|mem_alu_type) | (|mem_muldiv_type) | (|mem_cx_type) | mem_is_load);
+    assign mem_byp_result     = (|mem_alu_type) ? mem_alu_result : (|mem_muldiv_type) ? mem_muldiv_result : (|mem_cx_type) ? mem_bju_result : mem_is_load ? mem_opload_read_data_wb : 64'hDEADBEEF;
 endmodule

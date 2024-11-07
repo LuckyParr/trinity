@@ -54,7 +54,10 @@ module frontend (
 
     input wire [  `LREG_RANGE] mem_byp_rd,
     input wire                 mem_byp_need_to_wb,
-    input wire [`RESULT_RANGE] mem_byp_result
+    input wire [`RESULT_RANGE] mem_byp_result,
+
+    //mem stall: to stop all op in frontend
+    input wire mem_stall
 
 );
 
@@ -88,7 +91,8 @@ module frontend (
         .ibuffer_inst_out  (ibuffer_inst_out),
         .ibuffer_pc_out    (ibuffer_pc_out),
         .fifo_empty        (fifo_empty),
-        .pc_index          (pc_index)
+        .pc_index          (pc_index),
+        .mem_stall(mem_stall)
     );
 
 

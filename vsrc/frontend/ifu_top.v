@@ -24,7 +24,9 @@ module ifu_top (
     output wire fifo_empty,                    // Signal indicating if the FIFO is empty
 
     // Outputs from pc_ctrl
-    output wire [18:0] pc_index                // Selected bits [21:3] of the PC for DDR index
+    output wire [18:0] pc_index,                // Selected bits [21:3] of the PC for DDR index
+    
+    input wire mem_stall
 );
 
     // Internal signals connecting ibuffer and pc_ctrl
@@ -60,7 +62,8 @@ cacheline_selector u_cacheline_selector(
         .ibuffer_inst_valid(ibuffer_inst_valid),
         .ibuffer_inst_out (ibuffer_inst_out),
         .ibuffer_pc_out (ibuffer_pc_out),
-        .fifo_empty(fifo_empty)
+        .fifo_empty(fifo_empty),
+        .mem_stall(mem_stall)
     );
 
     // Instantiate the pc_ctrl module

@@ -100,13 +100,13 @@ module core_top #(
         .pc_operation_done (pc_operation_done),
         .pc_read_inst      (pc_read_inst),
         .pc_index          (pc_index),
-        .fifo_read_en      (1'b1),
+        .fifo_read_en      (~mem_stall), //when mem stall,ibuf can not to read instr anymore!
         .clear_ibuffer_ext (redirect_valid),
         .rs1               (rs1),
         .rs2               (rs2),
         .rd                (rd),
-        .src1_muxed              (src1),
-        .src2_muxed              (src2),
+        .src1_muxed        (src1),
+        .src2_muxed        (src2),
         .imm               (imm),
         .src1_is_reg       (src1_is_reg),
         .src2_is_reg       (src2_is_reg),
@@ -133,7 +133,8 @@ module core_top #(
         .ex_byp_result     (ex_byp_result),
         .mem_byp_rd        (mem_byp_rd),
         .mem_byp_need_to_wb(mem_byp_need_to_wb),
-        .mem_byp_result    (mem_byp_result)
+        .mem_byp_result    (mem_byp_result),
+        .mem_stall         (mem_stall)
 
     );
     wire                      out_valid;
@@ -160,7 +161,7 @@ module core_top #(
     pipe_reg u_pipe_reg_dec2exu (
         .clock                  (clock),
         .reset_n                (reset_n),
-        .stall                  ('b0),
+        .stall                  (mem_stall),
         .valid                  (decoder_inst_valid),
         .rs1                    (rs1),
         .rs2                    (rs2),

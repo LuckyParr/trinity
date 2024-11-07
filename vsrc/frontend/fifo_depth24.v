@@ -5,6 +5,7 @@ module fifo_depth24 (
     input wire write_en,            // Write enable
     input wire read_en,             // Read enable
     input wire clear_ibuffer,       // Clear signal for ibuffer
+    input wire stall,               // Stall signal (new input)
 
     output reg [(32+48-1):0] data_out,     // (32+48-1)-bit data output
     output wire empty,               // FIFO empty flag
@@ -37,13 +38,20 @@ module fifo_depth24 (
             end
 
             // Read operation
-            if (read_en && !empty) begin
+            if (stall) begin
+                // When stall is high, freeze the data output and valid signal
+                // Do not change data_out and data_valid
+                data_out <= data_out;
+                data_valid <= data_valid;
+            end else if (read_en && !empty) begin
+                // If stall is low, perform read operation
                 data_out <= fifo[read_ptr];
+                data_valid <= 1'b1;  // Set data valid signal when data is read
                 read_ptr <= (read_ptr + 1) % 24;
                 count <= count - 1;
-                data_valid <= 1'b1;  // Set data valid signal when data is read
             end else begin
-                data_valid <= 1'b0;  // Clear data valid signal when no read operation
+                // No read operation, reset data_valid
+                data_valid <= 1'b0;  // Clear data valid signal
             end
         end
     end
