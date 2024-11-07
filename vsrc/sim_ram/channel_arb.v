@@ -1,4 +1,6 @@
 module channel_arb (
+    input wire clock,   // Clock signal
+    input wire reset_n, // Active-low reset signal
 
     // PC Channel Inputs and Outputs
     input  wire         pc_index_valid,    // Valid signal for pc_index
@@ -33,8 +35,13 @@ module channel_arb (
     input  wire [ 63:0] ddr_opload_read_data,    // 64-bit data output for lw channel read
     input  wire [511:0] ddr_pc_read_inst,        // 512-bit data output for pc channel burst read
     input  wire         ddr_operation_done,
-    input  wire         ddr_ready                // Indicates if DDR is ready for new operation
+    input  wire         ddr_ready,                // Indicates if DDR is ready for new operation
+    
+    //add redirect wire
+    input wire redirect_valid
+
 );
+    reg redirect_valid_dly;
     assign pc_operation_done      = ddr_operation_done;
     assign opstore_operation_done = ddr_operation_done;
     assign opload_operation_done  = ddr_operation_done;
@@ -54,6 +61,7 @@ module channel_arb (
         pc_index_ready         = 1'b0;
         opstore_index_ready    = 1'b0;
         opload_index_ready     = 1'b0;
+        if(ddr_ready) begin
         if (opstore_index_valid) begin
             // opstore channel selected for write
             ddr_index              = opstore_index;
@@ -77,6 +85,23 @@ module channel_arb (
             ddr_write_enable = 1'b0;  // Read operation for burst mode
             ddr_burst_mode   = 1'b1;
             pc_index_ready   = 1'b1;  // Indicate PC channel is ready
+        end
+        end
+        else if(~ddr_ready && redirect_valid_dly)begin
+            // PC channel selected for burst read
+            ddr_index        = pc_index;
+            ddr_chip_enable  = 1'b1;
+            ddr_write_enable = 1'b0;  // Read operation for burst mode
+            ddr_burst_mode   = 1'b1;
+            pc_index_ready   = 1'b1;  // Indicate PC channel is ready
+        end
+    end
+
+    always @(posedge clock or negedge reset_n) begin
+        if(~reset_n)begin
+            redirect_valid_dly <= 1'b0;
+        end else begin
+            redirect_valid_dly <= redirect_valid;
         end
     end
 

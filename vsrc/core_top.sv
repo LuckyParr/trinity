@@ -268,6 +268,8 @@ module core_top #(
 
 
     channel_arb u_channel_arb (
+        .clock                 (clock),
+        .reset_n               (reset_n),
         .pc_index_valid        (pc_index_valid),
         .pc_index              (pc_index),
         .pc_index_ready        (pc_index_ready),
@@ -293,7 +295,8 @@ module core_top #(
         .ddr_opload_read_data  (ddr_opload_read_data),
         .ddr_pc_read_inst      (ddr_pc_read_inst),
         .ddr_operation_done    (ddr_operation_done),
-        .ddr_ready             (ddr_ready)
+        .ddr_ready             (ddr_ready),
+        .redirect_valid        (redirect_valid)
     );
 
 endmodule
