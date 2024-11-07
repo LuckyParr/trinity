@@ -212,7 +212,8 @@ module core_top #(
         .out_alu_result         (),
         .out_bju_result         (),
         .out_muldiv_result      (),
-        .out_opload_read_data_wb()
+        .out_opload_read_data_wb(),
+        .redirect_flush         (redirect_valid)
     );
 
 

@@ -35,6 +35,9 @@ module pipe_reg (
     //note: dont not to fill until mem stage done
     input wire [`RESULT_RANGE] opload_read_data_wb,
 
+    //flush
+    input redirect_flush,
+
     // outputs
     output reg               out_valid,
     output reg [`LREG_RANGE] out_rs1,
@@ -70,7 +73,7 @@ module pipe_reg (
 );
 
     always @(posedge clock or negedge reset_n) begin
-        if (~reset_n) begin
+        if (~reset_n || redirect_flush) begin
             out_valid               <= 'b0;
             out_rs1                 <= 'b0;
             out_rs2                 <= 'b0;

@@ -206,7 +206,8 @@ module backend (
         .out_alu_result         (mem_alu_result),
         .out_bju_result         (mem_bju_result),
         .out_muldiv_result      (mem_muldiv_result),
-        .out_opload_read_data_wb(mem_opload_read_data_wb)
+        .out_opload_read_data_wb(mem_opload_read_data_wb),
+        .redirect_flush         (1'b0)
     );
 
 
@@ -316,7 +317,9 @@ module backend (
         .out_alu_result         (wb_alu_result),
         .out_bju_result         (wb_bju_result),
         .out_muldiv_result      (wb_muldiv_result),
-        .out_opload_read_data_wb(wb_opload_read_data_wb)
+        .out_opload_read_data_wb(wb_opload_read_data_wb),
+        .redirect_flush         (1'b0)
+
     );
 
     assign regfile_write_valid = wb_valid & wb_need_to_wb;
