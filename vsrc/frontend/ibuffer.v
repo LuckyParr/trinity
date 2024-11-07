@@ -20,6 +20,16 @@ module ibuffer (
     assign ibuffer_inst_out = fifo_inst_addr_out[(32+48-1):48];
     assign ibuffer_pc_out = fifo_inst_addr_out[47:0];
 
+    reg [31:0] inst_cut [0:15];
+    integer i;
+
+    always @(*) begin
+        for (i = 0; i < 16; i = i + 1) begin
+            inst_cut[i] = pc_read_inst[(i * 32) + 31 -: 32];
+        end
+    end
+
+
     // Internal signals
     reg [(32+48-1):0] inst_buffer [0:15];              // Buffer to store 16 instructions (32-bit each)
     reg pc_index_ready_prev;                    // To detect rising edge of pc_index_ready
@@ -66,22 +76,22 @@ module ibuffer (
             // if (pc_index_ready && !pc_index_ready_prev) begin
             if (pc_operation_done) begin
                 // Split pc_read_inst into 16 instructions and load them into inst_buffer
-                inst_buffer[0]  <= {pc_read_inst[31:0]    , (pc+48'd0)};
-                inst_buffer[1]  <= {pc_read_inst[63:32]   , (pc+48'd4)};
-                inst_buffer[2]  <= {pc_read_inst[95:64]   , (pc+48'd8)};
-                inst_buffer[3]  <= {pc_read_inst[127:96]  , (pc+48'd12)};
-                inst_buffer[4]  <= {pc_read_inst[159:128] , (pc+48'd16)};
-                inst_buffer[5]  <= {pc_read_inst[191:160] , (pc+48'd20)};
-                inst_buffer[6]  <= {pc_read_inst[223:192] , (pc+48'd24)};
-                inst_buffer[7]  <= {pc_read_inst[255:224] , (pc+48'd28)};
-                inst_buffer[8]  <= {pc_read_inst[287:256] , (pc+48'd32)};
-                inst_buffer[9]  <= {pc_read_inst[319:288] , (pc+48'd36)};
-                inst_buffer[10] <= {pc_read_inst[351:320] , (pc+48'd40)};
-                inst_buffer[11] <= {pc_read_inst[383:352] , (pc+48'd44)};
-                inst_buffer[12] <= {pc_read_inst[415:384] , (pc+48'd48)};
-                inst_buffer[13] <= {pc_read_inst[447:416] , (pc+48'd52)};
-                inst_buffer[14] <= {pc_read_inst[479:448] , (pc+48'd56)};
-                inst_buffer[15] <= {pc_read_inst[511:480] , (pc+48'd60)};
+                inst_buffer[0]  <= {inst_cut[0] , (pc+48'd0)};
+                inst_buffer[1]  <= {inst_cut[1] , (pc+48'd4)};
+                inst_buffer[2]  <= {inst_cut[2] , (pc+48'd8)};
+                inst_buffer[3]  <= {inst_cut[3] , (pc+48'd12)};
+                inst_buffer[4]  <= {inst_cut[4] , (pc+48'd16)};
+                inst_buffer[5]  <= {inst_cut[5] , (pc+48'd20)};
+                inst_buffer[6]  <= {inst_cut[6] , (pc+48'd24)};
+                inst_buffer[7]  <= {inst_cut[7] , (pc+48'd28)};
+                inst_buffer[8]  <= {inst_cut[8] , (pc+48'd32)};
+                inst_buffer[9]  <= {inst_cut[9] , (pc+48'd36)};
+                inst_buffer[10] <= {inst_cut[10] , (pc+48'd40)};
+                inst_buffer[11] <= {inst_cut[11] , (pc+48'd44)};
+                inst_buffer[12] <= {inst_cut[12] , (pc+48'd48)};
+                inst_buffer[13] <= {inst_cut[13] , (pc+48'd52)};
+                inst_buffer[14] <= {inst_cut[14] , (pc+48'd56)};
+                inst_buffer[15] <= {inst_cut[15] , (pc+48'd60)};
 
                 write_index <= 4'b0;             // Reset write_index
                 write_enable <= 1'b1;            // Start writing to FIFO

@@ -8,6 +8,7 @@ module simddr (
     input wire ddr_burst_mode,                  // Burst mode control (1 for 512-bit, 0 for 64-bit)
     input wire [63:0] ddr_opstore_write_mask,    // Write Mask
     input wire [63:0] ddr_opstore_write_data,    // 64-bit data input for single access write
+    //input wire redirect_valid,
     output reg [63:0] ddr_opload_read_data,     // 64-bit data output for single access read
     output reg [511:0] ddr_pc_read_inst, // 512-bit data output for burst read operations
     input wire [511:0] ddr_l2_write_data, // 512-bit data input for burst write operations
@@ -24,12 +25,22 @@ import "DPI-C" function void difftest_ram_write
   input  longint mask
 );
 
+    //reg redirect_valid_dly;
+    //always @(posedge clock or negedge reset_n) begin
+    //    if(~reset_n)begin
+    //        redirect_valid_dly <= 1'b0;
+    //    end else begin
+    //        redirect_valid_dly <= redirect_valid;
+    //    end
+    //end
+
     reg ddr_burst_mode_latch;
     always @(posedge clock or negedge reset_n ) begin
         if(!reset_n) begin
             ddr_burst_mode_latch <= 1'b0;
         end
-        else if(ddr_chip_enable  & ~operation_in_progress) begin
+        //else if(ddr_chip_enable  & ~operation_in_progress) begin
+        else if(ddr_chip_enable ) begin
             ddr_burst_mode_latch <= ddr_burst_mode;
         end
     end
