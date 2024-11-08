@@ -64,10 +64,10 @@ module mem (
 
 
 
-    wire [         63:0] write_1b_mask = {56'b0, 8'b1};
-    wire [         63:0] write_1h_mask = {48'b0, 16'b1};
-    wire [         63:0] write_1w_mask = {32'b0, 32'b1};
-    wire [         63:0] write_2w_mask = {64'b1};
+    wire [         63:0] write_1b_mask = {56'b0, {8{1'b1}}};
+    wire [         63:0] write_1h_mask = {48'b0, {16{1'b1}}};
+    wire [         63:0] write_1w_mask = {32'b0, {32{1'b1}}};
+    wire [         63:0] write_2w_mask = {64{1'b1}};
 
     wire [          2:0] shift_size = ls_address[2:0];
 
