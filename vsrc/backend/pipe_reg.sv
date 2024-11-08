@@ -73,7 +73,7 @@ module pipe_reg (
 );
 
     always @(posedge clock or negedge reset_n) begin
-        if (~reset_n || redirect_flush) begin
+        if (~reset_n || redirect_flush & ~stall) begin
             out_valid               <= 'b0;
             out_rs1                 <= 'b0;
             out_rs2                 <= 'b0;

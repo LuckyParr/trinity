@@ -31,6 +31,15 @@ module mem (
 
 
 );
+    localparam IDLE = 2'b00;
+    localparam PENDING = 2'b01;
+    localparam OUTSTANDING = 2'b10;
+    localparam TEMP = 2'b11;
+    reg [1:0] ls_state;
+    wire ls_idle = ls_state == IDLE;
+    wire ls_pending = ls_state == PENDING;
+    wire ls_outstanding = ls_state == OUTSTANDING;
+    wire ls_temp = ls_state == TEMP;
     /*
     0 = B
     1 = HALF WORD
@@ -66,36 +75,16 @@ module mem (
 
     wire [`RESULT_RANGE] opstore_write_data_qual = src2 << (shift_size * 8);
 
-    reg operation_done_dly;
-    always @(posedge clock or negedge reset_n) begin
-        if(~reset_n) begin
-            operation_done_dly <= 'b0;
-        end else begin
-            operation_done_dly <= opload_operation_done | opstore_operation_done;
-        end
-    end
-
 
     always @(*) begin
         opload_index_valid = 'b0;
         opload_index       = 'b0;
 
-        if (is_load & ~outstanding_load_q & ~operation_done_dly) begin
+        if (is_load & (~ls_outstanding )) begin
             opload_index_valid = 1'b1;
             opload_index       = {3'b0, ls_address[`RESULT_WIDTH-1:3]};
         end
     end
-
-    always @(posedge clock or negedge reset_n) begin
-        if(~reset_n) begin
-            outstanding_load_q <= 'b0;
-        end else if((read_fire | read_pending) & ~outstanding_load_q ) begin
-            outstanding_load_q <= 'b1;
-        end else if( outstanding_load_q & opload_operation_done) begin
-            outstanding_load_q <= 'b0;
-        end        
-    end
-
 
 
     always @(*) begin
@@ -104,7 +93,7 @@ module mem (
         opstore_write_data  = 'b0;
         opstore_write_mask  = 'b0;
 
-        if (is_store & ~outstanding_store_q & ~operation_done_dly) begin
+        if (is_store & ~ls_outstanding) begin
             opstore_index_valid = 1'b1;
             opstore_index       = {3'b0, ls_address[`RESULT_WIDTH-1:3]};
             opstore_write_mask  = opstore_write_mask_qual;
@@ -113,17 +102,38 @@ module mem (
     end
 
 
-    always @(posedge clock or negedge reset_n) begin
+    always @(posedge clock or negedge reset_n ) begin
         if(~reset_n) begin
-            outstanding_store_q <= 'b0;
-        end else if((write_fire | write_pending) & ~outstanding_store_q ) begin
-            outstanding_store_q <= 'b1;
-        end else if( outstanding_store_q & opstore_operation_done) begin
-            outstanding_store_q <= 'b0;
-        end        
+            ls_state <= IDLE;
+        end else begin
+            case (ls_state)
+                IDLE: begin
+                    if(read_pending | write_pending) begin
+                        ls_state <= PENDING;
+                    end else if (read_fire | write_fire) begin
+                        ls_state <= OUTSTANDING;
+                    end
+                end
+
+                PENDING : begin
+                    if(read_fire | write_fire) begin
+                        ls_state <= OUTSTANDING;
+                    end
+                end 
+
+                OUTSTANDING : begin
+                    if(opload_operation_done | opstore_operation_done) begin
+                        ls_state <= IDLE;
+                    end
+                end
+
+                default: ;
+            endcase
+
+        end
+        
     end
 
-
-    assign mem_stall = (outstanding_store_q | opload_index_valid | opstore_index_valid) & ~opstore_operation_done;
+    assign mem_stall = (~ls_idle   | opload_index_valid | opstore_index_valid) & ~((opload_operation_done | opstore_operation_done) & (ls_outstanding));
 
 endmodule
