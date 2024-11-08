@@ -42,6 +42,7 @@ module channel_arb (
 
 );
     reg redirect_valid_dly;
+    reg redirect_valid_dly_2;
     assign pc_operation_done      = ddr_operation_done;
     assign opstore_operation_done = ddr_operation_done;
     assign opload_operation_done  = ddr_operation_done;
@@ -87,7 +88,8 @@ module channel_arb (
             pc_index_ready   = 1'b1;  // Indicate PC channel is ready
         end
         end
-        else if(~ddr_ready && redirect_valid_dly)begin
+        //force handshake when redirect_valid = 1
+        else if(~ddr_ready && ~redirect_valid_dly && redirect_valid_dly_2)begin
             // PC channel selected for burst read
             ddr_index        = pc_index;
             ddr_chip_enable  = 1'b1;
@@ -100,8 +102,10 @@ module channel_arb (
     always @(posedge clock or negedge reset_n) begin
         if(~reset_n)begin
             redirect_valid_dly <= 1'b0;
+            redirect_valid_dly_2 <= 1'b0;
         end else begin
             redirect_valid_dly <= redirect_valid;
+            redirect_valid_dly_2 <= redirect_valid_dly;
         end
     end
 
@@ -112,7 +116,8 @@ module channel_arb (
         if (ddr_ready) begin
             if (pc_operation_done) begin
                 pc_read_inst = ddr_pc_read_inst;
-            end else if (opload_operation_done) begin
+            end 
+            if (opload_operation_done) begin
                 opload_read_data = ddr_opload_read_data;
             end  // Priority selection logic
 

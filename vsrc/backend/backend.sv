@@ -218,6 +218,7 @@ module backend (
         .reset_n               (reset_n),
         .is_load               (mem_is_load),
         .is_store              (mem_is_store),
+        .is_unsigned           (mem_is_unsigned),
         .src2                  (mem_src2),
         .ls_address            (mem_ls_address),
         .ls_size               (mem_ls_size),
