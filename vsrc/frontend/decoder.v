@@ -396,9 +396,13 @@ module decoder (
                         10'b0000001100: begin
                             muldiv_type[`IS_DIVW] = 1'b1;
                         end
-                        0000001101: muldiv_type[`IS_DIVUW] = 1'b1;
-                        0000001110: muldiv_type[`IS_REMW] = 1'b1;
-                        0000001111: muldiv_type[`IS_REMUW] = 1'b1;
+                        10'b0000001101:begin
+                            muldiv_type[`IS_DIVUW] =  1'b1;
+                        end 
+                        10'b0000001110: muldiv_type[`IS_REMW] = 1'b1;
+                        10'b0000001111:begin
+                            muldiv_type[`IS_REMUW] = 1'b1;
+                        end 
                         default: ;
                     endcase
                 end

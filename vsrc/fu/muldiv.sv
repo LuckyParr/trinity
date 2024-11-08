@@ -1,9 +1,9 @@
 module muldiv (
-    input  wire [       `SRC_RANGE] src1,
-    input  wire [       `SRC_RANGE] src2,
+    input  wire [        `SRC_RANGE] src1,
+    input  wire [        `SRC_RANGE] src2,
     input  wire                      valid,
     input  wire [`MULDIV_TYPE_RANGE] muldiv_type,
-    output wire [        `RESULT_RANGE] result
+    output wire [     `RESULT_RANGE] result
 );
 
     /*
@@ -56,11 +56,24 @@ module muldiv (
     wire                 w_sign = src1[31] ^ src2[31];
 
 
-    wire                 mulw_result = {{32{w_sign}}, w_product};
-    wire                 divw_result = {{32{w_sign}}, w_q};
-    wire                 divuw_result = {{32{w_q[31]}}, w_q[30:0]};
-    wire                 remw_result = {{32{w_sign}}, w_remainder};
-    wire                 remuw_result = {{32{w_remainder[31]}}, w_remainder[30:0]};
-
-    assign result = is_mul ? mul_result : is_mulh ? mulh_result : is_mulhsu ? mulhsu_result : is_mulhu ? mulhu_result : is_div ? div_result : is_divu ? divu_result : is_rem ? rem_result : is_remu ? remu_result : is_mulw ? mulw_result : is_divw ? divw_result : is_remw ? remw_result : remuw_result;
+    wire [`RESULT_RANGE] mulw_result = {{32{w_sign}}, w_product};
+    wire [`RESULT_RANGE] divw_result = {{32{w_sign}}, w_q};
+    wire [`RESULT_RANGE] divuw_result = {{32{w_q[31]}}, w_q[30:0]};
+    wire [`RESULT_RANGE] remw_result = {{32{w_sign}}, w_remainder};
+    wire [`RESULT_RANGE] remuw_result = {{32{w_remainder[31]}}, w_remainder[30:0]};
+    /* verilog_format: off */
+    assign result = is_mul ? mul_result : 
+    is_mulh ? mulh_result : 
+    is_mulhsu ? mulhsu_result : 
+    is_mulhu ? mulhu_result : 
+    is_div ? div_result : 
+    is_divu ? divu_result : 
+    is_rem ? rem_result : 
+    is_remu ? remu_result :
+     is_mulw ? mulw_result : 
+     is_divw ? divw_result : 
+     is_remw ? remw_result : 
+    is_divuw ? divuw_result :
+     remuw_result;
+    /* verilog_format: on */
 endmodule
