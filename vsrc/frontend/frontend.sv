@@ -149,8 +149,7 @@ module frontend (
     //forwarding logic
 
 
-    // wire [`SRC_RANGE] src1_muxed;
-    // wire [`SRC_RANGE] src2_muxed;
+
     wire              src1_need_forward;
     wire              src2_need_forward;
     assign src1_need_forward = (rs1 == ex_byp_rd) & ex_byp_need_to_wb | (rs1 == mem_byp_rd) & mem_byp_need_to_wb;

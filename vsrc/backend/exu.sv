@@ -37,11 +37,18 @@ module exu (
     
     output wire [  `LREG_RANGE] ex_byp_rd,
     output wire                 ex_byp_need_to_wb,
-    output wire [`RESULT_RANGE] ex_byp_result
+    output wire [`RESULT_RANGE] ex_byp_result,
+
+    //mem load to use bypass
+    input wire [       `LREG_RANGE] mem_byp_rd,
+    input wire                 mem_byp_need_to_wb,
+    input wire [`RESULT_RANGE] mem_byp_result
 
 );
 
-
+    //mem load to use bypass
+    wire [`SRC_RANGE] src1_muxed;
+    wire [`SRC_RANGE] src2_muxed;
 
     //exu logic
     wire alu_valid = |alu_type;
@@ -51,7 +58,7 @@ module exu (
 
 
     agu u_agu (
-        .src1      (src1),
+        .src1      (src1_muxed),
         .imm       (imm),
         .is_load   (is_load),
         .is_store  (is_store),
@@ -59,8 +66,8 @@ module exu (
     );
 
     alu u_alu (
-        .src1       (src1),
-        .src2       (src2),
+        .src1       (src1_muxed),
+        .src2       (src2_muxed),
         .imm        (imm),
         .pc         (pc),
         .valid      (alu_valid),
@@ -72,8 +79,8 @@ module exu (
     );
 
     bju u_bju (
-        .src1           (src1),
-        .src2           (src2),
+        .src1           (src1_muxed),
+        .src2           (src2_muxed),
         .imm            (imm),
         .pc             (pc),
         .cx_type        (cx_type),
@@ -85,8 +92,8 @@ module exu (
     );
 
     muldiv u_muldiv (
-        .src1       (src1),
-        .src2       (src2),
+        .src1       (src1_muxed),
+        .src2       (src2_muxed),
         .valid      (muldiv_valid),
         .muldiv_type(muldiv_type),
         .result     (muldiv_result)
@@ -96,4 +103,22 @@ module exu (
     assign ex_byp_rd         = rd;
     assign ex_byp_need_to_wb = need_to_wb & pipeval & (alu_valid | muldiv_valid | bju_valid);
     assign ex_byp_result     = alu_valid ? alu_result : muldiv_valid ? muldiv_result : bju_valid ? bju_result : 64'hDEADBEEF;
+
+
+    //mem load to use bypass logic
+    wire              src1_need_forward;
+    wire              src2_need_forward;
+    assign src1_need_forward = (rs1 == mem_byp_rd) & mem_byp_need_to_wb;
+    assign src2_need_forward = (rs2 == mem_byp_rd) & mem_byp_need_to_wb;
+
+    wire [`RESULT_RANGE] src1_forward_result;
+    wire [`RESULT_RANGE] src2_forward_result;
+
+    assign src1_forward_result = (rs1 == mem_byp_rd) & mem_byp_need_to_wb ? mem_byp_result : 64'hDEADBEEF;
+    assign src2_forward_result = (rs2 == mem_byp_rd) & mem_byp_need_to_wb ? mem_byp_result : 64'hDEADBEEF;
+
+    assign src1_muxed = src1_need_forward ? src1_forward_result : src1;
+    assign src2_muxed = src2_need_forward ? src2_forward_result : src2;
+
+
 endmodule

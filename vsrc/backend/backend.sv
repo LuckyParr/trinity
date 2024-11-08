@@ -109,10 +109,10 @@ module backend (
         .muldiv_result    (muldiv_result),
         .ex_byp_rd        (ex_byp_rd),
         .ex_byp_need_to_wb(ex_byp_need_to_wb),
-        .ex_byp_result    (ex_byp_result)
-        // .mem_byp_rd        (mem_byp_rd),
-        // .mem_byp_need_to_wb(mem_byp_need_to_wb),
-        // .mem_byp_result    (mem_byp_result)
+        .ex_byp_result    (ex_byp_result),
+        .mem_byp_rd        (mem_byp_rd),
+        .mem_byp_need_to_wb(mem_byp_need_to_wb),
+        .mem_byp_result    (mem_byp_result)
     );
 
 
@@ -206,7 +206,7 @@ module backend (
         .out_alu_result         (mem_alu_result),
         .out_bju_result         (mem_bju_result),
         .out_muldiv_result      (mem_muldiv_result),
-        .out_opload_read_data_wb(mem_opload_read_data_wb),
+        .out_opload_read_data_wb(),
         .redirect_flush         (1'b0)
     );
 
@@ -410,5 +410,5 @@ module backend (
 
     assign mem_byp_rd         = mem_rd;
     assign mem_byp_need_to_wb = mem_need_to_wb & mem_valid & ((|mem_alu_type) | (|mem_muldiv_type) | (|mem_cx_type) | mem_is_load);
-    assign mem_byp_result     = (|mem_alu_type) ? mem_alu_result : (|mem_muldiv_type) ? mem_muldiv_result : (|mem_cx_type) ? mem_bju_result : mem_is_load ? mem_opload_read_data_wb : 64'hDEADBEEF;
+    assign mem_byp_result     = (|mem_alu_type) ? mem_alu_result : (|mem_muldiv_type) ? mem_muldiv_result : (|mem_cx_type) ? mem_bju_result : mem_is_load ? opload_read_data_wb : 64'hDEADBEEF;
 endmodule
