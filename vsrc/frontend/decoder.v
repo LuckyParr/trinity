@@ -71,6 +71,7 @@ module decoder (
     assign src2 = rs2_read_data;
     always @(*) begin
         if (ibuffer_inst_valid) begin
+            imm = 'b0;
             imm_itype        = ibuffer_inst_out[31:20];
             imm_stype        = {ibuffer_inst_out[31:25], ibuffer_inst_out[11:7]};
 
@@ -233,28 +234,28 @@ module decoder (
                     casez ({
                         funct7, funct3
                     })
-                        10'b??????000: begin
+                        10'b???????000: begin
                             is_imm            = 1'b1;
                             alu_type[`IS_ADD] = 1'b1;
                         end
-                        10'b??????010: begin
+                        10'b???????010: begin
                             is_imm            = 1'b1;
                             alu_type[`IS_SLT] = 1'b1;
                         end
-                        10'b??????011: begin
+                        10'b???????011: begin
                             is_imm            = 1'b1;
                             is_unsigned       = 1'b1;
                             alu_type[`IS_SLT] = 1'b1;
                         end
-                        10'b??????100: begin
+                        10'b???????100: begin
                             is_imm            = 1'b1;
                             alu_type[`IS_XOR] = 1'b1;
                         end
-                        10'b??????110: begin
+                        10'b???????110: begin
                             is_imm           = 1'b1;
                             alu_type[`IS_OR] = 1'b1;
                         end
-                        10'b??????111: begin
+                        10'b???????111: begin
                             is_imm            = 1'b1;
                             alu_type[`IS_AND] = 1'b1;
                         end
@@ -343,6 +344,7 @@ module decoder (
                     // Add your implementation here
                 end
                 OPCODE_ALU_ITYPE_WORD: begin
+                    imm        = imm_itype_64_s;
                     is_word    = 1'b1;
                     need_to_wb = 1'b1;
                     casez ({
