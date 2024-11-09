@@ -48,20 +48,18 @@ module channel_arb (
     assign opload_operation_done  = ddr_operation_done;
 
     always @(*) begin
-        // Default output values
+        // default output values to simddr.v
         ddr_chip_enable        = 1'b0;
         ddr_burst_mode         = 1'b0;
         ddr_write_enable       = 1'b0;
         ddr_index              = 19'b0;
-
         ddr_opstore_write_mask = 64'b0;
         ddr_opstore_write_data = 64'b0;
-
-
-        // Default ready signals
+        // default output ready signals to pc_ctrl.v and mem.v
         pc_index_ready         = 1'b0;
         opstore_index_ready    = 1'b0;
         opload_index_ready     = 1'b0;
+        //when ddr is idle , process req by priority
         if(ddr_ready) begin
         if (opstore_index_valid) begin
             // opstore channel selected for write
@@ -88,7 +86,7 @@ module channel_arb (
             pc_index_ready   = 1'b1;  // Indicate PC channel is ready
         end
         end
-        //force handshake when redirect_valid = 1
+        //force handshake when redirect_valid = 1, can intrrupt ongoing pc fetch
         else if(~ddr_ready && ~redirect_valid_dly && redirect_valid_dly_2)begin
             // PC channel selected for burst read
             ddr_index        = pc_index;
