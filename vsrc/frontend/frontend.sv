@@ -40,7 +40,7 @@ module frontend (
     output wire [           12:0] muldiv_type,
     output wire [           47:0] decoder_pc_out,
     output wire [           47:0] decoder_inst_out,
-    output wire                   decoder_inst_valid,
+    output wire                   decoder_instr_valid,
 
     //write back enable
     input wire                 writeback_valid,
@@ -60,7 +60,7 @@ module frontend (
     input wire mem_stall
 
 );
-
+    wire [31:0] ibuffer_instr_valid;
     wire [31:0] ibuffer_inst_out;
     wire [47:0] ibuffer_pc_out;
 
@@ -87,7 +87,7 @@ module frontend (
         .pc_read_inst      (pc_read_inst),
         .fifo_read_en      (fifo_read_en),
         .clear_ibuffer_ext (clear_ibuffer_ext),
-        .ibuffer_inst_valid(decoder_inst_valid),
+        .ibuffer_instr_valid(ibuffer_instr_valid),
         .ibuffer_inst_out  (ibuffer_inst_out),
         .ibuffer_pc_out    (ibuffer_pc_out),
         .fifo_empty        (fifo_empty),
@@ -100,7 +100,7 @@ module frontend (
         .clock             (clock),
         .reset_n           (reset_n),
         .fifo_empty        (fifo_empty),
-        .ibuffer_inst_valid(decoder_inst_valid),
+        .ibuffer_instr_valid(ibuffer_instr_valid),
         .ibuffer_inst_out  (ibuffer_inst_out),
         .ibuffer_pc_out    (ibuffer_pc_out),
         .rs1_read_data     (rs1_read_data),
@@ -123,10 +123,9 @@ module frontend (
         .is_store          (is_store),
         .ls_size           (ls_size),
         .muldiv_type       (muldiv_type),
-        .decoder_pc_out    (decoder_pc_out),
-        .decoder_inst_out  (decoder_inst_out)
-
-
+        .decoder_instr_valid  (decoder_instr_valid),
+        .decoder_inst_out  (decoder_inst_out),
+        .decoder_pc_out    (decoder_pc_out)
 
     );
 
@@ -144,11 +143,7 @@ module frontend (
         .rs2_read_data(rs2_read_data)
     );
 
-
-
     //forwarding logic
-
-
 
     wire              src1_need_forward;
     wire              src2_need_forward;

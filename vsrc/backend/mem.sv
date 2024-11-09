@@ -24,6 +24,14 @@ module mem (
     output reg  [         63:0] opstore_write_mask,
     input  wire                 opstore_operation_done,
 
+    input wire                      instr_valid,
+    input wire [         `PC_RANGE] pc,
+    input wire [      `INSTR_RANGE] instr,
+    // output valid, pc , inst
+    output wire                      instr_valid_out,
+    output wire [         `PC_RANGE] pc_out,
+    output wire [      `INSTR_RANGE] instr_out,
+
     //read data to wb stage
     output wire [`RESULT_RANGE] opload_read_data_wb,
 
@@ -32,6 +40,12 @@ module mem (
 
 
 );
+
+    assign instr_valid_out =         instr_valid;
+    assign pc_out =      pc;
+    assign instr_out =   instr;
+
+
     localparam IDLE = 2'b00;
     localparam PENDING = 2'b01;
     localparam OUTSTANDING = 2'b10;

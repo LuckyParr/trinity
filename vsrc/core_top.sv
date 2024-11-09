@@ -47,7 +47,7 @@ module core_top #(
     wire                      regfile_write_valid;
     wire [     `RESULT_RANGE] regfile_write_data;
     wire [               4:0] regfile_write_rd;
-    wire                      decoder_inst_valid;
+    wire                      decoder_instr_valid;
     wire [              47:0] decoder_pc_out;
     wire [              47:0] decoder_inst_out;
 
@@ -120,7 +120,7 @@ module core_top #(
         .is_store          (is_store),
         .ls_size           (ls_size),
         .muldiv_type       (muldiv_type),
-        .decoder_inst_valid(decoder_inst_valid),
+        .decoder_instr_valid(decoder_instr_valid),
         .decoder_pc_out    (decoder_pc_out),
         .decoder_inst_out  (decoder_inst_out),
         //write back enable
@@ -156,13 +156,14 @@ module core_top #(
     wire                      out_is_store;
     wire [               3:0] out_ls_size;
     wire [`MULDIV_TYPE_RANGE] out_muldiv_type;
+    wire                      out_instr_valid;
     wire [         `PC_RANGE] out_pc;
     wire [      `INSTR_RANGE] out_instr;
+
     pipe_reg u_pipe_reg_dec2exu (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  (mem_stall),
-        .valid                  (decoder_inst_valid),
         .rs1                    (rs1),
         .rs2                    (rs2),
         .rd                     (rd),
@@ -181,6 +182,7 @@ module core_top #(
         .is_store               (is_store),
         .ls_size                (ls_size),
         .muldiv_type            (muldiv_type),
+        .instr_valid            (decoder_instr_valid),
         .pc                     (decoder_pc_out),
         .instr                  (decoder_inst_out),
         .ls_address             ('b0),
@@ -188,7 +190,6 @@ module core_top #(
         .bju_result             ('b0),
         .muldiv_result          ('b0),
         .opload_read_data_wb    ('b0),
-        .out_valid              (out_valid),
         .out_rs1                (out_rs1),
         .out_rs2                (out_rs2),
         .out_rd                 (out_rd),
@@ -207,6 +208,7 @@ module core_top #(
         .out_is_store           (out_is_store),
         .out_ls_size            (out_ls_size),
         .out_muldiv_type        (out_muldiv_type),
+        .out_instr_valid        (out_instr_valid),
         .out_pc                 (out_pc),
         .out_instr              (out_instr),
         .out_ls_address         (),
@@ -221,7 +223,6 @@ module core_top #(
     backend u_backend (
         .clock                 (clock),
         .reset_n               (reset_n),
-        .pipeval               (out_valid),
         .rs1                   (out_rs1),
         .rs2                   (out_rs2),
         .rd                    (out_rd),
@@ -240,6 +241,7 @@ module core_top #(
         .is_store              (out_is_store),
         .ls_size               (out_ls_size),
         .muldiv_type           (out_muldiv_type),
+        .instr_valid            (out_instr_valid),
         .pc                    (out_pc),
         .instr                 (out_instr),
         .regfile_write_valid   (regfile_write_valid),

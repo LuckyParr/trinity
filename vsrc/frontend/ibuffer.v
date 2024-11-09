@@ -10,7 +10,7 @@ module ibuffer (
     input wire [47:0] pc,
     input wire cut_first_32_bit,
 
-    output wire ibuffer_inst_valid,
+    output wire ibuffer_instr_valid,
     output wire [31:0]  ibuffer_inst_out,
     output wire [47:0]  ibuffer_pc_out,
     output reg fetch_inst,                      // Output pulse when FIFO count decreases from 4 to 3
@@ -52,7 +52,7 @@ module ibuffer (
         .empty(fifo_empty),
         .full(fifo_full),
         .count(fifo_count),
-        .data_valid(ibuffer_inst_valid),
+        .data_valid(ibuffer_instr_valid),
         .stall(mem_stall)
     );
 

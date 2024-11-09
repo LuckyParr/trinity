@@ -3,7 +3,7 @@ module decoder (
     input wire        clock,
     input wire        reset_n,
     input wire        fifo_empty,
-    input wire        ibuffer_inst_valid,
+    input wire        ibuffer_instr_valid,
     input wire [31:0] ibuffer_inst_out,
     input wire [47:0] ibuffer_pc_out,
   
@@ -29,12 +29,14 @@ module decoder (
     output reg                       is_store,
     output reg  [               3:0] ls_size,
     output reg  [`MULDIV_TYPE_RANGE] muldiv_type,
-    output wire [              47:0] decoder_pc_out,
-    output wire [              47:0] decoder_inst_out
+    output wire [              47:0] decoder_instr_valid,
+    output wire [              47:0] decoder_inst_out,
+    output wire [              47:0] decoder_pc_out
 
 );
     assign decoder_pc_out   = ibuffer_pc_out;
     assign decoder_inst_out = ibuffer_inst_out;
+    assign decoder_instr_valid = ibuffer_instr_valid;
 
     reg [6:0] opcode;
     reg [2:0] funct3;
@@ -70,7 +72,7 @@ module decoder (
     assign src1 = rs1_read_data;
     assign src2 = rs2_read_data;
     always @(*) begin
-        if (ibuffer_inst_valid) begin
+        if (ibuffer_instr_valid) begin
             imm = 'b0;
             imm_itype        = ibuffer_inst_out[31:20];
             imm_stype        = {ibuffer_inst_out[31:25], ibuffer_inst_out[11:7]};

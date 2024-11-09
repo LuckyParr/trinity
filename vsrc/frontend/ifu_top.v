@@ -18,7 +18,7 @@ module ifu_top (
     input wire clear_ibuffer_ext,              // External clear signal for ibuffer
 
     // Outputs from ibuffer
-    output wire ibuffer_inst_valid,
+    output wire ibuffer_instr_valid,
     output wire [31:0] ibuffer_inst_out,
     output wire [47:0] ibuffer_pc_out,
     output wire fifo_empty,                    // Signal indicating if the FIFO is empty
@@ -59,7 +59,7 @@ cacheline_selector u_cacheline_selector(
         .clear_ibuffer(clear_ibuffer | clear_ibuffer_ext), // OR external and internal clear signals
         .can_fetch_inst(can_fetch_inst),
         .fetch_inst(fetch_inst),
-        .ibuffer_inst_valid(ibuffer_inst_valid),
+        .ibuffer_instr_valid(ibuffer_instr_valid),
         .ibuffer_inst_out (ibuffer_inst_out),
         .ibuffer_pc_out (ibuffer_pc_out),
         .fifo_empty(fifo_empty),

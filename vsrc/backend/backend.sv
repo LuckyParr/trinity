@@ -2,7 +2,7 @@
 module backend (
     input wire               clock,
     input wire               reset_n,
-    input wire               pipeval,
+    input wire               instr_valid,
     input wire [`LREG_RANGE] rs1,
     input wire [`LREG_RANGE] rs2,
     input wire [`LREG_RANGE] rd,
@@ -73,14 +73,15 @@ module backend (
 );
 
     wire exu_redirect_valid;
-    assign redirect_valid = exu_redirect_valid & pipeval;
+    assign redirect_valid = exu_redirect_valid & instr_valid;
 
-
+    wire    exu_instr_valid_out;
+    wire     [         `PC_RANGE]  exu_pc_out;
+    wire     [      `INSTR_RANGE]  exu_instr_out;
 
     exu u_exu (
         .clock            (clock),
         .reset_n          (reset_n),
-        .pipeval          (pipeval),
         .rs1              (rs1),
         .rs2              (rs2),
         .rd               (rd),
@@ -99,8 +100,12 @@ module backend (
         .is_store         (is_store),
         .ls_size          (ls_size),
         .muldiv_type      (muldiv_type),
+        .instr_valid      (instr_valid),
         .pc               (pc),
         .instr            (instr),
+        .instr_valid_out  (exu_instr_valid_out),
+        .pc_out           (exu_pc_out),
+        .instr_out        (exu_instr_out),
         .redirect_valid   (exu_redirect_valid),
         .redirect_target  (redirect_target),
         .ls_address       (ls_address),
@@ -123,7 +128,7 @@ module backend (
     wire [     `RESULT_RANGE] muldiv_result;
 
 
-    wire                      mem_valid;
+    wire                      mem_instr_valid;
     wire [       `LREG_RANGE] mem_rs1;
     wire [       `LREG_RANGE] mem_rs2;
     wire [       `LREG_RANGE] mem_rd;
@@ -154,7 +159,6 @@ module backend (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  (mem_stall),
-        .valid                  (pipeval),
         .rs1                    (rs1),
         .rs2                    (rs2),
         .rd                     (rd),
@@ -173,15 +177,15 @@ module backend (
         .is_store               (is_store),
         .ls_size                (ls_size),
         .muldiv_type            (muldiv_type),
-        .pc                     (pc),
-        .instr                  (instr),
+        .instr_valid            (exu_instr_valid_out),
+        .pc                     (exu_pc_out),
+        .instr                  (exu_instr_out),
         .ls_address             (ls_address),
         .alu_result             (alu_result),
         .bju_result             (bju_result),
         .muldiv_result          (muldiv_result),
         //note :sig below dont not to fill until mem stage done
         .opload_read_data_wb    ('b0),
-        .out_valid              (mem_valid),
         .out_rs1                (mem_rs1),
         .out_rs2                (mem_rs2),
         .out_rd                 (mem_rd),
@@ -200,6 +204,7 @@ module backend (
         .out_is_store           (mem_is_store),
         .out_ls_size            (mem_ls_size),
         .out_muldiv_type        (mem_muldiv_type),
+        .out_instr_valid        (mem_instr_valid),
         .out_pc                 (mem_pc),
         .out_instr              (mem_instr),
         .out_ls_address         (mem_ls_address),
@@ -210,6 +215,9 @@ module backend (
         .redirect_flush         (1'b0)
     );
 
+        wire                      mem_instr_valid_out;
+        wire [         `PC_RANGE] mem_pc_out;
+        wire [      `INSTR_RANGE] mem_instr_out;
 
 
     wire [`RESULT_RANGE] opload_read_data_wb;
@@ -233,6 +241,12 @@ module backend (
         .opstore_write_data    (opstore_write_data),
         .opstore_write_mask    (opstore_write_mask),
         .opstore_operation_done(opstore_operation_done),
+        .instr_valid      (mem_instr_valid),
+        .pc               (mem_pc),
+        .instr            (mem_instr),
+        .instr_valid_out  (mem_instr_valid_out),
+        .pc_out           (mem_pc_out),
+        .instr_out        (mem_instr_out),
         .opload_read_data_wb   (opload_read_data_wb),
         .mem_stall             (mem_stall)
     );
@@ -267,7 +281,6 @@ module backend (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  (1'b0),
-        .valid                  (mem_valid & ~mem_stall),
         .rs1                    (mem_rs1),
         .rs2                    (mem_rs2),
         .rd                     (mem_rd),
@@ -286,15 +299,15 @@ module backend (
         .is_store               (mem_is_store),
         .ls_size                (mem_ls_size),
         .muldiv_type            (mem_muldiv_type),
-        .pc                     (mem_pc),
-        .instr                  (mem_instr),
+        .instr_valid            (mem_instr_valid_out & ~mem_stall),
+        .pc                     (mem_pc_out),
+        .instr                  (mem_instr_out),
         .ls_address             (mem_ls_address),
         .alu_result             (mem_alu_result),
         .bju_result             (mem_bju_result),
         .muldiv_result          (mem_muldiv_result),
         //fill the load wb data
         .opload_read_data_wb    (opload_read_data_wb),
-        .out_valid              (wb_valid),
         .out_rs1                (wb_rs1),
         .out_rs2                (wb_rs2),
         .out_rd                 (wb_rd),
@@ -313,6 +326,7 @@ module backend (
         .out_is_store           (wb_is_store),
         .out_ls_size            (wb_ls_size),
         .out_muldiv_type        (wb_muldiv_type),
+        .out_instr_valid        (wb_valid),
         .out_pc                 (wb_pc),
         .out_instr              (wb_instr),
         .out_ls_address         (wb_ls_address),
@@ -409,6 +423,6 @@ module backend (
 
 
     assign mem_byp_rd         = mem_rd;
-    assign mem_byp_need_to_wb = mem_need_to_wb & mem_valid & ((|mem_alu_type) | (|mem_muldiv_type) | (|mem_cx_type) | mem_is_load);
+    assign mem_byp_need_to_wb = mem_need_to_wb & mem_instr_valid & ((|mem_alu_type) | (|mem_muldiv_type) | (|mem_cx_type) | mem_is_load);
     assign mem_byp_result     = (|mem_alu_type) ? mem_alu_result : (|mem_muldiv_type) ? mem_muldiv_result : (|mem_cx_type) ? mem_bju_result : mem_is_load ? opload_read_data_wb : 64'hDEADBEEF;
 endmodule

@@ -1,7 +1,6 @@
 module pipe_reg (
     input wire               clock,
     input wire               reset_n,
-    input wire               valid,
     input wire               stall,
     input wire [`LREG_RANGE] rs1,
     input wire [`LREG_RANGE] rs2,
@@ -23,6 +22,7 @@ module pipe_reg (
     input wire                      is_store,
     input wire [               3:0] ls_size,
     input wire [`MULDIV_TYPE_RANGE] muldiv_type,
+    input wire                      instr_valid,
     input wire [         `PC_RANGE] pc,
     input wire [      `INSTR_RANGE] instr,
 
@@ -39,7 +39,6 @@ module pipe_reg (
     input redirect_flush,
 
     // outputs
-    output reg               out_valid,
     output reg [`LREG_RANGE] out_rs1,
     output reg [`LREG_RANGE] out_rs2,
     output reg [`LREG_RANGE] out_rd,
@@ -60,6 +59,7 @@ module pipe_reg (
     output reg                      out_is_store,
     output reg [               3:0] out_ls_size,
     output reg [`MULDIV_TYPE_RANGE] out_muldiv_type,
+    output reg                      out_instr_valid,
     output reg [         `PC_RANGE] out_pc,
     output reg [      `INSTR_RANGE] out_instr,
 
@@ -74,7 +74,7 @@ module pipe_reg (
 
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n || redirect_flush & ~stall) begin
-            out_valid               <= 'b0;
+            out_instr_valid               <= 'b0;
             out_rs1                 <= 'b0;
             out_rs2                 <= 'b0;
             out_rd                  <= 'b0;
@@ -103,7 +103,7 @@ module pipe_reg (
             out_muldiv_result       <= 'b0;
             out_opload_read_data_wb <= 'b0;
         end else if (stall) begin
-            out_valid               <= out_valid;
+            out_instr_valid               <= out_instr_valid;
             out_rs1                 <= out_rs1;
             out_rs2                 <= out_rs2;
             out_rd                  <= out_rd;
@@ -130,7 +130,7 @@ module pipe_reg (
             out_muldiv_result       <= out_muldiv_result;
             out_opload_read_data_wb <= out_opload_read_data_wb;
         end else begin
-            out_valid               <= valid;
+            out_instr_valid               <= instr_valid;
             out_rs1                 <= rs1;
             out_rs2                 <= rs2;
             out_rd                  <= rd;

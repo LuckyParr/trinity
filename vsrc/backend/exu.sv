@@ -2,7 +2,6 @@
 module exu (
     input wire                      clock,
     input wire                      reset_n,
-    input wire                      pipeval,
     input wire [       `LREG_RANGE] rs1,
     input wire [       `LREG_RANGE] rs2,
     input wire [       `LREG_RANGE] rd,
@@ -24,8 +23,13 @@ module exu (
     input wire                      is_store,
     input wire [               3:0] ls_size,
     input wire [`MULDIV_TYPE_RANGE] muldiv_type,
+    input wire                      instr_valid,
     input wire [         `PC_RANGE] pc,
     input wire [      `INSTR_RANGE] instr,
+    // output valid, pc , inst
+    output wire                      instr_valid_out,
+    output wire [         `PC_RANGE] pc_out,
+    output wire [      `INSTR_RANGE] instr_out,
 
     output wire             redirect_valid,
     output wire [`PC_RANGE] redirect_target,
@@ -46,6 +50,12 @@ module exu (
 
 );
 
+
+    assign instr_valid_out =         instr_valid;
+    assign pc_out =      pc;
+    assign instr_out =   instr;
+
+
     //mem load to use bypass
     wire [`SRC_RANGE] src1_muxed;
     wire [`SRC_RANGE] src2_muxed;
@@ -56,6 +66,9 @@ module exu (
     wire bju_valid = |cx_type;
     wire muldiv_valid = |muldiv_type;
 
+    assign instr_valid_out = instr_valid;
+    assign pc_out = pc;
+    assign instr_out = instr;
 
     agu u_agu (
         .src1      (src1_muxed),
@@ -101,7 +114,7 @@ module exu (
 
     //forwarding logic
     assign ex_byp_rd         = rd;
-    assign ex_byp_need_to_wb = need_to_wb & pipeval & (alu_valid | muldiv_valid | bju_valid);
+    assign ex_byp_need_to_wb = need_to_wb & instr_valid & (alu_valid | muldiv_valid | bju_valid);
     assign ex_byp_result     = alu_valid ? alu_result : muldiv_valid ? muldiv_result : bju_valid ? bju_result : 64'hDEADBEEF;
 
 
