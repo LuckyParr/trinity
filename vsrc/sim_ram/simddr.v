@@ -77,7 +77,6 @@ import "DPI-C" function void difftest_ram_write
         end
     end
 
-    //req process logic
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             cycle_counter <= 8'b0;
@@ -86,8 +85,17 @@ import "DPI-C" function void difftest_ram_write
             ddr_pc_read_inst <= 512'b0;
             ddr_opload_read_data <= 64'b0;
         end else begin
-            if (operation_in_progress) begin  // Operations only proceed when ddr_chip_enable is high
-                if (ddr_burst_mode_latch && cycle_counter == 8'd79) begin  // After 80 cycles in burst mode
+            //restart process when ddr_chip_enable
+            if (ddr_chip_enable ) begin
+                // Start a new read or write operation if ddr_chip_enable is 1
+                cycle_counter <= 8'b0;            // reset_n cycle counter
+                operation_in_progress <= 1'b1;    // Mark operation as in progress
+                ddr_ready <= 1'b0;                    // reset_n ddr_ready signal
+            end
+            //req process logic
+            else if (operation_in_progress) begin  // Operations only proceed when ddr_chip_enable is high
+            // pc fetch req: read 512 bit inst after 80 cycles 
+                if (ddr_burst_mode_latch && cycle_counter == 8'd79) begin  
                     cycle_counter <= 8'b0;        // reset_n cycle counter
                     ddr_ready <= 1'b1;                // Signal that the operation is complete
                     operation_in_progress <= 1'b0;  // End the operation
@@ -120,7 +128,8 @@ import "DPI-C" function void difftest_ram_write
                         // memory[ddr_index + 6] <= ddr_l2_write_data[447:384];
                         // memory[ddr_index + 7] <= ddr_l2_write_data[511:448];
                     end
-                end else if (!ddr_burst_mode_latch && cycle_counter == 8'd63) begin  // After 64 cycles for single access
+                // opload/opstore req: rd/wr after 64 cycles 
+                end else if (!ddr_burst_mode_latch && cycle_counter == 8'd63) begin  
                     cycle_counter <= 8'b0;        // reset_n cycle counter
                     ddr_ready <= 1'b1;                // Signal that the operation is complete
                     operation_in_progress <= 1'b0;  // End the operation
@@ -128,7 +137,6 @@ import "DPI-C" function void difftest_ram_write
                         // Single 64-bit read from memory for single access mode
                         // ddr_opload_read_data <= memory[ddr_index];
                         ddr_opload_read_data[63:0] <= difftest_ram_read(concat_address);
-
                     end else if (write_enable_latch) begin
                         // Single 64-bit write to memory for single access mode
                         // memory[ddr_index] <= ddr_opstore_write_data;
@@ -138,12 +146,7 @@ import "DPI-C" function void difftest_ram_write
                     cycle_counter <= cycle_counter + 1;  // Increment cycle counter for both modes
                     ddr_ready <= 1'b0;                       // Data not ddr_ready during the wait
                 end
-            end else if (ddr_chip_enable && !operation_in_progress ) begin
-                // Start a new read or write operation if ddr_chip_enable is 1
-                cycle_counter <= 8'b0;            // reset_n cycle counter
-                operation_in_progress <= 1'b1;    // Mark operation as in progress
-                ddr_ready <= 1'b0;                    // reset_n ddr_ready signal
-            end
+            end 
         end
     end
 
