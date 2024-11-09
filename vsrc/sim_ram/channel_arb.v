@@ -43,9 +43,31 @@ module channel_arb (
 );
     reg redirect_valid_dly;
     reg redirect_valid_dly_2;
-    assign pc_operation_done      = ddr_operation_done;
-    assign opstore_operation_done = ddr_operation_done;
-    assign opload_operation_done  = ddr_operation_done;
+
+    reg pc_latch,opstore_latch,opload_latch;
+    always @(posedge clock or negedge reset_n) begin
+        if(~reset_n ) begin
+            opstore_latch  <= 1'b0;  
+            opload_latch   <= 1'b0; 
+            pc_latch       <= 1'b0;   
+        end else if(pc_index_valid && pc_index_ready)begin
+            opstore_latch  <= 1'b0;  
+            opload_latch   <= 1'b0; 
+            pc_latch       <= 1'b1;               
+        end else if(opload_index_valid && opload_index_ready)begin
+            opstore_latch  <= 1'b0;              
+            opload_latch   <= 1'b1; 
+            pc_latch       <= 1'b0;               
+        end else if(opstore_index_valid && opstore_index_ready)begin
+            opstore_latch   <= 1'b1;             
+            opload_latch   <= 1'b0; 
+            pc_latch       <= 1'b0;               
+        end
+    end
+
+    assign opstore_operation_done = opstore_latch? ddr_operation_done : 1'b0;
+    assign opload_operation_done  = opload_latch? ddr_operation_done : 1'b0;
+    assign pc_operation_done      = pc_latch? ddr_operation_done : 1'b0;
 
     always @(*) begin
         // default output values to simddr.v
