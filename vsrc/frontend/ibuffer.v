@@ -23,11 +23,13 @@ module ibuffer (
     assign ibuffer_pc_out = fifo_inst_addr_out[47:0];
 
     reg [31:0] inst_cut [0:15];
+    reg [47:0] pc_cut [0:15];
     integer i;
 
     always @(*) begin
         for (i = 0; i < 16; i = i + 1) begin
             inst_cut[i] = pc_read_inst[(i * 32) + 31 -: 32];
+            pc_cut[i] = pc+(i*4);
         end
     end
 
@@ -79,22 +81,22 @@ module ibuffer (
             // if (pc_index_ready && !pc_index_ready_prev) begin
             if (pc_operation_done) begin
                 // Split pc_read_inst into 16 instructions and load them into inst_buffer
-                inst_buffer[0]  <= {inst_cut[0] , (pc+48'd0)};
-                inst_buffer[1]  <= {inst_cut[1] , (pc+48'd4)};
-                inst_buffer[2]  <= {inst_cut[2] , (pc+48'd8)};
-                inst_buffer[3]  <= {inst_cut[3] , (pc+48'd12)};
-                inst_buffer[4]  <= {inst_cut[4] , (pc+48'd16)};
-                inst_buffer[5]  <= {inst_cut[5] , (pc+48'd20)};
-                inst_buffer[6]  <= {inst_cut[6] , (pc+48'd24)};
-                inst_buffer[7]  <= {inst_cut[7] , (pc+48'd28)};
-                inst_buffer[8]  <= {inst_cut[8] , (pc+48'd32)};
-                inst_buffer[9]  <= {inst_cut[9] , (pc+48'd36)};
-                inst_buffer[10] <= {inst_cut[10] , (pc+48'd40)};
-                inst_buffer[11] <= {inst_cut[11] , (pc+48'd44)};
-                inst_buffer[12] <= {inst_cut[12] , (pc+48'd48)};
-                inst_buffer[13] <= {inst_cut[13] , (pc+48'd52)};
-                inst_buffer[14] <= {inst_cut[14] , (pc+48'd56)};
-                inst_buffer[15] <= {inst_cut[15] , (pc+48'd60)};
+                inst_buffer[0]  <= {inst_cut[0 ] , (pc_cut[0 ])};
+                inst_buffer[1]  <= {inst_cut[1 ] , (pc_cut[1 ])};
+                inst_buffer[2]  <= {inst_cut[2 ] , (pc_cut[2 ])};
+                inst_buffer[3]  <= {inst_cut[3 ] , (pc_cut[3 ])};
+                inst_buffer[4]  <= {inst_cut[4 ] , (pc_cut[4 ])};
+                inst_buffer[5]  <= {inst_cut[5 ] , (pc_cut[5 ])};
+                inst_buffer[6]  <= {inst_cut[6 ] , (pc_cut[6 ])};
+                inst_buffer[7]  <= {inst_cut[7 ] , (pc_cut[7 ])};
+                inst_buffer[8]  <= {inst_cut[8 ] , (pc_cut[8 ])};
+                inst_buffer[9]  <= {inst_cut[9 ] , (pc_cut[9 ])};
+                inst_buffer[10] <= {inst_cut[10] , (pc_cut[10])};
+                inst_buffer[11] <= {inst_cut[11] , (pc_cut[11])};
+                inst_buffer[12] <= {inst_cut[12] , (pc_cut[12])};
+                inst_buffer[13] <= {inst_cut[13] , (pc_cut[13])};
+                inst_buffer[14] <= {inst_cut[14] , (pc_cut[14])};
+                inst_buffer[15] <= {inst_cut[15] , (pc_cut[15])};
 
                 write_index <= 4'b0;             // Reset write_index
                 write_enable <= 1'b1;            // Start writing to FIFO
