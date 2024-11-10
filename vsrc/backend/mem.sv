@@ -124,7 +124,7 @@ module mem (
         opload_index_valid = 'b0;
         opload_index       = 'b0;
 
-        if (is_load & (~ls_outstanding) & ~mmio_valid) begin
+        if (is_load & (~ls_outstanding) & ~mmio_valid & instr_valid) begin
             opload_index_valid = 1'b1;
             opload_index       = {3'b0, ls_address[`RESULT_WIDTH-1:3]};
         end
@@ -137,7 +137,7 @@ module mem (
         opstore_write_data  = 'b0;
         opstore_write_mask  = 'b0;
 
-        if (is_store & ~ls_outstanding & ~mmio_valid) begin
+        if (is_store & ~ls_outstanding & ~mmio_valid & instr_valid) begin
             opstore_index_valid = 1'b1;
             opstore_index       = {3'b0, ls_address[`RESULT_WIDTH-1:3]};
             opstore_write_mask  = opstore_write_mask_qual;
