@@ -161,12 +161,12 @@ module decoder (
                             cx_type[`IS_BGE] = 1'b1;
                         end
                         3'b110: begin
-                            imm              = imm_btype_64_u;
+                            imm              = imm_btype_64_s;
                             cx_type[`IS_BLT] = 1'b1;
                             is_unsigned      = 1'b1;
                         end
                         3'b111: begin
-                            imm              = imm_btype_64_u;
+                            imm              = imm_btype_64_s;
                             cx_type[`IS_BGE] = 1'b1;
                             is_unsigned      = 1'b1;
                         end
@@ -194,12 +194,12 @@ module decoder (
                             ls_size[`IS_D] =1'b1 ;
                         end
                         3'b100: begin
-                            imm         = imm_itype_64_u;
+                            imm         = imm_itype_64_s;
                             ls_size[`IS_B]     =1'b1 ;
                             is_unsigned = 1'b1;
                         end
                         3'b101: begin
-                            imm         = imm_itype_64_u;
+                            imm         = imm_itype_64_s;
                             ls_size[`IS_H]     =1'b1 ;
                             is_unsigned = 1'b1;
                         end
