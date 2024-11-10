@@ -109,14 +109,14 @@ module channel_arb (
         end
         end
         //force handshake when redirect_valid = 1, can intrrupt ongoing pc fetch
-        else if(~ddr_ready && ~redirect_valid_dly && redirect_valid_dly_2)begin
-            // PC channel selected for burst read
-            ddr_index        = pc_index;
-            ddr_chip_enable  = 1'b1;
-            ddr_write_enable = 1'b0;  // Read operation for burst mode
-            ddr_burst_mode   = 1'b1;
-            pc_index_ready   = 1'b1;  // Indicate PC channel is ready
-        end
+        //else if(~ddr_ready && ~redirect_valid_dly && redirect_valid_dly_2)begin
+        //    // PC channel selected for burst read
+        //    ddr_index        = pc_index;
+        //    ddr_chip_enable  = 1'b1;
+        //    ddr_write_enable = 1'b0;  // Read operation for burst mode
+        //    ddr_burst_mode   = 1'b1;
+        //    pc_index_ready   = 1'b1;  // Indicate PC channel is ready
+        //end
     end
 
     always @(posedge clock or negedge reset_n) begin

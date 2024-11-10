@@ -37,6 +37,7 @@ module ifu_top (
     wire [47:0] pc;
     wire [511:0] selected_data;
     wire cut_first_32_bit;
+    wire cancel_pc_fetch;
 
 cacheline_selector u_cacheline_selector(
     .cache_line       (pc_read_inst       ),
@@ -56,7 +57,7 @@ cacheline_selector u_cacheline_selector(
         .pc_operation_done(pc_operation_done),
         .pc_read_inst(selected_data),
         .fifo_read_en(fifo_read_en),
-        .clear_ibuffer(clear_ibuffer | clear_ibuffer_ext), // OR external and internal clear signals
+        .clear_ibuffer(clear_ibuffer | clear_ibuffer_ext | cancel_pc_fetch), // OR external and internal clear signals
         .can_fetch_inst(can_fetch_inst),
         .fetch_inst(fetch_inst),
         .ibuffer_instr_valid(ibuffer_instr_valid),
@@ -82,7 +83,8 @@ cacheline_selector u_cacheline_selector(
         .pc_index_valid(pc_index_valid),
         .pc_index(pc_index),
         .pc_index_ready(pc_index_ready),
-        .pc_operation_done(pc_operation_done)
+        .pc_operation_done(pc_operation_done),
+        .cancel_pc_fetch (cancel_pc_fetch)
     );
 
 

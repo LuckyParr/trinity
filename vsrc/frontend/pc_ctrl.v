@@ -15,7 +15,8 @@ module pc_ctrl (
     input  wire        fetch_inst,      // Fetch instruction signal, pulse signal for PC increment
     output reg         can_fetch_inst,  // Indicates if a new instruction can be fetched
     output reg         clear_ibuffer,
-    output reg  [47:0] pc,              // 48-bit Program Counter
+    output reg  [47:0] pc,              // 48-bit Program Counter  
+    output reg         cancel_pc_fetch,
 
     //ports with channel_arb
     output reg         pc_index_valid,    // Valid signal for PC index
@@ -24,7 +25,11 @@ module pc_ctrl (
     input  wire        pc_operation_done
 
 );
-
+    reg ongoing_normal_pc_fetch;
+    reg ongoing_redirect_pc_fetch;
+    reg set_normal_fetch_pc;
+    reg set_redirect_fetch_pc;
+    //reg cancel_pc_fetch;
     reg ibuffer_fetch_inst_dly;
     always @(posedge clock ) begin
         ibuffer_fetch_inst_dly <= fetch_inst;
@@ -44,6 +49,37 @@ module pc_ctrl (
             pc_index_valid <= 1'b0;
             can_fetch_inst <= 1'b1;
             clear_ibuffer  <= 1'b0;
+            ongoing_normal_pc_fetch <= 1'b0;
+            ongoing_redirect_pc_fetch <= 1'b0;
+            set_normal_fetch_pc <= 1'b1;
+            set_redirect_fetch_pc <= 1'b0;
+            cancel_pc_fetch <= 1'b0; 
+        //normal fire
+        end else if (set_normal_fetch_pc && (pc_index_valid && pc_index_ready)) begin  //handshake, indicate fetch inst req to ddr sent
+            // Set can_fetch_inst when pc_index_ready indicates operation completion
+            pc_index_valid <= 1'b0;  // Clear pc_index_valid on completion
+            can_fetch_inst <= 1'b0;  // Set can_fetch_inst to allow new fetch
+            ongoing_normal_pc_fetch <= 1'b1;
+            ongoing_redirect_pc_fetch <= 1'b0;
+        //redirect fire and normal finish at same time, begin redirect fire so dont need pc+64
+        end else if (set_redirect_fetch_pc && (pc_index_valid && pc_index_ready)) begin  //handshake, indicate fetch inst req to ddr sent
+            pc_index_valid <= 1'b0;  // Clear pc_index_valid on completion
+            can_fetch_inst <= 1'b0;  // Set can_fetch_inst to allow new fetch
+            ongoing_normal_pc_fetch <= 1'b0;
+            ongoing_redirect_pc_fetch <= 1'b1;
+            cancel_pc_fetch <= 1'b0;
+        //normal finish, pc=pc+64
+        end else if (pc_operation_done) begin
+            //Update pc: Normal PC increment on fetch_inst pulse
+            pc             <= pc + 64;  // Increment PC by 64
+            can_fetch_inst <= 1'b1;
+            set_normal_fetch_pc <=1'b1;
+            set_redirect_fetch_pc <= 1'b0;
+            ongoing_normal_pc_fetch <= 1'b0;
+            ongoing_redirect_pc_fetch <= 1'b0;
+            if(ongoing_normal_pc_fetch)begin
+                cancel_pc_fetch <= 1'b0;
+            end
         end else if (interrupt_valid) begin
             //Update pc:  Handle interrupt logic
             pc             <= interrupt_addr;  // Set PC to interrupt address if interrupt_valid is high
@@ -55,19 +91,20 @@ module pc_ctrl (
             pc_index_valid <= 1'b1;
             pc             <= redirect_target;
             can_fetch_inst <= 1'b0;
+            set_normal_fetch_pc <= 1'b0;
+            set_redirect_fetch_pc <= 1'b1;
+                if(ongoing_normal_pc_fetch)begin
+                    cancel_pc_fetch<=1'b1;
+                end 
             //clear_ibuffer  <= 1'b1;
         end else if (fetch_inst_rising) begin
             pc_index_valid <= 1'b1;  // Set pc_index_valid to indicate new index is ready
             can_fetch_inst <= 1'b0;  // Clear can_fetch_inst when fetch_inst is asserted
-        end else if (pc_index_valid && pc_index_ready) begin  //handshake, indicate fetch inst req to ddr sent
-            // Set can_fetch_inst when pc_index_ready indicates operation completion
-            pc_index_valid <= 1'b0;  // Clear pc_index_valid on completion
-            can_fetch_inst <= 1'b0;  // Set can_fetch_inst to allow new fetch
-        end else if (pc_operation_done) begin
-            //Update pc: Normal PC increment on fetch_inst pulse
-            pc             <= pc + 64;  // Increment PC by 64
-            can_fetch_inst <= 1'b1;
-        end
+        //end else if (pc_index_valid && pc_index_ready) begin  //handshake, indicate fetch inst req to ddr sent
+        //    // Set can_fetch_inst when pc_index_ready indicates operation completion
+        //    pc_index_valid <= 1'b0;  // Clear pc_index_valid on completion
+        //    can_fetch_inst <= 1'b0;  // Set can_fetch_inst to allow new fetch
+    end
     end
 
 
