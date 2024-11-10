@@ -32,9 +32,9 @@ module bju (
     wire equal = (src1 == src2);
     wire not_equal = ~equal;
     reg less_than ;
-    wire greater_equal = ~equal & ~less_than;
+    wire greater_equal = ~equal & ~less_than | equal;
     wire less_than_u = src1 < src2;
-    wire greater_equal_u = ~equal & ~less_than_u;
+    wire greater_equal_u = ~equal & ~less_than_u | equal;
     always @(*) begin
         case({src1[`SRC_WIDTH-1], src2[`SRC_WIDTH-1]}) 
             2'b00: less_than = src1[`SRC_WIDTH-2:0 ] < src2[`SRC_WIDTH-2:0 ];
