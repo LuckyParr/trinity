@@ -71,7 +71,7 @@ module pc_ctrl (
         //normal finish, pc=pc+64
         end else if (pc_operation_done) begin
             //Update pc: Normal PC increment on fetch_inst pulse
-            pc             <= pc + 64;  // Increment PC by 64
+            pc             <= had_unalign_redirect ? pc + 60 :(pc + 64);  // Increment PC by 64
             can_fetch_inst <= 1'b1;
             set_normal_fetch_pc <=1'b1;
             set_redirect_fetch_pc <= 1'b0;
@@ -108,4 +108,18 @@ module pc_ctrl (
     end
 
 
+    //redirect caused unalign 64B pc :record when redirect_valid & (redirect_target is unalign with 64B)
+    reg had_unalign_redirect;
+    always @(posedge clock or negedge reset_n ) begin
+        if(~reset_n) begin
+            had_unalign_redirect <= 'b0;
+        end
+        else begin
+            if(redirect_valid & redirect_target[2] & ~pc_operation_done) begin
+                had_unalign_redirect <= 'b1;
+            end else if(pc_operation_done) begin
+                had_unalign_redirect <= 'b0;
+            end
+        end
+    end
 endmodule

@@ -39,8 +39,8 @@ module ibuffer (
     reg pc_index_ready_prev;                    // To detect rising edge of pc_index_ready
     reg write_enable;                           // Enable writing to FIFO
     wire fifo_full;                             // Full signal from FIFO
-    wire [4:0] fifo_count;                      // Count of entries in the FIFO
-    reg [4:0] fifo_count_prev;                  // Previous FIFO count to detect transition from 4 to 3
+    wire [5:0] fifo_count;                      // Count of entries in the FIFO
+    reg [5:0] fifo_count_prev;                  // Previous FIFO count to detect transition from 4 to 3
     
     // Instantiate the 32x24 FIFO with clear functionality
     fifo_depth24 fifo_inst (
@@ -75,7 +75,7 @@ module ibuffer (
             write_index <= 4'b0;
             write_enable <= 1'b0;
             fetch_inst <= 1'b0;
-            fifo_count_prev <= 5'b0;
+            fifo_count_prev <= 6'b0;
         end else begin
             // Detect rising edge of pc_index_ready
             // if (pc_index_ready && !pc_index_ready_prev) begin
@@ -118,7 +118,7 @@ module ibuffer (
 
             // Generate fetch_inst pulse when FIFO count decreases from 4 to 3
             if(can_fetch_inst)begin
-                fetch_inst <= ((fifo_count_prev == 5'd4 && fifo_count == 5'd3)||fifo_empty) ? 1'b1 : 1'b0;
+                fetch_inst <= ((fifo_count_prev == 6'd4 && fifo_count == 6'd3)||fifo_empty) ? 1'b1 : 1'b0;
             end
         end
     end
