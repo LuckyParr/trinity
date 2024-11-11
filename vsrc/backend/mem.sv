@@ -98,9 +98,18 @@ module mem (
                 size_1b, size_1h, size_1w, size_2w, is_unsigned
             })
 
-                5'b10001: opload_read_data_wb = opload_read_data >> ((ls_address[2:0]) * 8);
-                5'b01001: opload_read_data_wb = opload_read_data >> ((ls_address[2:1]) * 16);
-                5'b00101: opload_read_data_wb = opload_read_data >> ((ls_address[2]) * 32);
+                5'b10001: begin
+                   opload_read_data_wb_raw =  (opload_read_data >> ((ls_address[2:0]) * 8));
+                   opload_read_data_wb = {56'h0, opload_read_data_wb_raw[7:0]};
+                end 
+                5'b01001: begin
+                    opload_read_data_wb_raw =  opload_read_data >> ((ls_address[2:1]) * 16) ;
+                    opload_read_data_wb = {48'h0, opload_read_data_wb_raw[15:0]};
+                end 
+                5'b00101:begin
+                    opload_read_data_wb_raw = opload_read_data >> ((ls_address[2]) * 32);
+                    opload_read_data_wb = {32'h0, opload_read_data_wb_raw[31:0]};
+                end  
                 5'b00010: opload_read_data_wb = opload_read_data;
                 5'b10000: begin
                     opload_read_data_wb_raw = opload_read_data >> ((ls_address[2:0]) * 8);

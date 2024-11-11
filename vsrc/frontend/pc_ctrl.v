@@ -117,7 +117,7 @@ module pc_ctrl (
         else begin
             if(redirect_valid & redirect_target[2] & ~pc_operation_done) begin
                 had_unalign_redirect <= 'b1;
-            end else if(pc_operation_done) begin
+            end else if(pc_operation_done & ~ongoing_normal_pc_fetch) begin
                 had_unalign_redirect <= 'b0;
             end
         end
