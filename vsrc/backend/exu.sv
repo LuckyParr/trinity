@@ -46,8 +46,12 @@ module exu (
     //mem load to use bypass
     input wire [       `LREG_RANGE] mem_byp_rd,
     input wire                 mem_byp_need_to_wb,
-    input wire [`RESULT_RANGE] mem_byp_result
+    input wire [`RESULT_RANGE] mem_byp_result,
 
+
+    //bypass to next stage
+    output wire [        `SRC_RANGE] final_src1,
+    output wire [        `SRC_RANGE] final_src2
 );
 
 
@@ -118,6 +122,8 @@ module exu (
     assign ex_byp_result     = alu_valid ? alu_result : muldiv_valid ? muldiv_result : bju_valid ? bju_result : 64'hDEADBEEF;
 
 
+
+
     //mem load to use bypass logic
     wire              src1_need_forward;
     wire              src2_need_forward;
@@ -133,5 +139,6 @@ module exu (
     assign src1_muxed = src1_need_forward ? src1_forward_result : src1;
     assign src2_muxed = src2_need_forward ? src2_forward_result : src2;
 
-
+    assign final_src1 = src1_muxed;
+    assign final_src2 = src2_muxed;
 endmodule

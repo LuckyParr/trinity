@@ -76,49 +76,56 @@ module backend (
     //when redirect hit mem_stall ,could cause false redirect fetch
     assign redirect_valid = exu_redirect_valid & instr_valid & ~mem_stall;
 
-    wire    exu_instr_valid_out;
-    wire     [         `PC_RANGE]  exu_pc_out;
-    wire     [      `INSTR_RANGE]  exu_instr_out;
+    wire                exu_instr_valid_out;
+    wire [   `PC_RANGE] exu_pc_out;
+    wire [`INSTR_RANGE] exu_instr_out;
+
+
+    //bypass to next stage
+    wire [  `SRC_RANGE] final_src1;
+    wire [  `SRC_RANGE] final_src2;
 
     exu u_exu (
-        .clock            (clock),
-        .reset_n          (reset_n),
-        .rs1              (rs1),
-        .rs2              (rs2),
-        .rd               (rd),
-        .src1             (src1),
-        .src2             (src2),
-        .imm              (imm),
-        .src1_is_reg      (src1_is_reg),
-        .src2_is_reg      (src2_is_reg),
-        .need_to_wb       (need_to_wb),
-        .cx_type          (cx_type),
-        .is_unsigned      (is_unsigned),
-        .alu_type         (alu_type),
-        .is_word          (is_word),
-        .is_load          (is_load),
-        .is_imm           (is_imm),
-        .is_store         (is_store),
-        .ls_size          (ls_size),
-        .muldiv_type      (muldiv_type),
-        .instr_valid      (instr_valid),
-        .pc               (pc),
-        .instr            (instr),
-        .instr_valid_out  (exu_instr_valid_out),
-        .pc_out           (exu_pc_out),
-        .instr_out        (exu_instr_out),
-        .redirect_valid   (exu_redirect_valid),
-        .redirect_target  (redirect_target),
-        .ls_address       (ls_address),
-        .alu_result       (alu_result),
-        .bju_result       (bju_result),
-        .muldiv_result    (muldiv_result),
-        .ex_byp_rd        (ex_byp_rd),
-        .ex_byp_need_to_wb(ex_byp_need_to_wb),
-        .ex_byp_result    (ex_byp_result),
+        .clock             (clock),
+        .reset_n           (reset_n),
+        .rs1               (rs1),
+        .rs2               (rs2),
+        .rd                (rd),
+        .src1              (src1),
+        .src2              (src2),
+        .imm               (imm),
+        .src1_is_reg       (src1_is_reg),
+        .src2_is_reg       (src2_is_reg),
+        .need_to_wb        (need_to_wb),
+        .cx_type           (cx_type),
+        .is_unsigned       (is_unsigned),
+        .alu_type          (alu_type),
+        .is_word           (is_word),
+        .is_load           (is_load),
+        .is_imm            (is_imm),
+        .is_store          (is_store),
+        .ls_size           (ls_size),
+        .muldiv_type       (muldiv_type),
+        .instr_valid       (instr_valid),
+        .pc                (pc),
+        .instr             (instr),
+        .instr_valid_out   (exu_instr_valid_out),
+        .pc_out            (exu_pc_out),
+        .instr_out         (exu_instr_out),
+        .redirect_valid    (exu_redirect_valid),
+        .redirect_target   (redirect_target),
+        .ls_address        (ls_address),
+        .alu_result        (alu_result),
+        .bju_result        (bju_result),
+        .muldiv_result     (muldiv_result),
+        .ex_byp_rd         (ex_byp_rd),
+        .ex_byp_need_to_wb (ex_byp_need_to_wb),
+        .ex_byp_result     (ex_byp_result),
         .mem_byp_rd        (mem_byp_rd),
         .mem_byp_need_to_wb(mem_byp_need_to_wb),
-        .mem_byp_result    (mem_byp_result)
+        .mem_byp_result    (mem_byp_result),
+        .final_src1        (final_src1),
+        .final_src2        (final_src2)
     );
 
 
@@ -163,8 +170,8 @@ module backend (
         .rs1                    (rs1),
         .rs2                    (rs2),
         .rd                     (rd),
-        .src1                   (src1),
-        .src2                   (src2),
+        .src1                   (final_src1),
+        .src2                   (final_src2),
         .imm                    (imm),
         .src1_is_reg            (src1_is_reg),
         .src2_is_reg            (src2_is_reg),
@@ -216,9 +223,9 @@ module backend (
         .redirect_flush         (1'b0)
     );
 
-        wire                      mem_instr_valid_out;
-        wire [         `PC_RANGE] mem_pc_out;
-        wire [      `INSTR_RANGE] mem_instr_out;
+    wire                 mem_instr_valid_out;
+    wire [    `PC_RANGE] mem_pc_out;
+    wire [ `INSTR_RANGE] mem_instr_out;
 
 
     wire [`RESULT_RANGE] opload_read_data_wb;
@@ -242,12 +249,12 @@ module backend (
         .opstore_write_data    (opstore_write_data),
         .opstore_write_mask    (opstore_write_mask),
         .opstore_operation_done(opstore_operation_done),
-        .instr_valid      (mem_instr_valid),
-        .pc               (mem_pc),
-        .instr            (mem_instr),
-        .instr_valid_out  (mem_instr_valid_out),
-        .pc_out           (mem_pc_out),
-        .instr_out        (mem_instr_out),
+        .instr_valid           (mem_instr_valid),
+        .pc                    (mem_pc),
+        .instr                 (mem_instr),
+        .instr_valid_out       (mem_instr_valid_out),
+        .pc_out                (mem_pc_out),
+        .instr_out             (mem_instr_out),
         .opload_read_data_wb   (opload_read_data_wb),
         .mem_stall             (mem_stall)
     );
