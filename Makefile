@@ -23,7 +23,7 @@ vcd:
 	gtkwave ./dump/sim.vcd
 
 diff: 
-	cd difftest_trinity && make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 -j 32 EMU_TRACE=1 RELEASE=1
+	cd difftest_trinity && make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 -j 32 EMU_TRACE=fst RELEASE=1
 
 run_diff: diff
 	./build/emu --diff=$(REF)  --dump-wave-full --wave-path=$(WAVE_PATH) -b 0 -e 1504001 --image=$(BIN)

@@ -14,12 +14,12 @@ module fifo_depth24 (
     output reg                data_valid  // Data valid signal
 );
 
-    localparam FIFO_WIDTH  = 64;
-    localparam FIFO_WIDTH_LOG = 6;
+    localparam FIFO_DEPTH  = 48;
+    localparam FIFO_DEPTH_LOG = 6;
 
-    reg [(32+48-1):0] fifo                        [FIFO_WIDTH-1:0];  // FIFO storage ((32+48-1)x24)
-    reg [        FIFO_WIDTH_LOG-1 :0] read_ptr;  // Read pointer
-    reg [        FIFO_WIDTH_LOG-1 :0] write_ptr;  // Write pointer
+    reg [(32+48-1):0] fifo                        [FIFO_DEPTH-1:0];  // FIFO storage ((32+48-1)x24)
+    reg [        FIFO_DEPTH_LOG-1 :0] read_ptr;  // Read pointer
+    reg [        FIFO_DEPTH_LOG-1 :0] write_ptr;  // Write pointer
 
     assign empty = (count == 6'd0);
     assign full  = (count == 6'd63);
@@ -35,7 +35,7 @@ module fifo_depth24 (
             // Write operation
             if (write_en && !full) begin
                 fifo[write_ptr] <= data_in;
-                write_ptr       <= (write_ptr + 1) % 64;
+                write_ptr       <= (write_ptr + 1) % FIFO_DEPTH;
             end
 
             // Read operation
@@ -48,7 +48,7 @@ module fifo_depth24 (
                 // If stall is low, perform read operation
                 data_out   <= fifo[read_ptr];
                 data_valid <= 1'b1;  // Set data valid signal when data is read
-                read_ptr   <= (read_ptr + 1) % 64;
+                read_ptr   <= (read_ptr + 1) % FIFO_DEPTH;
             end else begin
                 // No read operation, reset data_valid
                 data_valid <= 1'b0;  // Clear data valid signal
