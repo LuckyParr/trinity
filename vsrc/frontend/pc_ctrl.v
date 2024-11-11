@@ -54,8 +54,19 @@ module pc_ctrl (
             set_normal_fetch_pc <= 1'b1;
             set_redirect_fetch_pc <= 1'b0;
             cancel_pc_fetch <= 1'b0; 
+        //normal fire and redirect_valid at same time
+         end else if (redirect_valid && set_normal_fetch_pc && (pc_index_valid && pc_index_ready)) begin  //handshake, indicate fetch inst req to ddr sent
+            // Set can_fetch_inst when pc_index_ready indicates operation completion
+            can_fetch_inst <= 1'b0;  // Set can_fetch_inst to allow new fetch
+            pc_index_valid <= 1'b1;
+            pc             <= redirect_target;
+            set_normal_fetch_pc <= 1'b0;
+            set_redirect_fetch_pc <= 1'b1;
+            ongoing_normal_pc_fetch <= 1'b0;
+            ongoing_redirect_pc_fetch <= 1'b1;
+            cancel_pc_fetch <= 1'b1; 
         //normal fire
-        end else if (set_normal_fetch_pc && (pc_index_valid && pc_index_ready)) begin  //handshake, indicate fetch inst req to ddr sent
+        end else if (~redirect_valid && set_normal_fetch_pc && (pc_index_valid && pc_index_ready)) begin  //handshake, indicate fetch inst req to ddr sent
             // Set can_fetch_inst when pc_index_ready indicates operation completion
             pc_index_valid <= 1'b0;  // Clear pc_index_valid on completion
             can_fetch_inst <= 1'b0;  // Set can_fetch_inst to allow new fetch
