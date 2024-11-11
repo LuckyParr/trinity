@@ -73,7 +73,8 @@ module backend (
 );
 
     wire exu_redirect_valid;
-    assign redirect_valid = exu_redirect_valid & instr_valid;
+    //when redirect hit mem_stall ,could cause false redirect fetch
+    assign redirect_valid = exu_redirect_valid & instr_valid & ~mem_stall;
 
     wire    exu_instr_valid_out;
     wire     [         `PC_RANGE]  exu_pc_out;
@@ -338,7 +339,8 @@ module backend (
 
     );
 
-    assign regfile_write_valid = wb_valid & wb_need_to_wb;
+    //if mmio load,dont not to modify regfile to pass difftest
+    assign regfile_write_valid = wb_valid & wb_need_to_wb & ~(wb_mmio_valid & wb_is_load);
     assign regfile_write_data  = (|wb_alu_type) ? wb_alu_result : (|wb_cx_type) ? wb_bju_result : (|wb_muldiv_type) ? wb_muldiv_result : wb_is_load ? wb_opload_read_data_wb : 64'hDEADBEEF;
     assign regfile_write_rd    = wb_rd;
 
@@ -360,7 +362,7 @@ module backend (
         if (~reset_n) begin
             flop_wb_need_to_wb <= 'b0;
         end else begin
-            flop_wb_need_to_wb <= wb_need_to_wb;
+            flop_wb_need_to_wb <= regfile_write_valid;
         end
     end
     always @(posedge clock or negedge reset_n) begin
@@ -385,14 +387,14 @@ module backend (
         end
     end
 
-    wire mmio_valid = (wb_is_load | wb_is_store) & wb_valid & ('h30000000 <= wb_ls_address) & (wb_ls_address <= 'h40700000);
+    wire wb_mmio_valid = (wb_is_load | wb_is_store) & wb_valid & ('h30000000 <= wb_ls_address) & (wb_ls_address <= 'h40700000);
     reg  flop_mmio_valid;
 
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             flop_mmio_valid <= 'b0;
         end else begin
-            flop_mmio_valid <= mmio_valid;
+            flop_mmio_valid <= wb_mmio_valid;
         end
     end
 
