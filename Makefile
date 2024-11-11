@@ -26,7 +26,7 @@ diff:
 	cd difftest_trinity && make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 -j 32 EMU_TRACE=fst RELEASE=1
 
 run_diff: diff
-	./build/emu --diff=$(REF)  --dump-wave-full --wave-path=$(WAVE_PATH) -b 0 -e 1504001 --image=$(BIN)
+	./build/emu --diff=$(REF)  --dump-wave-full --wave-path=$(WAVE_PATH) -b 2500000 -e 5000000 --image=$(BIN)
 
 strace:
 	strace -e trace=open ./build/emu --diff=$(REF)  --dump-wave-full --wave-path=$(WAVE_PATH) -b 0 -e 5120 --image=$(BIN)

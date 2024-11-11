@@ -84,10 +84,21 @@ module alu (
 
     wire [31:0] sll_result_w = src1[31:0] << src2_qual[4:0] ;
     wire [31:0] srl_result_w = src1[31:0] >> src2_qual[4:0] ;
-    wire [31:0] sra_result_w = src1[31:0] >>> src2_qual[4:0] ;
+    reg signed [31:0] sra_result_w;
+    reg signed [31:0] signed_src1;
+    reg signed [4:0]  signed_src2_qual;
+     
+    //assign sra_result_w = signed_src1[31:0] >>> src2_qual[4:0] ;
+
+    always @(*) begin
+        signed_src2_qual = src2_qual[4:0];
+        signed_src1 = src1[31:0];
+        sra_result_w = signed_src1[31:0] >>> signed_src2_qual ;
+    end
+
     wire [`SRC_RANGE] sll_result = is_word? { {32{sll_result_w[31]}}, sll_result_w[31:0]} :src1 << src2_qual[5:0];
     wire [`SRC_RANGE] srl_result = is_word? { {32{srl_result_w[31]}}, srl_result_w[31:0]} :src1 >> src2_qual[5:0];
-    wire [`SRC_RANGE] sra_result = is_word? { {32{srl_result_w[31]}}, sra_result_w[31:0]} :src1 >>> src2_qual[5:0];
+    wire [`SRC_RANGE] sra_result = is_word? { {32{sra_result_w[31]}}, sra_result_w[31:0]} :src1 >>> src2_qual[5:0];
     
     assign result[`RESULT_RANGE] = (is_set_lt ? {63'b0, is_less} :
                     is_set_ltu ? {63'b0, is_lessu} :

@@ -56,11 +56,11 @@ module muldiv (
     wire                 w_sign = src1[31] ^ src2[31];
 
 
-    wire [`RESULT_RANGE] mulw_result = {{32{w_sign}}, w_product};
-    wire [`RESULT_RANGE] divw_result = {{32{w_sign}}, w_q};
-    wire [`RESULT_RANGE] divuw_result = {{32{w_q[31]}}, w_q[30:0]};
-    wire [`RESULT_RANGE] remw_result = {{32{w_sign}}, w_remainder};
-    wire [`RESULT_RANGE] remuw_result = {{32{w_remainder[31]}}, w_remainder[30:0]};
+    wire [`RESULT_RANGE] mulw_result = {{32{w_sign}}, w_product[31:0]};
+    wire [`RESULT_RANGE] divw_result = {{32{w_sign}}, w_q[31:0]};
+    wire [`RESULT_RANGE] divuw_result = {{32{w_q[31]}}, w_q[31:0]};
+    wire [`RESULT_RANGE] remw_result = {{32{w_sign}}, w_remainder[31:0]};
+    wire [`RESULT_RANGE] remuw_result = {{32{w_remainder[31]}}, w_remainder[31:0]};
     /* verilog_format: off */
     assign result = is_mul ? mul_result : 
     is_mulh ? mulh_result : 
