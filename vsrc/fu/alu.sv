@@ -86,14 +86,14 @@ module alu (
     wire [31:0] srl_result_w = src1[31:0] >> src2_qual[4:0] ;
     reg signed [31:0] sra_result_w;
     reg signed [31:0] signed_src1;
-    reg signed [4:0]  signed_src2_qual;
+    reg [4:0]  signed_src2_qual;
      
     //assign sra_result_w = signed_src1[31:0] >>> src2_qual[4:0] ;
 
     always @(*) begin
         signed_src2_qual = src2_qual[4:0];
         signed_src1 = src1[31:0];
-        sra_result_w = signed_src1[31:0] >>> signed_src2_qual ;
+        sra_result_w = signed_src1 >>> signed_src2_qual ;
     end
 
     wire [`SRC_RANGE] sll_result = is_word? { {32{sll_result_w[31]}}, sll_result_w[31:0]} :src1 << src2_qual[5:0];
