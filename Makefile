@@ -6,7 +6,7 @@ CSRC = ./csrc/dpic.cpp
 # REF = $(NOOP_HOME)/r2r/riscv64-nemu-interpreter-so
 REF = $(NOOP_HOME)/r2r/tri-riscv64-nemu-interpreter-so
 
-BIN = $(NOOP_HOME)/r2r/coremark-riscv64-nutshell.bin
+BIN = $(NOOP_HOME)/r2r/cmark/coremark-riscv64-nutshell-2.bin
 WAVE_PATH = $(NOOP_HOME)/dump/sim.vcd
 sim-verilog:
 	echo NULL
