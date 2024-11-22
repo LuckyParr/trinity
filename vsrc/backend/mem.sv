@@ -29,6 +29,7 @@ module mem (
     output wire                      instr_valid_out,
     output wire [         `PC_RANGE] pc_out,
     output wire [      `INSTR_RANGE] instr_out,
+    output wire [ `RESULT_RANGE] ls_address,
     //read data to wb stage
     output wire [`RESULT_RANGE] opload_read_data_wb,
     //mem stall
@@ -36,8 +37,7 @@ module mem (
 
 
 );
-    wire [ `RESULT_RANGE] ls_address;
-
+    
     agu u_agu(
         .src1       (src1       ),
         .imm        (imm        ),

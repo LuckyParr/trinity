@@ -97,6 +97,7 @@ module backend (
     wire [     `RESULT_RANGE] ex_byp_result;
 //mem internal output:
     wire [     `RESULT_RANGE] mem_opload_read_data_wb;
+    wire [     `RESULT_RANGE] mem_ls_address;
 //pipereg_exe2wb internal output:    
     wire                      wb_valid;
     wire [       `LREG_RANGE] wb_rs1;
@@ -211,6 +212,7 @@ mem u_mem(
     .instr_valid_out        (mem_instr_valid_out        ),
     .pc_out                 (mem_pc_out                 ),
     .instr_out              (mem_instr_out              ),
+    .ls_address             (mem_ls_address                 ),
     .opload_read_data_wb    (mem_opload_read_data_wb    ),
     .mem_stall              (mem_stall              )
 );
@@ -267,7 +269,7 @@ mem u_mem(
         .pc                     (pc_to_pexe2wb),
         .instr                  (instr_to_pexe2wb),
         //result
-        .ls_address             (64'h0),//dont need now
+        .ls_address             (mem_ls_address),
         .alu_result             (alu_result),
         .bju_result             (bju_result),
         .muldiv_result          (muldiv_result),
