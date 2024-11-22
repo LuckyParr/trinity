@@ -82,9 +82,9 @@ module core_top #(
     wire                      opload_operation_done;
 
 
-    wire [       `LREG_RANGE] ex_byp_rd;
-    wire                      ex_byp_need_to_wb;
-    wire [     `RESULT_RANGE] ex_byp_result;
+    wire [       `LREG_RANGE] exe_byp_rd;
+    wire                      exe_byp_need_to_wb;
+    wire [     `RESULT_RANGE] exe_byp_result;
 
     wire [       `LREG_RANGE] mem_byp_rd;
     wire                      mem_byp_need_to_wb;
@@ -128,12 +128,12 @@ module core_top #(
         .writeback_rd      (regfile_write_rd),
         .writeback_data    (regfile_write_data),
 
-        .ex_byp_rd         (ex_byp_rd),
-        .ex_byp_need_to_wb (ex_byp_need_to_wb),
-        .ex_byp_result     (ex_byp_result),
-        .mem_byp_rd        (mem_byp_rd),
-        .mem_byp_need_to_wb(mem_byp_need_to_wb),
-        .mem_byp_result    (mem_byp_result),
+        .exe_byp_rd         (exe_byp_rd),
+        .exe_byp_need_to_wb (exe_byp_need_to_wb),
+        .exe_byp_result     (exe_byp_result),
+        //.mem_byp_rd        (mem_byp_rd),
+        //.mem_byp_need_to_wb(mem_byp_need_to_wb),
+        //.mem_byp_result    (mem_byp_result),
         .mem_stall         (mem_stall)
 
     );
@@ -262,12 +262,12 @@ module core_top #(
         .opload_read_data      (opload_read_data),
         .opload_operation_done (opload_operation_done),
         .flop_commit_valid     (flop_commit_valid),
-        .ex_byp_rd             (ex_byp_rd),
-        .ex_byp_need_to_wb     (ex_byp_need_to_wb),
-        .ex_byp_result         (ex_byp_result),
-        .mem_byp_rd            (mem_byp_rd),
-        .mem_byp_need_to_wb    (mem_byp_need_to_wb),
-        .mem_byp_result        (mem_byp_result)
+        .exe_byp_rd             (exe_byp_rd),
+        .exe_byp_need_to_wb     (exe_byp_need_to_wb),
+        .exe_byp_result         (exe_byp_result)
+        //.mem_byp_rd            (mem_byp_rd),
+        //.mem_byp_need_to_wb    (mem_byp_need_to_wb),
+        //.mem_byp_result        (mem_byp_result)
     );
 
 

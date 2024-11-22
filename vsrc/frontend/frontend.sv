@@ -48,13 +48,13 @@ module frontend (
     input wire [`RESULT_RANGE] writeback_data,
 
 
-    input wire [  `LREG_RANGE] ex_byp_rd,
-    input wire                 ex_byp_need_to_wb,
-    input wire [`RESULT_RANGE] ex_byp_result,
+    input wire [  `LREG_RANGE] exe_byp_rd,
+    input wire                 exe_byp_need_to_wb,
+    input wire [`RESULT_RANGE] exe_byp_result,
 
-    input wire [  `LREG_RANGE] mem_byp_rd,
-    input wire                 mem_byp_need_to_wb,
-    input wire [`RESULT_RANGE] mem_byp_result,
+    //input wire [  `LREG_RANGE] mem_byp_rd,
+    //input wire                 mem_byp_need_to_wb,
+    //input wire [`RESULT_RANGE] mem_byp_result,
 
     //mem stall: to stop all op in frontend
     input wire mem_stall
@@ -147,14 +147,18 @@ module frontend (
 
     wire              src1_need_forward;
     wire              src2_need_forward;
-    assign src1_need_forward = (rs1 == ex_byp_rd) & ex_byp_need_to_wb | (rs1 == mem_byp_rd) & mem_byp_need_to_wb;
-    assign src2_need_forward = (rs2 == ex_byp_rd) & ex_byp_need_to_wb | (rs2 == mem_byp_rd) & mem_byp_need_to_wb;
+//    assign src1_need_forward = (rs1 == ex_byp_rd) & ex_byp_need_to_wb | (rs1 == mem_byp_rd) & mem_byp_need_to_wb;
+//    assign src2_need_forward = (rs2 == ex_byp_rd) & ex_byp_need_to_wb | (rs2 == mem_byp_rd) & mem_byp_need_to_wb;
+    assign src1_need_forward = (rs1 == exe_byp_rd) & exe_byp_need_to_wb ;
+    assign src2_need_forward = (rs2 == exe_byp_rd) & exe_byp_need_to_wb ;
 
     wire [`RESULT_RANGE] src1_forward_result;
     wire [`RESULT_RANGE] src2_forward_result;
 
-    assign src1_forward_result = (rs1 == ex_byp_rd) & ex_byp_need_to_wb ? ex_byp_result : (rs1 == mem_byp_rd) & mem_byp_need_to_wb ? mem_byp_result : 64'hDEADBEEF;
-    assign src2_forward_result = (rs2 == ex_byp_rd) & ex_byp_need_to_wb ? ex_byp_result : (rs2 == mem_byp_rd) & mem_byp_need_to_wb ? mem_byp_result : 64'hDEADBEEF;
+//    assign src1_forward_result = (rs1 == ex_byp_rd) & ex_byp_need_to_wb ? ex_byp_result : (rs1 == mem_byp_rd) & mem_byp_need_to_wb ? mem_byp_result : 64'hDEADBEEF;
+//    assign src2_forward_result = (rs2 == ex_byp_rd) & ex_byp_need_to_wb ? ex_byp_result : (rs2 == mem_byp_rd) & mem_byp_need_to_wb ? mem_byp_result : 64'hDEADBEEF;
+    assign src1_forward_result = ((rs1 == exe_byp_rd) & exe_byp_need_to_wb) ? exe_byp_result :  64'hDEADBEEF;
+    assign src2_forward_result = ((rs2 == exe_byp_rd) & exe_byp_need_to_wb) ? exe_byp_result :  64'hDEADBEEF;
 
     assign src1_muxed = src1_need_forward ? src1_forward_result : src1;
     assign src2_muxed = src2_need_forward ? src2_forward_result : src2;

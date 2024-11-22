@@ -5,46 +5,41 @@ module mem (
     input wire is_load,
     input wire is_store,
     input wire is_unsigned,
-    input wire [    `SRC_RANGE] imm,
-    input wire [    `SRC_RANGE] src1,
+
     input wire [    `SRC_RANGE] src2,
+    input wire [ `RESULT_RANGE] ls_address,
     input wire [`LS_SIZE_RANGE] ls_size,
-    input wire                      instr_valid,
-    input wire [         `PC_RANGE] pc,
-    input wire [      `INSTR_RANGE] instr,
-    //opload channel
+
     output reg                  opload_index_valid,
     input  wire                 opload_index_ready,
     output reg  [`RESULT_RANGE] opload_index,
+
     input wire                 opload_operation_done,
     input wire [`RESULT_RANGE] opload_read_data,
-    //opstore channel
+
     output reg                  opstore_index_valid,
     input  wire                 opstore_index_ready,
     output reg  [`RESULT_RANGE] opstore_index,
     output reg  [   `SRC_RANGE] opstore_write_data,
     output reg  [         63:0] opstore_write_mask,
     input  wire                 opstore_operation_done,
+
+    input wire                      instr_valid,
+    input wire [         `PC_RANGE] pc,
+    input wire [      `INSTR_RANGE] instr,
     // output valid, pc , inst
     output wire                      instr_valid_out,
     output wire [         `PC_RANGE] pc_out,
     output wire [      `INSTR_RANGE] instr_out,
+
     //read data to wb stage
     output wire [`RESULT_RANGE] opload_read_data_wb,
+
     //mem stall
     output wire mem_stall
 
 
 );
-    wire [ `RESULT_RANGE] ls_address;
-
-    agu u_agu(
-        .src1       (src1       ),
-        .imm        (imm        ),
-        .ls_address (ls_address )
-    );
-    
-
 
     assign instr_valid_out =         instr_valid;
     assign pc_out =      pc;

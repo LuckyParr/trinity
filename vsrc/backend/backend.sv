@@ -2,7 +2,6 @@
 module backend (
     input wire               clock,
     input wire               reset_n,
-    input wire               instr_valid,
     input wire [`LREG_RANGE] rs1,
     input wire [`LREG_RANGE] rs2,
     input wire [`LREG_RANGE] rd,
@@ -12,8 +11,6 @@ module backend (
     input wire               src1_is_reg,
     input wire               src2_is_reg,
     input wire               need_to_wb,
-
-    //sig below is control transfer(xfer) type
     input wire [    `CX_TYPE_RANGE] cx_type,
     input wire                      is_unsigned,
     input wire [   `ALU_TYPE_RANGE] alu_type,
@@ -23,18 +20,16 @@ module backend (
     input wire                      is_store,
     input wire [               3:0] ls_size,
     input wire [`MULDIV_TYPE_RANGE] muldiv_type,
+    input wire               instr_valid,
     input wire [         `PC_RANGE] pc,
     input wire [      `INSTR_RANGE] instr,
-
     //write back lreg 
     output wire                 regfile_write_valid,
     output wire [`RESULT_RANGE] regfile_write_data,
     output wire [          4:0] regfile_write_rd,
-
     //redirect
     output wire             redirect_valid,
     output wire [`PC_RANGE] redirect_target,
-
     //stall pipeline
     output wire mem_stall,
 
@@ -58,206 +53,51 @@ module backend (
     input  wire        opload_operation_done,
     // output instrcnt pulse
     output reg         flop_commit_valid,
-
-
-    output wire [  `LREG_RANGE] ex_byp_rd,
-    output wire                 ex_byp_need_to_wb,
-    output wire [`RESULT_RANGE] ex_byp_result,
-
-    output wire [  `LREG_RANGE] mem_byp_rd,
-    output wire                 mem_byp_need_to_wb,
-    output wire [`RESULT_RANGE] mem_byp_result
-
-
-
+    //output wire [  `LREG_RANGE] ex_byp_rd,
+    //output wire                 ex_byp_need_to_wb,
+    //output wire [`RESULT_RANGE] ex_byp_result,
+    //output wire [  `LREG_RANGE] mem_byp_rd,
+    //output wire                 mem_byp_need_to_wb,
+    //output wire [`RESULT_RANGE] mem_byp_result
+    output wire [  `LREG_RANGE] exe_byp_rd,
+    output wire                 exe_byp_need_to_wb,
+    output wire [`RESULT_RANGE] exe_byp_result
 );
 
+//input mux logic : issue intsr to exu or mem
+    reg                      instr_valid_to_mem;
+    reg [         `PC_RANGE] pc_to_mem;
+    reg [      `INSTR_RANGE] instr_to_mem;
+
+    reg                      instr_valid_to_exu;
+    reg [         `PC_RANGE] pc_to_exu;
+    reg [      `INSTR_RANGE] instr_to_exu;
+
+//output mux logic : collect exu/mem result 
+    //pexe2wb stands for pipereg_exe2wb
+    reg                       instr_valid_to_pexe2wb;
+    reg [         `PC_RANGE]  pc_to_pexe2wb;
+    reg [      `INSTR_RANGE]  instr_to_pexe2wb;
+    //exu output valid,pc,instr
+    reg                       exu_instr_valid_out;
+    reg [         `PC_RANGE]  exu_pc_out;
+    reg [      `INSTR_RANGE]  exu_instr_out;
+    //mem output valid,pc,instr
+    reg                       mem_instr_valid_out;
+    reg [         `PC_RANGE]  mem_pc_out;
+    reg [      `INSTR_RANGE]  mem_instr_out;
+
+//exu internal output:
     wire exu_redirect_valid;
     //when redirect hit mem_stall ,could cause false redirect fetch
-    assign redirect_valid = exu_redirect_valid & instr_valid & ~mem_stall;
-
-    wire                exu_instr_valid_out;
-    wire [   `PC_RANGE] exu_pc_out;
-    wire [`INSTR_RANGE] exu_instr_out;
-
-
-    //bypass to next stage
-    wire [  `SRC_RANGE] final_src1;
-    wire [  `SRC_RANGE] final_src2;
-
-    exu u_exu (
-        .clock             (clock),
-        .reset_n           (reset_n),
-        .rs1               (rs1),
-        .rs2               (rs2),
-        .rd                (rd),
-        .src1              (src1),
-        .src2              (src2),
-        .imm               (imm),
-        .src1_is_reg       (src1_is_reg),
-        .src2_is_reg       (src2_is_reg),
-        .need_to_wb        (need_to_wb),
-        .cx_type           (cx_type),
-        .is_unsigned       (is_unsigned),
-        .alu_type          (alu_type),
-        .is_word           (is_word),
-        .is_load           (is_load),
-        .is_imm            (is_imm),
-        .is_store          (is_store),
-        .ls_size           (ls_size),
-        .muldiv_type       (muldiv_type),
-        .instr_valid       (instr_valid),
-        .pc                (pc),
-        .instr             (instr),
-        .instr_valid_out   (exu_instr_valid_out),
-        .pc_out            (exu_pc_out),
-        .instr_out         (exu_instr_out),
-        .redirect_valid    (exu_redirect_valid),
-        .redirect_target   (redirect_target),
-        .ls_address        (ls_address),
-        .alu_result        (alu_result),
-        .bju_result        (bju_result),
-        .muldiv_result     (muldiv_result),
-        .ex_byp_rd         (ex_byp_rd),
-        .ex_byp_need_to_wb (ex_byp_need_to_wb),
-        .ex_byp_result     (ex_byp_result),
-        .mem_byp_rd        (mem_byp_rd),
-        .mem_byp_need_to_wb(mem_byp_need_to_wb),
-        .mem_byp_result    (mem_byp_result),
-        .final_src1        (final_src1),
-        .final_src2        (final_src2)
-    );
-
-
-
-    wire [     `RESULT_RANGE] ls_address;
-    wire [     `RESULT_RANGE] alu_result;
-    wire [     `RESULT_RANGE] bju_result;
+    assign redirect_valid = exu_redirect_valid & instr_valid_to_exu & ~mem_stall;
+    wire [     `RESULT_RANGE] alu_result   ;
+    wire [     `RESULT_RANGE] bju_result   ;
     wire [     `RESULT_RANGE] muldiv_result;
-
-
-    wire                      mem_instr_valid;
-    wire [       `LREG_RANGE] mem_rs1;
-    wire [       `LREG_RANGE] mem_rs2;
-    wire [       `LREG_RANGE] mem_rd;
-    wire [        `SRC_RANGE] mem_src1;
-    wire [        `SRC_RANGE] mem_src2;
-    wire [        `SRC_RANGE] mem_imm;
-    wire                      mem_src1_is_reg;
-    wire                      mem_src2_is_reg;
-    wire                      mem_need_to_wb;
-    wire [    `CX_TYPE_RANGE] mem_cx_type;
-    wire                      mem_is_unsigned;
-    wire [   `ALU_TYPE_RANGE] mem_alu_type;
-    wire                      mem_is_word;
-    wire                      mem_is_load;
-    wire                      mem_is_imm;
-    wire                      mem_is_store;
-    wire [               3:0] mem_ls_size;
-    wire [`MULDIV_TYPE_RANGE] mem_muldiv_type;
-    wire [         `PC_RANGE] mem_pc;
-    wire [      `INSTR_RANGE] mem_instr;
-    wire [     `RESULT_RANGE] mem_ls_address;
-    wire [     `RESULT_RANGE] mem_alu_result;
-    wire [     `RESULT_RANGE] mem_bju_result;
-    wire [     `RESULT_RANGE] mem_muldiv_result;
+    wire [     `RESULT_RANGE] ex_byp_result;
+//mem internal output:
     wire [     `RESULT_RANGE] mem_opload_read_data_wb;
-
-    pipe_reg u_pipe_reg_exu2mem (
-        .clock                  (clock),
-        .reset_n                (reset_n),
-        .stall                  (mem_stall),
-        .rs1                    (rs1),
-        .rs2                    (rs2),
-        .rd                     (rd),
-        .src1                   (final_src1),
-        .src2                   (final_src2),
-        .imm                    (imm),
-        .src1_is_reg            (src1_is_reg),
-        .src2_is_reg            (src2_is_reg),
-        .need_to_wb             (need_to_wb),
-        .cx_type                (cx_type),
-        .is_unsigned            (is_unsigned),
-        .alu_type               (alu_type),
-        .is_word                (is_word),
-        .is_load                (is_load),
-        .is_imm                 (is_imm),
-        .is_store               (is_store),
-        .ls_size                (ls_size),
-        .muldiv_type            (muldiv_type),
-        .instr_valid            (exu_instr_valid_out),
-        .pc                     (exu_pc_out),
-        .instr                  (exu_instr_out),
-        .ls_address             (ls_address),
-        .alu_result             (alu_result),
-        .bju_result             (bju_result),
-        .muldiv_result          (muldiv_result),
-        //note :sig below dont not to fill until mem stage done
-        .opload_read_data_wb    ('b0),
-        .out_rs1                (mem_rs1),
-        .out_rs2                (mem_rs2),
-        .out_rd                 (mem_rd),
-        .out_src1               (mem_src1),
-        .out_src2               (mem_src2),
-        .out_imm                (mem_imm),
-        .out_src1_is_reg        (mem_src1_is_reg),
-        .out_src2_is_reg        (mem_src2_is_reg),
-        .out_need_to_wb         (mem_need_to_wb),
-        .out_cx_type            (mem_cx_type),
-        .out_is_unsigned        (mem_is_unsigned),
-        .out_alu_type           (mem_alu_type),
-        .out_is_word            (mem_is_word),
-        .out_is_load            (mem_is_load),
-        .out_is_imm             (mem_is_imm),
-        .out_is_store           (mem_is_store),
-        .out_ls_size            (mem_ls_size),
-        .out_muldiv_type        (mem_muldiv_type),
-        .out_instr_valid        (mem_instr_valid),
-        .out_pc                 (mem_pc),
-        .out_instr              (mem_instr),
-        .out_ls_address         (mem_ls_address),
-        .out_alu_result         (mem_alu_result),
-        .out_bju_result         (mem_bju_result),
-        .out_muldiv_result      (mem_muldiv_result),
-        .out_opload_read_data_wb(),
-        .redirect_flush         (1'b0)
-    );
-
-    wire                 mem_instr_valid_out;
-    wire [    `PC_RANGE] mem_pc_out;
-    wire [ `INSTR_RANGE] mem_instr_out;
-
-
-    wire [`RESULT_RANGE] opload_read_data_wb;
-    mem u_mem (
-        .clock                 (clock),
-        .reset_n               (reset_n),
-        .is_load               (mem_is_load),
-        .is_store              (mem_is_store),
-        .is_unsigned           (mem_is_unsigned),
-        .src2                  (mem_src2),
-        .ls_address            (mem_ls_address),
-        .ls_size               (mem_ls_size),
-        .opload_index_valid    (opload_index_valid),
-        .opload_index_ready    (opload_index_ready),
-        .opload_index          (opload_index),
-        .opload_operation_done (opload_operation_done),
-        .opload_read_data      (opload_read_data),
-        .opstore_index_valid   (opstore_index_valid),
-        .opstore_index_ready   (opstore_index_ready),
-        .opstore_index         (opstore_index),
-        .opstore_write_data    (opstore_write_data),
-        .opstore_write_mask    (opstore_write_mask),
-        .opstore_operation_done(opstore_operation_done),
-        .instr_valid           (mem_instr_valid),
-        .pc                    (mem_pc),
-        .instr                 (mem_instr),
-        .instr_valid_out       (mem_instr_valid_out),
-        .pc_out                (mem_pc_out),
-        .instr_out             (mem_instr_out),
-        .opload_read_data_wb   (opload_read_data_wb),
-        .mem_stall             (mem_stall)
-    );
+//pipereg_exe2wb internal output:    
     wire                      wb_valid;
     wire [       `LREG_RANGE] wb_rs1;
     wire [       `LREG_RANGE] wb_rs2;
@@ -285,37 +125,154 @@ module backend (
     wire [     `RESULT_RANGE] wb_muldiv_result;
     wire [     `RESULT_RANGE] wb_opload_read_data_wb;
 
-    pipe_reg u_pipe_reg_mem2wb (
+
+    always @(*) begin
+        if(is_load | is_store)begin
+            instr_valid_to_exu = 1'b0;
+            pc_to_exu = 0;
+            instr_to_exu = 0;
+            instr_valid_to_mem = instr_valid;
+            pc_to_mem = pc;
+            instr_to_mem = instr;
+        end else begin
+            instr_valid_to_exu = instr_valid;
+            pc_to_exu = pc;
+            instr_to_exu = instr;
+            instr_valid_to_mem = 1'b0;
+            pc_to_mem = 0;
+            instr_to_mem = 0;            
+        end
+    end
+
+//can use instr_valid to control a clock gate here to save power
+exu u_exu(
+    .clock             (clock             ),
+    .reset_n           (reset_n           ),
+    .rs1               (rs1               ),
+    .rs2               (rs2               ),
+    .rd                (rd                ),
+    .src1              (src1              ),
+    .src2              (src2              ),
+    .imm               (imm               ),
+    .src1_is_reg       (src1_is_reg       ),
+    .src2_is_reg       (src2_is_reg       ),
+    .need_to_wb        (need_to_wb        ),
+    .cx_type           (cx_type           ),
+    .is_unsigned       (is_unsigned       ),
+    .alu_type          (alu_type          ),
+    .is_word           (is_word           ),
+    .is_load           (is_load           ),
+    .is_imm            (is_imm            ),
+    .is_store          (is_store          ),
+    .ls_size           (ls_size           ),
+    .muldiv_type       (muldiv_type       ),
+    .instr_valid       (instr_valid_to_exu       ),
+    .pc                (pc_to_exu                ),
+    .instr             (instr_to_exu             ),
+    //output
+    .instr_valid_out   (exu_instr_valid_out   ),
+    .pc_out            (exu_pc_out            ),
+    .instr_out         (exu_instr_out         ),
+    .alu_result        (alu_result        ),
+    .bju_result        (bju_result        ),
+    .muldiv_result     (muldiv_result     ),
+    .redirect_valid    (exu_redirect_valid    ),
+    .redirect_target   (redirect_target   ),
+    //.ex_byp_rd         (ex_byp_rd         ),
+    //.ex_byp_need_to_wb (ex_byp_need_to_wb ),
+    .ex_byp_result     (ex_byp_result     )
+);
+
+//can use instr_valid to control a clock gate here to save power
+mem u_mem(
+    .clock                  (clock                  ),
+    .reset_n                (reset_n                ),
+    .is_load                (is_load                ),
+    .is_store               (is_store               ),
+    .is_unsigned            (is_unsigned            ),
+    .imm                    (imm                    ),
+    .src1                   (src1                   ),
+    .src2                   (src2                   ),
+    .ls_size                (ls_size                ),
+    .instr_valid            (instr_valid_to_mem            ),
+    .pc                     (pc_to_mem                     ),
+    .instr                  (instr_to_mem                  ),
+    .opload_index_valid     (opload_index_valid     ),
+    .opload_index_ready     (opload_index_ready     ),
+    .opload_index           (opload_index           ),
+    .opload_operation_done  (opload_operation_done  ),
+    .opload_read_data       (opload_read_data       ),
+    .opstore_index_valid    (opstore_index_valid    ),
+    .opstore_index_ready    (opstore_index_ready    ),
+    .opstore_index          (opstore_index          ),
+    .opstore_write_data     (opstore_write_data     ),
+    .opstore_write_mask     (opstore_write_mask     ),
+    .opstore_operation_done (opstore_operation_done ),
+    .instr_valid_out        (mem_instr_valid_out        ),
+    .pc_out                 (mem_pc_out                 ),
+    .instr_out              (mem_instr_out              ),
+    .opload_read_data_wb    (mem_opload_read_data_wb    ),
+    .mem_stall              (mem_stall              )
+);
+
+
+    always @(*) begin
+        if(mem_instr_valid_out)begin
+            instr_valid_to_pexe2wb = 1'b1;
+            pc_to_pexe2wb = mem_pc_out;
+            instr_to_pexe2wb = mem_instr_out;
+        end else if (exu_instr_valid_out) begin
+            instr_valid_to_pexe2wb = 1'b1;
+            pc_to_pexe2wb = exu_pc_out;
+            instr_to_pexe2wb = exu_instr_out;
+        end else begin
+            instr_valid_to_pexe2wb = 1'b0;            
+            pc_to_pexe2wb = 0;
+            instr_to_pexe2wb = 0;
+        end
+    end
+
+    //bypass logic
+    assign exe_byp_rd = rd;
+    assign exe_byp_need_to_wb = need_to_wb & instr_valid & ((|alu_type) | (|muldiv_type) | (|cx_type) | is_load);
+    assign exe_byp_result = exu_instr_valid_out? ex_byp_result : mem_instr_valid_out? mem_opload_read_data_wb : 64'hDEADBEEF;
+
+
+    pipe_reg u_pipe_reg_exe2wb (
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  (1'b0),
-        .rs1                    (mem_rs1),
-        .rs2                    (mem_rs2),
-        .rd                     (mem_rd),
-        .src1                   (mem_src1),
-        .src2                   (mem_src2),
-        .imm                    (mem_imm),
-        .src1_is_reg            (mem_src1_is_reg),
-        .src2_is_reg            (mem_src2_is_reg),
-        .need_to_wb             (mem_need_to_wb),
-        .cx_type                (mem_cx_type),
-        .is_unsigned            (mem_is_unsigned),
-        .alu_type               (mem_alu_type),
-        .is_word                (mem_is_word),
-        .is_load                (mem_is_load),
-        .is_imm                 (mem_is_imm),
-        .is_store               (mem_is_store),
-        .ls_size                (mem_ls_size),
-        .muldiv_type            (mem_muldiv_type),
-        .instr_valid            (mem_instr_valid_out & ~mem_stall),
-        .pc                     (mem_pc_out),
-        .instr                  (mem_instr_out),
-        .ls_address             (mem_ls_address),
-        .alu_result             (mem_alu_result),
-        .bju_result             (mem_bju_result),
-        .muldiv_result          (mem_muldiv_result),
-        //fill the load wb data
-        .opload_read_data_wb    (opload_read_data_wb),
+        .redirect_flush         (1'b0),
+        //pipe input meterial
+        .rs1                    (rs1),
+        .rs2                    (rs2),
+        .rd                     (rd),
+        .src1                   (src1),
+        .src2                   (src2),
+        .imm                    (imm),
+        .src1_is_reg            (src1_is_reg),
+        .src2_is_reg            (src2_is_reg),
+        .need_to_wb             (need_to_wb),
+        .cx_type                (cx_type),
+        .is_unsigned            (is_unsigned),
+        .alu_type               (alu_type),
+        .is_word                (is_word),
+        .is_load                (is_load),
+        .is_imm                 (is_imm),
+        .is_store               (is_store),
+        .ls_size                (ls_size),
+        .muldiv_type            (muldiv_type),
+        //valid,pc,instr
+        .instr_valid            (instr_valid_to_pexe2wb & ~mem_stall),
+        .pc                     (pc_to_pexe2wb),
+        .instr                  (instr_to_pexe2wb),
+        //result
+        .ls_address             (64'h0),//dont need now
+        .alu_result             (alu_result),
+        .bju_result             (bju_result),
+        .muldiv_result          (muldiv_result),
+        .opload_read_data_wb    (mem_opload_read_data_wb),//fill the load wb data
+        //piped values
         .out_rs1                (wb_rs1),
         .out_rs2                (wb_rs2),
         .out_rd                 (wb_rd),
@@ -341,8 +298,7 @@ module backend (
         .out_alu_result         (wb_alu_result),
         .out_bju_result         (wb_bju_result),
         .out_muldiv_result      (wb_muldiv_result),
-        .out_opload_read_data_wb(wb_opload_read_data_wb),
-        .redirect_flush         (1'b0)
+        .out_opload_read_data_wb(wb_opload_read_data_wb)
 
     );
 
@@ -351,7 +307,7 @@ module backend (
     assign regfile_write_data  = (|wb_alu_type) ? wb_alu_result : (|wb_cx_type) ? wb_bju_result : (|wb_muldiv_type) ? wb_muldiv_result : wb_is_load ? wb_opload_read_data_wb : 64'hDEADBEEF;
     assign regfile_write_rd    = wb_rd;
 
-    wire                commit_valid = ((|wb_alu_type) | (|wb_cx_type) | (|wb_muldiv_type) | wb_is_load | wb_is_store) & wb_valid;
+    wire   commit_valid = ((|wb_alu_type) | (|wb_cx_type) | (|wb_muldiv_type) | wb_is_load | wb_is_store) & wb_valid;
 
     // reg                 flop_commit_valid;
     reg                 flop_wb_need_to_wb;
@@ -431,7 +387,6 @@ module backend (
 
 
 
-    assign mem_byp_rd         = mem_rd;
-    assign mem_byp_need_to_wb = mem_need_to_wb & mem_instr_valid & ((|mem_alu_type) | (|mem_muldiv_type) | (|mem_cx_type) | mem_is_load);
-    assign mem_byp_result     = (|mem_alu_type) ? mem_alu_result : (|mem_muldiv_type) ? mem_muldiv_result : (|mem_cx_type) ? mem_bju_result : mem_is_load ? opload_read_data_wb : 64'hDEADBEEF;
+
+
 endmodule
