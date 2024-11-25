@@ -475,27 +475,27 @@ Disassembly of section .text:
     800006fc:	00050813          	mv	a6,a0
     80000700:	00061463          	bnez	a2,80000708 <core_init_matrix+0xc>
     80000704:	00100613          	li	a2,1
-    80000708:	fff58593          	addi	a1,a1,-1
+    80000708:	fff58593          	addi	a1,a1,-1 //
     8000070c:	ffc5fe13          	andi	t3,a1,-4
     80000710:	004e0e93          	addi	t4,t3,4
-    80000714:	00000793          	li	a5,0
-    80000718:	0c080863          	beqz	a6,800007e8 <core_init_matrix+0xec>
-    8000071c:	00078513          	mv	a0,a5
+    80000714:	00000793          	li	a5,0 
+    80000718:	0c080863          	beqz	a6,800007e8 <core_init_matrix+0xec> //
+    8000071c:	00078513          	mv	a0,a5  //--begin redirect (1)
     80000720:	0017879b          	addiw	a5,a5,1
     80000724:	02f7873b          	mulw	a4,a5,a5
-    80000728:	0037171b          	slliw	a4,a4,0x3
+    80000728:	0037171b          	slliw	a4,a4,0x3 //
     8000072c:	ff0768e3          	bltu	a4,a6,8000071c <core_init_matrix+0x20>
     80000730:	02a502bb          	mulw	t0,a0,a0
     80000734:	02029793          	slli	a5,t0,0x20
-    80000738:	01f7d293          	srli	t0,a5,0x1f
+    80000738:	01f7d293          	srli	t0,a5,0x1f ////
     8000073c:	005e8e33          	add	t3,t4,t0
     80000740:	0a050e63          	beqz	a0,800007fc <core_init_matrix+0x100>
     80000744:	00050393          	mv	t2,a0
     80000748:	0015031b          	addiw	t1,a0,1
     8000074c:	00000f13          	li	t5,0
     80000750:	00100593          	li	a1,1
-    80000754:	00058f93          	mv	t6,a1
-    80000758:	02b6063b          	mulw	a2,a2,a1
+    80000754:	00058f93          	mv	t6,a1  //this is last, yeah (15)
+    80000758:	02b6063b          	mulw	a2,a2,a1 ////----(16)
     8000075c:	fff5879b          	addiw	a5,a1,-1
     80000760:	02079813          	slli	a6,a5,0x20
     80000764:	01f85793          	srli	a5,a6,0x1f
@@ -1807,7 +1807,7 @@ Disassembly of section .text:
     80001af4:	000cd7b7          	lui	a5,0xcd
     80001af8:	ccd78793          	addi	a5,a5,-819 # ccccd <_start-0x7ff33333>
     80001afc:	02051f13          	slli	t5,a0,0x20
-    80001b00:	00c79793          	slli	a5,a5,0xc
+    80001b00:	00c79793          	slli	a5,a5,0xc  
     80001b04:	ccd78793          	addi	a5,a5,-819
     80001b08:	020f5f13          	srli	t5,t5,0x20
     80001b0c:	02ff0f33          	mul	t5,t5,a5
@@ -1819,7 +1819,7 @@ Disassembly of section .text:
     80001b24:	01058313          	addi	t1,a1,16
     80001b28:	ffff87b7          	lui	a5,0xffff8
     80001b2c:	08078793          	addi	a5,a5,128 # ffffffffffff8080 <_pmem_end+0xffffffff77ff8080>
-    80001b30:	024f5f13          	srli	t5,t5,0x24
+    80001b30:	024f5f13          	srli	t5,t5,0x24  ////
     80001b34:	ffef0f1b          	addiw	t5,t5,-2
     80001b38:	020f1413          	slli	s0,t5,0x20
     80001b3c:	02045413          	srli	s0,s0,0x20
@@ -1834,7 +1834,7 @@ Disassembly of section .text:
     80001b60:	12b6fc63          	bgeu	a3,a1,80001c98 <core_list_init+0x1a4>
     80001b64:	00858893          	addi	a7,a1,8
     80001b68:	13f8f863          	bgeu	a7,t6,80001c98 <core_list_init+0x1a4>
-    80001b6c:	ffff8737          	lui	a4,0xffff8
+    80001b6c:	ffff8737          	lui	a4,0xffff8  ////
     80001b70:	00f53c23          	sd	a5,24(a0)
     80001b74:	00053823          	sd	zero,16(a0)
     80001b78:	00653023          	sd	t1,0(a0)

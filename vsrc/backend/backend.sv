@@ -53,12 +53,6 @@ module backend (
     input  wire        opload_operation_done,
     // output instrcnt pulse
     output reg         flop_commit_valid,
-    //output wire [  `LREG_RANGE] ex_byp_rd,
-    //output wire                 ex_byp_need_to_wb,
-    //output wire [`RESULT_RANGE] ex_byp_result,
-    //output wire [  `LREG_RANGE] mem_byp_rd,
-    //output wire                 mem_byp_need_to_wb,
-    //output wire [`RESULT_RANGE] mem_byp_result
     output wire [  `LREG_RANGE] exe_byp_rd,
     output wire                 exe_byp_need_to_wb,
     output wire [`RESULT_RANGE] exe_byp_result
