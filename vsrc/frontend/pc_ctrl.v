@@ -35,11 +35,11 @@ module pc_ctrl (
     localparam WASTED_NORMAL_PROCESS_4 = 4'd4;
     localparam WASTED_NORMAL_DONE_5 = 4'd5;
     localparam REDIRECT_PROCESS_6 = 4'd6;
-    localparam REDIRECT_DONE_7 = 4'd8;
-    localparam CAN_FETCH_INST_9 = 4'd9;
-    localparam GET_FETCH_INST_10 = 4'd10;
-    localparam SET_PC_11 = 4'd11;
-    localparam RAISE_VALID_REDIRECT_12 = 4'd12;
+    localparam REDIRECT_DONE_7 = 4'd7;
+    localparam CAN_FETCH_INST_8 = 4'd8;
+    localparam GET_FETCH_INST_9 = 4'd9;
+    localparam SET_PC_10 = 4'd10;
+    localparam RAISE_VALID_REDIRECT_11 = 4'd11;
 
     reg [3:0] current_state;
     reg [3:0] next_state;
@@ -76,7 +76,7 @@ module pc_ctrl (
                 end
             end
             NORMAL_DONE_3:begin
-                    next_state= CAN_FETCH_INST_9;
+                    next_state= CAN_FETCH_INST_8;
             end
             
             WASTED_NORMAL_PROCESS_4:begin
@@ -87,31 +87,31 @@ module pc_ctrl (
             end
             WASTED_NORMAL_DONE_5:begin
                 cancel_pc_fetch = 1'b0;      
-                next_state = CAN_FETCH_INST_9;
+                next_state = CAN_FETCH_INST_8;
             end
 
-            CAN_FETCH_INST_9:begin
+            CAN_FETCH_INST_8:begin
                 can_fetch_inst = 1'b1;
                 if(fetch_inst)begin
-                    next_state = GET_FETCH_INST_10;
+                    next_state = GET_FETCH_INST_9;
                 end
             end
-            GET_FETCH_INST_10:begin
+            GET_FETCH_INST_9:begin
                 can_fetch_inst = 1'b0;
-                next_state =  SET_PC_11;               
+                next_state =  SET_PC_10;               
             end
 
-            SET_PC_11:begin
+            SET_PC_10:begin
                 if(redirect_valid_or)begin
                     pc = redirect_target_or; 
-                    next_state = RAISE_VALID_REDIRECT_12;           
+                    next_state = RAISE_VALID_REDIRECT_11;           
                 end else begin
                     pc = had_unalign_redirect ? pc + 60 :(pc + 64);
                     next_state = RAISE_VALID_NORMAL_1;
                 end
             end
 
-            RAISE_VALID_REDIRECT_12:begin
+            RAISE_VALID_REDIRECT_11:begin
                 pc_index_valid = 1'b1;
                 if(pc_index_ready)begin
                     next_state = REDIRECT_PROCESS_6;
@@ -124,7 +124,7 @@ module pc_ctrl (
                 end
             end
             REDIRECT_DONE_7: begin
-                next_state = CAN_FETCH_INST_9;
+                next_state = CAN_FETCH_INST_8;
             end
 
             default:begin

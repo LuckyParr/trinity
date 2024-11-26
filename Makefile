@@ -8,6 +8,9 @@ REF = $(NOOP_HOME)/r2r/tri-riscv64-nemu-interpreter-so
 
 BIN = $(NOOP_HOME)/r2r/cmark/coremark-riscv64-nutshell-2.bin
 WAVE_PATH = $(NOOP_HOME)/dump/sim.vcd
+
+B ?= 0
+E ?= 241022
 sim-verilog:
 	echo NULL
 
