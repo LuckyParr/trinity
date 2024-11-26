@@ -28,15 +28,18 @@ module pc_ctrl (
     // Output the selected bits [21:3] of the current PC as pc_index
     assign pc_index = pc[21:3];
 
-    localparam BOOT_SETTING = 4'd0;
-    localparam WAIT_FOR_FIRE = 4'd1;
-    localparam ONGOING_NORMAL_FETCH = 4'd2;
-    localparam NORMAL_FINISH = 4'd3;
-    localparam WAIT_FOR_IBUFFER_INST_FETCH = 4'd4;
-    localparam ONGOING_REDIRECT_FETCH = 4'd5;
-    localparam REDIRECT_FINISH = 4'd6;
-    localparam ONGONG_WASTED_NORMAL_FETCH = 4'd7;
-    localparam WASTED_NORMAL_FETCH_FINISH = 4'd8;
+    localparam BOOT_SETTING_0 = 4'd0;
+    localparam RAISE_VALID_NORMAL_1 = 4'd1;
+    localparam NORMAL_PROCESS_2 = 4'd2;
+    localparam NORMAL_DONE_3 = 4'd3;
+    localparam WASTED_NORMAL_PROCESS_4 = 4'd4;
+    localparam WASTED_NORMAL_DONE_5 = 4'd5;
+    localparam REDIRECT_PROCESS_6 = 4'd6;
+    localparam REDIRECT_DONE_7 = 4'd8;
+    localparam CAN_FETCH_INST_9 = 4'd9;
+    localparam GET_FETCH_INST_10 = 4'd10;
+    localparam SET_PC_11 = 4'd11;
+    localparam RAISE_VALID_REDIRECT_12 = 4'd12;
 
     reg [3:0] current_state;
     reg [3:0] next_state;
@@ -51,84 +54,79 @@ module pc_ctrl (
 
     always @(*) begin
         case(current_state)
-            BOOT_SETTING: begin
+            BOOT_SETTING_0: begin
                 pc = boot_addr;
                 pc_index_valid = 1'b0;
                 can_fetch_inst = 1'b0;
-                //cancel_pc_fetch = 1'b0;
                 clear_ibuffer  = 1'b0;
-                    next_state = WAIT_FOR_FIRE;                
+                    next_state = RAISE_VALID_NORMAL_1;                
             end
-            WAIT_FOR_FIRE:begin
-                //cancel_pc_fetch = 1'b0;
+            RAISE_VALID_NORMAL_1:begin
                 pc_index_valid = 1'b1;
-                if(~redirect_valid_or &&  pc_index_ready) begin
-                    next_state = ONGOING_NORMAL_FETCH;
-                end else if (redirect_valid_or &&  pc_index_ready)begin
-                    next_state = ONGOING_REDIRECT_FETCH;                    
+                if( pc_index_ready) begin
+                    next_state = NORMAL_PROCESS_2;
                 end
             end
-            ONGOING_NORMAL_FETCH:begin
+            NORMAL_PROCESS_2:begin
                 pc_index_valid = 1'b0;
-                if(redirect_valid_or)begin
-                    pc=redirect_valid_or;
-                    next_state = ONGONG_WASTED_NORMAL_FETCH;
+                if(redirect_valid_or && ~pc_operation_done)begin
+                    next_state = WASTED_NORMAL_PROCESS_4;
                 end else if(pc_operation_done) begin
-                    next_state = NORMAL_FINISH;
+                    next_state = NORMAL_DONE_3;
                 end
             end
-            ONGONG_WASTED_NORMAL_FETCH:begin
-                pc_index_valid = 1'b0;
-                //cancel_pc_fetch = 1'b1;
+            NORMAL_DONE_3:begin
+                    next_state= CAN_FETCH_INST_9;
+            end
+            
+            WASTED_NORMAL_PROCESS_4:begin
+                cancel_pc_fetch = 1'b1;        
                 if(pc_operation_done)begin
-                    next_state = WASTED_NORMAL_FETCH_FINISH;
-                end
+                    next_state = WASTED_NORMAL_DONE_5;
+                end            
             end
-            WASTED_NORMAL_FETCH_FINISH:begin
-                //cancel_pc_fetch = 1'b1;
-                pc = redirect_target_or;
-                next_state = WAIT_FOR_FIRE;
+            WASTED_NORMAL_DONE_5:begin
+                cancel_pc_fetch = 1'b0;      
+                next_state = CAN_FETCH_INST_9;
             end
-            NORMAL_FINISH:begin
-                if(redirect_valid_or)begin
-                    pc = redirect_target_or;
-                    //cancel_pc_fetch = 1'b1;
-                        next_state= WAIT_FOR_FIRE;
-                end else begin
-                    pc = had_unalign_redirect ? pc + 60 :(pc + 64);
-                        next_state=WAIT_FOR_IBUFFER_INST_FETCH;                    
-                end
-            end
-            WAIT_FOR_IBUFFER_INST_FETCH:begin
+
+            CAN_FETCH_INST_9:begin
                 can_fetch_inst = 1'b1;
                 if(fetch_inst)begin
-                    next_state = WAIT_FOR_FIRE;
-                end
-                //if(redirect_valid)begin
-                //    pc = redirect_target;
-                //    next_state = WAIT_FOR_FIRE;
-                //end else if(fetch_inst)begin
-                //    //pc = had_unalign_redirect ? pc + 60 :(pc + 64);
-                //    next_state = WAIT_FOR_FIRE;
-                //end
-            end
-            ONGOING_REDIRECT_FETCH:begin
-                pc_index_valid = 1'b0;
-                //cancel_pc_fetch = 1'b0;
-                //clr_redirect_valid_latch = 1'b0;
-                if(pc_operation_done) begin
-                    next_state = REDIRECT_FINISH;
+                    next_state = GET_FETCH_INST_10;
                 end
             end
-            REDIRECT_FINISH:begin
-                //clr_redirect_valid_latch = 1'b1;
+            GET_FETCH_INST_10:begin
+                can_fetch_inst = 1'b0;
+                next_state =  SET_PC_11;               
+            end
+
+            SET_PC_11:begin
                 if(redirect_valid_or)begin
-                    pc = redirect_target_or;
-                    next_state = WAIT_FOR_FIRE;
+                    pc = redirect_target_or; 
+                    next_state = RAISE_VALID_REDIRECT_12;           
                 end else begin
-                    next_state = WAIT_FOR_IBUFFER_INST_FETCH;                                    
+                    pc = had_unalign_redirect ? pc + 60 :(pc + 64);
+                    next_state = RAISE_VALID_NORMAL_1;
                 end
             end
+
+            RAISE_VALID_REDIRECT_12:begin
+                pc_index_valid = 1'b1;
+                if(pc_index_ready)begin
+                    next_state = REDIRECT_PROCESS_6;
+                end
+            end
+            REDIRECT_PROCESS_6: begin
+                pc_index_valid = 1'b0;
+                if(pc_operation_done)begin
+                    next_state = REDIRECT_DONE_7;
+                end
+            end
+            REDIRECT_DONE_7: begin
+                next_state = CAN_FETCH_INST_9;
+            end
+
             default:begin
                 
             end
@@ -137,7 +135,6 @@ module pc_ctrl (
 
     reg redirect_valid_latch;
     reg [47:0] redirect_target_latch;
-    //reg clr_redirect_valid_latch;
     always @(posedge clock or negedge reset_n) begin
         if(~reset_n)begin
             redirect_valid_latch <= 1'b0;
@@ -145,7 +142,7 @@ module pc_ctrl (
         end else if (redirect_valid) begin
             redirect_valid_latch <= 1'b1; 
             redirect_target_latch <= redirect_target;
-        end else if (current_state == REDIRECT_FINISH) begin
+        end else if (current_state == REDIRECT_DONE_7) begin
             redirect_valid_latch <= 1'b0;
             redirect_target_latch <= 48'd0;
         end
@@ -156,49 +153,17 @@ module pc_ctrl (
     wire [47:0] redirect_target_or;
     assign redirect_target_or = ({48{redirect_valid}} & redirect_target) | ({48{redirect_valid_latch}} & redirect_target_latch);
 
-    always @(*) begin
-        //if(~reset_n) begin
-        //    cancel_pc_fetch <= 'b0;
-        //end
-        if (redirect_valid_or && current_state == WAIT_FOR_FIRE  ) begin
-            cancel_pc_fetch = 'b1;            
-        end
-        else if(current_state == REDIRECT_FINISH)begin
-            cancel_pc_fetch = 'b0;            
-        end
-    end
-
-
-    //redirect caused unalign 64B pc :record when redirect_valid & (redirect_target is unalign with 64B)
-    //reg had_unalign_redirect;
-    //always @(posedge clock or negedge reset_n ) begin
-    //    if(~reset_n) begin
-    //        had_unalign_redirect <= 'b0;
-    //    end
-    //    else begin
-    //        if(redirect_valid & redirect_target[2] & ~pc_operation_done) begin
-    //            had_unalign_redirect <= 1'b1;
-//  //          end else if(pc_operation_done & ~ongoing_normal_pc_fetch) begin
-//  //          end else if(pc_operation_done && (current_state != ONGOING_NORMAL_FETCH)) begin
-//  //          end else if(pc_operation_done && (current_state == NORMAL_FINISH)) begin
-    //        end else if((current_state == WAIT_FOR_IBUFFER_INST_FETCH)) begin
-    //            had_unalign_redirect <= 1'b0;
-    //        end
-    //    end
-    //end
-
     reg had_unalign_redirect;
     always @(posedge clock or negedge reset_n ) begin
         if(~reset_n) begin
             had_unalign_redirect <= 'b0;
         end
         else begin
-            if(redirect_valid & redirect_target[2] & ~pc_operation_done) begin
+            if(redirect_valid & redirect_target[2] ) begin
                 had_unalign_redirect <= 1'b1;
-//            end else if(pc_operation_done & ~ongoing_normal_pc_fetch) begin
-//            end else if(pc_operation_done && (current_state != ONGOING_NORMAL_FETCH)) begin
-//            end else if(pc_operation_done && (current_state == NORMAL_FINISH)) begin
-            end else if((current_state == REDIRECT_FINISH)) begin
+            end else if  (redirect_valid & ~redirect_target[2] ) begin
+                had_unalign_redirect <= 1'b0;                
+            end else if((current_state == NORMAL_DONE_3)) begin
                 had_unalign_redirect <= 1'b0;
             end
         end
