@@ -98,3 +98,8 @@
 `define IS_W 2 
 `define IS_D 3 
 
+`define TBUS_RANGE 1:0
+`define TBUS_READ 2'b00
+`define TBUS_WRITE 2'b01
+`define TBUS_RESERVED0 2'b10
+`define TBUS_RESERVED1 2'b11

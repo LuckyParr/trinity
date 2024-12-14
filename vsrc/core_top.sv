@@ -66,20 +66,19 @@ module core_top #(
     wire [             511:0] pc_read_inst;  // Output burst read data for pc channel
     wire                      pc_operation_done;
 
-    // LSU store Channel Inputs and Outputs
-    wire                      opstore_index_valid;  // Valid signal for opstore_index
-    wire [              18:0] opstore_index;  // 19-bit input for opstore_index (Channel 2)
-    wire                      opstore_index_ready;  // Ready signal for opstore channel
-    wire [              63:0] opstore_write_mask;  // Write Mask for opstore channel
-    wire [              63:0] opstore_write_data;  // 64-bit data input for opstore channel write
-    wire                      opstore_operation_done;
 
-    // LSU load Channel Inputs and Outputs
-    wire                      opload_index_valid;  // Valid signal for opload_index
-    wire [              18:0] opload_index;  // 19-bit input for opload_index (Channel 3)
-    wire                      opload_index_ready;  // Ready signal for lw channel
-    wire [              63:0] opload_read_data;  // Output read data for lw channel
-    wire                      opload_operation_done;
+    //trinity bus channel
+    wire                      tbus_index_valid;
+    wire                      tbus_index_ready;
+    wire [     `RESULT_RANGE] tbus_index;
+    wire [        `SRC_RANGE] tbus_write_data;
+    wire [              63:0] tbus_write_mask;
+
+    wire [     `RESULT_RANGE] tbus_read_data;
+    wire                      tbus_operation_done;
+    wire [       `TBUS_RANGE] tbus_operation_type;
+
+
 
 
     wire [       `LREG_RANGE] exe_byp_rd;
@@ -91,46 +90,46 @@ module core_top #(
     wire [     `RESULT_RANGE] mem_byp_result;
 
     frontend u_frontend (
-        .clock             (clock),
-        .reset_n           (reset_n),
-        .redirect_valid    (redirect_valid),
-        .redirect_target   (redirect_target),
-        .pc_index_valid    (pc_index_valid),
-        .pc_index_ready    (pc_index_ready),
-        .pc_operation_done (pc_operation_done),
-        .pc_read_inst      (pc_read_inst),
-        .pc_index          (pc_index),
-        .fifo_read_en      (~mem_stall), //when mem stall,ibuf can not to read instr anymore!
-        .clear_ibuffer_ext (redirect_valid),
-        .rs1               (rs1),
-        .rs2               (rs2),
-        .rd                (rd),
-        .src1_muxed        (src1),
-        .src2_muxed        (src2),
-        .imm               (imm),
-        .src1_is_reg       (src1_is_reg),
-        .src2_is_reg       (src2_is_reg),
-        .need_to_wb        (need_to_wb),
-        .cx_type           (cx_type),
-        .is_unsigned       (is_unsigned),
-        .alu_type          (alu_type),
-        .is_word           (is_word),
-        .is_imm            (is_imm),
-        .is_load           (is_load),
-        .is_store          (is_store),
-        .ls_size           (ls_size),
-        .muldiv_type       (muldiv_type),
+        .clock              (clock),
+        .reset_n            (reset_n),
+        .redirect_valid     (redirect_valid),
+        .redirect_target    (redirect_target),
+        .pc_index_valid     (pc_index_valid),
+        .pc_index_ready     (pc_index_ready),
+        .pc_operation_done  (pc_operation_done),
+        .pc_read_inst       (pc_read_inst),
+        .pc_index           (pc_index),
+        .fifo_read_en       (~mem_stall),           //when mem stall,ibuf can not to read instr anymore!
+        .clear_ibuffer_ext  (redirect_valid),
+        .rs1                (rs1),
+        .rs2                (rs2),
+        .rd                 (rd),
+        .src1_muxed         (src1),
+        .src2_muxed         (src2),
+        .imm                (imm),
+        .src1_is_reg        (src1_is_reg),
+        .src2_is_reg        (src2_is_reg),
+        .need_to_wb         (need_to_wb),
+        .cx_type            (cx_type),
+        .is_unsigned        (is_unsigned),
+        .alu_type           (alu_type),
+        .is_word            (is_word),
+        .is_imm             (is_imm),
+        .is_load            (is_load),
+        .is_store           (is_store),
+        .ls_size            (ls_size),
+        .muldiv_type        (muldiv_type),
         .decoder_instr_valid(decoder_instr_valid),
-        .decoder_pc_out    (decoder_pc_out),
-        .decoder_inst_out  (decoder_inst_out),
+        .decoder_pc_out     (decoder_pc_out),
+        .decoder_inst_out   (decoder_inst_out),
         //write back enable
-        .writeback_valid   (regfile_write_valid),
-        .writeback_rd      (regfile_write_rd),
-        .writeback_data    (regfile_write_data),
+        .writeback_valid    (regfile_write_valid),
+        .writeback_rd       (regfile_write_rd),
+        .writeback_data     (regfile_write_data),
 
-        .exe_byp_rd         (exe_byp_rd),
-        .exe_byp_need_to_wb (exe_byp_need_to_wb),
-        .exe_byp_result     (exe_byp_result),
+        .exe_byp_rd        (exe_byp_rd),
+        .exe_byp_need_to_wb(exe_byp_need_to_wb),
+        .exe_byp_result    (exe_byp_result),
         //.mem_byp_rd        (mem_byp_rd),
         //.mem_byp_need_to_wb(mem_byp_need_to_wb),
         //.mem_byp_result    (mem_byp_result),
@@ -241,7 +240,7 @@ module core_top #(
         .is_store              (out_is_store),
         .ls_size               (out_ls_size),
         .muldiv_type           (out_muldiv_type),
-        .instr_valid            (out_instr_valid),
+        .instr_valid           (out_instr_valid),
         .pc                    (out_pc),
         .instr                 (out_instr),
         .regfile_write_valid   (regfile_write_valid),
@@ -250,21 +249,19 @@ module core_top #(
         .redirect_valid        (redirect_valid),
         .redirect_target       (redirect_target),
         .mem_stall             (mem_stall),
-        .opstore_index_valid   (opstore_index_valid),
-        .opstore_index         (opstore_index),
-        .opstore_index_ready   (opstore_index_ready),
-        .opstore_write_mask    (opstore_write_mask),
-        .opstore_write_data    (opstore_write_data),
-        .opstore_operation_done(opstore_operation_done),
-        .opload_index_valid    (opload_index_valid),
-        .opload_index          (opload_index),
-        .opload_index_ready    (opload_index_ready),
-        .opload_read_data      (opload_read_data),
-        .opload_operation_done (opload_operation_done),
+        //trinity bus channel
+        .tbus_index_valid   (tbus_index_valid),
+        .tbus_index_ready   (tbus_index_ready),
+        .tbus_index         (tbus_index),
+        .tbus_write_data    (tbus_write_data),
+        .tbus_write_mask    (tbus_write_mask),
+        .tbus_read_data     (tbus_read_data),
+        .tbus_operation_done(tbus_operation_done),
+        .tbus_operation_type(tbus_operation_type),
         .flop_commit_valid     (flop_commit_valid),
-        .exe_byp_rd             (exe_byp_rd),
-        .exe_byp_need_to_wb     (exe_byp_need_to_wb),
-        .exe_byp_result         (exe_byp_result)
+        .exe_byp_rd            (exe_byp_rd),
+        .exe_byp_need_to_wb    (exe_byp_need_to_wb),
+        .exe_byp_result        (exe_byp_result)
         //.mem_byp_rd            (mem_byp_rd),
         //.mem_byp_need_to_wb    (mem_byp_need_to_wb),
         //.mem_byp_result        (mem_byp_result)
@@ -279,17 +276,15 @@ module core_top #(
         .pc_index_ready        (pc_index_ready),
         .pc_read_inst          (pc_read_inst),
         .pc_operation_done     (pc_operation_done),
-        .opstore_index_valid   (opstore_index_valid),
-        .opstore_index         (opstore_index),
-        .opstore_index_ready   (opstore_index_ready),
-        .opstore_write_mask    (opstore_write_mask),
-        .opstore_write_data    (opstore_write_data),
-        .opstore_operation_done(opstore_operation_done),
-        .opload_index_valid    (opload_index_valid),
-        .opload_index          (opload_index),
-        .opload_index_ready    (opload_index_ready),
-        .opload_read_data      (opload_read_data),
-        .opload_operation_done (opload_operation_done),
+        //trinity bus channel
+        .tbus_index_valid   (tbus_index_valid),
+        .tbus_index_ready   (tbus_index_ready),
+        .tbus_index         (tbus_index),
+        .tbus_write_data    (tbus_write_data),
+        .tbus_write_mask    (tbus_write_mask),
+        .tbus_read_data     (tbus_read_data),
+        .tbus_operation_done(tbus_operation_done),
+        .tbus_operation_type(tbus_operation_type),
         .ddr_chip_enable       (ddr_chip_enable),
         .ddr_index             (ddr_index),
         .ddr_write_enable      (ddr_write_enable),
