@@ -14,7 +14,7 @@ module channel_arb (
     output  wire                 tbus_index_ready,
     input reg  [`RESULT_RANGE] tbus_index,
     input reg  [   `SRC_RANGE] tbus_write_data,
-    input reg  [         63:0] tbus_write_mask,
+    input reg  [   `SRC_RANGE] tbus_write_mask,
 
     output  wire [ `RESULT_RANGE] tbus_read_data,
     output  wire                 tbus_operation_done,

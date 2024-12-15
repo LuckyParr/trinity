@@ -170,13 +170,13 @@ module mem (
         if (is_load & instr_valid) begin
             if ((~ls_outstanding) & ~mmio_valid) begin
                 tbus_index_valid    = 1'b1;
-                tbus_index          = {3'b0, ls_address[`RESULT_WIDTH-1:3]};
+                tbus_index          = ls_address[`RESULT_WIDTH-1:0];
                 tbus_operation_type = `TBUS_READ;
             end
         end else if (is_store & instr_valid) begin
             if (~ls_outstanding & ~mmio_valid) begin
                 tbus_index_valid    = 1'b1;
-                tbus_index          = {3'b0, ls_address[`RESULT_WIDTH-1:3]};
+                tbus_index          = ls_address[`RESULT_WIDTH-1:0];
                 tbus_write_mask     = opstore_write_mask_qual;
                 tbus_write_data     = opstore_write_data_qual;
                 tbus_operation_type = `TBUS_WRITE;
