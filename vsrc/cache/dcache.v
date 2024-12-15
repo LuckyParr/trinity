@@ -39,52 +39,7 @@ module dcache
     localparam READ_DDR      = 3'b100;
     localparam REFILL        = 3'b101;
 
-    // State register
-    reg [2:0] state 
-    reg [2:0] next_state;
-
-    // State transition logic
-    always @(posedge clock or negedge reset_n) begin
-        if (!reset_n)
-            state <= IDLE; // Reset to IDLE state
-        else
-            state <= next_state;
-    end
-
-    // Next state logic
-    always @(*) begin
-        case (state)
-            IDLE: begin
-                if (tbus_index_valid)
-                    next_state = READ_TAG;
-                else
-                    next_state = IDLE;
-            end
-            READ_TAG: begin
-                // Add condition for transitioning to next state
-                if(tagram_hit_s1) begin
-                    next_state = READWRITE_DATA;
-                end
-            end
-            READWRITE_DATA: begin
-                // Add condition for transitioning to next state
-                next_state = IDLE;
-            end
-            WB_DDR: begin
-                // Add condition for transitioning to next state
-                next_state = READ_DDR;
-            end
-            READ_DDR: begin
-                // Add condition for transitioning to next state
-                next_state = REFILL;
-            end
-            REFILL: begin
-                // Add condition for transitioning to IDLE or another state
-                next_state = IDLE;
-            end
-            default: next_state = IDLE;
-        endcase
-    end
+   
 
 /* -------------------------------------------------------------------------- */
 /*                                     stage0                                    */
@@ -160,12 +115,8 @@ lfsr_random u_lfsr_random(
     .seed       (seed       ),
     .random_num (random_num )
 );
-wire random_way_s1;
-assign random_way_s1 = random_num[0];
 
-wire [1:0] data_write_way_s1;
-assign data_write_way_s1 = tag_way_full_s1? random_way_s1:
-                           
+
 
 
     /* -------------------------------------------------------------------------- */
@@ -181,8 +132,10 @@ reg [1:0] tagram_hitway_onehot_s1;
 
 assign tag_read_data_way_s1[0] = tag_dout_s1[18:0];
 assign tag_read_data_way_s1[1] = tag_dout_s1[38:19];
-wire tag_way_full_s1 ;
-assign tag_way_full_s1 = tag_read_data_way_s1[0][`TAGRAM_VALID_RANGE] &&  tag_read_data_way_s1[1][`TAGRAM_VALID_RANGE];
+wire [1:0] tag_way_valid_s1 = {tag_read_data_way_s1[1][`TAGRAM_VALID_RANGE], tag_read_data_way_s1[0][`TAGRAM_VALID_RANGE]  } ;
+wire [1:0] tag_way_dirty_s1 = {tag_read_data_way_s1[1][`TAGRAM_DIRTY_RANGE], tag_read_data_way_s1[0][`TAGRAM_DIRTY_RANGE]  } ;
+wire tag_way_full_s1;
+assign tag_way_full_s1 = &tag_way_valid_s1;
 integer i;
 always @(*) begin
     tagram_hit_s1 = 0;
@@ -194,6 +147,23 @@ always @(*) begin
         end
     end
 end
+
+/* ------------------------------------ cal victim way ----------------------------------- */
+wire [1:0] random_way_s1;
+wire [1:0] data_write_way_s1;
+wire [1:0] ff_way_s1;
+wire victim_way_dirty;
+
+findfirstone u_findfirstone(
+    .in_vector (~tag_way_valid_s1 ),
+    .onehot    (ff_way_s1    ),
+    .valid     (     )
+);
+
+assign random_way_s1 = {random_num[0], ~random_num[0]};
+assign data_write_way_s1 = tag_way_full_s1? random_way_s1 : ff_way_s1;
+assign victim_way_dirty = &(tag_way_dirty_s1 & tag_way_valid_s1 & data_write_way_s1);
+
 
 
 //bankidx OH generate,used to r/w dataarray
@@ -280,8 +250,57 @@ dcache_dataarray u_dcache_dataarray(
 );
 
 
+/* -------------------------------------------------------------------------- */
+/*                                     FSM                                    */
+/* -------------------------------------------------------------------------- */
+ // State register
+    reg [2:0] state 
+    reg [2:0] next_state;
 
+    // State transition logic
+    always @(posedge clock or negedge reset_n) begin
+        if (!reset_n)
+            state <= IDLE; // Reset to IDLE state
+        else
+            state <= next_state;
+    end
 
+    // Next state logic
+    always @(*) begin
+        case (state)
+            IDLE: begin
+                if (tbus_index_valid)
+                    next_state = READ_TAG;
+                else
+                    next_state = IDLE;
+            end
+            READ_TAG: begin
+                if(tagram_hit_s1) begin
+                    next_state = READWRITE_DATA;
+                end else if(victim_way_dirty) begin
+                    next_state = WB_DDR;
+                end else begin
+                    next_state = READ_DDR;
+                end
+            end
+            READWRITE_DATA: begin
+                    next_state = IDLE;                    
+            end
+            WB_DDR: begin
+                // Add condition for transitioning to next state
+                next_state = READ_DDR;
+            end
+            READ_DDR: begin
+                // Add condition for transitioning to next state
+                next_state = REFILL;
+            end
+            REFILL: begin
+                // Add condition for transitioning to IDLE or another state
+                next_state = IDLE;
+            end
+            default: next_state = IDLE;
+        endcase
+    end
 endmodule
 
 

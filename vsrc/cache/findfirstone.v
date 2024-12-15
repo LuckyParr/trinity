@@ -1,4 +1,4 @@
-module FindFirstOneOneHot #(parameter WIDTH = 8) (
+module findfirstone #(parameter WIDTH = 8) (
     input  [WIDTH-1:0] in_vector,   // Input vector
     output reg [WIDTH-1:0] onehot,  // One-hot output indicating the position of the first '1'
     output reg valid                // Valid flag to indicate if a '1' is found
