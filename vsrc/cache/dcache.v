@@ -86,6 +86,12 @@ module dcache
         endcase
     end
 
+/* -------------------------------------------------------------------------- */
+/*                                     stage0                                    */
+/* -------------------------------------------------------------------------- */
+
+/* ----------------------------------- latch input ----------------------------------- */
+
 //indicate to access tag array
 reg tag_ce ;
 always @(*) begin
@@ -133,22 +139,50 @@ always @(posedge clock or reset_n) begin
 end
 
 
+wire [DATA_WIDTH-1:0] write_data_8banks[7:0];
+for (i=0;i<`TAGRAM_BANKNUM;i=i+1)begin
+    write_data_8banks[i] = write_data_latch;
+end
+
+wire [DATA_WIDTH-1:0] write_mask_8banks[7:0];
+for (i=0;i<`TAGRAM_BANKNUM;i=i+1)begin
+    write_mask_8banks[i] = write_mask_latch;
+end
+
+/* ------------------------------- lfsr random ------------------------------ */
+wire [7:0] seed;
+assign seed = 8'hFF;
+wire [7:0] random_num;
+
+lfsr_random u_lfsr_random(
+    .clock      (clock      ),
+    .reset_n    (reset_n    ),
+    .seed       (seed       ),
+    .random_num (random_num )
+);
+wire random_way_s1;
+assign random_way_s1 = random_num[0];
+
+wire [1:0] data_write_way_s1;
+assign data_write_way_s1 = tag_way_full_s1? random_way_s1:
+                           
 
 
+    /* -------------------------------------------------------------------------- */
+    /*           stage 1: miss / hit , generate data array access logic           */
+    /* -------------------------------------------------------------------------- */
 
-
-/*
-    stage 1: miss / hit , generate data array access logic
-*/
-//generate him/miss sigs
-wire [`TAGRAM_RANGE] dout;
+/* ------------------------- generate him/miss sigs ------------------------- */
+wire [`TAGRAM_RANGE] tag_dout_s1;
 wire [18:0] tag_read_data_way_s1[0:1];
 reg tagram_hit_s1;
 reg [1:0] tagram_hitway_onehot_s1;
 
 
-assign tag_read_data_way_s1[0] = dout[18:0];
-assign tag_read_data_way_s1[1] = dout[38:19];
+assign tag_read_data_way_s1[0] = tag_dout_s1[18:0];
+assign tag_read_data_way_s1[1] = tag_dout_s1[38:19];
+wire tag_way_full_s1 ;
+assign tag_way_full_s1 = tag_read_data_way_s1[0][`TAGRAM_VALID_RANGE] &&  tag_read_data_way_s1[1][`TAGRAM_VALID_RANGE];
 integer i;
 always @(*) begin
     tagram_hit_s1 = 0;
@@ -160,8 +194,6 @@ always @(*) begin
         end
     end
 end
-
-
 
 
 //bankidx OH generate,used to r/w dataarray
@@ -199,14 +231,16 @@ assign writeenable_bank = write_hit_s1?1'd1:1'd0;
 
 
 
-/*
-    
-*/
-wire  [DATA_WIDTH-1:0] dout_bank_s2 [7:0];
+
+    /* -------------------------------------------------------------------------- */
+    /*                    Stage2 : get read data array result / wirte done                   */
+    /* -------------------------------------------------------------------------- */
+
+wire  [DATA_WIDTH-1:0] data_dout_s2 [7:0];
 always @(*) begin
     integer i;
     for(i=0;i<TAGRAM_BANKNUM;i=i+1)begin
-        tbus_read_data = {64{ce_bank_dataarray_latch[i]}} && dout_bank_s2[i];
+        tbus_read_data = {64{ce_bank_dataarray_latch[i]}} && data_dout_s2[i];
     end
 end
 
@@ -229,7 +263,7 @@ dcache_tagarray u_dcache_tagarray(
     .raddr   (tag_setaddr_s0   ),
     .din     (din     ),
     .wmask   (wmask   ),
-    .dout    (dout    )
+    .dout    (tag_dout_s1    )
 );
 
 dcache_dataarray u_dcache_dataarray(
@@ -240,9 +274,9 @@ dcache_dataarray u_dcache_dataarray(
     .ce_bank           (ce_bank_dataarray           ),
     .writewayaddr (writewayaddr ),
     .readwayaddr  (readwayaddr  ),
-    .din_bank          (din_bank          ),
-    .wmask_bank        (wmask_bank        ),
-    .dout_bank         (dout_bank_s2         ),
+    .din_bank          (write_data_8banks          ),
+    .wmask_bank        (write_mask_8banks        ),
+    .dout_bank         (data_dout_s2         ),
 );
 
 
