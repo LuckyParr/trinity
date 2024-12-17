@@ -11,9 +11,9 @@ module dcache_dataarray
     input wire [7:0] ce_bank,                        // Write enables for each bank in way 0
     input wire [ADDR_WIDTH-1:0] writesetaddr ,    // Write addresses for each bank in way 0
     input wire [ADDR_WIDTH-1:0] readsetaddr ,    // Read addresses for each bank in way 1
-    input wire [DATA_WIDTH-1:0] din_bank [7:0],      // Data inputs for each bank in bank 0
-    input wire [DATA_WIDTH-1:0] wmask_bank [7:0],    // Write masks for each bank in bank 0
-    output wire [DATA_WIDTH-1:0] dout_bank [7:0]    // Data outputs for each bank in bank 0
+    input wire [DATA_WIDTH-1:0] din_banks [7:0],      // Data inputs for each bank in bank 0
+    input wire [DATA_WIDTH-1:0] wmask_banks [7:0],    // Write masks for each bank in bank 0
+    output wire [DATA_WIDTH-1:0] dout_banks [7:0]    // Data outputs for each bank in bank 0
 );
 
     // Instantiate 8 SRAM banks for each way
@@ -30,9 +30,9 @@ module dcache_dataarray
                 .we(we),
                 .waddr(writesetaddr),
                 .raddr(readsetaddr),
-                .din(din_bank[i]),
-                .wmask(wmask_bank[i]),
-                .dout(dout_bank[i])
+                .din(din_banks[i]),
+                .wmask(wmask_banks[i]),
+                .dout(dout_banks[i])
             );
         end
 
@@ -47,9 +47,9 @@ module dcache_dataarray
                 .we(we),
                 .waddr(writesetaddr),
                 .raddr(readsetaddr),
-                .din(din_bank[i]),
-                .wmask(wmask_bank[i]),
-                .dout(dout_bank[i])
+                .din(din_banks[i]),
+                .wmask(wmask_banks[i]),
+                .dout(dout_banks[i])
             );
         end
     endgenerate
