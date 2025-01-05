@@ -3,12 +3,11 @@ module ibuffer (
     input wire reset_n,
     input wire pc_index_ready,                  // Signal indicating readiness from `pc_index`
     input wire pc_operation_done,
-    input wire [511:0] pc_read_inst,        // 512-bit input data from arbiter (16 instructions, 32 bits each)
+    input wire [63:0] pc_read_inst,        // 512-bit input data from arbiter (16 instructions, 32 bits each)
     input wire fifo_read_en,                    // External read enable signal for FIFO
     input wire clear_ibuffer,                   // Clear signal for ibuffer
     input wire can_fetch_inst,
-    input wire [47:0] pc,
-    input wire cut_first_32_bit,
+    input wire [63:0] pc,
 
     output wire ibuffer_instr_valid,
     output wire [31:0]  ibuffer_inst_out,
@@ -18,16 +17,16 @@ module ibuffer (
 
     input wire mem_stall
 );
-    wire [(32+48-1):0] fifo_inst_addr_out;           // 32-bit output data from the FIFO
-    assign ibuffer_inst_out = fifo_inst_addr_out[(32+48-1):48];
+    wire [(32+64-1):0] fifo_inst_addr_out;           // 32-bit output data from the FIFO
+    assign ibuffer_inst_out = fifo_inst_addr_out[(32+64-1):64];
     assign ibuffer_pc_out = fifo_inst_addr_out[47:0];
 
     reg [31:0] inst_cut [0:15];
-    reg [47:0] pc_cut [0:15];
+    reg [63:0] pc_cut [0:15];
     integer i;
 
     always @(*) begin
-        for (i = 0; i < 16; i = i + 1) begin
+        for (i = 0; i < 2; i = i + 1) begin
             inst_cut[i] = pc_read_inst[(i * 32) + 31 -: 32];
             pc_cut[i] = pc+(i*4);
         end
@@ -83,20 +82,20 @@ module ibuffer (
                 // Split pc_read_inst into 16 instructions and load them into inst_buffer
                 inst_buffer[0]  <= {inst_cut[0 ] , (pc_cut[0 ])};
                 inst_buffer[1]  <= {inst_cut[1 ] , (pc_cut[1 ])};
-                inst_buffer[2]  <= {inst_cut[2 ] , (pc_cut[2 ])};
-                inst_buffer[3]  <= {inst_cut[3 ] , (pc_cut[3 ])};
-                inst_buffer[4]  <= {inst_cut[4 ] , (pc_cut[4 ])};
-                inst_buffer[5]  <= {inst_cut[5 ] , (pc_cut[5 ])};
-                inst_buffer[6]  <= {inst_cut[6 ] , (pc_cut[6 ])};
-                inst_buffer[7]  <= {inst_cut[7 ] , (pc_cut[7 ])};
-                inst_buffer[8]  <= {inst_cut[8 ] , (pc_cut[8 ])};
-                inst_buffer[9]  <= {inst_cut[9 ] , (pc_cut[9 ])};
-                inst_buffer[10] <= {inst_cut[10] , (pc_cut[10])};
-                inst_buffer[11] <= {inst_cut[11] , (pc_cut[11])};
-                inst_buffer[12] <= {inst_cut[12] , (pc_cut[12])};
-                inst_buffer[13] <= {inst_cut[13] , (pc_cut[13])};
-                inst_buffer[14] <= {inst_cut[14] , (pc_cut[14])};
-                inst_buffer[15] <= {inst_cut[15] , (pc_cut[15])};
+                // inst_buffer[2]  <= {inst_cut[2 ] , (pc_cut[2 ])};
+                // inst_buffer[3]  <= {inst_cut[3 ] , (pc_cut[3 ])};
+                // inst_buffer[4]  <= {inst_cut[4 ] , (pc_cut[4 ])};
+                // inst_buffer[5]  <= {inst_cut[5 ] , (pc_cut[5 ])};
+                // inst_buffer[6]  <= {inst_cut[6 ] , (pc_cut[6 ])};
+                // inst_buffer[7]  <= {inst_cut[7 ] , (pc_cut[7 ])};
+                // inst_buffer[8]  <= {inst_cut[8 ] , (pc_cut[8 ])};
+                // inst_buffer[9]  <= {inst_cut[9 ] , (pc_cut[9 ])};
+                // inst_buffer[10] <= {inst_cut[10] , (pc_cut[10])};
+                // inst_buffer[11] <= {inst_cut[11] , (pc_cut[11])};
+                // inst_buffer[12] <= {inst_cut[12] , (pc_cut[12])};
+                // inst_buffer[13] <= {inst_cut[13] , (pc_cut[13])};
+                // inst_buffer[14] <= {inst_cut[14] , (pc_cut[14])};
+                // inst_buffer[15] <= {inst_cut[15] , (pc_cut[15])};
 
                 write_index <= 4'b0;             // Reset write_index
                 write_enable <= 1'b1;            // Start writing to FIFO
@@ -105,10 +104,7 @@ module ibuffer (
             // Write instructions from inst_buffer to FIFO
             if (write_enable && !fifo_full) begin
                 write_index <= write_index + 1;
-                if ((cut_first_32_bit == 1) && write_index == 4'd14) begin
-                    write_enable <= 1'b0;        // Stop writing after 16 instructions
-                end
-                if ((cut_first_32_bit == 0) && write_index == 4'd15) begin
+                if ( write_index == 4'd1) begin
                     write_enable <= 1'b0;        // Stop writing after 16 instructions
                 end
             end
