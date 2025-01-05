@@ -89,6 +89,30 @@ module core_top #(
     wire                      mem_byp_need_to_wb;
     wire [     `RESULT_RANGE] mem_byp_result;
 
+dcache u_dcache(
+    .clock                          (clock                          ),
+    .reset_n                        (reset_n                        ),
+    .tbus_index_valid               (tbus_index_valid               ),
+    .tbus_index_ready               (tbus_index_ready               ),
+    .tbus_index                     (tbus_index                     ),
+    .tbus_write_data                (tbus_write_data                ),
+    .tbus_write_mask                (tbus_write_mask                ),
+    .tbus_read_data                 (tbus_read_data                 ),
+    .tbus_operation_done            (tbus_operation_done            ),
+    .tbus_operation_type            (tbus_operation_type            ),
+    .dcache2arb_tbus_index_valid    (dcache2arb_tbus_index_valid    ),
+    .dcache2arb_tbus_index_ready    (dcache2arb_tbus_index_ready    ),
+    .dcache2arb_tbus_index          (dcache2arb_tbus_index          ),
+    .dcache2arb_tbus_write_data     (dcache2arb_tbus_write_data     ),
+    .dcache2arb_tbus_write_mask     (dcache2arb_tbus_write_mask     ),
+    .dcache2arb_tbus_read_data      (dcache2arb_tbus_read_data      ),
+    .dcache2arb_tbus_operation_done (dcache2arb_tbus_operation_done ),
+    .dcache2arb_tbus_operation_type (dcache2arb_tbus_operation_type ),
+    .dcache2arb_tbus_burst_mode     (dcache2arb_tbus_burst_mode     )
+);
+
+
+
     frontend u_frontend (
         .clock              (clock),
         .reset_n            (reset_n),
