@@ -709,6 +709,7 @@ module dcache #(
     end
 
 
+    wire [63:0] miss_read_align_addr = {ls_addr_or[63:6],6'b0};
     always @(*) begin
         dcache2arb_dbus_index_valid    = 0;
         dcache2arb_dbus_index          = 0;
@@ -725,13 +726,13 @@ module dcache #(
             dcache2arb_dbus_index_valid = 0;
         end else if ((state == WRITE_DDR) && (next_state == READ_DDR)) begin  //read cacheline from ddr
             dcache2arb_dbus_index_valid    = 1;
-            dcache2arb_dbus_index          = ls_addr_or;
+            dcache2arb_dbus_index          = miss_read_align_addr;
             dcache2arb_dbus_write_data     = 0;
             dcache2arb_dbus_write_mask     = 0;
             dcache2arb_dbus_operation_type = `TBUS_READ;
         end else if (((state == LOOKUP) & (next_state == READ_DDR)) | ((state == READ_DDR) & ~dcache2arb_outstanding)) begin  //read cacheline from ddr
             dcache2arb_dbus_index_valid    = 1;
-            dcache2arb_dbus_index          = ls_addr_or;
+            dcache2arb_dbus_index          = miss_read_align_addr;
             dcache2arb_dbus_write_data     = 0;
             dcache2arb_dbus_write_mask     = 0;
             dcache2arb_dbus_operation_type = `TBUS_READ;

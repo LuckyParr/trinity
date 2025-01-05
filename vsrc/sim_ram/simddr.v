@@ -65,11 +65,12 @@ module simddr (
 
     // State machine to handle both burst and single access read/write operations
     reg [63:0] concat_address;
+    wire [63:0] offset_address = (ddr_index - 64'h8000_0000);
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             concat_address <= 64'd0;
         end else if (ddr_chip_enable) begin
-            concat_address <= (ddr_index - 64'h8000_0000);  //note : this is done to adapt to dpic 
+            concat_address <= {3'b0, offset_address[63:3]};  //note : this is done to adapt to dpic 
         end
     end
 
@@ -114,13 +115,13 @@ module simddr (
                     end else if (write_enable_latch) begin
                         // Write 512 bits (8 x 64-bit entries) to memory in one cycle for burst mode
                         difftest_ram_write(concat_address, ddr_write_data_latch[63:0], 64'hffff_ffff);
-                        difftest_ram_write(concat_address + 64'h8, ddr_write_data_latch[127:64], 64'hffff_ffff);
-                        difftest_ram_write(concat_address + 64'd16, ddr_write_data_latch[191:128], 64'hffff_ffff);
-                        difftest_ram_write(concat_address + 64'd24, ddr_write_data_latch[255:192], 64'hffff_ffff);
-                        difftest_ram_write(concat_address + 64'd32, ddr_write_data_latch[319:256], 64'hffff_ffff);
-                        difftest_ram_write(concat_address + 64'd40, ddr_write_data_latch[383:320], 64'hffff_ffff);
-                        difftest_ram_write(concat_address + 64'd48, ddr_write_data_latch[447:384], 64'hffff_ffff);
-                        difftest_ram_write(concat_address + 64'd56, ddr_write_data_latch[511:448], 64'hffff_ffff);
+                        difftest_ram_write(concat_address + 64'd1, ddr_write_data_latch[127:64], 64'hffff_ffff);
+                        difftest_ram_write(concat_address + 64'd2, ddr_write_data_latch[191:128], 64'hffff_ffff);
+                        difftest_ram_write(concat_address + 64'd3, ddr_write_data_latch[255:192], 64'hffff_ffff);
+                        difftest_ram_write(concat_address + 64'd4, ddr_write_data_latch[319:256], 64'hffff_ffff);
+                        difftest_ram_write(concat_address + 64'd5, ddr_write_data_latch[383:320], 64'hffff_ffff);
+                        difftest_ram_write(concat_address + 64'd6, ddr_write_data_latch[447:384], 64'hffff_ffff);
+                        difftest_ram_write(concat_address + 64'd7, ddr_write_data_latch[511:448], 64'hffff_ffff);
                         // memory[ddr_index]     <= ddr_write_data_latch[63:0];
                         // memory[ddr_index + 1] <= ddr_write_data_latch[127:64];
                         // memory[ddr_index + 2] <= ddr_write_data_latch[191:128];
