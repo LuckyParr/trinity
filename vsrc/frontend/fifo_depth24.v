@@ -17,7 +17,7 @@ module fifo_depth24 (
     localparam FIFO_DEPTH  = 48;
     localparam FIFO_DEPTH_LOG = 6;
 
-    reg [(32+64-1):0] fifo                        [FIFO_DEPTH-1:0];  // FIFO storage ((32+48-1)x24)
+    reg [(32+64-1):0] fifo                        [FIFO_DEPTH-1:0];  // FIFO storage ((32+64-1)x24)
     reg [        FIFO_DEPTH_LOG-1 :0] read_ptr;  // Read pointer
     reg [        FIFO_DEPTH_LOG-1 :0] write_ptr;  // Write pointer
 

@@ -34,7 +34,7 @@ module ibuffer (
 
 
     // Internal signals
-    reg [(32+48-1):0] inst_buffer [0:15];              // Buffer to store 16 instructions (32-bit each)
+    reg [(32+64-1):0] inst_buffer [0:15];              // Buffer to store 16 instructions (32-bit each)
     reg pc_index_ready_prev;                    // To detect rising edge of pc_index_ready
     reg write_enable;                           // Enable writing to FIFO
     wire fifo_full;                             // Full signal from FIFO
