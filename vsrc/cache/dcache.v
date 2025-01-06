@@ -224,7 +224,7 @@ module dcache #(
     reg [1:0] lookup_hitway_onehot_s1;
     reg       lookup_hitway_dec_s1;
 
-
+    wire [16:0] debug_ls_addr_or_tag = ls_addr_or[31:15];
     always @(*) begin
         integer i;
         lookup_hit_s1           = 0;
@@ -316,15 +316,12 @@ module dcache #(
 
     /* -------------- prepare tagarray input for state WRITE_CACHE -------------- */
     reg [`TAGRAM_RANGE] tagarray_din_writecache_s1;
-    always @(posedge clock or negedge reset_n) begin
-        if (~reset_n) begin
-            tagarray_din_writecache_s1 <= 0;
+    always @(*) begin
+        tagarray_din_writecache_s1 = 'b0;
+        if (lookup_hitway_dec_or == 1'b0) begin  //hit way0
+            tagarray_din_writecache_s1 = {tagarray_dout_or[37:19], tagarray_dout_or[18], 1'b1, tagarray_dout_or[16:0]};  // set way0 dirty to 1
         end else begin
-            if (lookup_hitway_dec_or == 1'b0) begin  //hit way0
-                tagarray_din_writecache_s1 <= {tagarray_dout_or[37:19], tagarray_dout_or[18], 1'b1, tagarray_dout_or[16:0]};  // set way0 dirty to 1
-            end else begin
-                tagarray_din_writecache_s1 <= {tagarray_dout_or[37], 1'b1, tagarray_dout_or[35:19], tagarray_dout_or[18:0]};  // set way1 dirty to 1            
-            end
+            tagarray_din_writecache_s1 = {tagarray_dout_or[37], 1'b1, tagarray_dout_or[35:19], tagarray_dout_or[18:0]};  // set way1 dirty to 1            
         end
     end
 
@@ -498,51 +495,51 @@ module dcache #(
         // if (flush) begin
         //     next_state = IDLE;
         // end else begin
-            case (state)
-                IDLE: begin
-                    if (tbus_index_valid) next_state = LOOKUP;
-                    else next_state = IDLE;
+        case (state)
+            IDLE: begin
+                if (tbus_index_valid) next_state = LOOKUP;
+                else next_state = IDLE;
+            end
+            LOOKUP: begin
+                if (write_hit_s1) begin
+                    next_state = WRITE_CACHE;
+                end else if (read_hit_s1 || lu_miss_full_vicdirty) begin
+                    next_state = READ_CACHE;
+                end else begin  //lu_miss_full_vicclean / lu_miss_notfull
+                    next_state = READ_DDR;
                 end
-                LOOKUP: begin
-                    if (write_hit_s1) begin
-                        next_state = WRITE_CACHE;
-                    end else if (read_hit_s1 || lu_miss_full_vicdirty) begin
-                        next_state = READ_CACHE;
-                    end else begin  //lu_miss_full_vicclean / lu_miss_notfull
-                        next_state = READ_DDR;
-                    end
-                end
-                WRITE_CACHE: begin
+            end
+            WRITE_CACHE: begin
+                next_state = IDLE;
+            end
+            READ_CACHE: begin
+                if (read_hit_s1) begin
                     next_state = IDLE;
+                end else if (lu_miss_full_vicdirty) begin
+                    next_state = WRITE_DDR;
                 end
-                READ_CACHE: begin
-                    if (read_hit_s1) begin
-                        next_state = IDLE;
-                    end else if (lu_miss_full_vicdirty) begin
-                        next_state = WRITE_DDR;
-                    end
+            end
+            WRITE_DDR: begin
+                if (dcache2arb_dbus_operation_done) begin
+                    next_state = READ_DDR;
                 end
-                WRITE_DDR: begin
-                    if (dcache2arb_dbus_operation_done) begin
-                        next_state = READ_DDR;
-                    end
+            end
+            READ_DDR: begin
+                if (dcache2arb_dbus_operation_done && tbus_is_read) begin
+                    next_state = REFILL_READ;
+                end else if (dcache2arb_dbus_operation_done && tbus_is_write) begin
+                    next_state = REFILL_WRITE;
                 end
-                READ_DDR: begin
-                    if (dcache2arb_dbus_operation_done && tbus_is_read) begin
-                        next_state = REFILL_READ;
-                    end else if (dcache2arb_dbus_operation_done && tbus_is_write) begin
-                        next_state = REFILL_WRITE;
-                    end
-                end
-                REFILL_READ: begin
-                    next_state = IDLE;
-                end
-                REFILL_WRITE: begin
-                    next_state = IDLE;
-                end
-                default: next_state = IDLE;
-            endcase
-        end
+            end
+            REFILL_READ: begin
+                next_state = IDLE;
+            end
+            REFILL_WRITE: begin
+                next_state = IDLE;
+            end
+            default: next_state = IDLE;
+        endcase
+    end
     // end
 
 
@@ -560,7 +557,7 @@ module dcache #(
         if (next_state == LOOKUP) begin
             tagarray_ce    = 1'b1;
             tagarray_we    = 1'b0;
-            tagarray_raddr = ls_addr_or[14:6];
+            tagarray_raddr = tbus_index[14:6];
             tagarray_waddr = 0;
             tagarray_din   = 0;
             tagarray_wmask = 0;

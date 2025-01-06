@@ -15,7 +15,7 @@ module sram #(parameter DATA_WIDTH = 64,  // Width of data
 );
 
     // Declare the SRAM memory array
-    reg [DATA_WIDTH-1:0] mem [(2**ADDR_WIDTH)-1:0];
+    reg [DATA_WIDTH-1:0] mem [0:(2**ADDR_WIDTH)-1];
 
     always @(posedge clock or negedge reset_n) begin
         if (!reset_n) begin
