@@ -4,8 +4,9 @@ module dcache #(
     parameter ADDR_WIDTH = 9    // Width of address bus
 ) (
 
-    input wire clock,   // Clock signal
-    input wire reset_n, // Active low reset
+    input wire clock,    // Clock signal
+    input wire reset_n,  // Active low reset
+    input wire flush,
 
     //trinity bus channel as input
     input  reg                  tbus_index_valid,
@@ -351,7 +352,7 @@ module dcache #(
         integer i;
         tbus_read_data_s2 = 'b0;
         for (i = 0; i < `DATARAM_BANKNUM; i = i + 1) begin
-            if(dataarray_ce_bank_q[i])begin
+            if (dataarray_ce_bank_q[i]) begin
                 tbus_read_data_s2 = dataarray_dout_banks[i];
             end
         end
@@ -362,19 +363,6 @@ module dcache #(
     /* -------------------------------------------------------------------------- */
     /* --------------------------- get ddr 512bit cacheline data -------------------------- */
     reg [`RESULT_RANGE] ddr_512_readdata_sx[0:7];
-    // always @(*) begin
-    //     integer i;
-    //     if (~reset_n) begin
-    //         ddr_512_readdata_sx = 0;
-    //     end else if ((state == READ_DDR) && dcache2arb_dbus_operation_done) begin
-    //         for (i = 0; i < `DATARAM_BANKNUM; i = i + 1) begin
-    //             ddr_512_readdata_sx[i] = dcache2arb_dbus_read_data[(i+1)*64-1:i*64];
-    //         end
-    //     end else begin
-    //         ddr_512_readdata_sx = 0;
-    //     end
-    // end
-    // Generate block to slice and assign data
     genvar i;
     generate
         for (i = 0; i < `DATARAM_BANKNUM; i = i + 1) begin : gen_ddr_readdata
@@ -502,56 +490,60 @@ module dcache #(
 
     // State transition logic
     always @(posedge clock or negedge reset_n) begin
-        if (!reset_n) state <= IDLE;  // Reset to IDLE state
+        if (!reset_n | flush) state <= IDLE;  // Reset to IDLE state
         else state <= next_state;
     end
     // Next state logic
     always @(*) begin
-        case (state)
-            IDLE: begin
-                if (tbus_index_valid) next_state = LOOKUP;
-                else next_state = IDLE;
-            end
-            LOOKUP: begin
-                if (write_hit_s1) begin
-                    next_state = WRITE_CACHE;
-                end else if (read_hit_s1 || lu_miss_full_vicdirty) begin
-                    next_state = READ_CACHE;
-                end else begin  //lu_miss_full_vicclean / lu_miss_notfull
-                    next_state = READ_DDR;
+        // if (flush) begin
+        //     next_state = IDLE;
+        // end else begin
+            case (state)
+                IDLE: begin
+                    if (tbus_index_valid) next_state = LOOKUP;
+                    else next_state = IDLE;
                 end
-            end
-            WRITE_CACHE: begin
-                next_state = IDLE;
-            end
-            READ_CACHE: begin
-                if (read_hit_s1) begin
+                LOOKUP: begin
+                    if (write_hit_s1) begin
+                        next_state = WRITE_CACHE;
+                    end else if (read_hit_s1 || lu_miss_full_vicdirty) begin
+                        next_state = READ_CACHE;
+                    end else begin  //lu_miss_full_vicclean / lu_miss_notfull
+                        next_state = READ_DDR;
+                    end
+                end
+                WRITE_CACHE: begin
                     next_state = IDLE;
-                end else if (lu_miss_full_vicdirty) begin
-                    next_state = WRITE_DDR;
                 end
-            end
-            WRITE_DDR: begin
-                if (dcache2arb_dbus_operation_done) begin
-                    next_state = READ_DDR;
+                READ_CACHE: begin
+                    if (read_hit_s1) begin
+                        next_state = IDLE;
+                    end else if (lu_miss_full_vicdirty) begin
+                        next_state = WRITE_DDR;
+                    end
                 end
-            end
-            READ_DDR: begin
-                if (dcache2arb_dbus_operation_done && tbus_is_read) begin
-                    next_state = REFILL_READ;
-                end else if (dcache2arb_dbus_operation_done && tbus_is_write) begin
-                    next_state = REFILL_WRITE;
+                WRITE_DDR: begin
+                    if (dcache2arb_dbus_operation_done) begin
+                        next_state = READ_DDR;
+                    end
                 end
-            end
-            REFILL_READ: begin
-                next_state = IDLE;
-            end
-            REFILL_WRITE: begin
-                next_state = IDLE;
-            end
-            default: next_state = IDLE;
-        endcase
-    end
+                READ_DDR: begin
+                    if (dcache2arb_dbus_operation_done && tbus_is_read) begin
+                        next_state = REFILL_READ;
+                    end else if (dcache2arb_dbus_operation_done && tbus_is_write) begin
+                        next_state = REFILL_WRITE;
+                    end
+                end
+                REFILL_READ: begin
+                    next_state = IDLE;
+                end
+                REFILL_WRITE: begin
+                    next_state = IDLE;
+                end
+                default: next_state = IDLE;
+            endcase
+        end
+    // end
 
 
 
@@ -709,7 +701,7 @@ module dcache #(
     end
 
 
-    wire [63:0] miss_read_align_addr = {ls_addr_or[63:6],6'b0};
+    wire [63:0] miss_read_align_addr = {ls_addr_or[63:6], 6'b0};
     always @(*) begin
         dcache2arb_dbus_index_valid    = 0;
         dcache2arb_dbus_index          = 0;

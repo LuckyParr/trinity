@@ -62,7 +62,7 @@ module core_top #(
     wire                      pc_index_valid;  // Valid signal for pc_index
     wire [              63:0] pc_index;  // 64-bit input for pc_index (Channel 1)
     wire                      pc_index_ready;  // Ready signal for pc channel
-    wire [               63:0] pc_read_inst;  // Output burst read data for pc channel
+    wire [              63:0] pc_read_inst;  // Output burst read data for pc channel
     wire                      pc_operation_done;
 
 
@@ -117,6 +117,7 @@ module core_top #(
     dcache u_dcache (
         .clock                         (clock),
         .reset_n                       (reset_n),
+        .flush                         (redirect_valid),
         .tbus_index_valid              (tbus_index_valid),
         .tbus_index_ready              (tbus_index_ready),
         .tbus_index                    (tbus_index),
@@ -138,6 +139,7 @@ module core_top #(
     dcache u_icache (
         .clock                         (clock),
         .reset_n                       (reset_n),
+        .flush                         (redirect_valid),
         .tbus_index_valid              (pc_index_valid),
         .tbus_index_ready              (pc_index_ready),
         .tbus_index                    (pc_index),
@@ -145,7 +147,7 @@ module core_top #(
         .tbus_write_mask               ('b0),
         .tbus_read_data                (pc_read_inst),
         .tbus_operation_done           (pc_operation_done),
-        .tbus_operation_type           (2'b00),//dbus read!
+        .tbus_operation_type           (2'b00),                           //dbus read!
         .dcache2arb_dbus_index_valid   (icache2arb_dbus_index_valid),
         .dcache2arb_dbus_index_ready   (icache2arb_dbus_index_ready),
         .dcache2arb_dbus_index         (icache2arb_dbus_index),
@@ -337,13 +339,13 @@ module core_top #(
 
 
     channel_arb u_channel_arb (
-        .clock              (clock),
-        .reset_n            (reset_n),
-        .pc_index_valid     (icache2arb_dbus_index_valid),
-        .pc_index           (icache2arb_dbus_index),
-        .pc_index_ready     (icache2arb_dbus_index_ready),
-        .pc_read_inst       (icache2arb_dbus_read_data),
-        .pc_operation_done  (icache2arb_dbus_operation_done),
+        .clock            (clock),
+        .reset_n          (reset_n),
+        .pc_index_valid   (icache2arb_dbus_index_valid),
+        .pc_index         (icache2arb_dbus_index),
+        .pc_index_ready   (icache2arb_dbus_index_ready),
+        .pc_read_inst     (icache2arb_dbus_read_data),
+        .pc_operation_done(icache2arb_dbus_operation_done),
 
         .dbus_index_valid   (dcache2arb_dbus_index_valid),
         .dbus_index_ready   (dcache2arb_dbus_index_ready),
