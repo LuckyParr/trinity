@@ -1,6 +1,6 @@
 module channel_arb (
     input wire clock,   // Clock signal
-    input wire reset_n, // Active-low reset signal
+    input wire reset_n, // Active-low reset_n signal
 
     // PC Channel Inputs and Outputs : from icache
     input  wire         pc_index_valid,    // Valid signal for pc_index
@@ -29,117 +29,89 @@ module channel_arb (
     output reg  [511:0] ddr_write_data,      // Output write data for opstore channel
     input  wire [511:0] ddr_read_data,       // 512-bit data output for lw channel read
     input  wire         ddr_operation_done,
-    input  wire         ddr_ready,           // Indicates if DDR is ready for new operation
+    input  wire         ddr_ready           // Indicates if DDR is ready for new operation
 
     //add redirect wire
-    input wire redirect_valid
+    //input wire redirect_valid
 
 );
-    reg redirect_valid_dly;
-    reg redirect_valid_dly_2;
+ 
+// State Encoding
 
-    reg pc_latch, dbus_write_latch, dbus_read_latch;
-    always @(posedge clock or negedge reset_n) begin
-        if (~reset_n) begin
-            dbus_write_latch <= 1'b0;
-            dbus_read_latch  <= 1'b0;
-            pc_latch      <= 1'b0;
-        end else if (pc_index_valid && pc_index_ready) begin
-            dbus_write_latch <= 1'b0;
-            dbus_read_latch  <= 1'b0;
-            pc_latch      <= 1'b1;
-        end else if (dbus_index_valid & (dbus_operation_type == `DBUS_READ) && dbus_index_ready) begin
-            dbus_write_latch <= 1'b0;
-            dbus_read_latch  <= 1'b1;
-            pc_latch      <= 1'b0;
-        end else if (dbus_index_valid & (dbus_operation_type == `DBUS_WRITE) && dbus_index_ready) begin
-            dbus_write_latch <= 1'b1;
-            dbus_read_latch  <= 1'b0;
-            pc_latch      <= 1'b0;
-        end
+    localparam  IDLE = 2'b00;
+    localparam  DBUS = 2'b01;
+    localparam  PC = 2'b10;
+
+    reg [1:0] current_state;
+    reg [1:0] next_state;
+
+    // Arbiter Logic
+    always@(posedge clock or negedge reset_n) begin
+        if (~reset_n)
+            current_state <= IDLE;
+        else
+            current_state <= next_state;
     end
 
-    wire dbus_write_operation_done = dbus_write_latch ? ddr_operation_done : 1'b0;
-    wire dbus_read_operation_done = dbus_read_latch ? ddr_operation_done : 1'b0;
+    always@(*) begin
+        // Default values
+        next_state       = current_state;
+        ddr_chip_enable  = 1'b0;
+        ddr_index        = 64'b0;
+        ddr_write_enable = 1'b0;
+        ddr_burst_mode   = 1'b0;
+        ddr_write_mask   = 512'b0;
+        ddr_write_data   = 512'b0;
 
-    assign dbus_operation_done = dbus_write_operation_done | dbus_read_operation_done;
-    assign pc_operation_done   = pc_latch ? ddr_operation_done : 1'b0;
+        pc_index_ready   = 1'b0;
+        pc_read_inst     = 512'b0;
 
-    wire anyop_fire;
-    assign anyop_fire = (dbus_index_valid & (dbus_operation_type == `DBUS_READ) & dbus_index_ready | dbus_index_valid & (dbus_operation_type == `DBUS_WRITE) & dbus_index_ready | pc_index_valid & pc_index_ready);
+        dbus_index_ready = 1'b0;
+        dbus_read_data   = 512'b0;
 
-    always @(posedge clock or negedge reset_n) begin
-        if (~reset_n) begin
-            // default output values to simddr.v
-            ddr_chip_enable  <= 1'b0;
-            ddr_burst_mode   <= 1'b0;
-            ddr_write_enable <= 1'b0;
-            ddr_index        <= 'b0;
-            ddr_write_mask   <= 'b0;
-            ddr_write_data   <= 'b0;
-            // default output ready signals to pc_ctrl.v and mem.v
-            pc_index_ready   <= 1'b0;
-            dbus_index_ready <= 1'b0;
-        end else begin
-            //when ddr is idle , process req by priority
-            // if (ddr_ready) begin
-            if (anyop_fire) begin
-                ddr_chip_enable  <= 1'b0;
-                pc_index_ready   <= 1'b0;
-                dbus_index_ready <= 1'b0;
-            end else if (ddr_ready) begin
-                if (dbus_index_valid & (dbus_operation_type == `DBUS_WRITE)) begin
-                    // opstore channel selected for write
-                    ddr_index        <= dbus_index;
-                    ddr_chip_enable  <= 1'b1;
-                    ddr_write_enable <= 1'b1;  // Write operation
-                    ddr_write_mask   <= dbus_write_mask;
-                    ddr_write_data   <= dbus_write_data;
-                    ddr_burst_mode   <= 1'b1;
-                    dbus_index_ready <= 1'b1;  // Indicate SW channel is ready
-                end else if (dbus_index_valid & (dbus_operation_type == `DBUS_READ)) begin
-                    // opload channel selected for read
-                    ddr_index        <= dbus_index;
-                    ddr_chip_enable  <= 1'b1;
-                    ddr_write_enable <= 1'b0;  // Read operation
-                    ddr_burst_mode   <= 1'b1;
-                    dbus_index_ready <= 1'b1;  // Indicate LW channel is ready
-                end else if (pc_index_valid) begin
-                    // PC channel selected for burst read
-                    ddr_index        <= pc_index;
-                    ddr_chip_enable  <= 1'b1;
-                    ddr_write_enable <= 1'b0;  // Read operation for burst mode
-                    ddr_burst_mode   <= 1'b1;
-                    pc_index_ready   <= 1'b1;  // Indicate PC channel is ready
+        case (current_state)
+            IDLE: begin
+                if (dbus_index_valid && ddr_ready)
+                    next_state = DBUS;
+                else if (pc_index_valid && ddr_ready)
+                    next_state = PC;
+            end
+
+            DBUS: begin
+                ddr_chip_enable  = 1'b1;
+                ddr_index        = dbus_index;
+                ddr_write_data   = dbus_write_data;
+                ddr_write_mask   = dbus_write_mask;
+                if(dbus_operation_type == `DBUS_WRITE)begin
+                    ddr_write_enable = 1'b1;                     
+                end else begin
+                    ddr_write_enable = 1'b0;                                         
+                end
+
+                if (ddr_operation_done) begin
+                    dbus_read_data   = ddr_read_data;
+                    dbus_index_ready = 1'b1;
+                    next_state       = IDLE;
                 end
             end
-        end
 
+            PC: begin
+                ddr_chip_enable  = 1'b1;
+                ddr_index        = pc_index;
+                ddr_burst_mode   = 1'b1; // Assume burst mode for PC channel
+                ddr_write_enable = 1'b0;
 
-
-    end
-
-    always @(posedge clock or negedge reset_n) begin
-        if (~reset_n) begin
-            redirect_valid_dly   <= 1'b0;
-            redirect_valid_dly_2 <= 1'b0;
-        end else begin
-            redirect_valid_dly   <= redirect_valid;
-            redirect_valid_dly_2 <= redirect_valid_dly;
-        end
-    end
-
-    always @(*) begin
-        // Default output values
-        dbus_read_data = 'b0;
-        pc_read_inst   = 'b0;
-        if (ddr_ready) begin
-            if (pc_operation_done) begin
-                pc_read_inst = ddr_read_data;
+                if (ddr_operation_done) begin
+                    pc_read_inst   = ddr_read_data;
+                    pc_index_ready = 1'b1;
+                    next_state     = IDLE;
+                end
             end
-            if (dbus_read_operation_done) begin
-                dbus_read_data = ddr_read_data;
-            end  // Priority selection logic
-        end
+            default: begin
+                
+            end
+        endcase
     end
+
+
 endmodule

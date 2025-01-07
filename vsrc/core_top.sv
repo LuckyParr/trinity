@@ -363,8 +363,8 @@ module core_top #(
         .ddr_write_data     (ddr_write_data),
         .ddr_read_data      (ddr_read_data),
         .ddr_operation_done (ddr_operation_done),
-        .ddr_ready          (ddr_ready),
-        .redirect_valid     (redirect_valid)
+        .ddr_ready          (ddr_ready)
+        //.redirect_valid     (redirect_valid)
     );
 
 
