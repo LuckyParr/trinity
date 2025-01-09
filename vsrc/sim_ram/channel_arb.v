@@ -15,7 +15,7 @@ module channel_arb (
     input  reg  [`RESULT_RANGE] dbus_index,
     input  reg  [   511:0] dbus_write_data,
     input  reg  [   511:0] dbus_write_mask,
-    output wire [511:0] dbus_read_data,
+    output wire [   511:0] dbus_read_data,
     output wire                 dbus_operation_done,
     input  wire [  `DBUS_RANGE] dbus_operation_type,
 
@@ -53,24 +53,13 @@ module channel_arb (
             current_state <= next_state;
     end
 
+    reg ddr_chip_enable_level;
+
     always@(*) begin
-        // Default values
-        next_state       = current_state;
-        ddr_chip_enable  = 1'b0;
-        ddr_index        = 64'b0;
-        ddr_write_enable = 1'b0;
-        ddr_burst_mode   = 1'b0;
-        ddr_write_mask   = 512'b0;
-        ddr_write_data   = 512'b0;
-
-        pc_index_ready   = 1'b0;
-        pc_read_inst     = 512'b0;
-
-        dbus_index_ready = 1'b0;
-        dbus_read_data   = 512'b0;
-
         case (current_state)
             IDLE: begin
+                dbus_operation_done =0;
+                pc_operation_done =0;
                 if (dbus_index_valid && ddr_ready)
                     next_state = DBUS;
                 else if (pc_index_valid && ddr_ready)
@@ -78,10 +67,11 @@ module channel_arb (
             end
 
             DBUS: begin
-                ddr_chip_enable  = 1'b1;
+                ddr_chip_enable_level  = 1'b1;
                 ddr_index        = dbus_index;
                 ddr_write_data   = dbus_write_data;
                 ddr_write_mask   = dbus_write_mask;
+                dbus_operation_done = ddr_operation_done;
                 if(dbus_operation_type == `DBUS_WRITE)begin
                     ddr_write_enable = 1'b1;                     
                 end else begin
@@ -96,10 +86,11 @@ module channel_arb (
             end
 
             PC: begin
-                ddr_chip_enable  = 1'b1;
+                ddr_chip_enable_level  = 1'b1;
                 ddr_index        = pc_index;
                 ddr_burst_mode   = 1'b1; // Assume burst mode for PC channel
                 ddr_write_enable = 1'b0;
+                pc_operation_done = ddr_operation_done;
 
                 if (ddr_operation_done) begin
                     pc_read_inst   = ddr_read_data;
@@ -108,10 +99,34 @@ module channel_arb (
                 end
             end
             default: begin
-                
+                // Default values
+                next_state       = current_state;
+                ddr_chip_enable_level  = 1'b0;
+                ddr_index        = 64'b0;
+                ddr_write_enable = 1'b0;
+                ddr_burst_mode   = 1'b0;
+                ddr_write_mask   = 512'b0;
+                ddr_write_data   = 512'b0;
+        
+                pc_index_ready   = 1'b0;
+                pc_read_inst     = 512'b0;
+        
+                dbus_index_ready = 1'b0;
+                dbus_read_data   = 512'b0;
             end
         endcase
     end
 
+//make chip_enable a pulse
+reg ddr_chip_enable_latch;
+always @(posedge clock or negedge reset_n) begin
+    if(~reset_n)begin
+        ddr_chip_enable_latch <= 0;
+    end else begin
+        ddr_chip_enable_latch <= ddr_chip_enable_level;
+    end
+end
+
+assign ddr_chip_enable =  ddr_chip_enable_level & ~ddr_chip_enable_latch;
 
 endmodule

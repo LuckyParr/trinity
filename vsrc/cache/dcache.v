@@ -686,14 +686,14 @@ module dcache #(
 
     /* ------------------------------- set ddr bus ------------------------------ */
     wire dcache2arb_fire = dcache2arb_dbus_index_valid & dcache2arb_dbus_index_ready;
-    reg  dcache2arb_outstanding;
+    reg  dcache2arb_inprocess;
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
-            dcache2arb_outstanding <= 'b0;
+            dcache2arb_inprocess <= 'b0;
         end else if (dcache2arb_fire) begin
-            dcache2arb_outstanding <= 1'b1;
+            dcache2arb_inprocess <= 1'b1;
         end else if (dcache2arb_dbus_operation_done) begin
-            dcache2arb_outstanding <= 'b0;
+            dcache2arb_inprocess <= 'b0;
         end
     end
 
@@ -711,15 +711,16 @@ module dcache #(
             dcache2arb_dbus_write_data     = tbus_read_data_s2;  //64bit
             dcache2arb_dbus_write_mask     = write_mask_or;
             dcache2arb_dbus_operation_type = `TBUS_WRITE;
-        end else if (state == WRITE_CACHE && dcache2arb_dbus_index_ready) begin
-            dcache2arb_dbus_index_valid = 0;
+        //end else if (state == WRITE_CACHE && dcache2arb_dbus_index_ready) begin
+        //    dcache2arb_dbus_index_valid = 0;
         end else if ((state == WRITE_DDR) && (next_state == READ_DDR)) begin  //read cacheline from ddr
             dcache2arb_dbus_index_valid    = 1;
             dcache2arb_dbus_index          = miss_read_align_addr;
             dcache2arb_dbus_write_data     = 0;
             dcache2arb_dbus_write_mask     = 0;
             dcache2arb_dbus_operation_type = `TBUS_READ;
-        end else if (((state == LOOKUP) & (next_state == READ_DDR)) | ((state == READ_DDR) & ~dcache2arb_outstanding)) begin  //read cacheline from ddr
+        end else if (((state == LOOKUP) && (next_state == READ_DDR)) || ((state == READ_DDR) & ~dcache2arb_inprocess)) begin  //read cacheline from ddr 
+        // 2nd condition means when state in READ_DDR,but ddr is busy,so have to wait till it finish
             dcache2arb_dbus_index_valid    = 1;
             dcache2arb_dbus_index          = miss_read_align_addr;
             dcache2arb_dbus_write_data     = 0;
