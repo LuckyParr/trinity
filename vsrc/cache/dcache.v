@@ -700,11 +700,7 @@ module dcache #(
 
     wire [63:0] miss_read_align_addr = {ls_addr_or[63:6], 6'b0};
     always @(*) begin
-        dcache2arb_dbus_index_valid    = 0;
-        dcache2arb_dbus_index          = 0;
-        dcache2arb_dbus_write_data     = 0;
-        dcache2arb_dbus_write_mask     = 0;
-        dcache2arb_dbus_operation_type = 0;
+        
         if (state == READ_CACHE && next_state == WRITE_DDR) begin  //write back dirty data to ddr
             dcache2arb_dbus_index_valid    = 1;
             dcache2arb_dbus_index          = victimway_fulladdr_latch;
@@ -726,6 +722,12 @@ module dcache #(
             dcache2arb_dbus_write_data     = 0;
             dcache2arb_dbus_write_mask     = 0;
             dcache2arb_dbus_operation_type = `TBUS_READ;
+        end else begin
+            dcache2arb_dbus_index_valid    = 0;
+            dcache2arb_dbus_index          = 0;
+            dcache2arb_dbus_write_data     = 0;
+            dcache2arb_dbus_write_mask     = 0;
+            dcache2arb_dbus_operation_type = 0;
         end
     end
 
