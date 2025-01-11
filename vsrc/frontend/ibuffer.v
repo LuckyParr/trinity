@@ -34,7 +34,7 @@ module ibuffer (
     end
 
     // FIFO signals
-    reg  [(32+64-1):0] inst_buffer                                                              [0:1];  // Buffer for up to 2 instructions
+    reg  [(32+64-1):0] inst_buffer   [0:1];  // Buffer for up to 2 instructions, 32bit instr+64bit addr
     wire               fifo_full;  // Full signal from FIFO
     wire [        5:0] fifo_count;  // Count of entries in the FIFO
     reg  [        5:0] fifo_count_prev;  // Previous FIFO count to detect transition from 4 to 3

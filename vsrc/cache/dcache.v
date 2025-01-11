@@ -653,7 +653,7 @@ module dcache #(
         end
     end
 
-    /* ----------------------- trinity bus to backend ----------------------- */
+    /* ----------------------- trinity bus to backend/pc_ctrl ----------------------- */
     always @(*) begin
         if (state == IDLE) begin
             tbus_operation_done = 1'b0;
@@ -662,19 +662,19 @@ module dcache #(
         end else if (state == WRITE_CACHE) begin
             tbus_operation_done = 1'b1;
             tbus_read_data      = 0;
-            tbus_index_ready    = 1;
+            tbus_index_ready    = 0;
         end else if (state == READ_CACHE && next_state == IDLE) begin
             tbus_operation_done = 1'b1;
             tbus_read_data      = tbus_read_data_s2;
-            tbus_index_ready    = 1;
+            tbus_index_ready    = 0;
         end else if (state == REFILL_READ && next_state == IDLE) begin
             tbus_operation_done = 1'b1;
             tbus_read_data      = masked_ddr_readdata_or;
-            tbus_index_ready    = 1;
+            tbus_index_ready    = 0;
         end else if (state == REFILL_WRITE && next_state == IDLE) begin
             tbus_operation_done = 1'b1;
             tbus_read_data      = 'b0;
-            tbus_index_ready    = 1;
+            tbus_index_ready    = 0;
         end else begin
             tbus_operation_done = 'b0;
             tbus_read_data      = 0;

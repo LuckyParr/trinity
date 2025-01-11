@@ -58,8 +58,12 @@ module channel_arb (
     always@(*) begin
         case (current_state)
             IDLE: begin
+                ddr_chip_enable_level = 0;
                 dbus_operation_done =0;
                 pc_operation_done =0;
+                pc_index_ready = 0;
+                dbus_index_ready = 0;
+
                 if (dbus_index_valid && ddr_ready)
                     next_state = DBUS;
                 else if (pc_index_valid && ddr_ready)
@@ -72,6 +76,7 @@ module channel_arb (
                 ddr_write_data   = dbus_write_data;
                 ddr_write_mask   = dbus_write_mask;
                 dbus_operation_done = ddr_operation_done;
+                dbus_index_ready = ddr_ready;
                 if(dbus_operation_type == `DBUS_WRITE)begin
                     ddr_write_enable = 1'b1;                     
                 end else begin
@@ -80,7 +85,7 @@ module channel_arb (
 
                 if (ddr_operation_done) begin
                     dbus_read_data   = ddr_read_data;
-                    dbus_index_ready = 1'b1;
+                    //dbus_index_ready = 1'b1;
                     next_state       = IDLE;
                 end
             end
@@ -91,10 +96,11 @@ module channel_arb (
                 ddr_burst_mode   = 1'b1; // Assume burst mode for PC channel
                 ddr_write_enable = 1'b0;
                 pc_operation_done = ddr_operation_done;
+                pc_index_ready = ddr_ready;
 
                 if (ddr_operation_done) begin
                     pc_read_inst   = ddr_read_data;
-                    pc_index_ready = 1'b1;
+                    //pc_index_ready = 1'b0;
                     next_state     = IDLE;
                 end
             end
