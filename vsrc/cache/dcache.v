@@ -492,9 +492,6 @@ module dcache #(
     end
     // Next state logic
     always @(*) begin
-        // if (flush) begin
-        //     next_state = IDLE;
-        // end else begin
         case (state)
             IDLE: begin
                 if (tbus_index_valid) next_state = LOOKUP;
@@ -700,22 +697,20 @@ module dcache #(
 
     wire [63:0] miss_read_align_addr = {ls_addr_or[63:6], 6'b0};
     always @(posedge clock or negedge reset_n) begin
-        if (~reset_n) begin
+        if (~reset_n || flush) begin
             dcache2arb_dbus_index_valid    <= 0;
             dcache2arb_dbus_index          <= 0;
             dcache2arb_dbus_write_data     <= 0;
             dcache2arb_dbus_write_mask     <= 0;
             dcache2arb_dbus_operation_type <= 0;
-        end
-
-        if (state == READ_CACHE && next_state == WRITE_DDR) begin  //write back dirty data to ddr
+        end else if (state == READ_CACHE && next_state == WRITE_DDR) begin  //write back dirty data to ddr
             dcache2arb_dbus_index_valid    <= 1;
             dcache2arb_dbus_index          <= victimway_fulladdr_latch;
             dcache2arb_dbus_write_data     <= tbus_read_data_s2;  //64bit
             dcache2arb_dbus_write_mask     <= write_mask_or;
             dcache2arb_dbus_operation_type <= `TBUS_WRITE;
         end else if ((state == WRITE_DDR && dcache2arb_dbus_index_ready) || (state == READ_DDR && dcache2arb_dbus_index_ready)) begin  //write ddr/read ddr is fire
-            dcache2arb_dbus_index_valid <= 0;
+            dcache2arb_dbus_index_valid    <= 0;
         end else if ((state == WRITE_DDR) && (next_state == READ_DDR)) begin  //read cacheline from ddr
             dcache2arb_dbus_index_valid    <= 1;
             dcache2arb_dbus_index          <= miss_read_align_addr;
