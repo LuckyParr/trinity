@@ -21,7 +21,7 @@ module dcache #(
 
 
     //trinity bus channel as output
-    output wire                      dcache2arb_dbus_index_valid,
+    output wire                     dcache2arb_dbus_index_valid,
     input  wire                     dcache2arb_dbus_index_ready,
     output reg  [    `RESULT_RANGE] dcache2arb_dbus_index,
     output reg  [       `SRC_RANGE] dcache2arb_dbus_write_data,
@@ -31,6 +31,8 @@ module dcache #(
     output wire [      `TBUS_RANGE] dcache2arb_dbus_operation_type
 
 );
+    wire tbus_fire;
+    assign tbus_fire = tbus_index_valid & tbus_index_ready;
     reg                      dcache2arb_dbus_index_valid_internal;
     assign dcache2arb_dbus_index_valid = dcache2arb_dbus_index_valid_internal & ~flush;
 
@@ -499,7 +501,7 @@ module dcache #(
     always @(*) begin
         case (state)
             IDLE: begin
-                if (tbus_index_valid) next_state = LOOKUP;
+                if (tbus_index_valid & ~dcache2arb_inprocess) next_state = LOOKUP;
                 else next_state = IDLE;
             end
             LOOKUP: begin
@@ -657,7 +659,7 @@ module dcache #(
 
     /* ----------------------- trinity bus to backend/pc_ctrl ----------------------- */
     always @(*) begin
-        if (state == IDLE) begin
+        if (state == IDLE && ~dcache2arb_inprocess) begin
             tbus_operation_done = 1'b0;
             tbus_read_data      = 0;
             tbus_index_ready    = 1;

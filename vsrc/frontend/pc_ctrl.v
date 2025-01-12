@@ -43,6 +43,8 @@ module pc_ctrl (
     always @(posedge clock or negedge reset_n) begin
         if(~reset_n)begin
             pc_req_outstanding <= 1'b0;
+        end else if (redirect_valid)begin
+            pc_req_outstanding <= 1'b0;
         end else if (pc_req_handshake)begin
             pc_req_outstanding <= 1'b1;             
         end else if(pc_operation_done)begin
@@ -54,9 +56,9 @@ module pc_ctrl (
     always @(posedge clock or negedge reset_n) begin
         if(~reset_n)begin
             pc_index_valid <= 1'b0;
-        end else if (redirect_valid)begin
+        end else if (redirect_valid)begin //redirect fetch
             pc_index_valid <= 1'b1;             
-        end else if(fetch_inst & ~pc_req_outstanding & ~pc_req_handshake )begin
+        end else if(fetch_inst & ~pc_req_outstanding & ~pc_req_handshake )begin //normal fetch 
             pc_index_valid <= 1'b1; 
         end else begin
             pc_index_valid <= 1'b0;

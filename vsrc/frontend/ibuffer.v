@@ -59,7 +59,7 @@ module ibuffer (
     // Control logic for writing instructions to FIFO
     always @(posedge clock or negedge reset_n) begin
         if (!reset_n || clear_ibuffer) begin
-            fetch_inst      <= 1'b0;
+            fetch_inst      <= 1'b1;
             fifo_count_prev <= 6'b0;
         end else begin
             // Generate inst_buffer  based on aligned_instr_valid
