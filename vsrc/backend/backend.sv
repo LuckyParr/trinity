@@ -83,7 +83,7 @@ module backend (
     //exu internal output:
     wire                exu_redirect_valid;
     //when redirect hit mem_stall ,could cause false redirect fetch
-    assign redirect_valid = exu_redirect_valid & instr_valid_to_exu & ~mem_stall;
+    assign redirect_valid = exu_redirect_valid & instr_valid_to_exu ;
     wire [     `RESULT_RANGE] alu_result;
     wire [     `RESULT_RANGE] bju_result;
     wire [     `RESULT_RANGE] muldiv_result;
