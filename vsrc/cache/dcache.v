@@ -213,6 +213,8 @@ module dcache #(
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             tagarray_dout_latch <= 0;
+        end else if(state == IDLE) begin
+            tagarray_dout_latch <= 'b0;
         end else if ((state == LOOKUP) && (next_state != LOOKUP)) begin
             tagarray_dout_latch <= tagarray_dout;
         end
