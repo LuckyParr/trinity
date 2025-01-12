@@ -252,7 +252,7 @@ module dcache #(
     reg [1:0] lookup_hitway_oh_latch;
     reg       lookup_hitway_dec_latch;
     always @(posedge clock or negedge reset_n) begin
-        if (~reset_n) begin
+        if (~reset_n | (state == IDLE)) begin
             lookup_hitway_oh_latch  <= 0;
             lookup_hitway_dec_latch <= 0;
         end else if ((state == LOOKUP) && (next_state != LOOKUP)) begin
@@ -292,7 +292,7 @@ module dcache #(
     //latch victimway_fulladdr in state lookup
     reg [`ADDR_RANGE] victimway_fulladdr_latch;
     always @(posedge clock or negedge reset_n) begin
-        if (~reset_n) begin
+        if (~reset_n | (state == IDLE)) begin
             victimway_fulladdr_latch <= 0;
         end else if ((state == LOOKUP) && (next_state != LOOKUP)) begin
             victimway_fulladdr_latch <= victimway_fulladdr_s1;
@@ -396,7 +396,7 @@ module dcache #(
     //latch 64bit tbus wmask
     reg [`RESULT_RANGE] masked_ddr_readdata_latch;
     always @(posedge clock or reset_n) begin
-        if (~reset_n) begin
+        if (~reset_n | (state == IDLE)) begin
             masked_ddr_readdata_latch <= 0;
         end else begin
             masked_ddr_readdata_latch <= masked_ddr_readdata_sx;
