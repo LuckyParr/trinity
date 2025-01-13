@@ -11,7 +11,7 @@ module frontend (
     output wire         pc_index_valid,
     input  wire         pc_index_ready,     // Signal indicating DDR operation is complete
     input  wire         pc_operation_done,  // Signal indicating PC operation is done
-    input  wire [511:0] pc_read_inst,       // 512-bit input data for instructions
+    input  wire [`ICACHE_FETCHWIDTH128_RAGNE] pc_read_inst,       // 128-bit input data for instructions
     output wire [ 63:0] pc_index,           // Selected bits [21:3] of the PC for DDR index
 
     // Inputs for instruction buffer

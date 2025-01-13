@@ -62,7 +62,7 @@ module core_top #(
     wire                      pc_index_valid;  // Valid signal for pc_index
     wire [              63:0] pc_index;  // 64-bit input for pc_index (Channel 1)
     wire                      pc_index_ready;  // Ready signal for pc channel
-    wire [              63:0] pc_read_inst;  // Output burst read data for pc channel
+    wire [`ICACHE_FETCHWIDTH128_RAGNE] pc_read_inst;  // Output burst read data for pc channel
     wire                      pc_operation_done;
 
 
@@ -136,7 +136,7 @@ module core_top #(
         .dcache2arb_dbus_operation_type(dcache2arb_dbus_operation_type)
     );
 
-    dcache u_icache (
+    icache u_icache (
         .clock                         (clock),
         .reset_n                       (reset_n),
         .flush                         (redirect_valid),

@@ -8,6 +8,7 @@
 
 `define IBUFFER_FIFO_WIDTH 32+48
 `define INST_CACHE_WIDTH 512
+
 /*
     0 = ADD
     1 = SET LESS THAN
@@ -120,5 +121,7 @@
 
 `define ADDR_RANGE 63:0
 `define INST_CACHE_RANGE 511:0
+
+`define ICACHE_FETCHWIDTH128_RAGNE 127:0
 
 
