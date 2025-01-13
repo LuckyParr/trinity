@@ -15,7 +15,7 @@ module ifu_top (
     // Inputs for instruction buffer
     input wire [`ICACHE_FETCHWIDTH128_RAGNE] pc_read_inst,      // 128-bit input data for instructions
     input wire        fifo_read_en,      // External read enable signal for FIFO
-    input wire        clear_ibuffer_ext, // External clear signal for ibuffer
+    //input wire        clear_ibuffer_ext, // External clear signal for ibuffer
 
     // Outputs from ibuffer
     output wire        ibuffer_instr_valid,
@@ -47,7 +47,7 @@ module ifu_top (
         .aligned_instr      (aligned_instr),
         .aligned_instr_valid(aligned_instr_valid),
         .fifo_read_en       (fifo_read_en),
-        .clear_ibuffer      (clear_ibuffer_ext),    // OR external and internal clear signals
+        .redirect_valid      (redirect_valid),    // OR external and internal clear signals
         .fetch_inst         (fetch_inst),
         .ibuffer_instr_valid(ibuffer_instr_valid),
         .ibuffer_inst_out   (ibuffer_inst_out),

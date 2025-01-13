@@ -6,7 +6,7 @@ module ibuffer (
     input wire [`ICACHE_FETCHWIDTH128_RAGNE] aligned_instr,        // 64-bit input data from arbiter (two instructions, 32 bits each)
     input wire [ 3:0] aligned_instr_valid,  // 2-bit validity indicator (11 or 01)
     input wire        fifo_read_en,         // External read enable signal for FIFO
-    input wire        clear_ibuffer,        // Clear signal for ibuffer
+    input wire        redirect_valid,        // Clear signal for ibuffer
     input wire [63:0] pc,
 
     output wire        ibuffer_instr_valid,
@@ -45,13 +45,13 @@ module ibuffer (
     reg  [        2:0] valid_counter;  // Counter for valid instructions //3bit becouse max valid_counter=4
     reg  [        2:0] write_index;  // Index for writing to FIFO
     // Instantiate the FIFO
-    fifo_depth24 fifo_inst (
+    fifo_ibuffer fifo_inst (
         .clock        (clock),
         .reset_n      (reset_n),
         .data_in      (inst_buffer[write_index]),  // Input to FIFO
         .write_en     (valid_counter > 0),         // Write enable based on counter
         .read_en      (fifo_read_en),
-        .clear_ibuffer(clear_ibuffer),             // Pass clear signal to FIFO
+        .redirect_valid (redirect_valid),             // Pass clear signal to FIFO
         .data_out     (fifo_inst_addr_out),
         .empty        (fifo_empty),
         .full         (fifo_full),
@@ -62,7 +62,7 @@ module ibuffer (
 
     // Control logic for writing instructions to FIFO
     always @(posedge clock or negedge reset_n) begin
-        if (!reset_n || clear_ibuffer) begin
+        if (!reset_n || redirect_valid) begin
             fetch_inst      <= 1'b1;
             fifo_count_prev <= 6'b0;
         end else begin
@@ -92,7 +92,7 @@ module ibuffer (
     end
     // Control logic for writing instructions to FIFO
     always @(posedge clock or negedge reset_n) begin
-        if (!reset_n || clear_ibuffer) begin
+        if (!reset_n || redirect_valid) begin
             valid_counter <= 3'h0;
         end else begin
             // Initialize valid_counter based on aligned_instr_valid
@@ -105,7 +105,7 @@ module ibuffer (
         end
     end
     always @(posedge clock or negedge reset_n) begin
-        if (!reset_n || clear_ibuffer) begin
+        if (!reset_n || redirect_valid) begin
             write_index <= 'b0;
         end else begin
             if(valid_counter >0 & ~fifo_full) begin

@@ -169,7 +169,7 @@ module core_top #(
         .pc_read_inst       (pc_read_inst),
         .pc_index           (pc_index),
         .fifo_read_en       (~mem_stall),           //when mem stall,ibuf can not to read instr anymore!
-        .clear_ibuffer_ext  (redirect_valid),
+        //.clear_ibuffer_ext  (redirect_valid),
         .rs1                (rs1),
         .rs2                (rs2),
         .rd                 (rd),
@@ -315,7 +315,7 @@ module core_top #(
         .regfile_write_valid(regfile_write_valid),
         .regfile_write_rd   (regfile_write_rd),
         .regfile_write_data (regfile_write_data),
-        .redirect_valid     (redirect_valid),
+        .redirect_valid     (redirect_valid),//output
         .redirect_target    (redirect_target),
         .mem_stall          (mem_stall),
         //trinity bus channel

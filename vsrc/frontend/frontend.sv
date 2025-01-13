@@ -16,7 +16,7 @@ module frontend (
 
     // Inputs for instruction buffer
     input wire fifo_read_en,      // External read enable signal for FIFO
-    input wire clear_ibuffer_ext, // External clear signal for ibuffer
+    //input wire clear_ibuffer_ext, // External clear signal for ibuffer
 
 
     //  Outputs from decoder
@@ -86,7 +86,7 @@ module frontend (
         .pc_operation_done (pc_operation_done),
         .pc_read_inst      (pc_read_inst),
         .fifo_read_en      (fifo_read_en),
-        .clear_ibuffer_ext (clear_ibuffer_ext),
+        //.clear_ibuffer_ext (clear_ibuffer_ext),
         .ibuffer_instr_valid(ibuffer_instr_valid),
         .ibuffer_inst_out  (ibuffer_inst_out),
         .ibuffer_pc_out    (ibuffer_pc_out),
