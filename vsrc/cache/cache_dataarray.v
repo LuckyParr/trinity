@@ -1,9 +1,9 @@
 
 // 2-Way, 8-Bank Cache Module
-module dcache_dataarray #(
-    parameter DATA_WIDTH = 64,  // Width of data
-    parameter ADDR_WIDTH = 9,    // Width of address bus
-    parameter BANK_NUM = 8
+module cache_dataarray #(
+    parameter DATA_WIDTH = 64,   // Width of data for dcache
+    parameter ADDR_WIDTH = 9,    // Width of address bus 
+    parameter BANK_NUM = 8       // Number of bank for dcache
 ) (
     input  wire                  clock,              // Clock signal
     input  wire                  reset_n,            // Active low reset

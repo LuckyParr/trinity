@@ -462,7 +462,7 @@ module dcache #(
     /* -------------------------------------------------------------------------- */
 
 
-    dcache_tagarray u_dcache_tagarray (
+    cache_tagarray u_dcache_tagarray (
         .clock  (clock),
         .reset_n(reset_n),
         .we     (tagarray_we),
@@ -474,7 +474,7 @@ module dcache #(
         .dout   (tagarray_dout)    //output
     );
 
-    dcache_dataarray u_dcache_dataarray (
+    cache_dataarray u_dcache_dataarray (
         .clock       (clock),
         .reset_n     (reset_n),
         .we          (dataarray_we),

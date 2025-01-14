@@ -118,6 +118,7 @@ module core_top #(
         .clock                         (clock),
         .reset_n                       (reset_n),
         .flush                         (redirect_valid),
+        //tbus channel from backend lsu (mem.v)
         .tbus_index_valid              (tbus_index_valid),
         .tbus_index_ready              (tbus_index_ready),
         .tbus_index                    (tbus_index),
@@ -126,6 +127,7 @@ module core_top #(
         .tbus_read_data                (tbus_read_data),
         .tbus_operation_done           (tbus_operation_done),
         .tbus_operation_type           (tbus_operation_type),
+        // dcache channel for lsu operation
         .dcache2arb_dbus_index_valid   (dcache2arb_dbus_index_valid),
         .dcache2arb_dbus_index_ready   (dcache2arb_dbus_index_ready),
         .dcache2arb_dbus_index         (dcache2arb_dbus_index),
@@ -140,6 +142,7 @@ module core_top #(
         .clock                         (clock),
         .reset_n                       (reset_n),
         .flush                         (redirect_valid),
+        //tbus channel from pc_ctrl
         .tbus_index_valid              (pc_index_valid),
         .tbus_index_ready              (pc_index_ready),
         .tbus_index                    (pc_index),
@@ -147,15 +150,16 @@ module core_top #(
         .tbus_write_mask               ('b0),
         .tbus_read_data                (pc_read_inst),
         .tbus_operation_done           (pc_operation_done),
-        .tbus_operation_type           (2'b00),                           //dbus read!
-        .dcache2arb_dbus_index_valid   (icache2arb_dbus_index_valid),
-        .dcache2arb_dbus_index_ready   (icache2arb_dbus_index_ready),
-        .dcache2arb_dbus_index         (icache2arb_dbus_index),
-        .dcache2arb_dbus_write_data    (icache2arb_dbus_write_data),
-        .dcache2arb_dbus_write_mask    (icache2arb_dbus_write_mask),
-        .dcache2arb_dbus_read_data     (icache2arb_dbus_read_data),
-        .dcache2arb_dbus_operation_done(icache2arb_dbus_operation_done),
-        .dcache2arb_dbus_operation_type()
+        .tbus_operation_type           (2'b00),     
+        //icache channel for reading inst from ddr
+        .icache2arb_dbus_index_valid   (icache2arb_dbus_index_valid),
+        .icache2arb_dbus_index_ready   (icache2arb_dbus_index_ready),
+        .icache2arb_dbus_index         (icache2arb_dbus_index),
+        .icache2arb_dbus_write_data    (icache2arb_dbus_write_data),
+        .icache2arb_dbus_write_mask    (icache2arb_dbus_write_mask),
+        .icache2arb_dbus_read_data     (icache2arb_dbus_read_data),
+        .icache2arb_dbus_operation_done(icache2arb_dbus_operation_done),
+        .icache2arb_dbus_operation_type()
     );
 
     frontend u_frontend (
@@ -341,20 +345,22 @@ module core_top #(
     channel_arb u_channel_arb (
         .clock            (clock),
         .reset_n          (reset_n),
-        .pc_index_valid   (icache2arb_dbus_index_valid),
-        .pc_index         (icache2arb_dbus_index),
-        .pc_index_ready   (icache2arb_dbus_index_ready),
-        .pc_read_inst     (icache2arb_dbus_read_data),
-        .pc_operation_done(icache2arb_dbus_operation_done),
-
-        .dbus_index_valid   (dcache2arb_dbus_index_valid),
-        .dbus_index_ready   (dcache2arb_dbus_index_ready),
-        .dbus_index         (dcache2arb_dbus_index),
-        .dbus_write_data    (dcache2arb_dbus_write_data),
-        .dbus_write_mask    (dcache2arb_dbus_write_mask),
-        .dbus_read_data     (dcache2arb_dbus_read_data),
-        .dbus_operation_done(dcache2arb_dbus_operation_done),
-        .dbus_operation_type(dcache2arb_dbus_operation_type),
+        //icache channel
+        .icache2arb_dbus_index_valid     (icache2arb_dbus_index_valid   ),
+        .icache2arb_dbus_index           (icache2arb_dbus_index         ),
+        .icache2arb_dbus_index_ready     (icache2arb_dbus_index_ready   ),
+        .icache2arb_dbus_read_data       (icache2arb_dbus_read_data     ),
+        .icache2arb_dbus_operation_done  (icache2arb_dbus_operation_done),
+        //dcache channel
+        .dcache2arb_dbus_index_valid     (dcache2arb_dbus_index_valid    ),
+        .dcache2arb_dbus_index_ready     (dcache2arb_dbus_index_ready    ),
+        .dcache2arb_dbus_index           (dcache2arb_dbus_index          ),
+        .dcache2arb_dbus_write_data      (dcache2arb_dbus_write_data     ),
+        .dcache2arb_dbus_write_mask      (dcache2arb_dbus_write_mask     ),
+        .dcache2arb_dbus_read_data       (dcache2arb_dbus_read_data      ),
+        .dcache2arb_dbus_operation_done  (dcache2arb_dbus_operation_done ),
+        .dcache2arb_dbus_operation_type  (dcache2arb_dbus_operation_type ),
+        //ddr channel
         .ddr_chip_enable    (ddr_chip_enable),
         .ddr_index          (ddr_index),
         .ddr_write_enable   (ddr_write_enable),
