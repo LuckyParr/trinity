@@ -228,10 +228,10 @@ module core_top #(
     wire [         `PC_RANGE] out_pc;
     wire [      `INSTR_RANGE] out_instr;
 
-    pipe_reg u_pipe_reg_dec2exu (
+    pipereg u_pipereg_dec2exu (
         .clock                  (clock),
         .reset_n                (reset_n),
-        .stall                  (mem_stall),
+        .stall                  (mem_stall),//mem_stall latch output of this pipereg
         .rs1                    (rs1),
         .rs2                    (rs2),
         .rd                     (rd),

@@ -221,6 +221,8 @@ module mem (
 
     end
 
-    assign mem_stall = (~ls_idle | tbus_index_valid) & ~((opload_operation_done | opstore_operation_done) & (ls_outstanding));
+    assign mem_stall =  (~ls_idle | tbus_index_valid) & //when tbus_index_valid = 1, means lsu have an req due to send, stall immediately
+                        ~((ls_outstanding) & (opload_operation_done | opstore_operation_done)); //when operation done, no need to stall anymore
+                         
 
 endmodule

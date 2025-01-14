@@ -92,7 +92,7 @@ module frontend (
         .ibuffer_pc_out    (ibuffer_pc_out),
         .fifo_empty        (fifo_empty),
         .pc_index          (pc_index),
-        .mem_stall(mem_stall)
+        .mem_stall         (mem_stall)
     );
 
 
