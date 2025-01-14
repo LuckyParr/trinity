@@ -3,7 +3,7 @@ module ibuffer (
     input wire        reset_n,
     input wire        pc_index_ready,       // Signal indicating readiness from `pc_index`
     input wire        pc_operation_done,
-    input wire [`ICACHE_FETCHWIDTH128_RAGNE] aligned_instr,        // 64-bit input data from arbiter (two instructions, 32 bits each)
+    input wire [`ICACHE_FETCHWIDTH128_RANGE] aligned_instr,        // 64-bit input data from arbiter (two instructions, 32 bits each)
     input wire [ 3:0] aligned_instr_valid,  // 2-bit validity indicator (11 or 01)
     input wire        fifo_read_en,         // External read enable signal for FIFO
     input wire        redirect_valid,        // Clear signal for ibuffer

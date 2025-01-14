@@ -10,26 +10,24 @@ module icache #(
     input wire flush,
 
     //trinity bus channel as input
-    input  reg                  tbus_index_valid,
-    output wire                 tbus_index_ready,
-    input  reg  [`RESULT_RANGE] tbus_index,
-    input  reg  [   `SRC_RANGE] tbus_write_data,
-    input  reg  [   `SRC_RANGE] tbus_write_mask,
-
-    output wire [`ICACHE_FETCHWIDTH128_RAGNE] tbus_read_data,
-    output wire                 tbus_operation_done,
-    input  wire [  `TBUS_RANGE] tbus_operation_type,
-
+    input  reg                                   tbus_index_valid,
+    output wire                                  tbus_index_ready,
+    input  reg  [   `TBUS_INDEX_RANGE       ]    tbus_index,
+    input  reg  [   `TBUS_DATA_RANGE        ]    tbus_write_data,
+    input  reg  [   `TBUS_DATA_RANGE        ]    tbus_write_mask,
+    output wire [`ICACHE_FETCHWIDTH128_RANGE]    tbus_read_data,
+    output wire                                  tbus_operation_done,
+    input  wire [  `TBUS_OPTYPE_RANGE       ]    tbus_operation_type,
 
     //trinity bus channel as output
-    output wire                     icache2arb_dbus_index_valid,
-    input  wire                     icache2arb_dbus_index_ready,
-    output reg  [    `RESULT_RANGE] icache2arb_dbus_index,
-    output reg  [       `SRC_RANGE] icache2arb_dbus_write_data,
-    output reg  [       `SRC_RANGE] icache2arb_dbus_write_mask,
-    input  wire [`INST_CACHE_RANGE] icache2arb_dbus_read_data,
-    input  wire                     icache2arb_dbus_operation_done,
-    output wire [      `TBUS_RANGE] icache2arb_dbus_operation_type
+    output wire                             icache2arb_dbus_index_valid,
+    input  wire                             icache2arb_dbus_index_ready,
+    output reg  [`DBUS_INDEX_RANGE ]        icache2arb_dbus_index,
+    output reg  [`DBUS_DATA_RANGE  ]        icache2arb_dbus_write_data,
+    output reg  [`DBUS_DATA_RANGE  ]        icache2arb_dbus_write_mask,
+    input  wire [`CACHELINE512_RANGE ]        icache2arb_dbus_read_data,
+    input  wire                             icache2arb_dbus_operation_done,
+    output wire [`DBUS_OPTYPE_RANGE]        icache2arb_dbus_operation_type
 
 );
     wire tbus_fire;

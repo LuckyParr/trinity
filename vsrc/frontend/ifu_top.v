@@ -13,7 +13,7 @@ module ifu_top (
     input  wire        pc_operation_done, // Signal indicating PC operation is done
 
     // Inputs for instruction buffer
-    input wire [`ICACHE_FETCHWIDTH128_RAGNE] pc_read_inst,      // 128-bit input data for instructions
+    input wire [`ICACHE_FETCHWIDTH128_RANGE] pc_read_inst,      // 128-bit input data for instructions
     input wire        fifo_read_en,      // External read enable signal for FIFO
     //input wire        clear_ibuffer_ext, // External clear signal for ibuffer
 
@@ -34,7 +34,7 @@ module ifu_top (
     wire        can_fetch_inst;  // Signal from pc_ctrl to allow fetch in ibuffer
 
     wire [63:0] pc;
-    wire [`ICACHE_FETCHWIDTH128_RAGNE] aligned_instr;
+    wire [`ICACHE_FETCHWIDTH128_RANGE] aligned_instr;
     wire [ 3:0] aligned_instr_valid;
 
     // Instantiate the ibuffer module

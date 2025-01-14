@@ -17,7 +17,7 @@ module channel_arb (
     input  reg  [   511:0] dcache2arb_dbus_write_mask,
     output wire [   511:0] dcache2arb_dbus_read_data,
     output wire                 dcache2arb_dbus_operation_done,
-    input  wire [  `DBUS_RANGE] dcache2arb_dbus_operation_type,
+    input  wire [  `DBUS_OPTYPE_RANGE] dcache2arb_dbus_operation_type,
 
 
     // DDR Control Inputs and Outputs

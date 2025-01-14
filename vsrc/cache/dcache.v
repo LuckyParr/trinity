@@ -9,26 +9,25 @@ module dcache #(
     input wire flush,
 
     //trinity bus channel as input
-    input  reg                  tbus_index_valid,
-    output wire                 tbus_index_ready,
-    input  reg  [`RESULT_RANGE] tbus_index,
-    input  reg  [   `SRC_RANGE] tbus_write_data,
-    input  reg  [   `SRC_RANGE] tbus_write_mask,
-
-    output wire [`RESULT_RANGE] tbus_read_data,
-    output wire                 tbus_operation_done,
-    input  wire [  `TBUS_RANGE] tbus_operation_type,
+    input  reg                       tbus_index_valid,
+    output wire                      tbus_index_ready,
+    input  reg  [`TBUS_INDEX_RANGE]  tbus_index,
+    input  reg  [`TBUS_DATA_RANGE ]  tbus_write_data,
+    input  reg  [`TBUS_DATA_RANGE ]  tbus_write_mask, 
+    output wire [`TBUS_DATA_RANGE ]  tbus_read_data,
+    output wire                      tbus_operation_done,
+    input  wire [`TBUS_OPTYPE_RANGE] tbus_operation_type,
 
 
     //trinity bus channel as output
     output wire                     dcache2arb_dbus_index_valid,
     input  wire                     dcache2arb_dbus_index_ready,
-    output reg  [    `RESULT_RANGE] dcache2arb_dbus_index,
-    output reg  [       `SRC_RANGE] dcache2arb_dbus_write_data,
-    output reg  [       `SRC_RANGE] dcache2arb_dbus_write_mask,
-    input  wire [`INST_CACHE_RANGE] dcache2arb_dbus_read_data,
+    output reg  [`DBUS_INDEX_RANGE] dcache2arb_dbus_index,
+    output reg  [`DBUS_DATA_RANGE ] dcache2arb_dbus_write_data,
+    output reg  [`DBUS_DATA_RANGE ] dcache2arb_dbus_write_mask,
+    input  wire [`CACHELINE512_RANGE] dcache2arb_dbus_read_data,
     input  wire                     dcache2arb_dbus_operation_done,
-    output wire [      `TBUS_RANGE] dcache2arb_dbus_operation_type
+    output wire [`DBUS_OPTYPE_RANGE ] dcache2arb_dbus_operation_type
 
 );
     wire tbus_fire;

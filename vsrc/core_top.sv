@@ -62,7 +62,7 @@ module core_top #(
     wire                      pc_index_valid;  // Valid signal for pc_index
     wire [              63:0] pc_index;  // 64-bit input for pc_index (Channel 1)
     wire                      pc_index_ready;  // Ready signal for pc channel
-    wire [`ICACHE_FETCHWIDTH128_RAGNE] pc_read_inst;  // Output burst read data for pc channel
+    wire [`ICACHE_FETCHWIDTH128_RANGE] pc_read_inst;  // Output burst read data for pc channel
     wire                      pc_operation_done;
 
 
@@ -75,7 +75,7 @@ module core_top #(
 
     wire [     `RESULT_RANGE] tbus_read_data;
     wire                      tbus_operation_done;
-    wire [       `TBUS_RANGE] tbus_operation_type;
+    wire [       `TBUS_OPTYPE_RANGE] tbus_operation_type;
 
 
 
@@ -96,9 +96,9 @@ module core_top #(
     reg  [     `RESULT_RANGE] dcache2arb_dbus_index;
     reg  [        `SRC_RANGE] dcache2arb_dbus_write_data;
     reg  [        `SRC_RANGE] dcache2arb_dbus_write_mask;
-    wire [ `INST_CACHE_RANGE] dcache2arb_dbus_read_data;
+    wire [ `CACHELINE512_RANGE] dcache2arb_dbus_read_data;
     wire                      dcache2arb_dbus_operation_done;
-    wire [       `TBUS_RANGE] dcache2arb_dbus_operation_type;
+    wire [       `TBUS_OPTYPE_RANGE] dcache2arb_dbus_operation_type;
     wire                      dcache2arb_dbus_burst_mode;
 
 
@@ -107,9 +107,9 @@ module core_top #(
     reg  [     `RESULT_RANGE] icache2arb_dbus_index;
     reg  [        `SRC_RANGE] icache2arb_dbus_write_data;
     reg  [        `SRC_RANGE] icache2arb_dbus_write_mask;
-    wire [ `INST_CACHE_RANGE] icache2arb_dbus_read_data;
+    wire [ `CACHELINE512_RANGE] icache2arb_dbus_read_data;
     wire                      icache2arb_dbus_operation_done;
-    wire [       `TBUS_RANGE] icache2arb_dbus_operation_type;
+    wire [       `TBUS_OPTYPE_RANGE] icache2arb_dbus_operation_type;
     wire                      icache2arb_dbus_burst_mode;
 
 

@@ -47,7 +47,7 @@ module backend (
 
     input  wire [`RESULT_RANGE] tbus_read_data,
     input  wire                 tbus_operation_done,
-    output wire [  `TBUS_RANGE] tbus_operation_type,
+    output wire [  `TBUS_OPTYPE_RANGE] tbus_operation_type,
 
 
     // output instrcnt pulse

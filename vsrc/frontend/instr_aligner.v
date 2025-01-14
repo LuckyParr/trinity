@@ -1,8 +1,8 @@
 module instr_aligner (
     input  wire        pc_operation_done,
-    input  wire [`ICACHE_FETCHWIDTH128_RAGNE] fetch_instr,         // 128-bit cache line input (4 instructions)
+    input  wire [`ICACHE_FETCHWIDTH128_RANGE] fetch_instr,         // 128-bit cache line input (4 instructions)
     input  wire [63:0] pc,                  // 63-bit Program Counter  
-    output reg  [`ICACHE_FETCHWIDTH128_RAGNE] aligned_instr,       // Output cache line after processing
+    output reg  [`ICACHE_FETCHWIDTH128_RANGE] aligned_instr,       // Output cache line after processing
     output reg  [ 3:0] aligned_instr_valid // indicate instr valid
 );
     always @* begin
