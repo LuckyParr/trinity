@@ -34,8 +34,8 @@ module icache #(
 );
     wire tbus_fire;
     assign tbus_fire = tbus_index_valid & tbus_index_ready;
-    reg                      dcache2arb_dbus_index_valid_internal;
-    assign icache2arb_dbus_index_valid = dcache2arb_dbus_index_valid_internal & ~flush;
+    reg                      icache2arb_dbus_index_valid_internal;
+    assign icache2arb_dbus_index_valid = icache2arb_dbus_index_valid_internal & ~flush;
 
     //internal signals
     wire [ `TAGRAM_RANGE] tagarray_dout;
@@ -109,30 +109,6 @@ module icache #(
             bankaddr_onehot_or[i] = (bankaddr_or == i);
         end
     end
-/* ---------------------------- useless in icache --------------------------- */
-    // //latch 64bit tbus data
-    // reg [`SRC_RANGE] write_data_latch;
-    // always @(posedge clock or reset_n) begin
-    //     if (~reset_n) begin
-    //         write_data_latch <= 'b0;
-    //     end else if (in_idle & tbus_index_valid) begin
-    //         write_data_latch <= tbus_write_data;
-    //     end
-    // end
-    // wire [`SRC_RANGE] write_data_or;
-    // assign write_data_or = write_data_latch | tbus_write_data;
-
-    // //latch 64bit tbus wmask
-    // reg [`SRC_RANGE] write_mask_latch;
-    // always @(posedge clock or reset_n) begin
-    //     if (~reset_n) begin
-    //         write_mask_latch <= 'b0;
-    //     end else if (in_idle & tbus_index_valid) begin
-    //         write_mask_latch <= tbus_write_mask;
-    //     end
-    // end
-    // wire [`SRC_RANGE] write_mask_or;
-    // assign write_mask_or = write_mask_latch | tbus_write_mask;
 
     //latch tbus operation_type
     reg [1:0] operation_type_latch;
@@ -150,34 +126,6 @@ module icache #(
     assign tbus_is_write = (operation_type_or == `TBUS_WRITE);
     wire tbus_is_read;
     assign tbus_is_read = (operation_type_or == `TBUS_READ);
-
-    // //extend latched tbus write data to 2D array for writing dataarray
-    // reg [DATA_WIDTH-1:0] write_data_8banks[0:7];
-    // always @(*) begin
-    //     integer i;
-    //     for (i = 0; i < `DATARAM_BANKNUM; i = i + 1) begin
-    //         if (bankaddr_onehot_or[i]) begin
-    //             write_data_8banks[i] = write_data_or;
-    //         end else begin
-    //             write_data_8banks[i] = 0;
-    //         end
-    //     end
-
-    // end
-    // //extend latched tbus wmask to 2D array for writing dataarray
-    // reg [DATA_WIDTH-1:0] write_mask_8banks[0:7];
-
-    // always @(*) begin
-    //     integer i;
-    //     for (i = 0; i < `DATARAM_BANKNUM; i = i + 1) begin
-    //         if (bankaddr_onehot_or[i]) begin
-    //             write_mask_8banks[i] = write_mask_or;
-    //         end else begin
-    //             write_mask_8banks[i] = 0;
-    //         end
-    //     end
-
-    // end
 
 
     /* ------------------------------- lfsr random ------------------------------ */
@@ -410,27 +358,6 @@ module icache #(
     assign masked_ddr_readdata_or = masked_ddr_readdata_latch | masked_ddr_readdata_sx;
 
 
-
-
-    // /* ------------------------ when opstore , merge data ----------------------- */
-    // reg [`RESULT_RANGE] merged_512_write_data[0:7];
-    // always @(*) begin
-    //     integer i;
-    //     for (i = 0; i < `DATARAM_BANKNUM; i = i + 1) begin
-    //         merged_512_write_data[i] = 'b0;
-    //     end
-    //     if ((state == READ_DDR) && icache2arb_dbus_operation_done) begin
-    //         for (i = 0; i < `DATARAM_BANKNUM; i = i + 1) begin
-    //             if (~bankaddr_onehot_or[i]) begin
-    //                 merged_512_write_data[i] = ddr_512_readdata_sx[i];
-    //             end else begin
-    //                 merged_512_write_data[i] = (write_data_8banks[i] & write_mask_8banks[i]) | (ddr_512_readdata_sx[i] & ~write_mask_8banks[i]);
-    //             end
-    //         end
-    //     end
-    // end
-
-
     /* --------------------------- state = REFILL_READ -------------------------- */
     reg [`TAGRAM_RANGE] tagarray_din_refillread_sx;
     always @(posedge clock or negedge reset_n) begin
@@ -508,7 +435,7 @@ module icache #(
     always @(*) begin
         case (state)
             IDLE: begin
-                if (tbus_index_valid & ~dcache2arb_inprocess) next_state = LOOKUP;
+                if (tbus_index_valid & ~icache2arb_inprocess) next_state = LOOKUP;
                 else next_state = IDLE;
             end
             LOOKUP: begin
@@ -669,7 +596,7 @@ module icache #(
 
     /* ----------------------- trinity bus to backend/pc_ctrl ----------------------- */
     always @(*) begin
-        if (state == IDLE && ~dcache2arb_inprocess) begin
+        if (state == IDLE && ~icache2arb_inprocess) begin
             tbus_operation_done = 1'b0;
             tbus_read_data      = 0;
             tbus_index_ready    = 1;
@@ -699,16 +626,16 @@ module icache #(
 
 
     /* ------------------------------- set ddr bus ------------------------------ */
-    wire dcache2arb_fire;
-    assign dcache2arb_fire = dcache2arb_dbus_index_valid_internal & icache2arb_dbus_index_ready;
-    reg  dcache2arb_inprocess;
+    wire icache2arb_fire;
+    assign icache2arb_fire = icache2arb_dbus_index_valid_internal & icache2arb_dbus_index_ready;
+    reg  icache2arb_inprocess;
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
-            dcache2arb_inprocess <= 'b0;
-        end else if (dcache2arb_fire) begin
-            dcache2arb_inprocess <= 1'b1;
+            icache2arb_inprocess <= 'b0;
+        end else if (icache2arb_fire) begin
+            icache2arb_inprocess <= 1'b1;
         end else if (icache2arb_dbus_operation_done) begin
-            dcache2arb_inprocess <= 'b0;
+            icache2arb_inprocess <= 'b0;
         end
     end
 
@@ -716,28 +643,28 @@ module icache #(
     wire [63:0] miss_read_align_addr = {ls_addr_or[63:6], 6'b0}; // aligned read addr for ddr
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n || flush) begin
-            dcache2arb_dbus_index_valid_internal    <= 0;
+            icache2arb_dbus_index_valid_internal    <= 0;
             icache2arb_dbus_index                   <= 0;
             icache2arb_dbus_write_data              <= 0;
             icache2arb_dbus_write_mask              <= 0;
             icache2arb_dbus_operation_type          <= 0;
         end else if (state == READ_CACHE && next_state == WRITE_DDR) begin  //write back dirty data to ddr
-            dcache2arb_dbus_index_valid_internal    <= 1;
+            icache2arb_dbus_index_valid_internal    <= 1;
             icache2arb_dbus_index                   <= victimway_fulladdr_latch;
             icache2arb_dbus_write_data              <= tbus_read_data_s2;  //128bit //no use in icache
             icache2arb_dbus_write_mask              <= 0;//no use in icache
             icache2arb_dbus_operation_type          <= `TBUS_WRITE;
         end else if ((state == WRITE_DDR && icache2arb_dbus_index_ready) || (state == READ_DDR && icache2arb_dbus_index_ready)) begin  //write ddr/read ddr is fire
-            dcache2arb_dbus_index_valid_internal    <= 0;
+            icache2arb_dbus_index_valid_internal    <= 0;
         end else if ((state == WRITE_DDR) && (next_state == READ_DDR)) begin  //read cacheline from ddr
-            dcache2arb_dbus_index_valid_internal    <= 1;
+            icache2arb_dbus_index_valid_internal    <= 1;
             icache2arb_dbus_index                   <= miss_read_align_addr;
             icache2arb_dbus_write_data              <= 0;
             icache2arb_dbus_write_mask              <= 0;
             icache2arb_dbus_operation_type          <= `TBUS_READ;
         end else if (((state == LOOKUP) && (next_state == READ_DDR))) begin  //read cacheline from ddr 
             // 2nd condition means when state in READ_DDR,but ddr is busy,so have to wait till it finish
-            dcache2arb_dbus_index_valid_internal    <= 1;
+            icache2arb_dbus_index_valid_internal    <= 1;
             icache2arb_dbus_index                   <= miss_read_align_addr;
             icache2arb_dbus_write_data              <= 0;
             icache2arb_dbus_write_mask              <= 0;
