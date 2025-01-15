@@ -70,7 +70,7 @@ module ifu_top (
     pc_ctrl pc_ctrl_inst (
         .clock            (clock),
         .reset_n          (reset_n),
-        .pc               (pc),
+        .pc               (pc),//output
         .boot_addr        (boot_addr),
         .redirect_valid   (redirect_valid),
         .redirect_target  (redirect_target),

@@ -58,8 +58,14 @@ module pc_ctrl (
             pc_index_valid <= 1'b0;
         end else if (redirect_valid)begin //redirect fetch
             pc_index_valid <= 1'b1;             
-        end else if(fetch_inst & ~pc_req_outstanding & ~pc_req_handshake )begin //normal fetch 
+        end else if(fetch_inst & ~pc_req_outstanding & ~pc_req_handshake )begin //normal fetch. 
             pc_index_valid <= 1'b1; 
+        //fastest icache fetch flow: take 4 cycle
+        //(1) 1st cycle, pc change 
+        //(2) 2nd cycle, pc_index_valid set to 1 , if pc_index_ready is already 1, handshake at this cycle 
+        //(3) 3rd cycle, icache state: IDLE->LOOKUP 
+        //(4) 4th cycle, icache state: LOOKUP->READ_CACHE , pc_operation_done set to 1
+        //(5) 5th cycle, icache state: READ_CACHE->IDLE, pc change again
         end else begin
             pc_index_valid <= 1'b0;
         end
