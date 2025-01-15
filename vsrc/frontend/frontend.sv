@@ -39,7 +39,9 @@ module frontend (
     output wire [            3:0] ls_size,
     output wire [           12:0] muldiv_type,
     output wire [           47:0] decoder_pc_out,
-    output wire [           47:0] decoder_inst_out,
+    output wire                   decoder_predicttaken_out,
+    output wire [31:0]            decoder_predicttarget_out,
+    output wire [           31:0] decoder_inst_out,
     output wire                   decoder_instr_valid,
 
     //write back enable
@@ -63,13 +65,15 @@ module frontend (
     wire [31:0] ibuffer_instr_valid;
     wire [31:0] ibuffer_inst_out;
     wire [47:0] ibuffer_pc_out;
+    wire        ibuffer_predicttaken_out;
+    wire [31:0] ibuffer_predicttarget_out;
+
 
     wire [63:0] rs1_read_data;
     wire [63:0] rs2_read_data;
     wire [63:0] rd_write_data;
 
     wire        fifo_empty;
-
 
     wire [           63:0] src1;
     wire [           63:0] src2;
@@ -88,6 +92,8 @@ module frontend (
         .fifo_read_en      (fifo_read_en),
         //.clear_ibuffer_ext (clear_ibuffer_ext),
         .ibuffer_instr_valid(ibuffer_instr_valid),
+        .ibuffer_predicttaken_out (ibuffer_predicttaken_out),
+        .ibuffer_predicttarget_out (ibuffer_predicttarget_out),
         .ibuffer_inst_out  (ibuffer_inst_out),
         .ibuffer_pc_out    (ibuffer_pc_out),
         .fifo_empty        (fifo_empty),
@@ -101,6 +107,8 @@ module frontend (
         .reset_n           (reset_n),
         .fifo_empty        (fifo_empty),
         .ibuffer_instr_valid(ibuffer_instr_valid),
+        .ibuffer_predicttaken_out (ibuffer_predicttaken_out),
+        .ibuffer_predicttarget_out (ibuffer_predicttarget_out),
         .ibuffer_inst_out  (ibuffer_inst_out),
         .ibuffer_pc_out    (ibuffer_pc_out),
         .rs1_read_data     (rs1_read_data),
@@ -124,6 +132,8 @@ module frontend (
         .ls_size           (ls_size),
         .muldiv_type       (muldiv_type),
         .decoder_instr_valid  (decoder_instr_valid),
+        .decoder_predicttaken_out (decoder_predicttaken_out),
+        .decoder_predicttarget_out (decoder_predicttarget_out),
         .decoder_inst_out  (decoder_inst_out),
         .decoder_pc_out    (decoder_pc_out)
 

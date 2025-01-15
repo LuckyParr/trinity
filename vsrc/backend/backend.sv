@@ -21,6 +21,8 @@ module backend (
     input  wire [               3:0] ls_size,
     input  wire [`MULDIV_TYPE_RANGE] muldiv_type,
     input  wire                      instr_valid,
+    input  wire                      predict_taken, 
+    input  wire [31:0]               predict_target, 
     input  wire [         `PC_RANGE] pc,
     input  wire [      `INSTR_RANGE] instr,
     //write back lreg 
@@ -189,6 +191,8 @@ module backend (
         .src2       (src2),
         .ls_size    (ls_size),
         .instr_valid(instr_valid_to_mem),
+        .predict_taken      (predict_taken), 
+        .predict_target     (predict_target), 
         .pc         (pc_to_mem),
         .instr      (instr_to_mem),
 

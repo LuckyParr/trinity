@@ -4,6 +4,8 @@ module decoder (
     input wire        reset_n,
     input wire        fifo_empty,
     input wire        ibuffer_instr_valid,
+    input wire        ibuffer_predicttaken_out,
+    input wire [31:0] ibuffer_predicttarget_out,
     input wire [31:0] ibuffer_inst_out,
     input wire [47:0] ibuffer_pc_out,
   
@@ -30,13 +32,17 @@ module decoder (
     output reg  [               3:0] ls_size,
     output reg  [`MULDIV_TYPE_RANGE] muldiv_type,
     output wire [              47:0] decoder_instr_valid,
-    output wire [              47:0] decoder_inst_out,
+    output wire                      decoder_predicttaken_out,
+    output wire [31:0]               decoder_predicttarget_out,
+    output wire [              31:0] decoder_inst_out,
     output wire [              47:0] decoder_pc_out
 
 );
     assign decoder_pc_out   = ibuffer_pc_out;
     assign decoder_inst_out = ibuffer_inst_out;
     assign decoder_instr_valid = ibuffer_instr_valid;
+    assign decoder_predicttaken_out = ibuffer_predicttaken_out;
+    assign decoder_predicttarget_out = ibuffer_predicttarget_out;
 
     reg [6:0] opcode;
     reg [2:0] funct3;

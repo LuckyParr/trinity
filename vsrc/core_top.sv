@@ -47,8 +47,10 @@ module core_top #(
     wire [     `RESULT_RANGE] regfile_write_data;
     wire [               4:0] regfile_write_rd;
     wire                      decoder_instr_valid;
+    wire                      decoder_predicttaken_out;
+    wire [31:0]               decoder_predicttarget_out;
     wire [              47:0] decoder_pc_out;
-    wire [              47:0] decoder_inst_out;
+    wire [              31:0] decoder_inst_out;
 
     //redirect
     wire                      redirect_valid;
@@ -193,6 +195,8 @@ module core_top #(
         .ls_size            (ls_size),
         .muldiv_type        (muldiv_type),
         .decoder_instr_valid(decoder_instr_valid),
+        .decoder_predicttaken_out (decoder_predicttaken_out),
+        .decoder_predicttarget_out (decoder_predicttarget_out),
         .decoder_pc_out     (decoder_pc_out),
         .decoder_inst_out   (decoder_inst_out),
         //write back enable
@@ -229,6 +233,8 @@ module core_top #(
     wire [               3:0] out_ls_size;
     wire [`MULDIV_TYPE_RANGE] out_muldiv_type;
     wire                      out_instr_valid;
+    wire                      out_predict_taken;
+    wire [31:0]               out_predict_target;
     wire [         `PC_RANGE] out_pc;
     wire [      `INSTR_RANGE] out_instr;
 
@@ -255,6 +261,8 @@ module core_top #(
         .ls_size                (ls_size),
         .muldiv_type            (muldiv_type),
         .instr_valid            (decoder_instr_valid),
+        .predict_taken          (decoder_predicttaken_out),
+        .predict_target         (decoder_predicttarget_out),
         .pc                     (decoder_pc_out),
         .instr                  (decoder_inst_out),
         .ls_address             ('b0),
@@ -281,6 +289,8 @@ module core_top #(
         .out_ls_size            (out_ls_size),
         .out_muldiv_type        (out_muldiv_type),
         .out_instr_valid        (out_instr_valid),
+        .out_predict_taken      (out_predict_taken),
+        .out_predict_target     (out_predict_target),
         .out_pc                 (out_pc),
         .out_instr              (out_instr),
         .out_ls_address         (),
@@ -314,6 +324,8 @@ module core_top #(
         .ls_size            (out_ls_size),
         .muldiv_type        (out_muldiv_type),
         .instr_valid        (out_instr_valid),
+        .predict_taken      (out_predict_taken), 
+        .predict_target     (out_predict_target), 
         .pc                 (out_pc),
         .instr              (out_instr),
         .regfile_write_valid(regfile_write_valid),

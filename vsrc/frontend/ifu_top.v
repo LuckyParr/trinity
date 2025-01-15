@@ -19,6 +19,8 @@ module ifu_top (
 
     // Outputs from ibuffer
     output wire        ibuffer_instr_valid,
+    output wire        ibuffer_predicttaken_out,
+    output wire [31:0] ibuffer_predicttarget_out,
     output wire [31:0] ibuffer_inst_out,
     output wire [63:0] ibuffer_pc_out,
     output wire        fifo_empty,           // Signal indicating if the FIFO is empty

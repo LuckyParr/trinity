@@ -23,6 +23,8 @@ module pipereg (
     input wire [               3:0] ls_size,
     input wire [`MULDIV_TYPE_RANGE] muldiv_type,
     input wire                      instr_valid,
+    input wire                      predict_taken,
+    input wire [31:0]               predict_target,
     input wire [         `PC_RANGE] pc,
     input wire [      `INSTR_RANGE] instr,
 
@@ -60,6 +62,8 @@ module pipereg (
     output reg [               3:0] out_ls_size,
     output reg [`MULDIV_TYPE_RANGE] out_muldiv_type,
     output reg                      out_instr_valid,
+    output reg                      out_predict_taken,
+    output reg [31:0]               out_predict_target,
     output reg [         `PC_RANGE] out_pc,
     output reg [      `INSTR_RANGE] out_instr,
 
@@ -94,6 +98,8 @@ module pipereg (
             out_is_store            <= 'b0;
             out_ls_size             <= 'b0;
             out_muldiv_type         <= 'b0;
+            out_predict_taken       <= 'b0;
+            out_predict_target      <= 'b0;
             out_pc                  <= 'b0;
             out_instr               <= 'b0;
 
@@ -122,6 +128,8 @@ module pipereg (
             out_is_store            <= out_is_store;
             out_ls_size             <= out_ls_size;
             out_muldiv_type         <= out_muldiv_type;
+            out_predict_taken       <= out_predict_taken ;
+            out_predict_target      <= out_predict_target ;
             out_pc                  <= out_pc;
             out_instr               <= out_instr;
             out_ls_address          <= out_ls_address;
@@ -150,6 +158,8 @@ module pipereg (
             out_is_store            <= is_store;
             out_ls_size             <= ls_size;
             out_muldiv_type         <= muldiv_type;
+            out_predict_taken       <= predict_taken ;
+            out_predict_target      <= predict_target ;
             out_pc                  <= pc;
             out_instr               <= instr;
 
