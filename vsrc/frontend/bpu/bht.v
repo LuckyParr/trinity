@@ -17,7 +17,7 @@ module bht #(
 
     input wire reset_n,                     // Active-low asynchronous reset
 
-    // Write Interface
+    //BHT Write Interface
     input wire bht_write_enable,                         // Write enable signal
     input wire [INDEX_WIDTH-1:0] bht_write_index,        // Set index for write operation
     input wire [1:0] bht_write_counter_select,           // Counter select (0 to 3) within the set
@@ -25,7 +25,7 @@ module bht #(
     input wire bht_write_dec,                            // Decrement signal for the counter
     input wire bht_valid_in,                             // Valid signal for the write operation
 
-    // Read Interface
+    //BHT Read Interface
     input wire bht_read_enable,                          // Read enable signal
     input wire [INDEX_WIDTH-1:0] bht_read_index,         // Set index for read operation
     output reg [COUNTER_WIDTH*4-1:0] bht_read_data,      // Data read from all 4 counters (8 bits)

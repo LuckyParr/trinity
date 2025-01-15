@@ -13,13 +13,14 @@ module btb (
     input wire clock,                     // Clock signal
     input wire reset_n,                   // Active low asynchronous reset
 
-    // Write Interface
+    //BTB Write Interface
     input wire btb_ce,                    // Chip enable
     input wire btb_we,                    // Write enable
+    input wire [128:0] btb_wmask,
     input wire [8:0] btb_waddr,           // Write address (9 bits for 512 sets)
     input wire [128:0] btb_din,           // Data input (1 valid bit + 4 targets * 32 bits)
 
-    // Read Interface
+    //BTB Read Interface
     input wire [8:0] btb_raddr,           // Read address (9 bits for 512 sets)
     output wire btb_read_valid_out,       // Valid bit from read operation
     output wire [127:0] btb_read_targets, // 4 target addresses from read operation
@@ -45,7 +46,7 @@ module btb (
         .waddr(btb_waddr),
         .raddr(btb_raddr),
         .din(btb_din),                        // Concatenated valid bit and target addresses
-        .wmask({DATA_WIDTH_BTB{btb_we}}),     // Write mask: all bits writable when 'btb_we' is high
+        .wmask(btb_wmask),                    
         .dout(btb_sram_dout)
     );
 
