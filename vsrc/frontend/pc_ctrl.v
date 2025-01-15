@@ -22,7 +22,9 @@ module pc_ctrl (
 //    output wire [18:0] pc_index,          // Selected bits [21:3] of the PC for DDR index
     output wire [63:0] pc_index,          // Selected bits [21:3] of the PC for DDR index
     input  wire        pc_index_ready,    // Signal indicating DDR operation is complete
-    input  wire        pc_operation_done
+    input  wire        pc_operation_done,
+    input  wire           admin2pcctrl_predicttaken,
+    input  wire  [31:0]   admin2pcctrl_predicttarget
 
 );
 
@@ -31,7 +33,9 @@ module pc_ctrl (
             pc <= boot_addr;
         end else if(redirect_valid)begin
             pc <= redirect_target; 
-        end else if(pc_operation_done) begin
+        end else if (pc_operation_done && admin2pcctrl_predicttaken)begin
+            pc <= {32'b0,admin2pcctrl_predicttarget};
+        end else if(pc_operation_done && ~admin2pcctrl_predicttaken) begin
             pc <= ({pc[63:4], 4'b0}) + 16;
         end
     end
