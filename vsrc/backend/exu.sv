@@ -21,6 +21,8 @@ module exu (
     input wire [               3:0] ls_size,
     input wire [`MULDIV_TYPE_RANGE] muldiv_type,
     input wire                      instr_valid,
+    input  wire                  predict_taken,
+    input  wire [31:0]           predict_target,  
     input wire [         `PC_RANGE] pc,
     input wire [      `INSTR_RANGE] instr,
     // output valid, pc, inst
@@ -97,6 +99,8 @@ module exu (
         .src1           (src1_muxed),
         .src2           (src2_muxed),
         .imm            (imm),
+        .predict_taken      (predict_taken), 
+        .predict_target     (predict_target), 
         .pc             (pc),
         .cx_type        (cx_type),
         .valid          (bju_valid),

@@ -3,6 +3,8 @@ module bju (
     input wire [    `SRC_RANGE] src1,
     input wire [    `SRC_RANGE] src2,
     input wire [`SRC_RANGE] imm,
+    input  wire                  predict_taken,
+    input  wire [31:0]           predict_target,  
     input wire [     `PC_RANGE] pc,
     input wire [`CX_TYPE_RANGE] cx_type,
     input wire valid,
@@ -58,4 +60,7 @@ module bju (
     assign redirect_valid = (is_jal | is_jalr | br_taken) & valid;
     assign redirect_target = is_jalr ? jalr_target : br_jal_target;
     assign dest = {16'b0, (pc + 48'h4)};
+
+    /* ----------------------------bju scoreboard logic ---------------------------- */
+
 endmodule

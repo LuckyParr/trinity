@@ -10,8 +10,8 @@ module mem (
     input  wire [    `SRC_RANGE] src2,
     input  wire [`LS_SIZE_RANGE] ls_size,
     input  wire                  instr_valid,
-    input  wire                  predict_taken,
-    input  wire [31:0]           predict_target,  
+    //input  wire                  predict_taken,
+    //input  wire [31:0]           predict_target,  
     input  wire [     `PC_RANGE] pc,
     input  wire [  `INSTR_RANGE] instr,
 

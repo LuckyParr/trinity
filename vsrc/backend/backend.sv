@@ -163,6 +163,8 @@ module backend (
         .ls_size        (ls_size),
         .muldiv_type    (muldiv_type),
         .instr_valid    (instr_valid_to_exu),
+        .predict_taken      (predict_taken), 
+        .predict_target     (predict_target), 
         .pc             (pc_to_exu),
         .instr          (instr_to_exu),
         //output
@@ -191,8 +193,8 @@ module backend (
         .src2       (src2),
         .ls_size    (ls_size),
         .instr_valid(instr_valid_to_mem),
-        .predict_taken      (predict_taken), 
-        .predict_target     (predict_target), 
+        //.predict_taken      (predict_taken), 
+        //.predict_target     (predict_target), 
         .pc         (pc_to_mem),
         .instr      (instr_to_mem),
 
