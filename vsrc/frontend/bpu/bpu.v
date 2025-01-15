@@ -29,7 +29,7 @@ module bpu (
     input wire [127:0] btb_write_targets,        // Four 32-bit target addresses for BTB write operation
 
     // Outputs from BHT
-    output wire [1:0] bht_prediction,            // 2-bit branch prediction
+    output wire [7:0] bht_read_data,              // 8-bit data from BHT (4 counters)
     output wire bht_valid,                       // BHT valid bit
     output wire [31:0] bht_read_miss_count,      // BHT read miss count
 
@@ -42,10 +42,6 @@ module bpu (
     // Extract set address from PC [12:4]
     wire [8:0] set_addr = pc[12:4];
 
-    // Define Counter Select for BHT Read (assuming you want to read a specific counter)
-    // Here, we choose to read the first counter (0). Modify as needed.
-    wire [1:0] bht_read_counter_select = 2'd0;
-
     // Instantiate BHT
     bht #(
         .SETS(512),
@@ -56,19 +52,19 @@ module bpu (
         .reset_n(reset_n),
 
         // Write Interface
-        .write_enable(bht_write_enable),
-        .write_index(bht_write_index),
-        .write_counter_select(bht_write_counter_select),
-        .write_inc(bht_write_inc),
-        .write_dec(bht_write_dec),
-        .valid_in(bht_valid_in),
+        .bht_write_enable(bht_write_enable),
+        .bht_write_index(bht_write_index),
+        .bht_write_counter_select(bht_write_counter_select),
+        .bht_write_inc(bht_write_inc),
+        .bht_write_dec(bht_write_dec),
+        .bht_valid_in(bht_valid_in),
 
         // Read Interface
-        .read_enable(1'b1),                    // Always enable read
-        .read_index(set_addr),
-        .read_counter_select(bht_read_counter_select),
-        .read_data(bht_prediction),
-        .valid_out(bht_valid)
+        .bht_read_enable(1'b1),                    // Always enable read
+        .bht_read_index(set_addr),
+        .bht_read_data(bht_read_data),             // 8-bit read data (4 counters)
+        .bht_valid(bht_valid),
+        .bht_read_miss_count(bht_read_miss_count)  // Read miss count output
     );
 
     // Instantiate BTB
@@ -77,19 +73,18 @@ module bpu (
         .reset_n(reset_n),
 
         // Write Interface
-        .ce(btb_write_enable),                // Chip enable during write
-        .we(btb_write_enable),                // Write enable during write
-        .waddr(btb_write_index),
-        .write_valid_in(btb_write_valid_in),
-        .write_targets(btb_write_targets),
+        .btb_ce(btb_write_enable),                // Chip enable during write
+        .btb_we(btb_write_enable),                // Write enable during write
+        .btb_waddr(btb_write_index),
+        .btb_din({btb_write_valid_in, btb_write_targets}),    // Concatenate valid bit and target addresses
 
         // Read Interface
-        .raddr(set_addr),
-        .read_valid_out(btb_valid),
-        .read_targets(btb_targets),
+        .btb_raddr(set_addr),
+        .btb_read_valid_out(btb_valid),
+        .btb_read_targets(btb_targets),
 
         // PMU Interface
-        .read_miss_count_out(btb_read_miss_count)
+        .btb_read_miss_count_out(btb_read_miss_count)
     );
 
 

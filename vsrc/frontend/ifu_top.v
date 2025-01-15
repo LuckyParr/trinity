@@ -37,6 +37,33 @@ module ifu_top (
     wire [`ICACHE_FETCHWIDTH128_RANGE] aligned_instr;
     wire [ 3:0] aligned_instr_valid;
 
+    /* --------------------------- bpu related signals -------------------------- */
+     // BHT Write Interface
+    wire bht_write_enable;                 // Write enable for BHT
+    wire [8:0] bht_write_index;            // Set index for BHT write operation
+    wire [1:0] bht_write_counter_select;   // Counter select within the BHT set (0 to 3)
+    wire bht_write_inc;                    // Increment signal for BHT counter
+    wire bht_write_dec;                    // Decrement signal for BHT counter
+    wire bht_valid_in;                     // Valid bit for BHT write operation
+
+    // BTB Write Interface
+    wire btb_write_enable;                 // Write enable for BTB
+    wire [8:0] btb_write_index;            // Set index for BTB write operation
+    wire btb_write_valid_in;               // Valid bit for BTB write operation
+    wire [127:0] btb_write_targets;        // Four 32-bit target addresses for BTB write operation
+
+    // Outputs from BHT
+    wire [7:0] bht_read_data;              // 8-bit data from BHT (4 counters)
+    wire bht_valid;                       // BHT valid bit
+    wire [31:0] bht_read_miss_count;      // BHT read miss count
+
+    // Outputs from BTB
+    wire [127:0] btb_targets;             // Four 32-bit branch target addresses
+    wire btb_valid;                       // BTB valid bit
+    wire [31:0] btb_read_miss_count;      // BTB read miss count
+
+
+
     // Instantiate the ibuffer module
     ibuffer ibuffer_inst (
         .clock              (clock),
@@ -57,7 +84,7 @@ module ifu_top (
     );
 
 
-    instr_aligner u_instr_aligner (
+    instr_administractor u_instr_administractor (
         .pc_operation_done  (pc_operation_done),
         .fetch_instr        (pc_read_inst),
         .pc                 (pc),
@@ -80,7 +107,29 @@ module ifu_top (
         .pc_index_ready   (pc_index_ready),
         .pc_operation_done(pc_operation_done)
     );
+bpu u_bpu(
+    .clock                    (clock                    ),
+    .reset_n                  (reset_n                  ),
+    .pc                       (pc                       ),
+    .bht_write_enable         (bht_write_enable         ),
+    .bht_write_index          (bht_write_index          ),
+    .bht_write_counter_select (bht_write_counter_select ),
+    .bht_write_inc            (bht_write_inc            ),
+    .bht_write_dec            (bht_write_dec            ),
+    .bht_valid_in             (bht_valid_in             ),
+    .btb_write_enable         (btb_write_enable         ),
+    .btb_write_index          (btb_write_index          ),
+    .btb_write_valid_in       (btb_write_valid_in       ),
+    .btb_write_targets        (btb_write_targets        ),
+    .bht_read_data            (bht_read_data            ),
+    .bht_valid                (bht_valid                ),
+    .bht_read_miss_count      (bht_read_miss_count      ),
+    .btb_targets              (btb_targets              ),
+    .btb_valid                (btb_valid                ),
+    .btb_read_miss_count      (btb_read_miss_count      )
+);
 
+    
 
 
 

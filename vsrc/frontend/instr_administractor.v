@@ -1,4 +1,4 @@
-module instr_aligner (
+module instr_administractor (
     input  wire        pc_operation_done,
     input  wire [`ICACHE_FETCHWIDTH128_RANGE] fetch_instr,         // 128-bit cache line input (4 instructions)
     input  wire [63:0] pc,                  // 63-bit Program Counter  
