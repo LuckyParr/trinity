@@ -85,6 +85,7 @@ module bju #(
     assign bjucal_redirect_valid = (is_jal | is_jalr | br_taken) & valid;
     assign bjucal_redirect_target = is_jalr ? jalr_target : br_jal_target;
     assign bjucal_dest = {16'b0, (pc + 48'h4)};
+    assign dest = bjucal_dest;
 
     /* ----------------------------bju scoreboard logic (bjusb) ---------------------------- */
     wire bjusb_bju_jump_bpu_jump_right;
