@@ -143,7 +143,7 @@ module ifu_top (
         .bht_write_inc              (bht_write_inc            ),
         .bht_write_dec              (bht_write_dec            ),
         .bht_valid_in               (bht_valid_in             ),
-        .btb_ce                     (1'b1                   ),
+        .btb_ce                     (pc_req_handshake || btb_ce   ),
         .btb_we                     (btb_we                   ),
         .btb_wmask                  (btb_wmask                ),
         .btb_write_index            (btb_write_index          ),
