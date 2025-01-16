@@ -43,7 +43,7 @@ module bht #(
     function [COUNTER_WIDTH-1:0] bht_saturate_increment;
         input [COUNTER_WIDTH-1:0] count;
         begin
-            if (count < {1'b1, {(COUNTER_WIDTH-1){1'b1}}}) // If not at max value
+            if (count < 2'b11) // If not at max value
                 bht_saturate_increment = count + 2'b01;
             else
                 bht_saturate_increment = count; // Saturate at max
@@ -165,7 +165,7 @@ module bht #(
                     endcase
                 end
                 else begin
-                    // Normal read: Concatenate all 4 counters
+                    // Normal read(without hazard): Concatenate all 4 counters
                     bht_read_data <= bht_counters[bht_read_index];
                 end
 
