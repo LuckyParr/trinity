@@ -16,12 +16,23 @@ module core_top #(
     input  wire         ddr_ready,           // Indicates if DDR is ready for new operation
     output reg          flop_commit_valid
 );
+    //bhtbtb write interface
+    //BHT Write Interface
+    wire                   wb_bht_write_enable        ;                         // Write enable signal
+    wire [INDEX_WIDTH-1:0] wb_bht_write_index         ;        // Set index for write operation
+    wire [1:0]             wb_bht_write_counter_select;           // Counter select (0 to 3) within the set
+    wire                   wb_bht_write_inc           ;                            // Increment signal for the counter
+    wire                   wb_bht_write_dec           ;                            // Decrement signal for the counter
+    wire                   wb_bht_valid_in            ;                             // Valid signal for the write operation
+    //BTB Write Interface
+    wire         wb_btb_ce   ;                    // Chip enable
+    wire         wb_btb_we   ;                    // Write enable
+    wire [128:0] wb_btb_wmask;
+    wire [8:0]   wb_btb_waddr;           // Write address (9 bits for 512 sets)
+    wire [128:0] wb_btb_din  ;        // Data input (1 valid bit + 4 targets * 32 bits)
 
 
     wire                      chip_enable = 1'b1;
-
-
-
     wire [       `LREG_RANGE] rs1;
     wire [       `LREG_RANGE] rs2;
     wire [       `LREG_RANGE] rd;
@@ -164,53 +175,62 @@ module core_top #(
         .icache2arb_dbus_operation_type()
     );
 
-    frontend u_frontend (
-        .clock              (clock),
-        .reset_n            (reset_n),
-        .redirect_valid     (redirect_valid),
-        .redirect_target    (redirect_target),
-        .pc_index_valid     (pc_index_valid),
-        .pc_index_ready     (pc_index_ready),
-        .pc_operation_done  (pc_operation_done),
-        .pc_read_inst       (pc_read_inst),
-        .pc_index           (pc_index),
-        .fifo_read_en       (~mem_stall),           //when mem stall,ibuf can not to read instr anymore!
-        //.clear_ibuffer_ext  (redirect_valid),
-        .rs1                (rs1),
-        .rs2                (rs2),
-        .rd                 (rd),
-        .src1_muxed         (src1),
-        .src2_muxed         (src2),
-        .imm                (imm),
-        .src1_is_reg        (src1_is_reg),
-        .src2_is_reg        (src2_is_reg),
-        .need_to_wb         (need_to_wb),
-        .cx_type            (cx_type),
-        .is_unsigned        (is_unsigned),
-        .alu_type           (alu_type),
-        .is_word            (is_word),
-        .is_imm             (is_imm),
-        .is_load            (is_load),
-        .is_store           (is_store),
-        .ls_size            (ls_size),
-        .muldiv_type        (muldiv_type),
-        .decoder_instr_valid(decoder_instr_valid),
-        .decoder_predicttaken_out (decoder_predicttaken_out),
+    frontend u_frontend            (
+        .clock                     (clock                    ),
+        .reset_n                   (reset_n                  ),
+        .redirect_valid            (redirect_valid           ),
+        .redirect_target           (redirect_target          ),
+        .pc_index_valid            (pc_index_valid           ),
+        .pc_index_ready            (pc_index_ready           ),
+        .pc_operation_done         (pc_operation_done        ),
+        .pc_read_inst              (pc_read_inst             ),
+        .pc_index                  (pc_index                 ),
+        .fifo_read_en              (~mem_stall               ),           //when mem stall,ibuf can not to read instr anymore!
+        //.clear_ibuffer_ext       (redirect_valid           ),
+        .rs1                       (rs1                      ),
+        .rs2                       (rs2                      ),
+        .rd                        (rd                       ),
+        .src1_muxed                (src1                     ),
+        .src2_muxed                (src2                     ),
+        .imm                       (imm                      ),
+        .src1_is_reg               (src1_is_reg              ),
+        .src2_is_reg               (src2_is_reg              ),
+        .need_to_wb                (need_to_wb               ),
+        .cx_type                   (cx_type                  ),
+        .is_unsigned               (is_unsigned              ),
+        .alu_type                  (alu_type                 ),
+        .is_word                   (is_word                  ),
+        .is_imm                    (is_imm                   ),
+        .is_load                   (is_load                  ),
+        .is_store                  (is_store                 ),
+        .ls_size                   (ls_size                  ),
+        .muldiv_type               (muldiv_type              ),
+        .decoder_instr_valid       (decoder_instr_valid      ),
+        .decoder_predicttaken_out  (decoder_predicttaken_out ),
         .decoder_predicttarget_out (decoder_predicttarget_out),
-        .decoder_pc_out     (decoder_pc_out),
-        .decoder_inst_out   (decoder_inst_out),
+        .decoder_pc_out            (decoder_pc_out           ),
+        .decoder_inst_out          (decoder_inst_out         ),
         //write back enable
         .writeback_valid    (regfile_write_valid),
-        .writeback_rd       (regfile_write_rd),
-        .writeback_data     (regfile_write_data),
+        .writeback_rd       (regfile_write_rd   ),
+        .writeback_data     (regfile_write_data ),
 
-        .exe_byp_rd        (exe_byp_rd),
-        .exe_byp_need_to_wb(exe_byp_need_to_wb),
-        .exe_byp_result    (exe_byp_result),
-        //.mem_byp_rd        (mem_byp_rd),
-        //.mem_byp_need_to_wb(mem_byp_need_to_wb),
-        //.mem_byp_result    (mem_byp_result),
-        .mem_stall         (mem_stall)
+        .exe_byp_rd        (exe_byp_rd                        ),
+        .exe_byp_need_to_wb(exe_byp_need_to_wb                ),
+        .exe_byp_result    (exe_byp_result                    ),
+        .mem_stall         (mem_stall                         ),
+        //bhtbtb
+        .bht_write_enable         (wb_bht_write_enable        ),                 
+        .bht_write_index          (wb_bht_write_index         ),
+        .bht_write_counter_select (wb_bht_write_counter_select),   
+        .bht_write_inc            (wb_bht_write_inc           ),                    
+        .bht_write_dec            (wb_bht_write_dec           ),                    
+        .bht_valid_in             (wb_bht_valid_in            ),  
+        .btb_ce                   (wb_btb_ce                  ),           
+        .btb_we                   (wb_btb_we                  ),           
+        .btb_wmask                (wb_btb_wmask               ),
+        .btb_waddr                (wb_btb_waddr               ),
+        .btb_din                  (wb_btb_din                 )        
 
     );
     wire                      out_valid;
@@ -242,6 +262,7 @@ module core_top #(
         .clock                  (clock),
         .reset_n                (reset_n),
         .stall                  (mem_stall),//mem_stall latch output of this pipereg
+        .redirect_flush         (redirect_valid),
         .rs1                    (rs1),
         .rs2                    (rs2),
         .rd                     (rd),
@@ -298,7 +319,30 @@ module core_top #(
         .out_bju_result         (),
         .out_muldiv_result      (),
         .out_opload_read_data_wb(),
-        .redirect_flush         (redirect_valid)
+        //bhtbtb pipe
+        .bht_write_enable         (1'b0),                 
+        .bht_write_index          (1'b0),
+        .bht_write_counter_select (1'b0),   
+        .bht_write_inc            (1'b0),                    
+        .bht_write_dec            (1'b0),                    
+        .bht_valid_in             (1'b0),  
+        .btb_ce                   (1'b0),           
+        .btb_we                   (1'b0),           
+        .btb_wmask                (1'b0),
+        .btb_waddr                (1'b0),
+        .btb_din                  (1'b0),
+        .out_bht_write_enable         (),                 
+        .out_bht_write_index          (),
+        .out_bht_write_counter_select (),   
+        .out_bht_write_inc            (),                    
+        .out_bht_write_dec            (),                    
+        .out_bht_valid_in             (),  
+        .out_btb_ce                   (),           
+        .out_btb_we                   (),           
+        .out_btb_wmask                (),
+        .out_btb_waddr                (),
+        .out_btb_din                  ()       
+
     );
 
 
@@ -346,10 +390,19 @@ module core_top #(
         .flop_commit_valid  (flop_commit_valid),
         .exe_byp_rd         (exe_byp_rd),
         .exe_byp_need_to_wb (exe_byp_need_to_wb),
-        .exe_byp_result     (exe_byp_result)
-        //.mem_byp_rd            (mem_byp_rd),
-        //.mem_byp_need_to_wb    (mem_byp_need_to_wb),
-        //.mem_byp_result        (mem_byp_result)
+        .exe_byp_result     (exe_byp_result),
+        .wb_bht_write_enable         (wb_bht_write_enable        ),                 
+        .wb_bht_write_index          (wb_bht_write_index         ),
+        .wb_bht_write_counter_select (wb_bht_write_counter_select),   
+        .wb_bht_write_inc            (wb_bht_write_inc           ),                    
+        .wb_bht_write_dec            (wb_bht_write_dec           ),                    
+        .wb_bht_valid_in             (wb_bht_valid_in            ),  
+        .wb_btb_ce                   (wb_btb_ce                  ),           
+        .wb_btb_we                   (wb_btb_we                  ),           
+        .wb_btb_wmask                (wb_btb_wmask               ),
+        .wb_btb_waddr                (wb_btb_waddr               ),
+        .wb_btb_din                  (wb_btb_din                 ) 
+
     );
 
 

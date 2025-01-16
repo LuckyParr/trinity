@@ -40,16 +40,21 @@ module exu (
     //bypass exu result to end of dec module
     //output wire [  `LREG_RANGE] ex_byp_rd,
     //output wire                 ex_byp_need_to_wb,
-    output wire [`RESULT_RANGE] ex_byp_result
+    output wire [`RESULT_RANGE] ex_byp_result,
+    //BHT Write Interface
+    output wire bjusb_bht_write_enable,                         // Write enable signal
+    output wire [INDEX_WIDTH-1:0] bjusb_bht_write_index,        // Set index for write operation
+    output wire [1:0] bjusb_bht_write_counter_select,           // Counter select (0 to 3) within the set
+    output wire bjusb_bht_write_inc,                            // Increment signal for the counter
+    output wire bjusb_bht_write_dec,                            // Decrement signal for the counter
+    output wire bjusb_bht_valid_in,                             // Valid signal for the write operation
 
-    ////mem load to use bypass
-    //input wire [       `LREG_RANGE] mem_byp_rd,
-    //input wire                 mem_byp_need_to_wb,
-    //input wire [`RESULT_RANGE] mem_byp_result,
-//
-    ////bypass to next stage
-    //output wire [        `SRC_RANGE] final_src1,
-    //output wire [        `SRC_RANGE] final_src2
+    //BTB Write Interface
+    output wire bjusb_btb_ce,                    // Chip enable
+    output wire bjusb_btb_we,                    // Write enable
+    output wire [128:0] bjusb_btb_wmask,
+    output wire [8:0]   bjusb_btb_waddr,           // Write address (9 bits for 512 sets)
+    output wire [128:0] bjusb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
 );
 
 
@@ -107,7 +112,18 @@ module exu (
         .is_unsigned    (is_unsigned),
         .dest           (bju_result),
         .redirect_valid (redirect_valid),
-        .redirect_target(redirect_target)
+        .redirect_target(redirect_target),
+        .bjusb_bht_write_enable (bjusb_bht_write_enable),                 
+        .bjusb_bht_write_index (bjusb_bht_write_index),
+        .bjusb_bht_write_counter_select (bjusb_bht_write_counter_select),   
+        .bjusb_bht_write_inc (bjusb_bht_write_inc),                    
+        .bjusb_bht_write_dec (bjusb_bht_write_dec),                    
+        .bjusb_bht_valid_in (bjusb_bht_valid_in),  
+        .bjusb_btb_ce (bjusb_btb_ce),           
+        .bjusb_btb_we (bjusb_btb_we),           
+        .bjusb_btb_wmask (bjusb_btb_wmask),
+        .bjusb_btb_waddr (bjusb_btb_waddr),
+        .bjusb_btb_din (bjusb_btb_din)             
     );
 
     muldiv u_muldiv (

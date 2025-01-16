@@ -18,19 +18,19 @@ module bju #(
     output wire [`PC_RANGE] redirect_target,
 
     //BHT Write Interface
-    output reg bjusb2bht_write_enable,                         // Write enable signal
-    output reg [INDEX_WIDTH-1:0] bjusb2bht_write_index,        // Set index for write operation
-    output reg [1:0] bjusb2bht_write_counter_select,           // Counter select (0 to 3) within the set
-    output reg bjusb2bht_write_inc,                            // Increment signal for the counter
-    output reg bjusb2bht_write_dec,                            // Decrement signal for the counter
-    output reg bjusb2bht_valid_in,                             // Valid signal for the write operation
+    output reg                   bjusb_bht_write_enable,                         // Write enable signal
+    output reg [INDEX_WIDTH-1:0] bjusb_bht_write_index,        // Set index for write operation
+    output reg [1:0]             bjusb_bht_write_counter_select,           // Counter select (0 to 3) within the set
+    output reg                   bjusb_bht_write_inc,                            // Increment signal for the counter
+    output reg                   bjusb_bht_write_dec,                            // Decrement signal for the counter
+    output reg                   bjusb_bht_valid_in,                             // Valid signal for the write operation
 
     //BTB Write Interface
-    output reg bjusb2btb_ce,                    // Chip enable
-    output reg bjusb2btb_we,                    // Write enable
-    output reg [128:0] bjusb2btb_wmask,
-    output reg [8:0]   bjusb2btb_waddr,           // Write address (9 bits for 512 sets)
-    output reg [128:0] bjusb2btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
+    output reg bjusb_btb_ce,                    // Chip enable
+    output reg bjusb_btb_we,                    // Write enable
+    output reg [128:0] bjusb_btb_wmask,
+    output reg [8:0]   bjusb_btb_waddr,           // Write address (9 bits for 512 sets)
+    output reg [128:0] bjusb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
 
 
 );
@@ -118,65 +118,65 @@ module bju #(
 
     always @(*) begin
             //bjusb2bht write interface
-            bjusb2bht_write_enable = 'b0;                         
-            bjusb2bht_write_index = 'b0;  //12-4+1=9bit used as set addr for 512set bht      
-            bjusb2bht_write_counter_select = 'b0;//pc[1:0] represent 4B = 1 instr, so pc[3:2] is for select 4 instr           
-            bjusb2bht_write_inc = 'b0;                            
-            bjusb2bht_write_dec = 'b0;                            
-            bjusb2bht_valid_in = 'b0;
+            bjusb_bht_write_enable = 'b0;                         
+            bjusb_bht_write_index = 'b0;  //12-4+1=9bit used as set addr for 512set bht      
+            bjusb_bht_write_counter_select = 'b0;//pc[1:0] represent 4B = 1 instr, so pc[3:2] is for select 4 instr           
+            bjusb_bht_write_inc = 'b0;                            
+            bjusb_bht_write_dec = 'b0;                            
+            bjusb_bht_valid_in = 'b0;
             //redirect signals
             redirect_valid = 'b0;
             redirect_target = 'b0;
-            //bjusb2btb_ write interface
-            bjusb2btb_ce = 'b0;                   
-            bjusb2btb_we = 'b0;                    
-            bjusb2btb_wmask = 'b0;
-            bjusb2btb_waddr = 'b0;          
-            bjusb2btb_din = 'b0;    
+            //bjusb_btb_ write interface
+            bjusb_btb_ce = 'b0;                   
+            bjusb_btb_we = 'b0;                    
+            bjusb_btb_wmask = 'b0;
+            bjusb_btb_waddr = 'b0;          
+            bjusb_btb_din = 'b0;    
         if(bjusb_bju_jump_bpu_jump_right)begin
             //predict jump right: enhance bht
-            bjusb2bht_write_enable = 1'b1;                         
-            bjusb2bht_write_index = pc[12:4];  //12-4+1=9bit used as set addr for 512set bht      
-            bjusb2bht_write_counter_select = pc[3:2];//pc[1:0] represent 4B = 1 instr, so pc[3:2] is for select 4 instr           
-            bjusb2bht_write_inc = 1'b1;                            
-            bjusb2bht_write_dec = 1'b0;                            
-            bjusb2bht_valid_in = 1'b1;     
+            bjusb_bht_write_enable = 1'b1;                         
+            bjusb_bht_write_index = pc[12:4];  //12-4+1=9bit used as set addr for 512set bht      
+            bjusb_bht_write_counter_select = pc[3:2];//pc[1:0] represent 4B = 1 instr, so pc[3:2] is for select 4 instr           
+            bjusb_bht_write_inc = 1'b1;                            
+            bjusb_bht_write_dec = 1'b0;                            
+            bjusb_bht_valid_in = 1'b1;     
         end else if(bjusb_bju_jump_bpu_notjump_wrong)begin
             //predict notjump wrong : enhance bht
-            bjusb2bht_write_enable = 1'b1;                         
-            bjusb2bht_write_index = pc[12:4];  
-            bjusb2bht_write_counter_select = pc[3:2];
-            bjusb2bht_write_inc = 1'b1;                            
-            bjusb2bht_write_dec = 1'b0;                            
-            bjusb2bht_valid_in = 1'b1;     
+            bjusb_bht_write_enable = 1'b1;                         
+            bjusb_bht_write_index = pc[12:4];  
+            bjusb_bht_write_counter_select = pc[3:2];
+            bjusb_bht_write_inc = 1'b1;                            
+            bjusb_bht_write_dec = 1'b0;                            
+            bjusb_bht_valid_in = 1'b1;     
             //send bjucal result as redirect
             redirect_valid = bjucal_redirect_valid;
             redirect_target = bjucal_redirect_target;
             //write bjucal_redirect_target to btb
-            bjusb2btb_ce = 1'b1;                   
-            bjusb2btb_we = 1'b1;                    
-            bjusb2btb_wmask = btb_wmask;
-            bjusb2btb_waddr = pc[12:4];          
-            bjusb2btb_din = btb_din;           
+            bjusb_btb_ce = 1'b1;                   
+            bjusb_btb_we = 1'b1;                    
+            bjusb_btb_wmask = btb_wmask;
+            bjusb_btb_waddr = pc[12:4];          
+            bjusb_btb_din = btb_din;           
         end else if(bjusb_bju_notjump_bpu_jump_wrong)begin
             //predict jump wrong : decrease bht
-            bjusb2bht_write_enable = 1'b1;                         
-            bjusb2bht_write_index = pc[12:4];  
-            bjusb2bht_write_counter_select = pc[3:2];
-            bjusb2bht_write_inc = 1'b0;                            
-            bjusb2bht_write_dec = 1'b1;                            
-            bjusb2bht_valid_in = 1'b1;     
+            bjusb_bht_write_enable = 1'b1;                         
+            bjusb_bht_write_index = pc[12:4];  
+            bjusb_bht_write_counter_select = pc[3:2];
+            bjusb_bht_write_inc = 1'b0;                            
+            bjusb_bht_write_dec = 1'b1;                            
+            bjusb_bht_valid_in = 1'b1;     
             //send pc+4 as redirect
             redirect_valid = 1'b1;
             redirect_target = pc+48'd4;
         end else if(bjusb_bju_notjump_bpu_notjump_right)begin
             //predict not jump right, decrease bht
-            bjusb2bht_write_enable = 1'b1;                         
-            bjusb2bht_write_index = pc[12:4];  
-            bjusb2bht_write_counter_select = pc[3:2];
-            bjusb2bht_write_inc = 1'b0;                            
-            bjusb2bht_write_dec = 1'b1;                            
-            bjusb2bht_valid_in = 1'b1;                
+            bjusb_bht_write_enable = 1'b1;                         
+            bjusb_bht_write_index = pc[12:4];  
+            bjusb_bht_write_counter_select = pc[3:2];
+            bjusb_bht_write_inc = 1'b0;                            
+            bjusb_bht_write_dec = 1'b1;                            
+            bjusb_bht_valid_in = 1'b1;                
         end
     end
 

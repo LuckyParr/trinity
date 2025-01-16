@@ -56,8 +56,35 @@ module backend (
     output reg                  flop_commit_valid,
     output wire [  `LREG_RANGE] exe_byp_rd,
     output wire                 exe_byp_need_to_wb,
-    output wire [`RESULT_RANGE] exe_byp_result
+    output wire [`RESULT_RANGE] exe_byp_result,
+    //BHT Write Interface
+    output wire                   wb_bht_write_enable,                         // Write enable signal
+    output wire [INDEX_WIDTH-1:0] wb_bht_write_index,        // Set index for write operation
+    output wire [1:0]             wb_bht_write_counter_select,           // Counter select (0 to 3) within the set
+    output wire                   wb_bht_write_inc,                            // Increment signal for the counter
+    output wire                   wb_bht_write_dec,                            // Decrement signal for the counter
+    output wire                   wb_bht_valid_in,                             // Valid signal for the write operation
+    //BTB Write Interface
+    output wire         wb_btb_ce,                    // Chip enable
+    output wire         wb_btb_we,                    // Write enable
+    output wire [128:0] wb_btb_wmask,
+    output wire [8:0]   wb_btb_waddr,           // Write address (9 bits for 512 sets)
+    output wire [128:0] wb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
+
 );
+    //bhtbtb signal
+    wire                   bjusb_bht_write_enable,                         // Write enable signal
+    wire [INDEX_WIDTH-1:0] bjusb_bht_write_index,        // Set index for write operation
+    wire [1:0]             bjusb_bht_write_counter_select,           // Counter select (0 to 3) within the set
+    wire                   bjusb_bht_write_inc,                            // Increment signal for the counter
+    wire                   bjusb_bht_write_dec,                            // Decrement signal for the counter
+    wire                   bjusb_bht_valid_in,                             // Valid signal for the write operation
+    //BTB Write Interface
+    wire         bjusb_btb_ce,                    // Chip enable
+    wire         bjusb_btb_we,                    // Write enable
+    wire [128:0] bjusb_btb_wmask,
+    wire [8:0]   bjusb_btb_waddr,           // Write address (9 bits for 512 sets)
+    wire [128:0] bjusb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
 
     //input mux logic : issue intsr to exu or mem
     reg                 instr_valid_to_mem;
@@ -141,44 +168,53 @@ module backend (
     end
 
     //can use instr_valid to control a clock gate here to save power
-    exu u_exu (
-        .clock          (clock),
-        .reset_n        (reset_n),
-        .rs1            (rs1),
-        .rs2            (rs2),
-        .rd             (rd),
-        .src1           (src1),
-        .src2           (src2),
-        .imm            (imm),
-        .src1_is_reg    (src1_is_reg),
-        .src2_is_reg    (src2_is_reg),
-        .need_to_wb     (need_to_wb),
-        .cx_type        (cx_type),
-        .is_unsigned    (is_unsigned),
-        .alu_type       (alu_type),
-        .is_word        (is_word),
-        .is_load        (is_load),
-        .is_imm         (is_imm),
-        .is_store       (is_store),
-        .ls_size        (ls_size),
-        .muldiv_type    (muldiv_type),
-        .instr_valid    (instr_valid_to_exu),
-        .predict_taken      (predict_taken), 
-        .predict_target     (predict_target), 
-        .pc             (pc_to_exu),
-        .instr          (instr_to_exu),
+    exu u_exu               (
+        .clock              (clock             ),
+        .reset_n            (reset_n           ),
+        .rs1                (rs1               ),
+        .rs2                (rs2               ),
+        .rd                 (rd                ),
+        .src1               (src1              ),
+        .src2               (src2              ),
+        .imm                (imm               ),
+        .src1_is_reg        (src1_is_reg       ),
+        .src2_is_reg        (src2_is_reg       ),
+        .need_to_wb         (need_to_wb        ),
+        .cx_type            (cx_type           ),
+        .is_unsigned        (is_unsigned       ),
+        .alu_type           (alu_type          ),
+        .is_word            (is_word           ),
+        .is_load            (is_load           ),
+        .is_imm             (is_imm            ),
+        .is_store           (is_store          ),
+        .ls_size            (ls_size           ),
+        .muldiv_type        (muldiv_type       ),
+        .instr_valid        (instr_valid_to_exu),
+        .predict_taken      (predict_taken     ), 
+        .predict_target     (predict_target    ), 
+        .pc                 (pc_to_exu         ),
+        .instr              (instr_to_exu      ),
         //output
-        .instr_valid_out(exu_instr_valid_out),
-        .pc_out         (exu_pc_out),
-        .instr_out      (exu_instr_out),
-        .alu_result     (alu_result),
-        .bju_result     (bju_result),
-        .muldiv_result  (muldiv_result),
-        .redirect_valid (exu_redirect_valid),
-        .redirect_target(redirect_target),
-        //.ex_byp_rd         (ex_byp_rd         ),
-        //.ex_byp_need_to_wb (ex_byp_need_to_wb ),
-        .ex_byp_result  (ex_byp_result)
+        .instr_valid_out                (exu_instr_valid_out),
+        .pc_out                         (exu_pc_out),
+        .instr_out                      (exu_instr_out),
+        .alu_result                     (alu_result),
+        .bju_result                     (bju_result),
+        .muldiv_result                  (muldiv_result),
+        .redirect_valid                 (exu_redirect_valid),
+        .redirect_target                (redirect_target),
+        .ex_byp_result                  (ex_byp_result),
+        .bjusb_bht_write_enable         (bjusb_bht_write_enable),                 
+        .bjusb_bht_write_index          (bjusb_bht_write_index),
+        .bjusb_bht_write_counter_select (bjusb_bht_write_counter_select),   
+        .bjusb_bht_write_inc            (bjusb_bht_write_inc),                    
+        .bjusb_bht_write_dec            (bjusb_bht_write_dec),                    
+        .bjusb_bht_valid_in             (bjusb_bht_valid_in),  
+        .bjusb_btb_ce                   (bjusb_btb_ce),           
+        .bjusb_btb_we                   (bjusb_btb_we),           
+        .bjusb_btb_wmask                (bjusb_btb_wmask),
+        .bjusb_btb_waddr                (bjusb_btb_waddr),
+        .bjusb_btb_din                  (bjusb_btb_din) 
     );
 
     //can use instr_valid to control a clock gate here to save power
@@ -193,11 +229,8 @@ module backend (
         .src2       (src2),
         .ls_size    (ls_size),
         .instr_valid(instr_valid_to_mem),
-        //.predict_taken      (predict_taken), 
-        //.predict_target     (predict_target), 
         .pc         (pc_to_mem),
         .instr      (instr_to_mem),
-
 
         //trinity bus channel
         .tbus_index_valid   (tbus_index_valid),
@@ -208,8 +241,6 @@ module backend (
         .tbus_read_data     (tbus_read_data),
         .tbus_operation_done(tbus_operation_done),
         .tbus_operation_type(tbus_operation_type),
-
-
 
         .instr_valid_out    (mem_instr_valid_out),
         .pc_out             (mem_pc_out),
@@ -248,61 +279,84 @@ module backend (
         .stall                  (1'b0),//this is used to stall pipereg output
         .redirect_flush         (1'b0),
         //pipe input meterial
-        .rs1                    (rs1),
-        .rs2                    (rs2),
-        .rd                     (rd),
-        .src1                   (src1),
-        .src2                   (src2),
-        .imm                    (imm),
+        .rs1                    (rs1        ),
+        .rs2                    (rs2        ),
+        .rd                     (rd         ),
+        .src1                   (src1       ),
+        .src2                   (src2       ),
+        .imm                    (imm        ),
         .src1_is_reg            (src1_is_reg),
         .src2_is_reg            (src2_is_reg),
-        .need_to_wb             (need_to_wb),
-        .cx_type                (cx_type),
+        .need_to_wb             (need_to_wb ),
+        .cx_type                (cx_type    ),
         .is_unsigned            (is_unsigned),
-        .alu_type               (alu_type),
-        .is_word                (is_word),
-        .is_load                (is_load),
-        .is_imm                 (is_imm),
-        .is_store               (is_store),
-        .ls_size                (ls_size),
+        .alu_type               (alu_type   ),
+        .is_word                (is_word    ),
+        .is_load                (is_load    ),
+        .is_imm                 (is_imm     ),
+        .is_store               (is_store   ),
+        .ls_size                (ls_size    ),
         .muldiv_type            (muldiv_type),
         //valid,pc,instr
         .instr_valid            (instr_valid_to_pexe2wb & ~mem_stall),//stall means latch, but this pipereg output to difftest, so mem_stall dont latch output , but make instr(curent processing lsu operation) invalid, after lsu operation finish , mem_stall =0, this instr would automatically be valid to this pipereg
-        .pc                     (pc_to_pexe2wb),
-        .instr                  (instr_to_pexe2wb),
+        .pc                     (pc_to_pexe2wb                      ),
+        .instr                  (instr_to_pexe2wb                   ),
         //result
-        .ls_address             (mem_ls_address),
-        .alu_result             (alu_result),
-        .bju_result             (bju_result),
-        .muldiv_result          (muldiv_result),
+        .ls_address             (mem_ls_address         ),
+        .alu_result             (alu_result             ),
+        .bju_result             (bju_result             ),
+        .muldiv_result          (muldiv_result          ),
         .opload_read_data_wb    (mem_opload_read_data_wb),              //fill the load wb data
         //piped values
-        .out_rs1                (wb_rs1),
-        .out_rs2                (wb_rs2),
-        .out_rd                 (wb_rd),
-        .out_src1               (wb_src1),
-        .out_src2               (wb_src2),
-        .out_imm                (wb_imm),
-        .out_src1_is_reg        (wb_src1_is_reg),
-        .out_src2_is_reg        (wb_src2_is_reg),
-        .out_need_to_wb         (wb_need_to_wb),
-        .out_cx_type            (wb_cx_type),
-        .out_is_unsigned        (wb_is_unsigned),
-        .out_alu_type           (wb_alu_type),
-        .out_is_word            (wb_is_word),
-        .out_is_load            (wb_is_load),
-        .out_is_imm             (wb_is_imm),
-        .out_is_store           (wb_is_store),
-        .out_ls_size            (wb_ls_size),
-        .out_muldiv_type        (wb_muldiv_type),
-        .out_instr_valid        (wb_valid),
-        .out_pc                 (wb_pc),
-        .out_instr              (wb_instr),
-        .out_ls_address         (wb_ls_address),
-        .out_alu_result         (wb_alu_result),
-        .out_bju_result         (wb_bju_result),
-        .out_muldiv_result      (wb_muldiv_result),
-        .out_opload_read_data_wb(wb_opload_read_data_wb)
+        .out_rs1                        (wb_rs1                        ),
+        .out_rs2                        (wb_rs2                        ),
+        .out_rd                         (wb_rd                         ),
+        .out_src1                       (wb_src1                       ),
+        .out_src2                       (wb_src2                       ),
+        .out_imm                        (wb_imm                        ),
+        .out_src1_is_reg                (wb_src1_is_reg                ),
+        .out_src2_is_reg                (wb_src2_is_reg                ),
+        .out_need_to_wb                 (wb_need_to_wb                 ),
+        .out_cx_type                    (wb_cx_type                    ),
+        .out_is_unsigned                (wb_is_unsigned                ),
+        .out_alu_type                   (wb_alu_type                   ),
+        .out_is_word                    (wb_is_word                    ),
+        .out_is_load                    (wb_is_load                    ),
+        .out_is_imm                     (wb_is_imm                     ),
+        .out_is_store                   (wb_is_store                   ),
+        .out_ls_size                    (wb_ls_size                    ),
+        .out_muldiv_type                (wb_muldiv_type                ),
+        .out_instr_valid                (wb_valid                      ),
+        .out_pc                         (wb_pc                         ),
+        .out_instr                      (wb_instr                      ),
+        .out_ls_address                 (wb_ls_address                 ),
+        .out_alu_result                 (wb_alu_result                 ),
+        .out_bju_result                 (wb_bju_result                 ),
+        .out_muldiv_result              (wb_muldiv_result              ),
+        .out_opload_read_data_wb        (wb_opload_read_data_wb        ),
+        //bhtbtb pipe
+        .bht_write_enable         (bjusb_bht_write_enable        ),                 
+        .bht_write_index          (bjusb_bht_write_index         ),
+        .bht_write_counter_select (bjusb_bht_write_counter_select),   
+        .bht_write_inc            (bjusb_bht_write_inc           ),                    
+        .bht_write_dec            (bjusb_bht_write_dec           ),                    
+        .bht_valid_in             (bjusb_bht_valid_in            ),  
+        .btb_ce                   (bjusb_btb_ce                  ),           
+        .btb_we                   (bjusb_btb_we                  ),           
+        .btb_wmask                (bjusb_btb_wmask               ),
+        .btb_waddr                (bjusb_btb_waddr               ),
+        .btb_din                  (bjusb_btb_din                 ),
+        .out_bht_write_enable         (wb_bht_write_enable        ),                 
+        .out_bht_write_index          (wb_bht_write_index         ),
+        .out_bht_write_counter_select (wb_bht_write_counter_select),   
+        .out_bht_write_inc            (wb_bht_write_inc           ),                    
+        .out_bht_write_dec            (wb_bht_write_dec           ),                    
+        .out_bht_valid_in             (wb_bht_valid_in            ),  
+        .out_btb_ce                   (wb_btb_ce                  ),           
+        .out_btb_we                   (wb_btb_we                  ),           
+        .out_btb_wmask                (wb_btb_wmask               ),
+        .out_btb_waddr                (wb_btb_waddr               ),
+        .out_btb_din                  (wb_btb_din                 )       
 
     );
 

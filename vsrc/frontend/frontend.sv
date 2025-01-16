@@ -59,7 +59,22 @@ module frontend (
     //input wire [`RESULT_RANGE] mem_byp_result,
 
     //mem stall: to stop all op in frontend
-    input wire mem_stall
+    input wire mem_stall,
+
+    //BHT Write Interface
+    input wire bht_write_enable,                         // Write enable signal
+    input wire [INDEX_WIDTH-1:0] bht_write_index,        // Set index for write operation
+    input wire [1:0] bht_write_counter_select,           // Counter select (0 to 3) within the set
+    input wire bht_write_inc,                            // Increment signal for the counter
+    input wire bht_write_dec,                            // Decrement signal for the counter
+    input wire bht_valid_in,                             // Valid signal for the write operation
+    //BTB Write Interface
+    input wire btb_ce,                    // Chip enable
+    input wire btb_we,                    // Write enable
+    input wire [128:0] btb_wmask,
+    input wire [8:0] btb_waddr,           // Write address (9 bits for 512 sets)
+    input wire [128:0] btb_din,           // Data input (1 valid bit + 4 targets * 32 bits)
+
 
 );
     wire [31:0] ibuffer_instr_valid;
@@ -77,29 +92,40 @@ module frontend (
 
     wire [           63:0] src1;
     wire [           63:0] src2;
-    ifu_top u_ifu_top (
-        .clock             (clock),
-        .reset_n           (reset_n),
-        .boot_addr         (48'h80000000),
-        .interrupt_valid   (1'd0),
-        .interrupt_addr    (48'd0),
-        .redirect_valid    (redirect_valid),
-        .redirect_target   (redirect_target),
-        .pc_index_valid    (pc_index_valid),
-        .pc_index_ready    (pc_index_ready),
-        .pc_operation_done (pc_operation_done),
-        .pc_read_inst      (pc_read_inst),
-        .fifo_read_en      (fifo_read_en),
-        //.clear_ibuffer_ext (clear_ibuffer_ext),
-        .ibuffer_instr_valid(ibuffer_instr_valid),
-        .ibuffer_predicttaken_out (ibuffer_predicttaken_out),
-        .ibuffer_predicttarget_out (ibuffer_predicttarget_out),
-        .ibuffer_inst_out  (ibuffer_inst_out),
-        .ibuffer_pc_out    (ibuffer_pc_out),
-        .fifo_empty        (fifo_empty),
-        .pc_index          (pc_index),
-        .mem_stall         (mem_stall)
-    );
+    ifu_top u_ifu_top              (
+        .clock                     (clock                            ),
+        .reset_n                   (reset_n                          ),
+        .boot_addr                 (48'h80000000                     ),
+        .interrupt_valid           (1'd0                             ),
+        .interrupt_addr            (48'd0                            ),
+        .redirect_valid            (redirect_valid                   ),
+        .redirect_target           (redirect_target                  ),
+        .pc_index_valid            (pc_index_valid                   ),
+        .pc_index_ready            (pc_index_ready                   ),
+        .pc_operation_done         (pc_operation_done                ),
+        .pc_read_inst              (pc_read_inst                     ),
+        .fifo_read_en              (fifo_read_en                     ),
+        //.clear_ibuffer_ext       (clear_ibuffer_ext                ),
+        .ibuffer_instr_valid       (ibuffer_instr_valid              ),
+        .ibuffer_predicttaken_out  (ibuffer_predicttaken_out         ),
+        .ibuffer_predicttarget_out (ibuffer_predicttarget_out        ),
+        .ibuffer_inst_out          (ibuffer_inst_out                 ),
+        .ibuffer_pc_out            (ibuffer_pc_out                   ),
+        .fifo_empty                (fifo_empty                       ),
+        .pc_index                  (pc_index                         ),
+        .mem_stall                 (mem_stall                        ),
+        .bht_write_enable          (bht_write_enable                 ),                 
+        .bht_write_index           (bht_write_index                  ),
+        .bht_write_counter_select  (bht_write_counter_select         ),   
+        .bht_write_inc             (bht_write_inc                    ),                    
+        .bht_write_dec             (bht_write_dec                    ),                    
+        .bht_valid_in              (bht_valid_in                     ),  
+        .btb_ce                    (btb_ce                           ),           
+        .btb_we                    (btb_we                           ),           
+        .btb_wmask                 (btb_wmask                        ),
+        .btb_waddr                 (btb_waddr                        ),
+        .btb_din                   (btb_din                          ) 
+                                                                     );
 
 
     decoder u_decoder (

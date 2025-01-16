@@ -73,7 +73,35 @@ module pipereg (
     output reg [`RESULT_RANGE] out_bju_result,
     output reg [`RESULT_RANGE] out_muldiv_result,
 
-    output reg [`RESULT_RANGE] out_opload_read_data_wb
+    output reg [`RESULT_RANGE] out_opload_read_data_wb,
+        // BHT Write Interface
+    input wire bht_write_enable,                 // Write enable for BHT
+    input wire [8:0] bht_write_index,            // Set index for BHT write operation
+    input wire [1:0] bht_write_counter_select,   // Counter select within the BHT set (0 to 3)
+    input wire bht_write_inc,                    // Increment signal for BHT counter
+    input wire bht_write_dec,                    // Decrement signal for BHT counter
+    input wire bht_valid_in,                     // Valid bit for BHT write operation
+
+    // BTB Write Interface
+    input wire btb_write_enable,                 // Write enable for BTB
+    input wire [8:0] btb_write_index,            // Set index for BTB write operation
+    input wire btb_write_valid_in,               // Valid bit for BTB write operation
+    input wire [127:0] btb_write_targets,        // Four 32-bit target addresses for BTB write operation
+
+    // BHT Write Interface
+    output wire       out_bht_write_enable,                 // Write enable for BHT
+    output wire [8:0] out_bht_write_index,            // Set index for BHT write operation
+    output wire [1:0] out_bht_write_counter_select,   // Counter select within the BHT set (0 to 3)
+    output wire       out_bht_write_inc,                    // Increment signal for BHT counter
+    output wire       out_bht_write_dec,                    // Decrement signal for BHT counter
+    output wire       out_bht_valid_in,                     // Valid bit for BHT write operation
+
+    // BTB Write Interface
+    output wire         out_btb_write_enable,                 // Write enable for BTB
+    output wire [8:0]   out_btb_write_index,            // Set index for BTB write operation
+    output wire         out_btb_write_valid_in,               // Valid bit for BTB write operation
+    output wire [127:0] out_btb_write_targets        // Four 32-bit target addresses for BTB write operation
+
 );
 
     always @(posedge clock or negedge reset_n) begin
