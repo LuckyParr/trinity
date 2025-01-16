@@ -103,6 +103,8 @@ module exu #(
     );
 
     bju u_bju (
+        .clock (clock),
+        .reset_n (reset_n),
         .src1           (src1_muxed),
         .src2           (src2_muxed),
         .imm            (imm),

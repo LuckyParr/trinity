@@ -3,6 +3,9 @@ module bju #(
         parameter BHTBTB_INDEX_WIDTH = 9           // Width of the set index (for SETS=512, BHTBTB_INDEX_WIDTH=9)
 )
 (
+    input wire clock, //only for pmu logic
+    input wire reset_n, //only for pmu logic
+
     input wire [    `SRC_RANGE] src1,
     input wire [    `SRC_RANGE] src2,
     input wire [`SRC_RANGE] imm,
@@ -88,19 +91,19 @@ module bju #(
     assign dest = bjucal_dest;
 
     /* ----------------------------bju scoreboard logic (bjusb) ---------------------------- */
-    wire bjusb_bju_jump_bpu_jump_right;
-    wire bjusb_bju_jump_bpu_jump_butaddrwrong;
-    wire bjusb_bju_jump_bpu_notjump_wrong;
-    wire bjusb_bju_notjump_bpu_jump_wrong;
-    wire bjusb_bju_notjump_bpu_notjump_right;
+    wire bjusb_bju_jump_bpu_jump_right;//situation1
+    wire bjusb_bju_jump_bpu_jump_butaddrwrong;//situation2
+    wire bjusb_bju_jump_bpu_notjump_wrong;//situation3
+    wire bjusb_bju_notjump_bpu_jump_wrong;//situation4
+    wire bjusb_bju_notjump_bpu_notjump_right;//situation5
 
-    assign bjusb_bju_jump_bpu_jump_right = bjucal_redirect_valid && predict_taken && (bjucal_redirect_target[31:0] == predict_target);
+    assign bjusb_bju_jump_bpu_jump_right = valid && (bjucal_redirect_valid && predict_taken) && (bjucal_redirect_target[31:0] == predict_target);
 
-    assign bjusb_bju_jump_bpu_jump_butaddrwrong = (bjucal_redirect_valid && predict_taken && (bjucal_redirect_target[31:0] != predict_target));
-    assign bjusb_bju_jump_bpu_notjump_wrong = (bjucal_redirect_valid && ~predict_taken);
+    assign bjusb_bju_jump_bpu_jump_butaddrwrong = valid && (bjucal_redirect_valid && predict_taken && (bjucal_redirect_target[31:0] != predict_target));
+    assign bjusb_bju_jump_bpu_notjump_wrong = valid && (bjucal_redirect_valid && ~predict_taken);
     
-    assign bjusb_bju_notjump_bpu_jump_wrong = ~bjucal_redirect_valid && predict_taken;
-    assign bjusb_bju_notjump_bpu_notjump_right = ~bjucal_redirect_valid && ~predict_taken;
+    assign bjusb_bju_notjump_bpu_jump_wrong =valid && (~bjucal_redirect_valid && predict_taken);
+    assign bjusb_bju_notjump_bpu_notjump_right =valid && (~bjucal_redirect_valid && ~predict_taken);
 
 
     reg [128:0] btb_wmask;
@@ -140,7 +143,7 @@ module bju #(
             bjusb_btb_wmask = 'b0;
             bjusb_btb_write_index = 'b0;          
             bjusb_btb_din = 'b0;    
-        if(bjusb_bju_jump_bpu_jump_right && valid)begin
+        if(bjusb_bju_jump_bpu_jump_right )begin
             //predict jump right: enhance bht
             bjusb_bht_write_enable = 1'b1;                         
             bjusb_bht_write_index = pc[12:4];  //12-4+1=9bit used as set addr for 512set bht      
@@ -148,7 +151,7 @@ module bju #(
             bjusb_bht_write_inc = 1'b1;                            
             bjusb_bht_write_dec = 1'b0;                            
             bjusb_bht_valid_in = 1'b1;     
-        end else if((bjusb_bju_jump_bpu_notjump_wrong || bjusb_bju_jump_bpu_jump_butaddrwrong) && valid)begin
+        end else if(bjusb_bju_jump_bpu_notjump_wrong || bjusb_bju_jump_bpu_jump_butaddrwrong)begin
             //predict notjump wrong : enhance bht
             bjusb_bht_write_enable = 1'b1;                         
             bjusb_bht_write_index = pc[12:4];  
@@ -165,7 +168,7 @@ module bju #(
             bjusb_btb_wmask = btb_wmask;
             bjusb_btb_write_index = pc[12:4];          
             bjusb_btb_din = btb_din;           
-        end else if(bjusb_bju_notjump_bpu_jump_wrong && valid)begin
+        end else if(bjusb_bju_notjump_bpu_jump_wrong)begin
             //predict jump wrong : decrease bht
             bjusb_bht_write_enable = 1'b1;                         
             bjusb_bht_write_index = pc[12:4];  
@@ -176,7 +179,7 @@ module bju #(
             //send pc+4 as redirect
             redirect_valid = 1'b1;
             redirect_target = pc+48'd4;
-        end else if(bjusb_bju_notjump_bpu_notjump_right && valid)begin
+        end else if(bjusb_bju_notjump_bpu_notjump_right)begin
             //predict not jump right, decrease bht
             bjusb_bht_write_enable = 1'b1;                         
             bjusb_bht_write_index = pc[12:4];  
@@ -186,5 +189,33 @@ module bju #(
             bjusb_bht_valid_in = 1'b1;                
         end
     end
+
+    /* -------------------------------- pmu logic ------------------------------- */
+    reg [31:0] situation1_cnt;
+    reg [31:0] situation2_cnt;
+    reg [31:0] situation3_cnt;
+    reg [31:0] situation4_cnt;
+    reg [31:0] situation5_cnt;
+
+    always @(posedge clock or negedge reset_n) begin
+        if(~reset_n)begin
+            situation1_cnt <= 'b0;
+            situation2_cnt <= 'b0;
+            situation3_cnt <= 'b0;
+            situation4_cnt <= 'b0;
+            situation5_cnt <= 'b0;
+        end else if(bjusb_bju_jump_bpu_jump_right)begin
+            situation1_cnt <= situation1_cnt + 1;
+        end else if (bjusb_bju_jump_bpu_jump_butaddrwrong)begin
+            situation2_cnt <= situation2_cnt + 1;
+        end else if (bjusb_bju_jump_bpu_notjump_wrong)begin
+            situation3_cnt <= situation3_cnt + 1;
+        end else if (bjusb_bju_notjump_bpu_jump_wrong) begin
+            situation4_cnt <= situation3_cnt + 1;
+        end else if (bjusb_bju_notjump_bpu_notjump_right)begin
+            situation5_cnt <= situation4_cnt + 1;            
+        end
+    end
+
 
 endmodule
