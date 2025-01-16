@@ -10,16 +10,15 @@
 
 module bht #(
     parameter SETS = 512,                // Number of sets in the BHT
-    parameter BHTBTB_INDEX_WIDTH = 9,           // Width of the set index (for SETS=512, BHTBTB_INDEX_WIDTH=9)
+    parameter BHTBTB_INDEX_WIDTH = 9,    // Width of the set index (for SETS=512, BHTBTB_INDEX_WIDTH=9)
     parameter COUNTER_WIDTH = 2          // Width of each saturating counter (default 2 bits)
 )(
     input wire clock,                       // Clock signal
-
     input wire reset_n,                     // Active-low asynchronous reset
 
     //BHT Write Interface
     input wire bht_write_enable,                         // Write enable signal
-    input wire [BHTBTB_INDEX_WIDTH-1:0] bht_write_index,        // Set index for write operation
+    input wire [BHTBTB_INDEX_WIDTH-1:0] bht_write_index, // Set index for write operation
     input wire [1:0] bht_write_counter_select,           // Counter select (0 to 3) within the set
     input wire bht_write_inc,                            // Increment signal for the counter
     input wire bht_write_dec,                            // Decrement signal for the counter
@@ -27,10 +26,10 @@ module bht #(
 
     //BHT Read Interface
     input wire bht_read_enable,                          // Read enable signal
-    input wire [BHTBTB_INDEX_WIDTH-1:0] bht_read_index,         // Set index for read operation
+    input wire [BHTBTB_INDEX_WIDTH-1:0] bht_read_index,  // Set index for read operation
     output reg [COUNTER_WIDTH*4-1:0] bht_read_data,      // Data read from all 4 counters (8 bits)
     output reg bht_valid,                                // Valid signal from the read operation
-    output reg [31:0] bht_read_miss_count               // Read miss counter output
+    output reg [31:0] bht_read_miss_count                // Read miss counter output
 );
 
     // Internal Storage
@@ -80,36 +79,42 @@ module bht #(
                 bht_valid_bits[bht_write_index] <= bht_valid_in;
 
                 // Update the selected saturating counter using bit slicing
-                case(bht_write_counter_select)
-                    2'd0: begin
+            if(bht_write_counter_select == 2'b00)
+                     begin
                         if (bht_write_inc && !bht_write_dec)
-                            bht_counters[bht_write_index][1:0] <= bht_saturate_increment(bht_counters[bht_write_index][1:0]);
+                            if (bht_counters[bht_write_index][1:0] < 2'b11) 
+                                bht_counters[bht_write_index][1:0] <= bht_counters[bht_write_index][1:0] + 2'b01;
                         else if (bht_write_dec && !bht_write_inc)
-                            bht_counters[bht_write_index][1:0] <= bht_saturate_decrement(bht_counters[bht_write_index][1:0]);
-                        // If both write_inc and write_dec are asserted, no change occurs
+                            if (bht_counters[bht_write_index][1:0] > 2'b00)
+                                bht_counters[bht_write_index][1:0] <= bht_counters[bht_write_index][1:0] - 2'b01;
                     end
-                    2'd1: begin
+            else if(bht_write_counter_select == 2'b01)
+                    begin
                         if (bht_write_inc && !bht_write_dec)
-                            bht_counters[bht_write_index][3:2] <= bht_saturate_increment(bht_counters[bht_write_index][3:2]);
+                            if (bht_counters[bht_write_index][3:2] < 2'b11)
+                                bht_counters[bht_write_index][3:2] <= bht_counters[bht_write_index][3:2] + 2'b01;
                         else if (bht_write_dec && !bht_write_inc)
-                            bht_counters[bht_write_index][3:2] <= bht_saturate_decrement(bht_counters[bht_write_index][3:2]);
+                            if (bht_counters[bht_write_index][3:2] > 2'b00)
+                                bht_counters[bht_write_index][3:2] <= bht_counters[bht_write_index][3:2] - 2'b01;
                     end
-                    2'd2: begin
+            else if(bht_write_counter_select == 2'b10)
+                    begin
                         if (bht_write_inc && !bht_write_dec)
-                            bht_counters[bht_write_index][5:4] <= bht_saturate_increment(bht_counters[bht_write_index][5:4]);
+                            if (bht_counters[bht_write_index][5:4] < 2'b11)
+                                bht_counters[bht_write_index][5:4] <= bht_counters[bht_write_index][5:4] + 2'b01;
                         else if (bht_write_dec && !bht_write_inc)
-                            bht_counters[bht_write_index][5:4] <= bht_saturate_decrement(bht_counters[bht_write_index][5:4]);
+                            if (bht_counters[bht_write_index][5:4] > 2'b00)
+                                bht_counters[bht_write_index][5:4] <= bht_counters[bht_write_index][5:4] - 2'b01;
                     end
-                    2'd3: begin
+            else if(bht_write_counter_select == 2'b11)
+                    begin
                         if (bht_write_inc && !bht_write_dec)
-                            bht_counters[bht_write_index][7:6] <= bht_saturate_increment(bht_counters[bht_write_index][7:6]);
+                            if (bht_counters[bht_write_index][7:6] < 2'b11)
+                                bht_counters[bht_write_index][7:6] <= bht_counters[bht_write_index][7:6] + 2'b01;
                         else if (bht_write_dec && !bht_write_inc)
-                            bht_counters[bht_write_index][7:6] <= bht_saturate_decrement(bht_counters[bht_write_index][7:6]);
+                            if (bht_counters[bht_write_index][7:6] > 2'b00)
+                                bht_counters[bht_write_index][7:6] <= bht_counters[bht_write_index][7:6] - 2'b01;
                     end
-                    default: begin
-                        // Do nothing
-                    end
-                endcase
             end
 
             // Read Operation with Write Bypass
