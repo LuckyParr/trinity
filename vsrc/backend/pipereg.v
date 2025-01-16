@@ -96,7 +96,7 @@ module pipereg (
     // BTB Write Interface
     output wire         out_btb_ce         ,
     output wire         out_btb_we         ,                 // Write enable for BTB
-    output wire         out_btb_wmask      ,
+    output wire [128:0]        out_btb_wmask      ,
     output wire [8:0]   out_btb_write_index,            // Set index for BTB write operation
     output wire [128:0] out_btb_din        
 );
