@@ -38,10 +38,11 @@ module ifu_top (
     input wire bht_valid_in,                     // Valid bit for BHT write operation
 
     // BTB Write Interface
-    input wire btb_write_enable,                 // Write enable for BTB
+    input wire btb_ce,
+    input wire btb_we,                 // Write enable for BTB
+    input wire [128:0] btb_wmask,
     input wire [8:0] btb_write_index,            // Set index for BTB write operation
-    input wire btb_write_valid_in,               // Valid bit for BTB write operation
-    input wire [127:0] btb_write_targets        // Four 32-bit target addresses for BTB write operation
+    input wire [128:0] btb_din
 
 );
 
@@ -96,59 +97,62 @@ module ifu_top (
     );
 
 
-    instr_admin u_instr_admin (
-        .pc_operation_done  (pc_operation_done),
-        .fetch_instr        (pc_read_inst),
-        .pc                 (pc),//input
-        .admin2ib_instr        (admin2ib_instr),
-        .admin2ib_instr_valid  (admin2ib_instr_valid),
-        .bht_read_data      (bht_read_data),
-        .bht_valid          (bht_valid),
-        .btb_targets        (btb_targets),
-        .btb_valid          (btb_valid),
+    instr_admin u_instr_admin           (
+        .pc_operation_done              (pc_operation_done            ),
+        .fetch_instr                    (pc_read_inst                 ),
+        .pc                             (pc                           ),//input
+        .admin2ib_instr                 (admin2ib_instr               ),
+        .admin2ib_instr_valid           (admin2ib_instr_valid         ),
+        .bht_read_data                  (bht_read_data                ),
+        .bht_valid                      (bht_valid                    ),
+        .btb_targets                    (btb_targets                  ),
+        .btb_valid                      (btb_valid                    ),
         .admin2ib_predicttaken          (admin2ib_predicttaken        ),
         .admin2ib_predicttarget         (admin2ib_predicttarget       ),
         .admin2pcctrl_predicttaken      (admin2pcctrl_predicttaken    ),
         .admin2pcctrl_predicttarget     (admin2pcctrl_predicttarget   )
-    );
+                                                                      );
 
 
     // Instantiate the pc_ctrl module
-    pc_ctrl pc_ctrl_inst (
-        .clock            (clock),
-        .reset_n          (reset_n),
-        .pc               (pc),//output
-        .boot_addr        (boot_addr),
-        .redirect_valid   (redirect_valid),
-        .redirect_target  (redirect_target),
-        .fetch_inst       (fetch_inst),
-        .pc_index_valid   (pc_index_valid),
-        .pc_index         (pc_index),
-        .pc_index_ready   (pc_index_ready),
-        .pc_operation_done(pc_operation_done)
-    );
+    pc_ctrl pc_ctrl_inst                (
+        .clock                          (clock                        ),
+        .reset_n                        (reset_n                      ),
+        .pc                             (pc                           ),//output
+        .boot_addr                      (boot_addr                    ),
+        .redirect_valid                 (redirect_valid               ),
+        .redirect_target                (redirect_target              ),
+        .fetch_inst                     (fetch_inst                   ),
+        .pc_index_valid                 (pc_index_valid               ),
+        .pc_index                       (pc_index                     ),
+        .pc_index_ready                 (pc_index_ready               ),
+        .pc_operation_done              (pc_operation_done            ),
+        .admin2pcctrl_predicttaken      (admin2pcctrl_predicttaken    ),
+        .admin2pcctrl_predicttarget     (admin2pcctrl_predicttarget   )
+                                                                      );
 
-    bpu u_bpu(
-        .clock                    (clock                    ),
-        .reset_n                  (reset_n                  ),
-        .pc                       (pc                       ),
-        .bht_write_enable         (bht_write_enable         ),
-        .bht_write_index          (bht_write_index          ),
-        .bht_write_counter_select (bht_write_counter_select ),
-        .bht_write_inc            (bht_write_inc            ),
-        .bht_write_dec            (bht_write_dec            ),
-        .bht_valid_in             (bht_valid_in             ),
-        .btb_write_enable         (btb_write_enable         ),
-        .btb_write_index          (btb_write_index          ),
-        .btb_write_valid_in       (btb_write_valid_in       ),
-        .btb_write_targets        (btb_write_targets        ),
-        .bht_read_data            (bht_read_data            ),
-        .bht_valid                (bht_valid                ),
-        .bht_read_miss_count      (bht_read_miss_count      ),
-        .btb_targets              (btb_targets              ),
-        .btb_valid                (btb_valid                ),
-        .btb_read_miss_count      (btb_read_miss_count      )
-    );
+    bpu u_bpu                       (
+        .clock                      (clock                    ),
+        .reset_n                    (reset_n                  ),
+        .pc                         (pc                       ),
+        .bht_write_enable           (bht_write_enable         ),
+        .bht_write_index            (bht_write_index          ),
+        .bht_write_counter_select   (bht_write_counter_select ),
+        .bht_write_inc              (bht_write_inc            ),
+        .bht_write_dec              (bht_write_dec            ),
+        .bht_valid_in               (bht_valid_in             ),
+        .btb_ce                     (btb_ce                   ),
+        .btb_we                     (btb_we                   ),
+        .btb_wmask                  (btb_wmask                ),
+        .btb_write_index            (btb_write_index          ),
+        .btb_din                    (btb_din                  ),
+        .bht_read_data              (bht_read_data            ),
+        .bht_valid                  (bht_valid                ),
+        .bht_read_miss_count        (bht_read_miss_count      ),
+        .btb_targets                (btb_targets              ),
+        .btb_valid                  (btb_valid                ),
+        .btb_read_miss_count        (btb_read_miss_count      )
+                                                              );
 
     
 

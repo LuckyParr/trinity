@@ -1,5 +1,6 @@
 `include "defines.sv"
 module core_top #(
+        parameter BHTBTB_INDEX_WIDTH = 9           // Width of the set index (for SETS=512, BHTBTB_INDEX_WIDTH=9)
 ) (
     input wire clock,
     input wire reset_n,
@@ -19,7 +20,7 @@ module core_top #(
     //bhtbtb write interface
     //BHT Write Interface
     wire                   wb_bht_write_enable        ;                         // Write enable signal
-    wire [INDEX_WIDTH-1:0] wb_bht_write_index         ;        // Set index for write operation
+    wire [BHTBTB_INDEX_WIDTH-1:0] wb_bht_write_index         ;        // Set index for write operation
     wire [1:0]             wb_bht_write_counter_select;           // Counter select (0 to 3) within the set
     wire                   wb_bht_write_inc           ;                            // Increment signal for the counter
     wire                   wb_bht_write_dec           ;                            // Decrement signal for the counter
@@ -28,7 +29,7 @@ module core_top #(
     wire         wb_btb_ce   ;                    // Chip enable
     wire         wb_btb_we   ;                    // Write enable
     wire [128:0] wb_btb_wmask;
-    wire [8:0]   wb_btb_waddr;           // Write address (9 bits for 512 sets)
+    wire [8:0]   wb_btb_write_index;           // Write address (9 bits for 512 sets)
     wire [128:0] wb_btb_din  ;        // Data input (1 valid bit + 4 targets * 32 bits)
 
 
@@ -229,7 +230,7 @@ module core_top #(
         .btb_ce                   (wb_btb_ce                  ),           
         .btb_we                   (wb_btb_we                  ),           
         .btb_wmask                (wb_btb_wmask               ),
-        .btb_waddr                (wb_btb_waddr               ),
+        .btb_write_index          (wb_btb_write_index               ),
         .btb_din                  (wb_btb_din                 )        
 
     );
@@ -320,17 +321,17 @@ module core_top #(
         .out_muldiv_result      (),
         .out_opload_read_data_wb(),
         //bhtbtb pipe
-        .bht_write_enable         (1'b0),                 
-        .bht_write_index          (1'b0),
-        .bht_write_counter_select (1'b0),   
-        .bht_write_inc            (1'b0),                    
-        .bht_write_dec            (1'b0),                    
-        .bht_valid_in             (1'b0),  
-        .btb_ce                   (1'b0),           
-        .btb_we                   (1'b0),           
-        .btb_wmask                (1'b0),
-        .btb_waddr                (1'b0),
-        .btb_din                  (1'b0),
+        .bht_write_enable         ('b0),                 
+        .bht_write_index          ('b0),
+        .bht_write_counter_select ('b0),   
+        .bht_write_inc            ('b0),                    
+        .bht_write_dec            ('b0),                    
+        .bht_valid_in             ('b0),  
+        .btb_ce                   ('b0),           
+        .btb_we                   ('b0),           
+        .btb_wmask                ('b0),
+        .btb_write_index          ('b0),
+        .btb_din                  ('b0),
         .out_bht_write_enable         (),                 
         .out_bht_write_index          (),
         .out_bht_write_counter_select (),   
@@ -340,7 +341,7 @@ module core_top #(
         .out_btb_ce                   (),           
         .out_btb_we                   (),           
         .out_btb_wmask                (),
-        .out_btb_waddr                (),
+        .out_btb_write_index          (),
         .out_btb_din                  ()       
 
     );
@@ -400,7 +401,7 @@ module core_top #(
         .wb_btb_ce                   (wb_btb_ce                  ),           
         .wb_btb_we                   (wb_btb_we                  ),           
         .wb_btb_wmask                (wb_btb_wmask               ),
-        .wb_btb_waddr                (wb_btb_waddr               ),
+        .wb_btb_write_index                (wb_btb_write_index               ),
         .wb_btb_din                  (wb_btb_din                 ) 
 
     );

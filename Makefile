@@ -36,3 +36,8 @@ strace:
 
 clean:
 	rm -rf build/emu-compile build/emu time.log
+
+rerun:
+	make clean;
+	clear;
+	make run_diff > log

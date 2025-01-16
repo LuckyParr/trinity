@@ -10,7 +10,7 @@
 
 module bht #(
     parameter SETS = 512,                // Number of sets in the BHT
-    parameter INDEX_WIDTH = 9,           // Width of the set index (for SETS=512, INDEX_WIDTH=9)
+    parameter BHTBTB_INDEX_WIDTH = 9,           // Width of the set index (for SETS=512, BHTBTB_INDEX_WIDTH=9)
     parameter COUNTER_WIDTH = 2          // Width of each saturating counter (default 2 bits)
 )(
     input wire clock,                       // Clock signal
@@ -19,7 +19,7 @@ module bht #(
 
     //BHT Write Interface
     input wire bht_write_enable,                         // Write enable signal
-    input wire [INDEX_WIDTH-1:0] bht_write_index,        // Set index for write operation
+    input wire [BHTBTB_INDEX_WIDTH-1:0] bht_write_index,        // Set index for write operation
     input wire [1:0] bht_write_counter_select,           // Counter select (0 to 3) within the set
     input wire bht_write_inc,                            // Increment signal for the counter
     input wire bht_write_dec,                            // Decrement signal for the counter
@@ -27,7 +27,7 @@ module bht #(
 
     //BHT Read Interface
     input wire bht_read_enable,                          // Read enable signal
-    input wire [INDEX_WIDTH-1:0] bht_read_index,         // Set index for read operation
+    input wire [BHTBTB_INDEX_WIDTH-1:0] bht_read_index,         // Set index for read operation
     output reg [COUNTER_WIDTH*4-1:0] bht_read_data,      // Data read from all 4 counters (8 bits)
     output reg bht_valid,                                // Valid signal from the read operation
     output reg [31:0] bht_read_miss_count               // Read miss counter output

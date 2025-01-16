@@ -1,5 +1,7 @@
 `include "defines.sv"
-module frontend (
+module frontend #(
+        parameter BHTBTB_INDEX_WIDTH = 9           // Width of the set index (for SETS=512, BHTBTB_INDEX_WIDTH=9)
+)(
     input wire clock,
     input wire reset_n,
 
@@ -63,7 +65,7 @@ module frontend (
 
     //BHT Write Interface
     input wire bht_write_enable,                         // Write enable signal
-    input wire [INDEX_WIDTH-1:0] bht_write_index,        // Set index for write operation
+    input wire [BHTBTB_INDEX_WIDTH-1:0] bht_write_index,        // Set index for write operation
     input wire [1:0] bht_write_counter_select,           // Counter select (0 to 3) within the set
     input wire bht_write_inc,                            // Increment signal for the counter
     input wire bht_write_dec,                            // Decrement signal for the counter
@@ -72,8 +74,8 @@ module frontend (
     input wire btb_ce,                    // Chip enable
     input wire btb_we,                    // Write enable
     input wire [128:0] btb_wmask,
-    input wire [8:0] btb_waddr,           // Write address (9 bits for 512 sets)
-    input wire [128:0] btb_din,           // Data input (1 valid bit + 4 targets * 32 bits)
+    input wire [8:0] btb_write_index,           // Write address (9 bits for 512 sets)
+    input wire [128:0] btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
 
 
 );
@@ -123,7 +125,7 @@ module frontend (
         .btb_ce                    (btb_ce                           ),           
         .btb_we                    (btb_we                           ),           
         .btb_wmask                 (btb_wmask                        ),
-        .btb_waddr                 (btb_waddr                        ),
+        .btb_write_index                 (btb_write_index                        ),
         .btb_din                   (btb_din                          ) 
                                                                      );
 

@@ -1,5 +1,7 @@
 `include "defines.sv"
-module backend (
+module backend #(
+        parameter BHTBTB_INDEX_WIDTH = 9           // Width of the set index (for SETS=512, BHTBTB_INDEX_WIDTH=9)
+)(
     input  wire                      clock,
     input  wire                      reset_n,
     input  wire [       `LREG_RANGE] rs1,
@@ -59,7 +61,7 @@ module backend (
     output wire [`RESULT_RANGE] exe_byp_result,
     //BHT Write Interface
     output wire                   wb_bht_write_enable,                         // Write enable signal
-    output wire [INDEX_WIDTH-1:0] wb_bht_write_index,        // Set index for write operation
+    output wire [BHTBTB_INDEX_WIDTH-1:0] wb_bht_write_index,        // Set index for write operation
     output wire [1:0]             wb_bht_write_counter_select,           // Counter select (0 to 3) within the set
     output wire                   wb_bht_write_inc,                            // Increment signal for the counter
     output wire                   wb_bht_write_dec,                            // Decrement signal for the counter
@@ -68,23 +70,23 @@ module backend (
     output wire         wb_btb_ce,                    // Chip enable
     output wire         wb_btb_we,                    // Write enable
     output wire [128:0] wb_btb_wmask,
-    output wire [8:0]   wb_btb_waddr,           // Write address (9 bits for 512 sets)
+    output wire [8:0]   wb_btb_write_index,           // Write address (9 bits for 512 sets)
     output wire [128:0] wb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
 
 );
     //bhtbtb signal
-    wire                   bjusb_bht_write_enable,                         // Write enable signal
-    wire [INDEX_WIDTH-1:0] bjusb_bht_write_index,        // Set index for write operation
-    wire [1:0]             bjusb_bht_write_counter_select,           // Counter select (0 to 3) within the set
-    wire                   bjusb_bht_write_inc,                            // Increment signal for the counter
-    wire                   bjusb_bht_write_dec,                            // Decrement signal for the counter
-    wire                   bjusb_bht_valid_in,                             // Valid signal for the write operation
+    wire                   bjusb_bht_write_enable;                         // Write enable signal
+    wire [BHTBTB_INDEX_WIDTH-1:0] bjusb_bht_write_index;        // Set index for write operation
+    wire [1:0]             bjusb_bht_write_counter_select;           // Counter select (0 to 3) within the set
+    wire                   bjusb_bht_write_inc;                            // Increment signal for the counter
+    wire                   bjusb_bht_write_dec;                            // Decrement signal for the counter
+    wire                   bjusb_bht_valid_in;                             // Valid signal for the write operation
     //BTB Write Interface
-    wire         bjusb_btb_ce,                    // Chip enable
-    wire         bjusb_btb_we,                    // Write enable
-    wire [128:0] bjusb_btb_wmask,
-    wire [8:0]   bjusb_btb_waddr,           // Write address (9 bits for 512 sets)
-    wire [128:0] bjusb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
+    wire         bjusb_btb_ce;                    // Chip enable
+    wire         bjusb_btb_we;                    // Write enable
+    wire [128:0] bjusb_btb_wmask;
+    wire [8:0]   bjusb_btb_write_index;           // Write address (9 bits for 512 sets)
+    wire [128:0] bjusb_btb_din;           // Data input (1 valid bit + 4 targets * 32 bits)
 
     //input mux logic : issue intsr to exu or mem
     reg                 instr_valid_to_mem;
@@ -213,7 +215,7 @@ module backend (
         .bjusb_btb_ce                   (bjusb_btb_ce),           
         .bjusb_btb_we                   (bjusb_btb_we),           
         .bjusb_btb_wmask                (bjusb_btb_wmask),
-        .bjusb_btb_waddr                (bjusb_btb_waddr),
+        .bjusb_btb_write_index                (bjusb_btb_write_index),
         .bjusb_btb_din                  (bjusb_btb_din) 
     );
 
@@ -299,6 +301,8 @@ module backend (
         .muldiv_type            (muldiv_type),
         //valid,pc,instr
         .instr_valid            (instr_valid_to_pexe2wb & ~mem_stall),//stall means latch, but this pipereg output to difftest, so mem_stall dont latch output , but make instr(curent processing lsu operation) invalid, after lsu operation finish , mem_stall =0, this instr would automatically be valid to this pipereg
+        .predict_taken      ('b0), 
+        .predict_target     ('b0), 
         .pc                     (pc_to_pexe2wb                      ),
         .instr                  (instr_to_pexe2wb                   ),
         //result
@@ -327,6 +331,8 @@ module backend (
         .out_ls_size                    (wb_ls_size                    ),
         .out_muldiv_type                (wb_muldiv_type                ),
         .out_instr_valid                (wb_valid                      ),
+        .out_predict_taken      (),
+        .out_predict_target     (),
         .out_pc                         (wb_pc                         ),
         .out_instr                      (wb_instr                      ),
         .out_ls_address                 (wb_ls_address                 ),
@@ -344,7 +350,7 @@ module backend (
         .btb_ce                   (bjusb_btb_ce                  ),           
         .btb_we                   (bjusb_btb_we                  ),           
         .btb_wmask                (bjusb_btb_wmask               ),
-        .btb_waddr                (bjusb_btb_waddr               ),
+        .btb_write_index          (bjusb_btb_write_index               ),
         .btb_din                  (bjusb_btb_din                 ),
         .out_bht_write_enable         (wb_bht_write_enable        ),                 
         .out_bht_write_index          (wb_bht_write_index         ),
@@ -355,7 +361,7 @@ module backend (
         .out_btb_ce                   (wb_btb_ce                  ),           
         .out_btb_we                   (wb_btb_we                  ),           
         .out_btb_wmask                (wb_btb_wmask               ),
-        .out_btb_waddr                (wb_btb_waddr               ),
+        .out_btb_write_index          (wb_btb_write_index         ),
         .out_btb_din                  (wb_btb_din                 )       
 
     );

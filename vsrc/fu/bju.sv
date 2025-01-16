@@ -1,6 +1,6 @@
 `include "defines.sv"
 module bju #(
-        parameter INDEX_WIDTH = 9           // Width of the set index (for SETS=512, INDEX_WIDTH=9)
+        parameter BHTBTB_INDEX_WIDTH = 9           // Width of the set index (for SETS=512, BHTBTB_INDEX_WIDTH=9)
 )
 (
     input wire [    `SRC_RANGE] src1,
@@ -13,13 +13,13 @@ module bju #(
     input wire valid,
     input wire is_unsigned,
 
-    output wire [`RESULT_RANGE] dest,
-    output wire redirect_valid,
-    output wire [`PC_RANGE] redirect_target,
+    output reg [`RESULT_RANGE] dest,
+    output reg redirect_valid,
+    output reg [`PC_RANGE] redirect_target,
 
     //BHT Write Interface
     output reg                   bjusb_bht_write_enable,                         // Write enable signal
-    output reg [INDEX_WIDTH-1:0] bjusb_bht_write_index,        // Set index for write operation
+    output reg [BHTBTB_INDEX_WIDTH-1:0] bjusb_bht_write_index,        // Set index for write operation
     output reg [1:0]             bjusb_bht_write_counter_select,           // Counter select (0 to 3) within the set
     output reg                   bjusb_bht_write_inc,                            // Increment signal for the counter
     output reg                   bjusb_bht_write_dec,                            // Decrement signal for the counter
@@ -29,7 +29,7 @@ module bju #(
     output reg bjusb_btb_ce,                    // Chip enable
     output reg bjusb_btb_we,                    // Write enable
     output reg [128:0] bjusb_btb_wmask,
-    output reg [8:0]   bjusb_btb_waddr,           // Write address (9 bits for 512 sets)
+    output reg [8:0]   bjusb_btb_write_index,           // Write address (9 bits for 512 sets)
     output reg [128:0] bjusb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
 
 
@@ -79,7 +79,7 @@ module bju #(
 
     wire bjucal_redirect_valid;
     wire [`PC_RANGE] bjucal_redirect_target;
-    wire [`RESULT_RANGE] bjucal_dest,
+    wire [`RESULT_RANGE] bjucal_dest;
 
 
     assign bjucal_redirect_valid = (is_jal | is_jalr | br_taken) & valid;
@@ -101,18 +101,20 @@ module bju #(
     reg [128:0] btb_wmask;
     reg [128:0] btb_din;
     always @(*) begin
+            btb_wmask = 'b0;
+            btb_din = 'b0;
         if(pc[3:2] == 2'b00)begin
-            btb_wmask = {1'b1,32{1'b0},32{1'b0},32{1'b0},32{1'b1}};
-            btb_din = {1'b1,32{1'b0},32{1'b0},32{1'b0},bjucal_redirect_target[31:0]};
+            btb_wmask = {1'b1,32'd0,32'd0,32'd0,{32{1'b1}}};
+            btb_din = {1'b1,32'd0,32'd0,32'd0,bjucal_redirect_target[31:0]};
         end else if (pc[3:2] == 2'b01) begin
-            btb_wmask = {1'b1,32{1'b0},32{1'b0},32{1'b1},32{1'b0}};
-            btb_din = {1'b1,32{1'b0},32{1'b0},bjucal_redirect_target[31:0],32{1'b0}};            
+            btb_wmask = {1'b1,32'd0,32'd0,{32{1'b1}},32'd0};
+            btb_din = {1'b1,32'd0,32'd0,bjucal_redirect_target[31:0],32'd0};            
         end else if (pc[3:2] == 2'b10)begin
-            btb_wmask = {1'b1,32{1'b0},32{1'b1},32{1'b0},32{1'b0}};
-            btb_din = {1'b1,32{1'b0},bjucal_redirect_target[31:0],32{1'b0},32{1'b0}};                        
+            btb_wmask = {1'b1,32'd0,{32{1'b1}},32'd0,32'd0};
+            btb_din = {1'b1,32'd0,bjucal_redirect_target[31:0],32'd0,32'd0};                        
         end else if (pc[3:2] == 2'b11)begin
-            btb_wmask = {1'b1,32{1'b1},32{1'b0},32{1'b0},32{1'b0}};
-            btb_din = {1'b1,bjucal_redirect_target[31:0],32{1'b0},32{1'b0},32{1'b0}};                                    
+            btb_wmask = {1'b1,{32{1'b1}},32'd0,32'd0,32'd0};
+            btb_din = {1'b1,bjucal_redirect_target[31:0],32'd0,32'd0,32'd0};                                    
         end
     end
 
@@ -131,7 +133,7 @@ module bju #(
             bjusb_btb_ce = 'b0;                   
             bjusb_btb_we = 'b0;                    
             bjusb_btb_wmask = 'b0;
-            bjusb_btb_waddr = 'b0;          
+            bjusb_btb_write_index = 'b0;          
             bjusb_btb_din = 'b0;    
         if(bjusb_bju_jump_bpu_jump_right)begin
             //predict jump right: enhance bht
@@ -156,7 +158,7 @@ module bju #(
             bjusb_btb_ce = 1'b1;                   
             bjusb_btb_we = 1'b1;                    
             bjusb_btb_wmask = btb_wmask;
-            bjusb_btb_waddr = pc[12:4];          
+            bjusb_btb_write_index = pc[12:4];          
             bjusb_btb_din = btb_din;           
         end else if(bjusb_bju_notjump_bpu_jump_wrong)begin
             //predict jump wrong : decrease bht

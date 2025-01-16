@@ -63,18 +63,17 @@ function [1:0] decode_instr;
     end
 endfunction
 
+    wire [31:0] instr3 = aligned_instr[127:96];//4th instr
+    wire [31:0] instr2 = aligned_instr[95:64];//3rd instr
+    wire [31:0] instr1 = aligned_instr[63:32];//2nd instr
+    wire [31:0] instr0 = aligned_instr[31:0];//1st instr
+
     reg  [1:0]   instr3_type;        // Type of Instruction 3
     reg  [1:0]   instr2_type;        // Type of Instruction 2
     reg  [1:0]   instr1_type;        // Type of Instruction 1
     reg  [1:0]   instr0_type;        // Type of Instruction 0
 
     always @(*) begin
-        // Extract each 32-bit instruction
-        wire [31:0] instr3 = aligned_instr[127:96];//4th instr
-        wire [31:0] instr2 = aligned_instr[95:64];//3rd instr
-        wire [31:0] instr1 = aligned_instr[63:32];//2nd instr
-        wire [31:0] instr0 = aligned_instr[31:0];//1st instr
-        
         // Decode instruction types
         instr3_type = decode_instr(instr3);
         instr2_type = decode_instr(instr2);
@@ -87,7 +86,7 @@ endfunction
         (instr3_type != 2'b0),
         (instr2_type != 2'b0),
         (instr1_type != 2'b0),
-        (instr0_type != 2'b0),
+        (instr0_type != 2'b0)
     };
 
     assign admin2ib_predicttaken = {bht_read_data[7],bht_read_data[5],bht_read_data[3],bht_read_data[1]};
@@ -96,10 +95,10 @@ endfunction
     assign bpu_say_jump_makesense_of_4instr = jal_jalr_branch_of_4instr & admin2ib_predicttaken;
 
     assign admin2ib_predicttarget = {
-        {32{admin2ib_predicttaken[3]} & btb_targets[127:96]},
-        {32{admin2ib_predicttaken[2]} & btb_targets[95:64]},
-        {32{admin2ib_predicttaken[1]} & btb_targets[63:32]},
-        {32{admin2ib_predicttaken[0]} & btb_targets[31:0]}
+        ({32{admin2ib_predicttaken[3]}} & btb_targets[127:96]),
+        ({32{admin2ib_predicttaken[2]}} & btb_targets[95:64]),
+        ({32{admin2ib_predicttaken[1]}} & btb_targets[63:32]),
+        ({32{admin2ib_predicttaken[0]}} & btb_targets[31:0])
     };
 
     /* ---------------- convert bpu_say_jump_makesense_of_4instr ---------------- */
@@ -154,10 +153,10 @@ endfunction
 
     assign admin2pcctrl_predicttaken = exist_aligned_makesensejump;
     assign admin2pcctrl_predicttarget = {
-        (32{first_aligned_makesensejump_oh[3]} & btb_targets[127:96]) |
-        (32{first_aligned_makesensejump_oh[2]} & btb_targets[95:64]) |
-        (32{first_aligned_makesensejump_oh[1]} & btb_targets[63:32]) |
-        (32{first_aligned_makesensejump_oh[0]} & btb_targets[31:0]) 
+        ({32{first_aligned_makesensejump_oh[3]}} & btb_targets[127:96]) |
+        ({32{first_aligned_makesensejump_oh[2]}} & btb_targets[95:64])  |
+        ({32{first_aligned_makesensejump_oh[1]}} & btb_targets[63:32])  |
+        ({32{first_aligned_makesensejump_oh[0]}} & btb_targets[31:0]) 
     };
     
 

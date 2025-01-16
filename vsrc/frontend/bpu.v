@@ -23,11 +23,11 @@ module bpu (
     input wire bht_valid_in,                     // Valid bit for BHT write operation
 
     // BTB Write Interface
-    input wire btb_write_enable,                 // Write enable for BTB
+    input wire btb_ce,                 // Write enable for BTB
+    input wire btb_we,
+    input wire [128:0] btb_wmask,
     input wire [8:0] btb_write_index,            // Set index for BTB write operation
-    input wire btb_write_valid_in,               // Valid bit for BTB write operation
-    input wire [127:0] btb_write_targets,        // Four 32-bit target addresses for BTB write operation
-
+    input wire [128:0] btb_din,
     // Outputs from BHT
     output wire [7:0] bht_read_data,              // 8-bit data from BHT (4 counters)
     output wire bht_valid,                       // BHT valid bit
@@ -40,12 +40,12 @@ module bpu (
 );
 
     // Extract set address from PC [12:4]
-    wire [8:0] set_addr = pc[12:4];
+    wire [8:0] read_index = pc[12:4];
 
     // Instantiate BHT
     bht #(
         .SETS(512),
-        .INDEX_WIDTH(9),
+        .BHTBTB_INDEX_WIDTH(9),
         .COUNTER_WIDTH(2)
     ) bht_inst (
         .clock(clock),
@@ -61,7 +61,7 @@ module bpu (
 
         // Read Interface
         .bht_read_enable(1'b1),                    // Always enable read
-        .bht_read_index(set_addr),
+        .bht_read_index(read_index),
         .bht_read_data(bht_read_data),             // 8-bit read data (4 counters)
         .bht_valid(bht_valid),
         .bht_read_miss_count(bht_read_miss_count)  // Read miss count output
@@ -73,13 +73,14 @@ module bpu (
         .reset_n(reset_n),
 
         // Write Interface
-        .btb_ce(btb_write_enable),                // Chip enable during write
-        .btb_we(btb_write_enable),                // Write enable during write
-        .btb_waddr(btb_write_index),
-        .btb_din({btb_write_valid_in, btb_write_targets}),    // Concatenate valid bit and target addresses
+        .btb_ce(btb_ce),                // Chip enable during write
+        .btb_we(btb_we),                // Write enable during write
+        .btb_wmask (btb_wmask),
+        .btb_write_index(btb_write_index),
+        .btb_din(btb_din),    // Concatenate valid bit and target addresses
 
         // Read Interface
-        .btb_raddr(set_addr),
+        .btb_read_index(read_index),
         .btb_read_valid_out(btb_valid),
         .btb_read_targets(btb_targets),
 

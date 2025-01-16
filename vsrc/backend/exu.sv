@@ -1,5 +1,7 @@
 `include "defines.sv"
-module exu (
+module exu #(
+        parameter BHTBTB_INDEX_WIDTH = 9           // Width of the set index (for SETS=512, BHTBTB_INDEX_WIDTH=9)
+)(
     input wire                      clock,
     input wire                      reset_n,
     input wire [       `LREG_RANGE] rs1,
@@ -43,7 +45,7 @@ module exu (
     output wire [`RESULT_RANGE] ex_byp_result,
     //BHT Write Interface
     output wire bjusb_bht_write_enable,                         // Write enable signal
-    output wire [INDEX_WIDTH-1:0] bjusb_bht_write_index,        // Set index for write operation
+    output wire [BHTBTB_INDEX_WIDTH-1:0] bjusb_bht_write_index,        // Set index for write operation
     output wire [1:0] bjusb_bht_write_counter_select,           // Counter select (0 to 3) within the set
     output wire bjusb_bht_write_inc,                            // Increment signal for the counter
     output wire bjusb_bht_write_dec,                            // Decrement signal for the counter
@@ -53,7 +55,7 @@ module exu (
     output wire bjusb_btb_ce,                    // Chip enable
     output wire bjusb_btb_we,                    // Write enable
     output wire [128:0] bjusb_btb_wmask,
-    output wire [8:0]   bjusb_btb_waddr,           // Write address (9 bits for 512 sets)
+    output wire [8:0]   bjusb_btb_write_index,           // Write address (9 bits for 512 sets)
     output wire [128:0] bjusb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
 );
 
@@ -122,7 +124,7 @@ module exu (
         .bjusb_btb_ce (bjusb_btb_ce),           
         .bjusb_btb_we (bjusb_btb_we),           
         .bjusb_btb_wmask (bjusb_btb_wmask),
-        .bjusb_btb_waddr (bjusb_btb_waddr),
+        .bjusb_btb_write_index (bjusb_btb_write_index),
         .bjusb_btb_din (bjusb_btb_din)             
     );
 
