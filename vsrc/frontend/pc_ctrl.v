@@ -24,7 +24,8 @@ module pc_ctrl (
     input  wire        pc_index_ready,    // Signal indicating DDR operation is complete
     input  wire        pc_operation_done,
     input  wire           admin2pcctrl_predicttaken,
-    input  wire  [31:0]   admin2pcctrl_predicttarget
+    input  wire  [31:0]   admin2pcctrl_predicttarget,
+    output wire   pc_req_handshake
 
 );
 
@@ -41,7 +42,7 @@ module pc_ctrl (
     end
 
 
-    wire pc_req_handshake;
+    //wire pc_req_handshake;
     assign pc_req_handshake = pc_index_ready && pc_index_valid;
     reg pc_req_outstanding;
     always @(posedge clock or negedge reset_n) begin

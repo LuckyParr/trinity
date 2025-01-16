@@ -54,7 +54,8 @@ module ifu_top (
 
     /* --------------------------- bpu related signals -------------------------- */
 
-    // Outputs from BHT
+    // BHT Read Interface
+    wire   pc_req_handshake;
     wire [7:0] bht_read_data;              // 8-bit data from BHT (4 counters)
     wire bht_valid;                       // BHT valid bit
     wire [31:0] bht_read_miss_count;      // BHT read miss count
@@ -128,7 +129,8 @@ module ifu_top (
         .pc_index_ready                 (pc_index_ready               ),
         .pc_operation_done              (pc_operation_done            ),
         .admin2pcctrl_predicttaken      (admin2pcctrl_predicttaken    ),
-        .admin2pcctrl_predicttarget     (admin2pcctrl_predicttarget   )
+        .admin2pcctrl_predicttarget     (admin2pcctrl_predicttarget   ),
+        .pc_req_handshake               (pc_req_handshake)
                                                                       );
 
     bpu u_bpu                       (
@@ -146,6 +148,7 @@ module ifu_top (
         .btb_wmask                  (btb_wmask                ),
         .btb_write_index            (btb_write_index          ),
         .btb_din                    (btb_din                  ),
+        .bht_read_enable            (pc_req_handshake),
         .bht_read_data              (bht_read_data            ),
         .bht_valid                  (bht_valid                ),
         .bht_read_miss_count        (bht_read_miss_count      ),

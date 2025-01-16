@@ -28,7 +28,8 @@ module bpu (
     input wire [128:0] btb_wmask,
     input wire [8:0] btb_write_index,            // Set index for BTB write operation
     input wire [128:0] btb_din,
-    // Outputs from BHT
+    // BHT Read Interface
+    input  wire bht_read_enable,
     output wire [7:0] bht_read_data,              // 8-bit data from BHT (4 counters)
     output wire bht_valid,                       // BHT valid bit
     output wire [31:0] bht_read_miss_count,      // BHT read miss count
@@ -60,7 +61,7 @@ module bpu (
         .bht_valid_in(bht_valid_in),
 
         // Read Interface
-        .bht_read_enable(1'b1),                    // Always enable read
+        .bht_read_enable(bht_read_enable),                    
         .bht_read_index(read_index),
         .bht_read_data(bht_read_data),             // 8-bit read data (4 counters)
         .bht_valid(bht_valid),
