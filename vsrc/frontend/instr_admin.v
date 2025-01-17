@@ -19,28 +19,44 @@ reg  [`ICACHE_FETCHWIDTH128_RANGE] aligned_instr; // 4 instr after aligner logic
 reg  [ 3:0] aligned_instr_valid; // indicate instr valid
 
 /* ------------ aligner logic : to delete some front instr base on pc ------------ */
+// let s say 4 instruciton fetch from icache like this:
+//                      fetch_instr              aligned_instr_valid   aligned_instr
+//                      |instr 0|                              0         | empty |  
+//                pc->  |instr 1|     ------>                  1         |instr 1|  
+//                      |instr 2|                              1         |instr 2|  
+//                      |instr 3|                              1         |instr 3|     
+
     always @* begin
         aligned_instr       = 'b0;
         aligned_instr_valid = 'b0;
         if (pc_operation_done) begin
-            if (pc[3:2] == 2'b01) begin
-                // Shift cache line to discard the lowest 32 bits (shift by 32 bits)
-                aligned_instr       = {32'b0, fetch_instr[127:32]};
-                aligned_instr_valid = {4'b0111};
-            end else if (pc[3:2] == 2'b10) begin
-                aligned_instr       = {64'b0, fetch_instr[127:64]};
-                aligned_instr_valid = {4'b0011};
-            end else if (pc[3:2] == 2'b11) begin
-                aligned_instr       = {96'b0, fetch_instr[127:96]};
-                aligned_instr_valid = {4'b0001};
-            end else begin // (pc[3:2] == 2'b00), get all instr
-                aligned_instr       = fetch_instr;
+            if (pc[3:2] == 2'b00) begin
                 aligned_instr_valid = {4'b1111};
+                aligned_instr       = fetch_instr;
+            end else if (pc[3:2] == 2'b01) begin
+                // Shift cache line to discard the lowest 32 bits (shift by 32 bits)
+                aligned_instr_valid = {4'b0111};
+                aligned_instr       = {32'b0, fetch_instr[127:32]};
+            end else if (pc[3:2] == 2'b10) begin
+                aligned_instr_valid = {4'b0011};
+                aligned_instr       = {64'b0, fetch_instr[127:64]};
+            end else if (pc[3:2] == 2'b11) begin
+                aligned_instr_valid = {4'b0001};
+                aligned_instr       = {96'b0, fetch_instr[127:96]};
             end
         end
     end
 
 /* ------- checker logic : determine if 4 instr is true branch/jal/jalr , then get instrs that truly need jump ------- */
+// continue:
+// aligned_instr_valid   aligned_instr         bht_say_jump    bht_say_jump_aligned     jal_jalr_branch_of_4instr   ::  admin2ib_predicttaken    admin2ib_predicttarget    ::  set_valid_till_first_branch     admin2ib_instr_valid      admin2ib_instr     ::     admin2pcctrl_predicttarget     admin2pcctrl_predicttarget                                                                            
+//             0         | empty | (br)             1                    0                        1                 ::          0                    |      empty     |    ::              1                           0                 |   emtpy   |      ::                                              
+//             1         |instr 1| (add)            1                    1                        0                 ::          0                    |      empty     |    ::              1                           1                 |  instr 1  |      ::                 1                         |  instr 1  |               
+//             1         |instr 2| (br)             1                    1                        1                 ::          1                    |predict target 2|    ::              1                           1                 |  instr 2  |      ::                    
+//             1         |instr 3| (br)             1                    1                        1                 ::          1                    |predict target 3|    ::              0                           0                 |   emtpy   |      ::                    
+
+
+/* ---------admin check which instr of fetched 4 instr is truly jump or branch instruction--------- */
 // Define local parameters for instruction types
 localparam OTHER    = 2'b00;
 localparam JAL      = 2'b01;
@@ -89,11 +105,16 @@ endfunction
         (instr0_type != 2'b0)
     };
 
-    assign admin2ib_predicttaken = {bht_read_data[7],bht_read_data[5],bht_read_data[3],bht_read_data[1]};
+    /* ----------  admin signals to ibufer : admin2ib_predicttaken and admin2ib_predicttarget ---------- */
+    wire [3:0] bht_say_jump;
+    assign bht_say_jump = {bht_read_data[7],bht_read_data[5],bht_read_data[3],bht_read_data[1]} ;
+    wire [3:0] bht_say_jump_aligned;
+    assign bht_say_jump_aligned = bht_say_jump & aligned_instr_valid;
+    
+    wire [3:0] bpu_say_jump_makesense_aligned;//bit = 1 indicate this instruction is truly jump or branch , while bpu predict jump 
+    assign bpu_say_jump_makesense_aligned = jal_jalr_branch_of_4instr & bht_say_jump_aligned;
 
-    wire [3:0] bpu_say_jump_makesense_of_4instr;//bit = 1 indicate this instruction is truly jump or branch , while bpu predict jump 
-    assign bpu_say_jump_makesense_of_4instr = jal_jalr_branch_of_4instr & admin2ib_predicttaken;
-
+    assign admin2ib_predicttaken = bpu_say_jump_makesense_aligned;
     assign admin2ib_predicttarget = {
         ({32{admin2ib_predicttaken[3]}} & btb_targets[127:96]),
         ({32{admin2ib_predicttaken[2]}} & btb_targets[95:64]),
@@ -101,35 +122,26 @@ endfunction
         ({32{admin2ib_predicttaken[0]}} & btb_targets[31:0])
     };
 
-    /* ---------------- convert bpu_say_jump_makesense_of_4instr ---------------- */
-    wire [3:0] set_valid_before_first_branch;
-    assign set_valid_before_first_branch = (bpu_say_jump_makesense_of_4instr[0]) ? 4'b0001 :          
-                                           (bpu_say_jump_makesense_of_4instr[1]) ? 4'b0011 :          
-                                           (bpu_say_jump_makesense_of_4instr[2]) ? 4'b0111 :          
-                                           (bpu_say_jump_makesense_of_4instr[3]) ? 4'b1111 :          
+    /* ---------- admin signals to ibufer : admin2ib_instr_valid and admin2ib_instr---------- */
+    wire [3:0] set_valid_till_first_branch;
+    assign set_valid_till_first_branch = (bpu_say_jump_makesense_aligned[0]) ? 4'b0001 :          
+                                           (bpu_say_jump_makesense_aligned[1]) ? 4'b0011 :          
+                                           (bpu_say_jump_makesense_aligned[2]) ? 4'b0111 :          
+                                           (bpu_say_jump_makesense_aligned[3]) ? 4'b1111 :          
                                             4'b0000 ;   
 
-    /* --------------------------- last process logic:(admin2ib_instr after trimfront(aligned) and trimtail(branch)) --------------------------- */
-    wire [3:0] aligned_makesensejump_of_4instr;
-    assign aligned_makesensejump_of_4instr = (aligned_instr_valid & bpu_say_jump_makesense_of_4instr);
-
-    wire exist_aligned_makesensejump;
-    assign exist_aligned_makesensejump = | aligned_makesensejump_of_4instr;
-
-    wire [3:0] trimtail_instr_valid;
-    assign trimtail_instr_valid = {
-        (aligned_instr_valid[3] & set_valid_before_first_branch[3]),
-        (aligned_instr_valid[2] & set_valid_before_first_branch[2]),
-        (aligned_instr_valid[1] & set_valid_before_first_branch[1]),
-        (aligned_instr_valid[0] & set_valid_before_first_branch[0])
-    };
+    wire [3:0] trimtail_aligned_instr_valid;
+    assign trimtail_aligned_instr_valid = aligned_instr_valid & set_valid_till_first_branch;
 
     wire [127:0] trimtail_instr;
-    assign trimtail_instr[127:96] = {32{trimtail_instr_valid[3]}} & aligned_instr[127:96];
-    assign trimtail_instr[95:64] = {32{trimtail_instr_valid[2]}} & aligned_instr[95:64];
-    assign trimtail_instr[63:32] = {32{trimtail_instr_valid[1]}} & aligned_instr[63:32];
-    assign trimtail_instr[31:0] = {32{trimtail_instr_valid[0]}} & aligned_instr[31:0];
+    assign trimtail_instr[127:96] = {32{trimtail_aligned_instr_valid[3]}} & aligned_instr[127:96];
+    assign trimtail_instr[95:64] = {32{trimtail_aligned_instr_valid[2]}} & aligned_instr[95:64];
+    assign trimtail_instr[63:32] = {32{trimtail_aligned_instr_valid[1]}} & aligned_instr[63:32];
+    assign trimtail_instr[31:0] = {32{trimtail_aligned_instr_valid[0]}} & aligned_instr[31:0];
     
+
+    wire exist_aligned_makesensejump;
+    assign exist_aligned_makesensejump = | bpu_say_jump_makesense_aligned;
 
     always @(*) begin
         admin2ib_instr = 'b0;
@@ -139,14 +151,14 @@ endfunction
             admin2ib_instr_valid = aligned_instr_valid;
         end else begin
             admin2ib_instr = trimtail_instr;
-            admin2ib_instr_valid = trimtail_instr_valid;
+            admin2ib_instr_valid = trimtail_aligned_instr_valid;
         end
     end
 
     /* ------------------------------ signal to pc ------------------------------ */
     wire [3:0] first_aligned_makesensejump_oh;
     findfirstone u_findfirstone_admin(
-        .in_vector (aligned_makesensejump_of_4instr ),
+        .in_vector (bpu_say_jump_makesense_aligned ),
         .onehot    (first_aligned_makesensejump_oh    ),
         .valid     (     )
     );
