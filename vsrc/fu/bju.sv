@@ -216,6 +216,7 @@ module bju #(
             situation5_cnt <= situation4_cnt + 1;            
         end
     end
-
+//250117 record: 
+//correctness rate = (situation1_cnt + situation5)/sum : (11011+1013)/14079=85.4%
 
 endmodule
