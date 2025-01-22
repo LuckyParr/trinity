@@ -1,30 +1,142 @@
-module #()
-(
+module param_queue #(
+    parameter ISSUE_QUEUE_DEPTH = 8,
+    parameter DATA_WIDTH        = 231
+)(
+    // Clock & Reset
+    input  wire                     clock,
+    input  wire                     reset_n,  // Active-low reset
 
+    // Write interface
+    input  wire [DATA_WIDTH-1:0]    write_data,
+    input  wire                     write_sleep_rs1,
+    input  wire                     write_sleep_rs2,
+    input  wire                     write_enable,
+    output reg                      queue_full,  // Indicates no free entries
+
+    // Wake-up interface for RS1
+    input  wire [$clog2(ISSUE_QUEUE_DEPTH)-1:0] wake_rs1_index,
+    input  wire                                 wake_rs1_enable,
+
+    // Wake-up interface for RS2
+    input  wire [$clog2(ISSUE_QUEUE_DEPTH)-1:0] wake_rs2_index,
+    input  wire                                 wake_rs2_enable,
+
+    // Read interface
+    input  wire                     read_enable,
+    output reg  [DATA_WIDTH-1:0]    read_data,
+    output reg                      read_data_valid
 );
-//issue queue is a 2d reg array
-/* ------------------- use findfirst_2availableblock to get place to enqueue 2 instr at same time ------------------- */
 
+    // ----------------------
+    // Internal memory arrays
+    // ----------------------
+    reg [DATA_WIDTH-1:0] data_array   [0:ISSUE_QUEUE_DEPTH-1];
+    reg                  valid_array  [0:ISSUE_QUEUE_DEPTH-1];
+    // Two separate sleep bits per entry
+    reg                  sleep_rs1_array [0:ISSUE_QUEUE_DEPTH-1];
+    reg                  sleep_rs2_array [0:ISSUE_QUEUE_DEPTH-1];
 
+    // --------------------------------------------------------
+    // 1) Find the first free slot for write (i.e. valid=0)
+    // --------------------------------------------------------
+    reg [$clog2(ISSUE_QUEUE_DEPTH)-1:0] write_index_internal;
+    reg                                  found_write_slot;
 
-/* ---------- receive writeback info to wakeup instr in issue queue --------- */
+    integer i;
+    always @* begin
+        found_write_slot     = 1'b0;
+        write_index_internal = {($clog2(ISSUE_QUEUE_DEPTH)){1'b0}};
+        for (i = 0; i < ISSUE_QUEUE_DEPTH; i = i + 1) begin
+            if (!found_write_slot && !valid_array[i]) begin
+                write_index_internal = i[$clog2(ISSUE_QUEUE_DEPTH)-1:0];
+                found_write_slot     = 1'b1;
+            end
+        end
+    end
 
+    // -------------------------------------------------------------
+    // 2) Find the first valid entry with BOTH sleep bits cleared
+    // -------------------------------------------------------------
+    reg [$clog2(ISSUE_QUEUE_DEPTH)-1:0] read_index;
+    reg                                  found_read_slot;
 
+    always @* begin
+        found_read_slot = 1'b0;
+        read_index      = {($clog2(ISSUE_QUEUE_DEPTH)){1'b0}};
+        for (i = 0; i < ISSUE_QUEUE_DEPTH; i = i + 1) begin
+            // Must be valid AND both sleep bits = 0
+            if (!found_read_slot && valid_array[i] &&
+                !sleep_rs1_array[i] && !sleep_rs2_array[i]) begin
+                read_index      = i[$clog2(ISSUE_QUEUE_DEPTH)-1:0];
+                found_read_slot = 1'b1;
+            end
+        end
+    end
 
-/* ---------------- use findfirst to find first non-sleep instr to send to fu --------------- */
+    // -------------------------------------------------------------
+    // 3) Sequential logic
+    // -------------------------------------------------------------
+    always @(posedge clock or negedge reset_n) begin
+        if (!reset_n) begin
+            // Reset all internal states
+            for (i = 0; i < ISSUE_QUEUE_DEPTH; i = i + 1) begin
+                data_array[i]       <= {DATA_WIDTH{1'b0}};
+                valid_array[i]      <= 1'b0;
+                sleep_rs1_array[i]  <= 1'b0;
+                sleep_rs2_array[i]  <= 1'b0;
+            end
+            read_data       <= {DATA_WIDTH{1'b0}};
+            read_data_valid <= 1'b0;
+            queue_full      <= 1'b0;
+        end
+        else begin
+            //------------------------------------------
+            // A) Handle write: if a free slot is found
+            //------------------------------------------
+            queue_full <= 1'b0;  // Default is not full
+            if (write_enable) begin
+                if (found_write_slot) begin
+                    data_array[write_index_internal]       <= write_data;
+                    valid_array[write_index_internal]      <= 1'b1;
+                    sleep_rs1_array[write_index_internal]  <= write_sleep_rs1;
+                    sleep_rs2_array[write_index_internal]  <= write_sleep_rs2;
+                end
+                else begin
+                    // No free slot found => queue is full
+                    queue_full <= 1'b1;
+                end
+            end
 
+            //------------------------------------------
+            // B) Wake-up (set the corresponding sleep bit to 0)
+            //------------------------------------------
+            if (wake_rs1_enable) begin
+                sleep_rs1_array[wake_rs1_index] <= 1'b0;
+            end
+            if (wake_rs2_enable) begin
+                sleep_rs2_array[wake_rs2_index] <= 1'b0;
+            end
 
-
-
-/* ------------------ get reg content from physical regfile ----------------- */
-
-
-
-
-/* ---------------------------- send instr to fu ---------------------------- */
-
-
-
-
+            //------------------------------------------
+            // C) Handle read
+            //------------------------------------------
+            // By default, no valid read output
+            read_data_valid <= 1'b0;
+            if (read_enable) begin
+                if (found_read_slot) begin
+                    // Output data for the selected entry
+                    read_data       <= data_array[read_index];
+                    read_data_valid <= 1'b1;
+                    // Once read, clear valid bit
+                    valid_array[read_index] <= 1'b0;
+                end
+                else begin
+                    // If no valid, fully-awake entry found, output invalid
+                    read_data       <= {DATA_WIDTH{1'b0}};
+                    read_data_valid <= 1'b0;
+                end
+            end
+        end
+    end
 
 endmodule

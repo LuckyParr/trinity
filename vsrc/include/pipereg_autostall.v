@@ -1,8 +1,7 @@
 module pipereg_autostall (
     input  wire               clock,
     input  wire               reset_n,
-    // input  wire               stall,
-    output wire               instr_ready,
+    output wire               instr_ready_to_upper,
     input  wire [`LREG_RANGE] lrs1,
     input  wire [`LREG_RANGE] lrs2,
     input  wire [`LREG_RANGE] lrd,
@@ -41,10 +40,10 @@ module pipereg_autostall (
     input wire [`RESULT_RANGE] opload_read_data_wb,
 
     //flush
-    input redirect_flush,
+    input flush_valid,
 
     // outputs
-    input  wire               lower_instr_ready,
+    input  wire               instr_ready_from_lower,
     output reg  [`LREG_RANGE] lower_lrs1,
     output reg  [`LREG_RANGE] lower_lrs2,
     output reg  [`LREG_RANGE] lower_lrd,
@@ -80,10 +79,10 @@ module pipereg_autostall (
 
     output reg [`RESULT_RANGE] lower_opload_read_data_wb
 );
-    wire in_fire = instr_valid & instr_ready;
-    wire lower_fire = lower_instr_valid & lower_instr_ready;
+    wire in_fire = instr_valid & instr_ready_to_upper;
+    wire lower_fire = lower_instr_valid & instr_ready_from_lower;
     always @(posedge clock or negedge reset_n) begin
-        if (~reset_n || redirect_flush ) begin
+        if (~reset_n || flush_valid ) begin
             lower_instr_valid         <= 'b0;
             lower_lrs1                <= 'b0;
             lower_lrs2                <= 'b0;
@@ -150,5 +149,5 @@ module pipereg_autostall (
         end
     end
 
-    assign instr_ready = lower_instr_ready;
+    assign instr_ready_to_upper = instr_ready_from_lower;
 endmodule

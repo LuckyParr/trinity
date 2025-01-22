@@ -14,19 +14,19 @@ module busy_vector (
 
     // Read Port 0
     input wire [5:0] disp2bt_instr0rs1_rdaddr, // Address for disp2bt_instr0rs1_rddata
-    output wire bt2disp_instr0rs1_rddata,      // Data output for disp2bt_instr0rs1_rddata
+    output wire bt2disp_instr0rs1_busy,      // Data output for disp2bt_instr0rs1_rddata
 
     // Read Port 1
     input wire [5:0] disp2bt_instr0rs2_rdaddr, // Address for disp2bt_instr0rs2_rddata
-    output wire bt2disp_instr0rs2_rddata,      // Data output for disp2bt_instr0rs2_rddata
+    output wire bt2disp_instr0rs2_busy,      // Data output for disp2bt_instr0rs2_rddata
 
     // Read Port 2
     input wire [5:0] disp2bt_instr1rs1_rdaddr, // Address for disp2bt_instr1rs1_rddata
-    output wire bt2disp_instr1rs1_rddata,      // Data output for disp2bt_instr1rs1_rddata
+    output wire bt2disp_instr1rs1_busy,      // Data output for disp2bt_instr1rs1_rddata
 
     // Read Port 3
     input wire [5:0] disp2bt_instr1rs2_rdaddr, // Address for disp2bt_instr1rs2_rddata
-    output wire bt2disp_instr1rs2_rddata,      // Data output for disp2bt_instr1rs2_rddata
+    output wire bt2disp_instr1rs2_busy,      // Data output for disp2bt_instr1rs2_rddata
 
     // Write Port 0 - Allocate Instruction 0
     input wire alloc_instr0rd_en0,             // Enable for alloc_instr0rd_addr0
@@ -106,9 +106,9 @@ module busy_vector (
            busy_vector[disp2bt_instr1rs2_rdaddr];
 
     // Assigning read data with bypass logic
-    assign bt2disp_instr0rs1_rddata = bypass_instr0rs1;
-    assign bt2disp_instr0rs2_rddata = bypass_instr0rs2;
-    assign bt2disp_instr1rs1_rddata = bypass_instr1rs1;
-    assign bt2disp_instr1rs2_rddata = bypass_instr1rs2;
+    assign bt2disp_instr0rs1_busy = bypass_instr0rs1;
+    assign bt2disp_instr0rs2_busy = bypass_instr0rs2;
+    assign bt2disp_instr1rs1_busy = bypass_instr1rs1;
+    assign bt2disp_instr1rs2_busy = bypass_instr1rs2;
 
 endmodule
