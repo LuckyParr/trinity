@@ -2,20 +2,25 @@
 module mem (
     input  wire                  clock,
     input  wire                  reset_n,
-    input  wire                  is_load,
-    input  wire                  is_store,
-    input  wire                  is_unsigned,
-    input  wire [    `SRC_RANGE] imm,
-    input  wire [    `SRC_RANGE] src1,
-    input  wire [    `SRC_RANGE] src2,
-    input  wire [`LS_SIZE_RANGE] ls_size,
     input  wire                  instr_valid,
+    output wire                  instr_ready,
+    input  wire [  `INSTR_RANGE] instr, // for debug
+    input  wire [     `PC_RANGE] pc,//for debug
+    input  wire [7:0]            id,
+/* -------------------------- calculation meterial -------------------------- */
+    input  wire [    `SRC_RANGE   ] src1    ,
+    input  wire [    `SRC_RANGE   ] src2    ,
+    input  wire [      `PREG_RANGE] prd     ,
+    input  wire [    `SRC_RANGE   ] imm     ,
+    input  wire                  is_load    ,
+    input  wire                  is_store   ,
+    input  wire                  is_unsigned,
+    input  wire [`LS_SIZE_RANGE] ls_size    ,
+
     //input  wire                  predict_taken,
     //input  wire [31:0]           predict_target,  
-    input  wire [     `PC_RANGE] pc,
-    input  wire [  `INSTR_RANGE] instr,
 
-    //trinity bus channel
+/* --------------------------- trinity bus channel -------------------------- */
     output reg                  tbus_index_valid,
     input  wire                 tbus_index_ready,
     output reg  [`RESULT_RANGE] tbus_index,
@@ -26,19 +31,46 @@ module mem (
     input  wire                 tbus_operation_done,
     output wire [  `TBUS_OPTYPE_RANGE] tbus_operation_type,
 
-    // output valid, pc , inst
-    output wire                 instr_valid_out,
-    output wire [    `PC_RANGE] pc_out,
-    output wire [ `INSTR_RANGE] instr_out,
-    output wire [`RESULT_RANGE] ls_address,
+/* -------------------------- output to wb pipereg -------------------------- */
+    // output valid, pc , inst, id
+    output wire                 out_instr_valid,
+    // output wire [ `INSTR_RANGE] out_instr,
+    // output wire [    `PC_RANGE] out_pc,
+    output wire [7:0]           out_id,
+    output wire [`PREG_RANGE]   out_prd,
+    output wire                 out_need_to_wb,
+    output wire                 out_mmio_valid,
+    //output wire [`RESULT_RANGE] ls_address,
     //read data to wb stage
-    output wire [`RESULT_RANGE] opload_read_data_wb,
-    //mem stall
-    output wire                 mem_stall
+    output wire [`RESULT_RANGE] opload_read_data_wb, // output rddata at same cycle as operation_done
+    //mem stall, dont use mem_stall anymore, use instr_ready to stop issue_queue from issuing instr
+    //output wire                 mem_stall
 
+    /* -------------------------- redirect flush logic -------------------------- */
+    input  wire                     flush_valid,
+    input  wire   [7:0]             flush_id
 
 );
+    wire op_processing;
+    //assign instr_ready = ~mem_stall;
+    assign instr_ready = ~op_processing;
 
+    //when redirect instr from wb pipereg is older than current instr in exu, flush instr in exu
+    wire need_flush;
+    assign need_flush = flush_valid && ((flush_id[7]^out_id[7])^(flush_id[6:0] < out_id[6:0]));
+
+    reg                     need_to_wb_latch;
+    reg [7:0]               id_latch;
+    reg [      `PREG_RANGE] prd_latch;
+    assign out_instr_valid = is_outstanding & (tbus_operation_done) & ~need_flush | out_mmio_valid;;
+    // assign out_instr       = instr;
+    // assign out_pc          = pc;
+    assign out_id          = id_latch;
+    assign out_prd         = prd_latch;
+    assign out_need_to_wb  = need_to_wb_latch;
+
+/* ---------------------------- calculate address --------------------------- */
+    wire [`RESULT_RANGE] ls_address;
     agu u_agu (
         .src1      (src1),
         .imm       (imm),
@@ -46,27 +78,19 @@ module mem (
     );
 
 
-
-    assign instr_valid_out = instr_valid;
-    assign pc_out          = pc;
-    assign instr_out       = instr;
-
-
     localparam IDLE = 2'b00;
     localparam PENDING = 2'b01;
     localparam OUTSTANDING = 2'b10;
-    localparam TEMP = 2'b11;
     reg  [1:0] ls_state;
-    wire       ls_idle = ls_state == IDLE;
-    wire       ls_pending = ls_state == PENDING;
-    wire       ls_outstanding = ls_state == OUTSTANDING;
-    wire       ls_temp = ls_state == TEMP;
+    wire       is_idle = ls_state == IDLE;
+    wire       is_pending = ls_state == PENDING;
+    wire       is_outstanding = ls_state == OUTSTANDING;
     /*
     0 = B
     1 = HALF WORD
     2 = WORD
     3 = DOUBLE WORD
-*/
+    */
     wire       size_1b = ls_size[0];
     wire       size_1h = ls_size[1];
     wire       size_1w = ls_size[2];
@@ -110,8 +134,14 @@ module mem (
     assign opload_operation_done = outstanding_load_q & tbus_operation_done;
     assign opstore_operation_done = outstanding_store_q & tbus_operation_done;
     
-    wire                 mmio_valid = (is_load | is_store) & ('h30000000 <= ls_address) & (ls_address <= 'h40700000);
+    wire   mmio_valid = instr_valid & (is_load | is_store) & ('h30000000 <= ls_address) & (ls_address <= 'h40700000);
 
+    always @(posedge clock or negedge reset_n) begin 
+        if(reset_n == 1'b0) 
+            out_mmio_valid <= 0; 
+        else 
+            out_mmio_valid <= mmio_valid; 
+    end
 
     wire [         63:0] write_1b_mask = {56'b0, {8{1'b1}}};
     wire [         63:0] write_1h_mask = {48'b0, {16{1'b1}}};
@@ -170,13 +200,13 @@ module mem (
         tbus_operation_type = 'b0;
 
         if (is_load & instr_valid) begin
-            if ((~ls_outstanding) & ~mmio_valid) begin
+            if ((~is_outstanding) & ~mmio_valid) begin
                 tbus_index_valid    = 1'b1;
                 tbus_index          = ls_address[`RESULT_WIDTH-1:0];
                 tbus_operation_type = `TBUS_READ;
             end
         end else if (is_store & instr_valid) begin
-            if (~ls_outstanding & ~mmio_valid) begin
+            if (~is_outstanding & ~mmio_valid) begin
                 tbus_index_valid    = 1'b1;
                 tbus_index          = ls_address[`RESULT_WIDTH-1:0];
                 tbus_write_mask     = opstore_write_mask_qual;
@@ -188,8 +218,6 @@ module mem (
         end
 
     end
-
-
 
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
@@ -223,8 +251,46 @@ module mem (
 
     end
 
-    assign mem_stall =  (~ls_idle | tbus_index_valid) & //when tbus_index_valid = 1, means lsu have an req due to send, stall immediately
-                        ~((ls_outstanding) & (opload_operation_done | opstore_operation_done)); //when operation done, no need to stall anymore
-                         
+    //assign mem_stall =  (~is_idle | tbus_index_valid) & //when tbus_index_valid = 1, means lsu have an req due to send, stall immediately
+    //                    ~((is_outstanding) & (opload_operation_done | opstore_operation_done)); //when operation done, no need to stall anymore
+    assign op_processing = ~idle;                     
+
+
+    /* -------------------------------------------------------------------------- */
+    /* latch input signal when entry is issued from isq, because isq entry valid bit is 0 after selection, so it would not hold itself                               */
+    /* -------------------------------------------------------------------------- */
+    wire req_fire;
+    assign req_fire = write_fire || read_fire;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            need_to_wb_latch <= 'b0;
+        end else if (req_fire | mmio_valid) begin
+            need_to_wb_latch <= instr_valid & is_load;
+        end else if (tbus_operation_done | is_idle) begin
+            need_to_wb_latch <= 'b0;
+        end
+    end
+
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            prd_latch <= 'b0;
+        end else if (req_fire | mmio_valid) begin
+            prd_latch <= prd;
+        end else if (tbus_operation_done | is_idle) begin
+            prd_latch <= 'b0;
+        end
+    end
+
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            id_latch <= 'b0;
+        end else if (req_fire | mmio_valid) begin
+            id_latch <= id;
+        end else if (tbus_operation_done | is_idle) begin
+            id_latch <= 'b0;
+        end
+    end
+
+
 
 endmodule

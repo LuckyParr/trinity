@@ -1,11 +1,11 @@
-module param_queue #(
+module issue_queue #(
     parameter ISSUE_QUEUE_DEPTH = 8,
-    parameter DATA_WIDTH        = 231
+    parameter DATA_WIDTH        = 248
 )(
     // Clock & Reset
     input  wire                     clock,
     input  wire                     reset_n,  // Active-low reset
-
+    /* ----------------------------issue queue itself wr/rd port ---------------------------- */
     // Write interface
     input  wire [DATA_WIDTH-1:0]    write_data,
     input  wire                     write_sleep_rs1,
@@ -24,7 +24,46 @@ module param_queue #(
     // Read interface
     input  wire                     read_enable,
     output reg  [DATA_WIDTH-1:0]    read_data,
-    output reg                      read_data_valid
+    output reg                      read_data_valid,
+
+    /* ----------------------- read from phsical register ----------------------- */
+    output wire               isq2prf_prs1_rden,
+    output wire [`PREG_RANGE] isq2prf_prs1_rdaddr,  // Read register 1 address
+    input reg [63:0] prf2isq_prs1_rddata,  // Data from isq2prf_prs1_rdaddr register
+
+    output wire               isq2prf_prs2_rden,
+    output wire [`PREG_RANGE] isq2prf_prs2_rdaddr,  // Read register 2 address
+    input reg [63:0] prf2isq_prs2_rddata,  // Data from isq2prf_prs2_rdaddr register
+
+    /* ---------------------------- info write to fu ---------------------------- */
+    output reg                instr0_valid,
+    input  wire               instr0_ready,
+
+    output wire instr0_src1,
+    output wire instr0_src2,
+    output   [7:0]       instr0_id,
+    output  [`SRC_RANGE] instr0_pc,
+//    output reg  [`PREG_RANGE] instr0_prs1,
+//    output reg  [`PREG_RANGE] instr0_prs2,
+//    output reg                instr0_src1_is_reg,
+//    output reg                instr0_src2_is_reg,
+    output  [`PREG_RANGE] instr0_prd,
+//    output reg [`PREG_RANGE] instr0_old_prd,
+
+    output  [`SRC_RANGE ] instr0_imm               ,
+    output                       instr0_need_to_wb ,
+    output  [    `CX_TYPE_RANGE] instr0_cx_type    ,
+    output                       instr0_is_unsigned,
+    output  [   `ALU_TYPE_RANGE] instr0_alu_type   ,
+    output  [`MULDIV_TYPE_RANGE] instr0_muldiv_type,
+    output                       instr0_is_word    ,
+    output                       instr0_is_imm     ,
+    output                       instr0_is_load    , //to mem.v
+    output                       instr0_is_store   , //to mem.v
+    output  [               3:0] instr0_ls_size    , //to mem.v
+
+    output instr0 // send instr itself for debug
+
 );
 
     // ----------------------
@@ -129,14 +168,83 @@ module param_queue #(
                     read_data_valid <= 1'b1;
                     // Once read, clear valid bit
                     valid_array[read_index] <= 1'b0;
+                    instr0_valid <= 1'b1; // if can find entry to read, make instr0_valid = 1 to send it to fu
                 end
                 else begin
                     // If no valid, fully-awake entry found, output invalid
                     read_data       <= {DATA_WIDTH{1'b0}};
                     read_data_valid <= 1'b0;
+                    instr0_valid <= 1'b0;
                 end
             end
         end
     end
+
+
+
+/* ----------------------- read from phsical register ----------------------- */
+    assign isq2prf_prs1_rden = instr0_src1_is_reg;
+    assign isq2prf_prs1_rdaddr = instr0_prs1;
+
+    assign isq2prf_prs2_rden = instr0_src2_is_reg;
+    assign isq2prf_prs2_rdaddr = instr0_prs2;
+
+
+
+/* ------------------------------ decode rddata and send some of them to fu----------------------------- */
+//  each decoded field
+    wire [7:0]  instr0_id         ;
+    wire [63:0] instr0_pc         ;
+    wire [31:0] instr0            ;
+    wire [4:0]  instr0_lrs1       ;
+    wire [4:0]  instr0_lrs2       ;
+    wire [4:0]  instr0_lrd        ;
+    wire [5:0]  instr0_prd        ;
+    wire [5:0]  instr0_old_prd    ;
+    wire        instr0_need_to_wb ;
+    wire [5:0]  instr0_prs1       ;
+    wire [5:0]  instr0_prs2       ;
+    wire        instr0_src1_is_reg;
+    wire        instr0_src2_is_reg;
+    wire [63:0] instr0_imm        ;
+    wire [5:0]  instr0_cx_type    ;
+    wire        instr0_is_unsigned;
+    wire [10:0] instr0_alu_type   ;
+    wire [12:0] instr0_muldiv_type;
+    wire        instr0_is_word    ;
+    wire        instr0_is_imm     ;
+    wire        instr0_is_load    ;
+    wire        instr0_is_store   ;
+    wire [3:0]  instr0_ls_size    ;
+    // Decode the disp2isq_wrdata0 signal
+    assign instr0_src1 =  prf2isq_prs1_rddata;
+    assign instr0_src2 =  prf2isq_prs2_rddata;
+    assign instr0_id          = read_data[247:241];
+    assign instr0_pc          = read_data[240:177];
+    assign instr0             = read_data[176:145];
+    assign instr0_lrs1        = read_data[144:140];
+    assign instr0_lrs2        = read_data[139:135];
+    assign instr0_lrd         = read_data[134:130];
+    assign instr0_prd         = read_data[129:124];
+    assign instr0_old_prd     = read_data[123:118];
+    assign instr0_need_to_wb  = read_data[117    ];
+    assign instr0_prs1        = read_data[116:111];
+    assign instr0_prs2        = read_data[110:105];
+    assign instr0_src1_is_reg = read_data[104    ];
+    assign instr0_src2_is_reg = read_data[103    ];
+    assign instr0_imm         = read_data[102:39 ];
+    assign instr0_cx_type     = read_data[38:33  ];
+    assign instr0_is_unsigned = read_data[32     ];
+    assign instr0_alu_type    = read_data[31:21  ];
+    assign instr0_muldiv_type = read_data[20:8   ];
+    assign instr0_is_word     = read_data[7      ];
+    assign instr0_is_imm      = read_data[6      ];
+    assign instr0_is_load     = read_data[5      ];
+    assign instr0_is_store    = read_data[4      ];
+    assign instr0_ls_size     = read_data[3:0    ];
+
+
+
+
 
 endmodule

@@ -4,37 +4,48 @@ module exu #(
 )(
     input wire                      clock,
     input wire                      reset_n,
-    input wire [       `LREG_RANGE] rs1,
-    input wire [       `LREG_RANGE] rs2,
-    input wire [       `LREG_RANGE] rd,
+    input wire                      instr_valid,
+    output wire                     instr_ready,
+    input wire  [      `INSTR_RANGE] instr,  //for debug
+    input wire [         `PC_RANGE] pc,
+    input reg  [7:0]                id,
+
+/* -------------------------- calculation meterial -------------------------- */
+    //input wire [       `LREG_RANGE] rs1,
+    //input wire [       `LREG_RANGE] rs2,
+    //input wire [       `LREG_RANGE] rd,
+    //input wire                      src1_is_reg,
+    //input wire                      src2_is_reg,
     input wire [        `SRC_RANGE] src1,
     input wire [        `SRC_RANGE] src2,
+    input wire [       `PREG_RANGE] prd,
     input wire [        `SRC_RANGE] imm,
-    input wire                      src1_is_reg,
-    input wire                      src2_is_reg,
     input wire                      need_to_wb,
     input wire [    `CX_TYPE_RANGE] cx_type,
     input wire                      is_unsigned,
     input wire [   `ALU_TYPE_RANGE] alu_type,
-    input wire                      is_word,
-    input wire                      is_load,
-    input wire                      is_imm,
-    input wire                      is_store,
-    input wire [               3:0] ls_size,
     input wire [`MULDIV_TYPE_RANGE] muldiv_type,
-    input wire                      instr_valid,
-    input  wire                  predict_taken,
-    input  wire [31:0]           predict_target,  
-    input wire [         `PC_RANGE] pc,
-    input wire [      `INSTR_RANGE] instr,
-    // output valid, pc, inst
-    output wire                      instr_valid_out,
-    output wire [         `PC_RANGE] pc_out,
-    output wire [      `INSTR_RANGE] instr_out,
+    input wire                      is_imm,
+    input wire                      is_word,
+    //input wire                      is_load,
+    //input wire                      is_store,
+    //input wire [               3:0] ls_size,
+/* ------------------------------ bhtbtb input info ------------------------------ */
+    input  wire                      predict_taken,
+    input  wire [31:0              ] predict_target,  
+/* ----------------------- output result to wb pipereg ---------------------- */
+    // output valid, pc, inst, id
+    output wire                      out_instr_valid,
+    output wire [      `INSTR_RANGE] out_instr,
+    output wire [         `PC_RANGE] out_pc,
+    output wire [7:0]                out_id,
     //exu result
-    output wire [`RESULT_RANGE] alu_result,
-    output wire [`RESULT_RANGE] bju_result,
-    output wire [`RESULT_RANGE] muldiv_result,
+    // output wire [`RESULT_RANGE] alu_result,
+    // output wire [`RESULT_RANGE] bju_result,
+    // output wire [`RESULT_RANGE] muldiv_result,
+    output wire [`RESULT_RANGE] out_result,
+    output wire                 out_need_to_wb,
+    output wire [       `PREG_RANGE] out_prd,
     //output wire [`RESULT_RANGE] ls_address,
     //redirect
     output wire             redirect_valid,
@@ -43,6 +54,13 @@ module exu #(
     //output wire [  `LREG_RANGE] ex_byp_rd,
     //output wire                 ex_byp_need_to_wb,
     output wire [`RESULT_RANGE] ex_byp_result,
+
+/* ---------------------- flush signal from wb pipereg ---------------------- */
+    input wire                     flush_valid,
+    input wire  [7:0]              flush_id,
+
+
+/* --------------------------- btbbht update port -------------------------- */
     //BHT Write Interface
     output wire bjusb_bht_write_enable,                         // Write enable signal
     output wire [BHTBTB_INDEX_WIDTH-1:0] bjusb_bht_write_index,        // Set index for write operation
@@ -58,40 +76,31 @@ module exu #(
     output wire [8:0]   bjusb_btb_write_index,           // Write address (9 bits for 512 sets)
     output wire [128:0] bjusb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
 );
+    wire redirect_valid_internal;
 
+    assign instr_ready = 1'b1;
+    //when redirect instr from wb pipereg is older than current instr in exu, flush instr in exu
+    wire need_flush;
+    assign need_flush = flush_valid && ((flush_id[7]^out_id[7])^(flush_id[6:0] < out_id[6:0]));
 
-    assign instr_valid_out =         instr_valid;
-    assign pc_out =      pc;
-    assign instr_out =   instr;
-
-    //mem load to use bypass
-    wire [`SRC_RANGE] src1_muxed;
-    wire [`SRC_RANGE] src2_muxed;
-    assign src1_muxed = src1;
-    assign src2_muxed = src2;
-    
+    assign out_instr_valid =  need_flush? 0 :  instr_valid;
+    assign out_pc =      pc;    
+    assign out_instr =   instr; //for debug
+    assign out_id = id;
+    assign out_prd = prd;
+    assign redirect_valid = need_flush? 0 :  redirect_valid_internal;
 
     //exu logic
     wire alu_valid = (|alu_type) & instr_valid;
-    wire agu_valid = (is_load | is_store) & instr_valid;
     wire bju_valid = (|cx_type) & instr_valid;
     wire muldiv_valid = (|muldiv_type) & instr_valid;
+    assign out_result = (|alu_type) ? alu_result : (|cx_type) ? bju_result : (|muldiv_type) ? muldiv_result : 64'hDEADBEEF;
+    assign out_need_to_wb = need_to_wb;
 
-    assign instr_valid_out = instr_valid;
-    assign pc_out = pc;
-    assign instr_out = instr;
-
-    //agu u_agu (
-    //    .src1      (src1_muxed),
-    //    .imm       (imm),
-    //    .is_load   (is_load),
-    //    .is_store  (is_store),
-    //    .ls_address(ls_address)
-    //);
 
     alu u_alu (
-        .src1       (src1_muxed),
-        .src2       (src2_muxed),
+        .src1       (src1),
+        .src2       (src2),
         .imm        (imm),
         .pc         (pc),
         .valid      (alu_valid),
@@ -105,8 +114,8 @@ module exu #(
     bju u_bju (
         .clock (clock),
         .reset_n (reset_n),
-        .src1           (src1_muxed),
-        .src2           (src2_muxed),
+        .src1           (src1),
+        .src2           (src2),
         .imm            (imm),
         .predict_taken      (predict_taken), 
         .predict_target     (predict_target), 
@@ -115,7 +124,7 @@ module exu #(
         .valid          (bju_valid),
         .is_unsigned    (is_unsigned),
         .dest           (bju_result),
-        .redirect_valid (redirect_valid),
+        .redirect_valid (redirect_valid_internal),
         .redirect_target(redirect_target),
         .bjusb_bht_write_enable (bjusb_bht_write_enable),                 
         .bjusb_bht_write_index (bjusb_bht_write_index),
@@ -131,8 +140,8 @@ module exu #(
     );
 
     muldiv u_muldiv (
-        .src1       (src1_muxed),
-        .src2       (src2_muxed),
+        .src1       (src1),
+        .src2       (src2),
         .valid      (muldiv_valid),
         .muldiv_type(muldiv_type),
         .result     (muldiv_result)
@@ -155,9 +164,9 @@ module exu #(
     //assign src1_forward_result = (rs1 == mem_byp_rd) & mem_byp_need_to_wb ? mem_byp_result : 64'hDEADBEEF;
     //assign src2_forward_result = (rs2 == mem_byp_rd) & mem_byp_need_to_wb ? mem_byp_result : 64'hDEADBEEF;
 //
-    //assign src1_muxed = src1_need_forward ? src1_forward_result : src1;
-    //assign src2_muxed = src2_need_forward ? src2_forward_result : src2;
+    //assign src1 = src1_need_forward ? src1_forward_result : src1;
+    //assign src2 = src2_need_forward ? src2_forward_result : src2;
 //
-    //assign final_src1 = src1_muxed;
-    //assign final_src2 = src2_muxed;
+    //assign final_src1 = src1;
+    //assign final_src2 = src2;
 endmodule

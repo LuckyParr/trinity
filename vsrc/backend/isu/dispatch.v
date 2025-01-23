@@ -122,30 +122,57 @@ assign disp2bt_instr1rs2_rdaddr = instr1_prs2; //use to set sleep bit in issue q
 assign disp2isq_wren0 = instr0_valid;
 assign disp2isq_wrdata0 = 
                         {
-                        instr0_pc         ,//64
-                        instr0            ,//32
-                        instr0_lrs1       ,//5
-                        instr0_lrs2       ,//5
-                        instr0_lrd        ,//5
-                        instr0_prd        ,//6
-                        instr0_old_prd    ,//6
-                        instr0_need_to_wb ,//1
-                        instr0_prs1       ,//6
-                        instr0_prs2       ,//6
-                        instr0_src1_is_reg,//1
-                        instr0_src2_is_reg,//1
-                        instr0_imm        ,//64
-                        instr0_cx_type    ,//6
-                        instr0_is_unsigned,//1
-                        instr0_alu_type   ,//11
-                        instr0_muldiv_type,//13
-                        instr0_is_word    ,//1
-                        instr0_is_imm     ,//1
-                        instr0_is_load    ,//1
-                        instr0_is_store   ,//1
-                        instr0_ls_size     //4
+                        rob2disp_instr_id ,//7   //[247 : 241]
+                        instr0_pc         ,//64  //[240 : 177]         
+                        instr0            ,//32  //[176 : 145]         
+                        instr0_lrs1       ,//5   //[144 : 140]         
+                        instr0_lrs2       ,//5   //[139 : 135]         
+                        instr0_lrd        ,//5   //[134 : 130]         
+                        instr0_prd        ,//6   //[129 : 124]         
+                        instr0_old_prd    ,//6   //[123 : 118]         
+                        instr0_need_to_wb ,//1   //[117 : 117]         
+                        instr0_prs1       ,//6   //[116 : 111]         
+                        instr0_prs2       ,//6   //[110 : 105]         
+                        instr0_src1_is_reg,//1   //[104 : 104]         
+                        instr0_src2_is_reg,//1   //[103 : 103]         
+                        instr0_imm        ,//64  //[102 : 39 ]         
+                        instr0_cx_type    ,//6   //[38  : 33 ]         
+                        instr0_is_unsigned,//1   //[32  : 32 ]         
+                        instr0_alu_type   ,//11  //[31  : 21 ]         
+                        instr0_muldiv_type,//13  //[20  : 8  ]         
+                        instr0_is_word    ,//1   //[7   : 7  ]         
+                        instr0_is_imm     ,//1   //[6   : 6  ]         
+                        instr0_is_load    ,//1   //[5   : 5  ]         
+                        instr0_is_store   ,//1   //[4   : 4  ]         
+                        instr0_ls_size     //4   //[3   : 0  ]         
                         };
-//total:231 bit
+//total:248 bit
+
+      
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+    
+    
+    
+    
+   
+   
+   
+   
+   
+   
+
+
+
 
 
 endmodule
