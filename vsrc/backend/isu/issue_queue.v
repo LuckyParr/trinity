@@ -41,7 +41,7 @@ module issue_queue #(
 
     output wire instr0_src1,
     output wire instr0_src2,
-    output   [7:0]       instr0_id,
+    output   [`INSTR_ID_WIDTH-1:0]       instr0_id,
     output  [`SRC_RANGE] instr0_pc,
 //    output reg  [`PREG_RANGE] instr0_prs1,
 //    output reg  [`PREG_RANGE] instr0_prs2,
@@ -193,7 +193,7 @@ module issue_queue #(
 
 /* ------------------------------ decode rddata and send some of them to fu----------------------------- */
 //  each decoded field
-    wire [7:0]  instr0_id         ;
+    wire [`INSTR_ID_WIDTH-1:0]  instr0_id         ;
     wire [63:0] instr0_pc         ;
     wire [31:0] instr0            ;
     wire [4:0]  instr0_lrs1       ;

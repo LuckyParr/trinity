@@ -61,8 +61,8 @@ module dispatch#()
 
 
     // signal from rob
-    input wire [INDEX_WIDTH-1:0] rob2disp_instr_cnt, //7 bit
-    input wire [INDEX_WIDTH-1:0] rob2disp_instr_id, //7 bit
+    input wire [`INSTR_ID_WIDTH-1:0] rob2disp_instr_cnt, //7 bit
+    input wire [`INSTR_ID_WIDTH-1:0] rob2disp_instr_id, //7 bit
 
     //write rob
     output wire disp2rob_wren0,

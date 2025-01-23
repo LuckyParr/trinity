@@ -1,14 +1,14 @@
 `include "defines.sv"
-module exu #(
+module intblock #(
         parameter BHTBTB_INDEX_WIDTH = 9           // Width of the set index (for SETS=512, BHTBTB_INDEX_WIDTH=9)
 )(
     input wire                      clock,
     input wire                      reset_n,
     input wire                      instr_valid,
     output wire                     instr_ready,
-    input wire  [      `INSTR_RANGE] instr,  //for debug
-    input wire [         `PC_RANGE] pc,
-    input reg  [7:0]                id,
+    input wire  [      `INSTR_RANGE]   instr,  //for debug
+    input wire  [         `PC_RANGE ]  pc,
+    input reg   [`INSTR_ID_WIDTH-1:0]  id,
 
 /* -------------------------- calculation meterial -------------------------- */
     //input wire [       `LREG_RANGE] rs1,
@@ -32,13 +32,13 @@ module exu #(
     //input wire [               3:0] ls_size,
 /* ------------------------------ bhtbtb input info ------------------------------ */
     input  wire                      predict_taken,
-    input  wire [31:0              ] predict_target,  
+    input  wire [31:0              ] predict_target,
 /* ----------------------- output result to wb pipereg ---------------------- */
     // output valid, pc, inst, id
     output wire                      out_instr_valid,
-    output wire [      `INSTR_RANGE] out_instr,
-    output wire [         `PC_RANGE] out_pc,
-    output wire [7:0]                out_id,
+    output wire [      `INSTR_RANGE] out_instr,//for debug
+    output wire [         `PC_RANGE] out_pc, //for debug
+    output wire [`INSTR_ID_WIDTH-1:0]                out_id,
     //exu result
     // output wire [`RESULT_RANGE] alu_result,
     // output wire [`RESULT_RANGE] bju_result,
@@ -57,7 +57,7 @@ module exu #(
 
 /* ---------------------- flush signal from wb pipereg ---------------------- */
     input wire                     flush_valid,
-    input wire  [7:0]              flush_id,
+    input wire  [`INSTR_ID_WIDTH-1:0]              flush_id,
 
 
 /* --------------------------- btbbht update port -------------------------- */
@@ -84,11 +84,11 @@ module exu #(
     assign need_flush = flush_valid && ((flush_id[7]^out_id[7])^(flush_id[6:0] < out_id[6:0]));
 
     assign out_instr_valid =  need_flush? 0 :  instr_valid;
-    assign out_pc =      pc;    
-    assign out_instr =   instr; //for debug
-    assign out_id = id;
-    assign out_prd = prd;
-    assign redirect_valid = need_flush? 0 :  redirect_valid_internal;
+    assign out_pc          =  pc;    
+    assign out_instr       =  instr; //for debug
+    assign out_id          =  id;
+    assign out_prd         =  prd;
+    assign redirect_valid  =  need_flush? 0 :  redirect_valid_internal;
 
     //exu logic
     wire alu_valid = (|alu_type) & instr_valid;

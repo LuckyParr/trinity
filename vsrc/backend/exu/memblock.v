@@ -1,12 +1,12 @@
 `include "defines.sv"
-module mem (
+module memblock (
     input  wire                  clock,
     input  wire                  reset_n,
     input  wire                  instr_valid,
     output wire                  instr_ready,
     input  wire [  `INSTR_RANGE] instr, // for debug
     input  wire [     `PC_RANGE] pc,//for debug
-    input  wire [7:0]            id,
+    input  wire [`INSTR_ID_WIDTH-1:0]            id,
 /* -------------------------- calculation meterial -------------------------- */
     input  wire [    `SRC_RANGE   ] src1    ,
     input  wire [    `SRC_RANGE   ] src2    ,
@@ -33,34 +33,32 @@ module mem (
 
 /* -------------------------- output to wb pipereg -------------------------- */
     // output valid, pc , inst, id
-    output wire                 out_instr_valid,
     // output wire [ `INSTR_RANGE] out_instr,
     // output wire [    `PC_RANGE] out_pc,
-    output wire [7:0]           out_id,
+    output wire                        out_instr_valid,
+    output wire [`INSTR_ID_WIDTH-1:0]  out_id,
     output wire [`PREG_RANGE]   out_prd,
     output wire                 out_need_to_wb,
     output wire                 out_mmio_valid,
-    //output wire [`RESULT_RANGE] ls_address,
-    //read data to wb stage
-    output wire [`RESULT_RANGE] opload_read_data_wb, // output rddata at same cycle as operation_done
-    //mem stall, dont use mem_stall anymore, use instr_ready to stop issue_queue from issuing instr
-    //output wire                 mem_stall
+    output wire [`RESULT_RANGE] out_opload_rddata, // output rddata at same cycle as operation_done
 
     /* -------------------------- redirect flush logic -------------------------- */
     input  wire                     flush_valid,
-    input  wire   [7:0]             flush_id
+    input  wire   [7:0]             flush_id,
+    output wire                     mem2dcache_flush // use to flush dcache process
 
 );
     wire op_processing;
     //assign instr_ready = ~mem_stall;
-    assign instr_ready = ~op_processing;
+    assign instr_ready = ~op_processing;//use this to stop issue queue from issuing, AND with exu ready then connect to isq 
 
     //when redirect instr from wb pipereg is older than current instr in exu, flush instr in exu
     wire need_flush;
     assign need_flush = flush_valid && ((flush_id[7]^out_id[7])^(flush_id[6:0] < out_id[6:0]));
+    assign mem2dcache_flush = need_flush;
 
     reg                     need_to_wb_latch;
-    reg [7:0]               id_latch;
+    reg [`INSTR_ID_WIDTH-1:0]               id_latch;
     reg [      `PREG_RANGE] prd_latch;
     assign out_instr_valid = is_outstanding & (tbus_operation_done) & ~need_flush | out_mmio_valid;;
     // assign out_instr       = instr;
@@ -163,28 +161,28 @@ module mem (
 
                 5'b10001: begin
                     opload_read_data_wb_raw = (tbus_read_data >> ((ls_address[2:0]) * 8));
-                    opload_read_data_wb     = {56'h0, opload_read_data_wb_raw[7:0]};
+                    out_opload_rddata     = {56'h0, opload_read_data_wb_raw[7:0]};
                 end
                 5'b01001: begin
                     opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2:1]) * 16);
-                    opload_read_data_wb     = {48'h0, opload_read_data_wb_raw[15:0]};
+                    out_opload_rddata     = {48'h0, opload_read_data_wb_raw[15:0]};
                 end
                 5'b00101: begin
                     opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2]) * 32);
-                    opload_read_data_wb     = {32'h0, opload_read_data_wb_raw[31:0]};
+                    out_opload_rddata     = {32'h0, opload_read_data_wb_raw[31:0]};
                 end
-                5'b00010: opload_read_data_wb = tbus_read_data;
+                5'b00010: out_opload_rddata = tbus_read_data;
                 5'b10000: begin
                     opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2:0]) * 8);
-                    opload_read_data_wb     = {{56{opload_read_data_wb_raw[7]}}, opload_read_data_wb_raw[7:0]};
+                    out_opload_rddata     = {{56{opload_read_data_wb_raw[7]}}, opload_read_data_wb_raw[7:0]};
                 end
                 5'b01000: begin
                     opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2:1]) * 16);
-                    opload_read_data_wb     = {{48{opload_read_data_wb_raw[15]}}, opload_read_data_wb_raw[15:0]};
+                    out_opload_rddata     = {{48{opload_read_data_wb_raw[15]}}, opload_read_data_wb_raw[15:0]};
                 end
                 5'b00100: begin
                     opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2]) * 32);
-                    opload_read_data_wb     = {{32{opload_read_data_wb_raw[31]}}, opload_read_data_wb_raw[31:0]};
+                    out_opload_rddata     = {{32{opload_read_data_wb_raw[31]}}, opload_read_data_wb_raw[31:0]};
                 end
                 default:  ;
             endcase

@@ -126,7 +126,16 @@
 
 `define ADDR_RANGE 63:0
 `define CACHELINE512_RANGE 511:0
-
 `define ICACHE_FETCHWIDTH128_RANGE 127:0
 
+`define MACRO_DFF_NONEN(dff_data_q, dff_data_in, dff_data_width) \
+always @(posedge clock or negedge reset_n) begin \
+    if(reset_n == 1'b0) \
+        dff_data_q <= {dff_data_width{1'b0}}; \
+    else \
+        dff_data_q <= dff_data_in; \
+end
+
+`define BHTBTB_INDEX_WIDTH 9
+`define INSTR_ID_WIDTH 7
 
