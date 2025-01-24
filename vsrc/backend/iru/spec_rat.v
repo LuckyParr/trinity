@@ -1,5 +1,8 @@
 `timescale 1ns / 1ps
-module spec_rat (
+module spec_rat #(
+    parameter DATA_WIDTH = 124;
+)
+(
     input wire clk,
     input wire reset,
     // Write Port 0 
@@ -33,7 +36,35 @@ module spec_rat (
     output wire [5:0] specrat2rn_instr1prs1,
     output wire [5:0] specrat2rn_instr1prs2,
     output wire [5:0] specrat2rn_instr1prd,
+
+/* ------------------------------- commit port ------------------------------ */
+    input wire                  commit_valid0,
+    input wire [DATA_WIDTH-1:0] commit_data0,
+
+    input wire                  commit_valid1,
+    input wire [DATA_WIDTH-1:0] commit_data1,
+
+
+
+
+/* ------------------------------- walk_logic ------------------------------- */
+    input wire is_idle,
+    input wire is_rollingback,
+    input wire is_walking,
+    input wire walking_valid0,
+    input wire walking_valid1,
+    input wire [5:0] walking_prd0,
+    input wire [5:0] walking_prd1,
+    input wire [4:0] walking_lrd0,
+    input wire [4:0] walking_lrd1
+
 );
+
+    //hit situation
+    wire rename_lrd_hit;
+    wire walk_lrd_hit;
+    assign rename_lrd_hit = rn2specrat_instr0_lrd_wren && rn2specrat_instr1_lrd_wren && (rn2specrat_instr0_lrd_wraddr == rn2specrat_instr1_lrd_wraddr);
+    assign walk_lrd_hit = walking_valid0 && walking_valid1 && (walking_lrd0 == walking_lrd1);
 
     // Parameters
     localparam LOGICAL_REG_WIDTH    = 5;
@@ -42,7 +73,7 @@ module spec_rat (
     localparam NUM_PHYSICAL_REGS    = 64;
     
     // Speculative RAT Register Array: Maps Logical Registers to Physical Registers
-    reg [PHYSICAL_REG_WIDTH-1:0] spec_rat [0:NUM_LOGICAL_REGS-1];
+    reg [PHYSICAL_REG_WIDTH-1:0] spec_rat [0:NUM_LOGICAL_REGS-1];  // [5:0] reg [31:0]
     
     // Initialize Speculative RAT
     integer i;
@@ -53,14 +84,25 @@ module spec_rat (
             end
         end
         else begin
+            if(is_rollingback)begin
+                spec_rat <= arch_rat_content;
+            end else if (is_walking)begin
+                if(walking_valid0 && ~walk_lrd_hit)begin
+                    spec_rat[walking_lrd0] <= walking_prd0;//prd is new physical reg number fetched from freelist, use it to upate arch_rat 
+                end
+                if(walking_valid1)begin
+                    spec_rat[walking_lrd1] <= walking_prd1;
+                end
+            end else begin // (is_idle)
             // Write Port 0
-            if (rn2specrat_instr0_lrd_wren) begin
+            if (rn2specrat_instr0_lrd_wren && ~rename_lrd_hit) begin
                 spec_rat[rn2specrat_instr0_lrd_wraddr] <= rn2specrat_instr0_lrd_wrdata;
             end
             // Write Port 1
             if (rn2specrat_instr1_lrd_wren) begin
                 spec_rat[rn2specrat_instr1_lrd_wraddr] <= rn2specrat_instr1_lrd_wrdata;
             end
+        end
         end
     end
     
@@ -172,5 +214,119 @@ module spec_rat (
     assign specrat2rn_instr1prs1 = rn2specrat_instr1_lrs1_valid   ? bypass_instr1_prs1 : 6'd0;
     assign specrat2rn_instr1prs2 = rn2specrat_instr1_lrs2_valid   ? bypass_instr1_prs2 : 6'd0;
     assign specrat2rn_instr1prd  = rn2specrat_instr0_lrd_valid    ? bypass_instr1_prd  : 6'd0;
+
+/* ------------------------------ commit logic ------------------------------ */
+//decode meterial
+//   disp2rob_wrdata0 =   
+//   { 
+//   instr0_pc           ,//[123:60]
+//   instr0              ,//[59:28]
+//   instr0_lrs1         ,//[27:23]
+//   instr0_lrs2         ,//[22:18]
+//   instr0_lrd          ,//[17:13]
+//   instr0_prd          ,//[12:7]
+//   instr0_old_prd      ,//[6:1]
+//   instr0_need_to_wb    //[0]
+//   };
+
+    wire               commit0_need_to_wb ;
+    wire [`LREG_RANGE] commit0_lrd        ;
+    wire [`PREG_RANGE] commit0_prd        ;
+    wire               commits1_need_to_wb;
+    wire [`LREG_RANGE] commits1_lrd       ;
+    wire [`PREG_RANGE] commits1_prd       ;
+
+    assign commit0_need_to_wb = commit_data0[0];
+    assign commit0_lrd = commit_data0[17:13];
+    assign commit0_prd = commit_data0[12:7];
+
+    assign commit1_need_to_wb = commit_data1[0];
+    assign commit1_lrd = commit_data1[17:13];
+    assign commit1_prd = commit_data1[12:7];
+
+
+arch_rat u_arch_rat(
+    .clock              (clock              ),
+    .reset_n            (reset_n            ),
+    .commit0_valid      (commit_valid0      ),
+    .commit0_need_to_wb (commit0_need_to_wb ),
+    .commit0_lrd        (commit0_lrd        ),
+    .commit0_prd        (commit0_prd        ),
+    .commit1_valid      (commit_valid1      ),
+    .commit1_need_to_wb (commit1_need_to_wb ),
+    .commit1_lrd        (commit1_lrd        ),
+    .commit1_prd        (commit1_prd        ),
+    .debug_preg0        (debug_preg0        ),
+    .debug_preg1        (debug_preg1        ),
+    .debug_preg2        (debug_preg2        ),
+    .debug_preg3        (debug_preg3        ),
+    .debug_preg4        (debug_preg4        ),
+    .debug_preg5        (debug_preg5        ),
+    .debug_preg6        (debug_preg6        ),
+    .debug_preg7        (debug_preg7        ),
+    .debug_preg8        (debug_preg8        ),
+    .debug_preg9        (debug_preg9        ),
+    .debug_preg10       (debug_preg10       ),
+    .debug_preg11       (debug_preg11       ),
+    .debug_preg12       (debug_preg12       ),
+    .debug_preg13       (debug_preg13       ),
+    .debug_preg14       (debug_preg14       ),
+    .debug_preg15       (debug_preg15       ),
+    .debug_preg16       (debug_preg16       ),
+    .debug_preg17       (debug_preg17       ),
+    .debug_preg18       (debug_preg18       ),
+    .debug_preg19       (debug_preg19       ),
+    .debug_preg20       (debug_preg20       ),
+    .debug_preg21       (debug_preg21       ),
+    .debug_preg22       (debug_preg22       ),
+    .debug_preg23       (debug_preg23       ),
+    .debug_preg24       (debug_preg24       ),
+    .debug_preg25       (debug_preg25       ),
+    .debug_preg26       (debug_preg26       ),
+    .debug_preg27       (debug_preg27       ),
+    .debug_preg28       (debug_preg28       ),
+    .debug_preg29       (debug_preg29       ),
+    .debug_preg30       (debug_preg30       ),
+    .debug_preg31       (debug_preg31       )
+);
+
+
+    wire [`PREG_RANGE] arch_rat_content[31:0];
+    assign arch_rat_content = {
+        debug_preg31,
+        debug_preg30,
+        debug_preg29,
+        debug_preg28,
+        debug_preg27,
+        debug_preg26,
+        debug_preg25,
+        debug_preg24,
+        debug_preg23,
+        debug_preg22,
+        debug_preg21,
+        debug_preg20,
+        debug_preg19,
+        debug_preg18,
+        debug_preg17,
+        debug_preg16,
+        debug_preg15,
+        debug_preg14,
+        debug_preg13,
+        debug_preg12,
+        debug_preg11,
+        debug_preg10,
+        debug_preg9,
+        debug_preg8,
+        debug_preg7,
+        debug_preg6,
+        debug_preg5,
+        debug_preg4,
+        debug_preg3,
+        debug_preg2,
+        debug_preg1,
+        debug_preg0
+    };
+
+
 
 endmodule

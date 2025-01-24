@@ -42,7 +42,21 @@ module busy_vector (
 
     // Write Port 3 - Free Instruction 1
     input wire free_instr1rd_en1,              // Enable for free_instr1rd_addr1
-    input wire [5:0] free_instr1rd_addr1       // Address for free_instr1rd_addr1
+    input wire [5:0] free_instr1rd_addr1,       // Address for free_instr1rd_addr1
+
+/* ------------------------------- walk logic ------------------------------- */
+    input flush_valid,
+    input [`INSTR_ID_WIDTH-1:0] flush_id,
+    input wire is_idle,
+    input wire is_rollingback,
+    input wire is_walking,
+    input wire walking_valid0,
+    input wire walking_valid1,
+    input wire [5:0] walking_prd0,
+    input wire [5:0] walking_prd1,
+    input wire walking_complete0,
+    input wire walking_complete1
+
 );
 
     // Internal 64-bit busy vector register
@@ -50,22 +64,35 @@ module busy_vector (
 
     // Synchronous write operations with active-low reset
     always @(posedge clk) begin
-        if (!reset_n) begin
+        if (!reset_n | is_rollingback) begin
             busy_vector <= 64'b0;
         end else begin
             // Allocation Ports - Set Bit to 1
-            if (alloc_instr0rd_en0)
-                busy_vector[alloc_instr0rd_addr0] <= 1'b1;
+            if (alloc_instr0rd_en0)begin
+                busy_vector[alloc_instr0rd_addr0] <= 1'b1;                
+            end
 
-            if (alloc_instr1rd_en1)
-                busy_vector[alloc_instr1rd_addr1] <= 1'b1;
+            if (alloc_instr1rd_en1)begin
+                busy_vector[alloc_instr1rd_addr1] <= 1'b1;                
+            end
 
             // Free Ports - Set Bit to 0
-            if (free_instr0rd_en0)
-                busy_vector[free_instr0rd_addr0] <= 1'b0;
+            if (free_instr0rd_en0)begin
+                busy_vector[free_instr0rd_addr0] <= 1'b0;                
+            end
 
-            if (free_instr1rd_en1)
-                busy_vector[free_instr1rd_addr1] <= 1'b0;
+            if (free_instr1rd_en1)begin
+                busy_vector[free_instr1rd_addr1] <= 1'b0;                
+            end
+
+            if (walking_valid0 && ~walking_complete0)begin
+                busy_vector[walking_prd0] = 1'b1;
+            end
+
+            if (walking_valid1 && ~walking_complete1)begin
+                busy_vector[walking_prd1] = 1'b1;
+            end
+            
         end
     end
 

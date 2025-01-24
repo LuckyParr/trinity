@@ -12,8 +12,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 module arch_rat (
-    input wire clk,
-    input wire reset,
+    input wire clock,
+    input wire reset_n,
     
     // Commit Write Port 0
     input wire               commit0_valid,
@@ -69,12 +69,12 @@ module arch_rat (
     localparam NUM_PHYSICAL_REGS    = 64;
     
     // Arch_RAT Register Array: Maps Logical Registers to Physical Registers
-    reg [PHYSICAL_REG_WIDTH-1:0] arch_rat [0:NUM_LOGICAL_REGS-1];
+    reg [PHYSICAL_REG_WIDTH-1:0] arch_rat [0:NUM_LOGICAL_REGS-1]; // [5:0] reg [0:31]
     
     // Initialize Arch_RAT
     integer i;
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
+    always @(posedge clock or posedge reset_n) begin
+        if (~reset_n) begin
             for (i = 0; i < NUM_LOGICAL_REGS; i = i + 1) begin
                 arch_rat[i] <= i; // Initial mapping: Logical Reg i maps to Physical Reg i
             end

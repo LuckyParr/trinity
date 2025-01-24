@@ -11,9 +11,9 @@ module dispatch#()
     input  wire [`LREG_RANGE] instr0_lrs1,
     input  wire [`LREG_RANGE] instr0_lrs2,
     input  wire [`LREG_RANGE] instr0_lrd,
-    input wire  [`PREG_RANGE] instr0_prd,
-    input wire  [`PREG_RANGE] instr0_old_prd,
-    input wire                instr0_need_to_wb,
+    input  wire  [`PREG_RANGE] instr0_prd,
+    input  wire  [`PREG_RANGE] instr0_old_prd,
+    input  wire                instr0_need_to_wb,
     //remain info go to issue queue alone with above signals
     input wire [`PREG_RANGE]        instr0_prs1,
     input wire [`PREG_RANGE]        instr0_prs2,
@@ -100,7 +100,15 @@ module dispatch#()
 
 /* --------------------- write instr0 and instr1 to rob --------------------- */
 assign disp2rob_wren0 = instr0_valid;
-assign disp2rob_wrdata0 = {instr0_pc,instr0,instr0_lrs1,instr0_lrs2,instr0_lrd,instr0_prd,instr0_old_prd,instr0_need_to_wb};
+assign disp2rob_wrdata0 = { instr0_pc           ,//[123:60]
+                            instr0              ,//[59:28]
+                            instr0_lrs1         ,//[27:23]
+                            instr0_lrs2         ,//[22:18]
+                            instr0_lrd          ,//[17:13]
+                            instr0_prd          ,//[12:7]
+                            instr0_old_prd      ,//[6:1]
+                            instr0_need_to_wb    //[0]
+                            };
 
 assign disp2rob_wren1 = instr1_valid;
 assign disp2rob_wrdata1 = {instr1_pc,instr1,instr1_lrs1,instr1_lrs2,instr1_lrd,instr1_prd,instr1_old_prd,instr1_need_to_wb};
@@ -148,31 +156,7 @@ assign disp2isq_wrdata0 =
                         };
 //total:248 bit
 
-      
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-    
-    
-    
-    
+ 
    
-   
-   
-   
-   
-   
-
-
-
-
 
 endmodule
