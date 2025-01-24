@@ -1,16 +1,5 @@
 `timescale 1ns / 1ps
 
-////////////////////////////////////////////////////////////////////////////////
-// Description:
-//      Architectural Register Alias Table (Arch_RAT) with 2 commit write ports.
-//      Maintains committed mappings from logical registers to physical registers.
-//      Supports 64 physical registers.
-//      Includes 32 debug output signals to monitor the contents of the arch_rat array.
-//      Implements priority handling for simultaneous commits.
-//      No read ports are included as per specifications.
-//
-////////////////////////////////////////////////////////////////////////////////
-
 module arch_rat (
     input wire clock,
     input wire reset_n,

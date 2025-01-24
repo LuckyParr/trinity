@@ -3,8 +3,8 @@ module spec_rat #(
     parameter DATA_WIDTH = 124;
 )
 (
-    input wire clk,
-    input wire reset,
+    input wire clock,
+    input wire reset_n,
     // Write Port 0 
     input wire rn2specrat_instr0_lrd_wren,
     input wire [4:0] rn2specrat_instr0_lrd_wraddr,
@@ -16,12 +16,12 @@ module spec_rat #(
     input wire [5:0] rn2specrat_instr1_lrd_wrdata,
 
     // Read Ports for Instruction     
-    input wire rn2specrat_instr0_lrs1_valid,
-    input wire rn2specrat_instr0_lrs2_valid,
-    input wire rn2specrat_instr1_lrd_valid,
-    input wire rn2specrat_instr1_lrs1_valid,
-    input wire rn2specrat_instr1_lrs2_valid,
-    input wire rn2specrat_instr0_lrd_valid,
+    input wire rn2specrat_instr0_lrs1_rden,
+    input wire rn2specrat_instr0_lrs2_rden,
+    input wire rn2specrat_instr0_lrd_rden,
+    input wire rn2specrat_instr1_lrs1_rden,
+    input wire rn2specrat_instr1_lrs2_rden,
+    input wire rn2specrat_instr1_lrd_rden,
     input wire [4:0] rn2specrat_instr0_lrs1,
     input wire [4:0] rn2specrat_instr0_lrs2,
     input wire [4:0] rn2specrat_instr0_lrd,
@@ -38,14 +38,14 @@ module spec_rat #(
     output wire [5:0] specrat2rn_instr1prd,
 
 /* ------------------------------- commit port ------------------------------ */
-    input wire                  commit_valid0,
-    input wire [DATA_WIDTH-1:0] commit_data0,
-
-    input wire                  commit_valid1,
-    input wire [DATA_WIDTH-1:0] commit_data1,
-
-
-
+    input wire                  commit0_valid     ,
+    input wire                  commit0_need_to_wb,
+    input wire [4:0]            commit0_lrd       ,
+    input wire [5:0]            commit0_prd       ,
+    input wire                  commit1_valid     ,
+    input wire                  commit1_need_to_wb,
+    input wire [4:0]            commit1_lrd       ,
+    input wire [5:0]            commit1_prd       ,
 
 /* ------------------------------- walk_logic ------------------------------- */
     input wire is_idle,
@@ -77,15 +77,15 @@ module spec_rat #(
     
     // Initialize Speculative RAT
     integer i;
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
             for (i = 0; i < NUM_LOGICAL_REGS; i = i + 1) begin
                 spec_rat[i] <= i; // Initial mapping: Logical Reg i maps to Physical Reg i
             end
         end
         else begin
             if(is_rollingback)begin
-                spec_rat <= arch_rat_content;
+                    spec_rat <= arch_rat_content;
             end else if (is_walking)begin
                 if(walking_valid0 && ~walk_lrd_hit)begin
                     spec_rat[walking_lrd0] <= walking_prd0;//prd is new physical reg number fetched from freelist, use it to upate arch_rat 
@@ -208,12 +208,12 @@ module spec_rat #(
                                  spec_rat[rn2specrat_instr1_lrd]);
     
     // Read Result
-    assign specrat2rn_instr0prs1 = rn2specrat_instr0_lrs1_valid   ? bypass_instr0_prs1 : 6'd0;
-    assign specrat2rn_instr0prs2 = rn2specrat_instr0_lrs2_valid   ? bypass_instr0_prs2 : 6'd0;
-    assign specrat2rn_instr0prd  = rn2specrat_instr1_lrd_valid    ? bypass_instr0_prd  : 6'd0;
-    assign specrat2rn_instr1prs1 = rn2specrat_instr1_lrs1_valid   ? bypass_instr1_prs1 : 6'd0;
-    assign specrat2rn_instr1prs2 = rn2specrat_instr1_lrs2_valid   ? bypass_instr1_prs2 : 6'd0;
-    assign specrat2rn_instr1prd  = rn2specrat_instr0_lrd_valid    ? bypass_instr1_prd  : 6'd0;
+    assign specrat2rn_instr0prs1 = rn2specrat_instr0_lrs1_rden   ? bypass_instr0_prs1 : 6'd0;
+    assign specrat2rn_instr0prs2 = rn2specrat_instr0_lrs2_rden   ? bypass_instr0_prs2 : 6'd0;
+    assign specrat2rn_instr0prd  = rn2specrat_instr1_lrd_rden    ? bypass_instr0_prd  : 6'd0;
+    assign specrat2rn_instr1prs1 = rn2specrat_instr1_lrs1_rden   ? bypass_instr1_prs1 : 6'd0;
+    assign specrat2rn_instr1prs2 = rn2specrat_instr1_lrs2_rden   ? bypass_instr1_prs2 : 6'd0;
+    assign specrat2rn_instr1prd  = rn2specrat_instr0_lrd_rden    ? bypass_instr1_prd  : 6'd0;
 
 /* ------------------------------ commit logic ------------------------------ */
 //decode meterial
@@ -229,33 +229,18 @@ module spec_rat #(
 //   instr0_need_to_wb    //[0]
 //   };
 
-    wire               commit0_need_to_wb ;
-    wire [`LREG_RANGE] commit0_lrd        ;
-    wire [`PREG_RANGE] commit0_prd        ;
-    wire               commits1_need_to_wb;
-    wire [`LREG_RANGE] commits1_lrd       ;
-    wire [`PREG_RANGE] commits1_prd       ;
-
-    assign commit0_need_to_wb = commit_data0[0];
-    assign commit0_lrd = commit_data0[17:13];
-    assign commit0_prd = commit_data0[12:7];
-
-    assign commit1_need_to_wb = commit_data1[0];
-    assign commit1_lrd = commit_data1[17:13];
-    assign commit1_prd = commit_data1[12:7];
-
 
 arch_rat u_arch_rat(
     .clock              (clock              ),
     .reset_n            (reset_n            ),
-    .commit0_valid      (commit_valid0      ),
-    .commit0_need_to_wb (commit0_need_to_wb ),
-    .commit0_lrd        (commit0_lrd        ),
-    .commit0_prd        (commit0_prd        ),
-    .commit1_valid      (commit_valid1      ),
-    .commit1_need_to_wb (commit1_need_to_wb ),
-    .commit1_lrd        (commit1_lrd        ),
-    .commit1_prd        (commit1_prd        ),
+    .commit0_valid      (rob2specrat_commit0_valid     ),
+    .commit0_need_to_wb (rob2specrat_commit0_need_to_wb),
+    .commit0_lrd        (rob2specrat_commit0_lrd       ),
+    .commit0_prd        (rob2specrat_commit0_prd       ),
+    .commit1_valid      (),
+    .commit1_need_to_wb (),
+    .commit1_lrd        (),
+    .commit1_prd        (),
     .debug_preg0        (debug_preg0        ),
     .debug_preg1        (debug_preg1        ),
     .debug_preg2        (debug_preg2        ),

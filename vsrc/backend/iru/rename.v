@@ -47,18 +47,18 @@ module rename #()
     input wire [3:0] instr1_ls_size,
 
     // 6 read port to spec_rat
-    output wire rn2specrat_instr0_lrs1_valid , 
+    output wire rn2specrat_instr0_lrs1_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr0_lrs1,
-    output wire rn2specrat_instr0_lrs2_valid , 
+    output wire rn2specrat_instr0_lrs2_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr0_lrs2,
-    output wire rn2specrat_instr1_lrd_valid , 
+    output wire rn2specrat_instr1_lrd_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr0_lrd,
     
-    output wire rn2specrat_instr1_lrs1_valid , 
+    output wire rn2specrat_instr1_lrs1_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr1_lrs1,
-    output wire rn2specrat_instr1_lrs2_valid , 
+    output wire rn2specrat_instr1_lrs2_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr1_lrs2,
-    output wire rn2specrat_instr0_lrd_valid ,  
+    output wire rn2specrat_instr0_lrd_rden ,  
     output wire [`LREG_RANGE] rn2specrat_instr1_lrd,
 
     input wire [`PREG_RANGE] specrat2rn_instr0prs1,
@@ -173,17 +173,17 @@ hazardchecker u_hazardchecker(
 
 /* -------------------- read 6 physical reg number from spec_rat when valid-------------------- */
 //6 read req:
-assign rn2specrat_instr0_lrs1_valid = instr0_lrs1_valid;
+assign rn2specrat_instr0_lrs1_rden = instr0_lrs1_valid;
 assign rn2specrat_instr0_lrs1       = instr0_lrs1;
-assign rn2specrat_instr0_lrs2_valid = instr0_lrs2_valid;
+assign rn2specrat_instr0_lrs2_rden = instr0_lrs2_valid;
 assign rn2specrat_instr0_lrs2       = instr0_lrs2;
-assign rn2specrat_instr1_lrd_valid  = instr0_lrd_valid;
+assign rn2specrat_instr1_lrd_rden  = instr0_lrd_valid;
 assign rn2specrat_instr0_lrd        = instr0_lrd;
-assign rn2specrat_instr1_lrs1_valid = instr1_lrs1_valid;
+assign rn2specrat_instr1_lrs1_rden = instr1_lrs1_valid;
 assign rn2specrat_instr1_lrs1       = instr1_lrs1;
-assign rn2specrat_instr1_lrs2_valid = instr1_lrs2_valid;
+assign rn2specrat_instr1_lrs2_rden = instr1_lrs2_valid;
 assign rn2specrat_instr1_lrs2       = instr1_lrs2;
-assign rn2specrat_instr0_lrd_valid  = instr1_lrd_valid;
+assign rn2specrat_instr0_lrd_rden  = instr1_lrd_valid;
 assign rn2specrat_instr1_lrd        = instr1_lrd;
 
 

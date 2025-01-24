@@ -31,8 +31,20 @@ module rob #(
     input [STATUS_WIDTH-1:0]    complete_wrdata1,
 
     // Commit Port :
-    output reg                  commit_valid0,       // Indicates that commit_data is valid this cycle
-    output reg [DATA_WIDTH-1:0] commit_data0,        // Data of the entry being committed
+
+    output wire         rob2fl_commit_valid0,       // Indicates that commit_data is valid this cycle
+    output wire  [5:0]  rob2fl_commit_old_prd,        
+    
+    output wire               rob2specrat_commit0_valid      ,
+    output wire               rob2specrat_commit0_need_to_wb ,
+    output wire [`LREG_RANGE] rob2specrat_commit0_lrd        ,
+    output wire [`PREG_RANGE] rob2specrat_commit0_prd        ,
+
+    output wire               rob2specrat_commit1_valid      ,
+    output wire               rob2specrat_commit1_need_to_wb ,
+    output wire [`LREG_RANGE] rob2specrat_commit1_lrd        ,
+    output wire [`PREG_RANGE] rob2specrat_commit1_prd        ,
+
 
     // // Status Flags
     // output full,
@@ -175,7 +187,7 @@ module rob #(
     // end
 
     //--------------------------------------------------------------------------
-    // Commit Logic (new)
+    // Commit Logic 
     //--------------------------------------------------------------------------
     always @(posedge clock or negedge reset_n) begin
         if (!reset_n) begin
@@ -199,6 +211,15 @@ module rob #(
             end
         end
     end
+
+    assign rob2fl_commit_valid0 = commit_valid;
+    assign rob2fl_commit_old_prd = commit_data[6:1];
+
+    assign rob2specrat_commit0_valid      = commit_valid;
+    assign rob2specrat_commit0_need_to_wb = commit_data[0];
+    assign rob2specrat_commit0_lrd        = commit_data[17:13];
+    assign rob2specrat_commit0_prd        = commit_data[12:7];
+
 
 /* ---------------------------- flush walk logic ---------------------------- */
 localparam IDLE = 2'b00;

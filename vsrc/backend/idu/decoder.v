@@ -2,6 +2,7 @@
 module decoder (
     input wire        clock,
     input wire        reset_n,
+    //ibuffer signal
     input wire        fifo_empty,
     input wire        ibuffer_instr_valid,
     input wire        ibuffer_predicttaken_out,
@@ -12,12 +13,7 @@ module decoder (
     //to regfile read 
     output reg  [ 4:0] rs1,
     output reg  [ 4:0] rs2,
-    input  wire [63:0] rs1_read_data,
-    input  wire [63:0] rs2_read_data,
-
     output reg  [               4:0] rd,
-    output reg  [              63:0] src1,
-    output reg  [              63:0] src2,
     output reg  [              63:0] imm,
     output reg                       src1_is_reg,
     output reg                       src2_is_reg,
@@ -31,6 +27,7 @@ module decoder (
     output reg                       is_store,
     output reg  [               3:0] ls_size,
     output reg  [`MULDIV_TYPE_RANGE] muldiv_type,
+    //feedthrough
     output wire [              47:0] decoder_instr_valid,
     output wire                      decoder_predicttaken_out,
     output wire [31:0]               decoder_predicttarget_out,
@@ -75,8 +72,8 @@ module decoder (
     reg [63:0] imm_utype_64;
     reg [63:0] imm_jtype_64;
 
-    assign src1 = rs1_read_data;
-    assign src2 = rs2_read_data;
+    // assign src1 = rs1_read_data;
+    // assign src2 = rs2_read_data;
 
     reg        lrd_is_not_zero;
     always @(*) begin

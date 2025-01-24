@@ -1,4 +1,4 @@
-module ifu_top (
+module ifu (
     input wire clock,
     input wire reset_n,
 
