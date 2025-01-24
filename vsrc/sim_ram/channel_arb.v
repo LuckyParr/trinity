@@ -73,6 +73,7 @@ module channel_arb (
             DBUS: begin
                 ddr_chip_enable_level  = 1'b1;
                 ddr_index        = dcache2arb_dbus_index;
+                ddr_burst_mode   = 1'b1;
                 ddr_write_data   = dcache2arb_dbus_write_data;
                 ddr_write_mask   = dcache2arb_dbus_write_mask;
                 dcache2arb_dbus_operation_done = ddr_operation_done;
