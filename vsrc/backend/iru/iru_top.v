@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module iru
+module iru_top
 #()
 (
     input wire               clock,
@@ -34,7 +34,7 @@ module iru
 
     // Inputs from ROB to Free List
     input wire [`PREG_RANGE-1:0] rob2fl_commit_old_prd,
-    input wire               rob2fl_commit_valid0,
+    input wire                   rob2fl_commit_valid0,
 
     // Additional control signals
     input wire               flush_valid,

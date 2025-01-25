@@ -1,4 +1,4 @@
-module idu (
+module idu_top (
     input wire        clock,
     input wire        reset_n,
     input wire        fifo_empty,

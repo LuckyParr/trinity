@@ -93,10 +93,22 @@ module dispatch#()
     output wire [5:0] alloc_instr1rd_addr1,     // Address for alloc_instr1rd_addr1
 
     //write data to issue_queue
-    output wire disp2isq_wren0,
-    output wire [231-1:0]disp2isq_wrdata0
+    output wire isq_in_wr_valid,
+    input wire  isq_out_wr_ready,
+    //output wire disp2isq_wren0,
+    output wire [231-1:0]disp2isq_wrdata0,
+
+    //flush signals
+    input wire flush_valid,
+    input wire [`INSTR_ID_WIDTH-1:0] flush_id,
+
+    //walk
+    input wire is_idle
 
 );
+//ready
+assign disp2rn_instr0_ready = (rob2disp_instr_cnt < `ROB_SIZE) && isq_out_wr_ready && ~flush_valid && is_idle;
+assign isq_in_wr_valid = instr0_valid && ~flush_valid;
 
 /* --------------------- write instr0 and instr1 to rob --------------------- */
 assign disp2rob_wren0 = instr0_valid;

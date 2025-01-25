@@ -9,10 +9,12 @@ module issue_queue #(
 
     /* ----------------------issue queue itself wr/rd port --------------------- */
     // Write interface
-    input  wire [DATA_WIDTH-1:0]    write_data,
-    input  wire                     write_sleep_rs1,
-    input  wire                     write_sleep_rs2,
-    input  wire                     write_enable,
+    input  wire [DATA_WIDTH-1:0]    wr_data,
+    input  wire                     wr_rs1_sleepbit,
+    input  wire                     wr_rs2_sleepbit,
+    // input  wire                     write_enable,
+    input  wire                     isq_in_wr_valid,
+    output wire                     isq_out_wr_ready, 
     output reg                      queue_full,  // Indicates no free entries
 
     // Wake-up interface for RS1
@@ -24,9 +26,10 @@ module issue_queue #(
     input  wire                             wake_rs2_enable,
 
     // Read interface
-    input  wire                     read_enable,
-    output reg  [DATA_WIDTH-1:0]    read_data,
-    output reg                      read_data_valid,
+    //input  wire                     read_enable,
+    output  reg                     rd_valid,
+    input  wire                     rd_ready,
+    output reg  [DATA_WIDTH-1:0]    rd_data,
 
     /* ----------------------- read from physical register ---------------------- */
     output wire               isq2prf_prs1_rden,
@@ -67,6 +70,12 @@ module issue_queue #(
     input wire walking_valid0,
     input wire walking_valid1
 );
+    assign isq_out_wr_ready = valid_array[write_index];
+    wire write_enable;
+    assign write_enable = isq_in_wr_valid && isq_out_wr_ready;
+
+    wire read_fire; //for debug
+    assign read_fire = rd_valid && rd_ready;
 
     // ----------------------
     // Internal storage
@@ -84,8 +93,15 @@ module issue_queue #(
     // We keep read_index_mark name for read pointer
     reg [ISSUE_QUEUE_DEPTH_LOG-1:0] read_index_mark;
 
+    // "Holding" state for the read side
+    reg [ISSUE_QUEUE_DEPTH_LOG-1:0] read_slot_index;  // which entry we are currently holding
+    reg                             read_slot_valid;  // do we currently hold an entry?
+
+    // We will drive these from read_slot_*:
+    assign rd_valid = read_slot_valid;
+    assign rd_data  = data_array[read_slot_index];
     // --------------------------------------------------------
-    // 1) Find the first free slot for write (circular search)
+    // A) Find the first free slot for write (circular search)
     // --------------------------------------------------------
     reg [ISSUE_QUEUE_DEPTH_LOG-1:0] write_index;  // renamed from write_index_internal
     reg                             found_write_slot;
@@ -107,70 +123,82 @@ module issue_queue #(
         end
     end
 
-    // -------------------------------------------------------------
-    // 2) Find first valid entry w/ BOTH sleep bits cleared (circular)
-    // -------------------------------------------------------------
-    reg [ISSUE_QUEUE_DEPTH_LOG-1:0] read_index;
+    // ----------------------------------------------------------------
+    // B) Circular search for a read slot
+    // ----------------------------------------------------------------
+    //
+    // We only search for a new read slot if:
+    //    * we do NOT already hold one (read_slot_valid=0)
+    //    * we are not flushing, etc. (omitting flush logic for brevity)
+    //
+    // Then we do a circular scan from read_index_mark to find
+    // the first (valid && !sleep_rs1 && !sleep_rs2).
+    // We'll store that index in read_slot_index but NOT immediately
+    // pop it from the queue array. We only pop once rd_ready=1.
+    //
+
+    reg [ISSUE_QUEUE_DEPTH_LOG-1:0] possible_read_index;
     reg                             found_read_slot;
 
+    //found_read_slot and possible_read_index is just a temporary signal use to find available read slot in the exact cycle that we dont hold a read slot 
     always @* begin
-        found_read_slot = 1'b0;
-        read_index      = read_index_mark;  // default
+        found_read_slot  = 1'b0;
+        possible_read_index = read_index_mark;  // default
 
-        for (i = 0; i < ISSUE_QUEUE_DEPTH; i = i + 1) begin
-            reg [ISSUE_QUEUE_DEPTH_LOG-1:0] idx;
-            idx = (read_index_mark + i) % ISSUE_QUEUE_DEPTH;
-
-            if (!found_read_slot && valid_array[idx] &&
-                !sleep_rs1_array[idx] && !sleep_rs2_array[idx]) begin
-                read_index      = idx;
-                found_read_slot = 1'b1;
+        if (!read_slot_valid) begin
+            // Only search if we do not hold a slot
+            for (i = 0; i < ISSUE_QUEUE_DEPTH; i = i + 1) begin
+                reg [ISSUE_QUEUE_DEPTH_LOG-1:0] idx;
+                idx = (read_index_mark + i) % ISSUE_QUEUE_DEPTH;
+                if (!found_read_slot && valid_array[idx] && !sleep_rs1_array[idx] && !sleep_rs2_array[idx]) 
+                begin
+                    found_read_slot    = 1'b1;
+                    possible_read_index = idx;
+                end
             end
         end
     end
 
-    // -------------------------------------------------------------
-    // 3) Main sequential logic
-    // -------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // C) Main sequential always block
+    // ----------------------------------------------------------------
     always @(posedge clock or negedge reset_n) begin
         if (!reset_n) begin
-            // Reset all internal states
             for (i = 0; i < ISSUE_QUEUE_DEPTH; i = i + 1) begin
                 data_array[i]       <= {DATA_WIDTH{1'b0}};
                 valid_array[i]      <= 1'b0;
                 sleep_rs1_array[i]  <= 1'b0;
                 sleep_rs2_array[i]  <= 1'b0;
             end
+            write_index_mark <= 0;
+            read_index_mark  <= 0;
+            queue_full       <= 1'b0;
 
-            read_data         <= {DATA_WIDTH{1'b0}};
-            read_data_valid   <= 1'b0;
-            queue_full        <= 1'b0;
-            instr0_valid      <= 1'b0;
-
-            // Reset the circular pointers
-            write_index_mark  <= {ISSUE_QUEUE_DEPTH_LOG{1'b0}};
-            read_index_mark   <= {ISSUE_QUEUE_DEPTH_LOG{1'b0}};
-        end
+            read_slot_index  <= 0;
+            read_slot_valid  <= 1'b0;
+            instr0_valid     <= 1'b0;
+        end 
         else begin
-            if(is_rollingback)begin
-                valid_array  <= valid_array & ~needflush_valid;
-            end else if(is_walking)begin
-                
-            end 
-            else begin
-            // ---------------------------------------
-            // A) Handle writes
-            // ---------------------------------------
-            queue_full <= 1'b0;  // Default not full
+            // -----------------------------
+            // 1) Possibly flush/rollback
+            // -----------------------------
+            // We'll omit the actual flush logic or incorporate as needed
+
+            // -----------------------------
+            // 2) Handle writes
+            // -----------------------------
+            queue_full <= 1'b0;  // default
             if (write_enable) begin
                 if (found_write_slot) begin
-                    data_array[write_index]      <= write_data;
+                    // Write into that slot
+                    data_array[write_index]      <= wr_data;
                     valid_array[write_index]     <= 1'b1;
-                    sleep_rs1_array[write_index] <= write_sleep_rs1;
-                    sleep_rs2_array[write_index] <= write_sleep_rs2;
-
-                    // Advance the write pointer
-                    write_index_mark <= (write_index + 1) % ISSUE_QUEUE_DEPTH;
+                    sleep_rs1_array[write_index] <= wr_rs1_sleepbit;
+                    sleep_rs2_array[write_index] <= wr_rs2_sleepbit;
+                    // Optionally increment the write_index_mark
+                    // This is only a "hint" pointer. Some designs keep it stable
+                    // or always move it. We'll do a naive approach:
+                    write_index_mark <= (write_index_mark + 1) % ISSUE_QUEUE_DEPTH;
                 end
                 else begin
                     // No free slot => queue is full
@@ -178,9 +206,9 @@ module issue_queue #(
                 end
             end
 
-            // ---------------------------------------
-            // B) Wake-ups
-            // ---------------------------------------
+            // -----------------------------
+            // 3) Wake-ups
+            // -----------------------------
             if (wake_rs1_enable) begin
                 sleep_rs1_array[wake_rs1_index] <= 1'b0;
             end
@@ -188,32 +216,40 @@ module issue_queue #(
                 sleep_rs2_array[wake_rs2_index] <= 1'b0;
             end
 
-            // ---------------------------------------
-            // C) Handle reads
-            // ---------------------------------------
-            read_data_valid <= 1'b0;
-            instr0_valid    <= 1'b0; // default
+            // -----------------------------
+            // 4) Read (handshake) logic
+            // -----------------------------
+            instr0_valid <= 1'b0; // default
 
-            if (read_enable) begin
+            if (!read_slot_valid) begin
+                // We do NOT hold a slot. Check if we found one
                 if (found_read_slot) begin
-                    read_data             <= data_array[read_index];
-                    read_data_valid       <= 1'b1;
-                    valid_array[read_index] <= 1'b0;
-
-                    instr0_valid <= 1'b1;
-
-                    // Advance the read pointer
-                    read_index_mark <= (read_index + 1) % ISSUE_QUEUE_DEPTH;
+                    // Mark we hold that slot
+                    read_slot_index <= possible_read_index;
+                    read_slot_valid <= 1'b1;
                 end
-                else begin
-                    read_data       <= {DATA_WIDTH{1'b0}};
-                    read_data_valid <= 1'b0;
-                    instr0_valid    <= 1'b0;
+            end 
+            else begin
+                // We DO hold a slot => rd_valid=1 to the outside
+                // We only pop it if rd_ready=1
+                if (rd_ready) begin
+                    // *** Now we pop it from the array ***
+                    valid_array[read_slot_index] <= 1'b0;
+                    
+                    // Optionally, move read_index_mark up to the next slot
+                    // We'll do something minimal like:
+                    read_index_mark <= (read_slot_index + 1) % ISSUE_QUEUE_DEPTH;
+
+                    // We are done holding that slot
+                    read_slot_valid <= 1'b0;
                 end
             end
+
+            // If you want `instr0_valid` to track the same as `rd_valid`, do:
+            instr0_valid <= read_slot_valid;
         end
     end
-    end 
+
 
     /* ----------------------- read from physical register ----------------------- */
     assign isq2prf_prs1_rden   = instr0_src1_is_reg;
@@ -222,7 +258,7 @@ module issue_queue #(
     assign isq2prf_prs2_rden   = instr0_src2_is_reg;
     assign isq2prf_prs2_rdaddr = instr0_prs2;
 
-    /* ------------------------------ decode read_data ------------------------------ */
+    /* ------------------------------ decode rd_data ------------------------------ */
     wire [`INSTR_ID_WIDTH-1:0] instr0_id         ;
     wire [63:0]                instr0_pc         ;
     wire [31:0]                instr0            ;
@@ -251,30 +287,30 @@ module issue_queue #(
     assign instr0_src1 = prf2isq_prs1_rddata;
     assign instr0_src2 = prf2isq_prs2_rddata;
 
-    // Decode from read_data
-    assign instr0_id          = read_data[247:241];
-    assign instr0_pc          = read_data[240:177];
-    assign instr0             = read_data[176:145];
-    assign instr0_lrs1        = read_data[144:140];
-    assign instr0_lrs2        = read_data[139:135];
-    assign instr0_lrd         = read_data[134:130];
-    assign instr0_prd         = read_data[129:124];
-    assign instr0_old_prd     = read_data[123:118];
-    assign instr0_need_to_wb  = read_data[117];
-    assign instr0_prs1        = read_data[116:111];
-    assign instr0_prs2        = read_data[110:105];
-    assign instr0_src1_is_reg = read_data[104];
-    assign instr0_src2_is_reg = read_data[103];
-    assign instr0_imm         = read_data[102:39];
-    assign instr0_cx_type     = read_data[38:33];
-    assign instr0_is_unsigned = read_data[32];
-    assign instr0_alu_type    = read_data[31:21];
-    assign instr0_muldiv_type = read_data[20:8];
-    assign instr0_is_word     = read_data[7];
-    assign instr0_is_imm      = read_data[6];
-    assign instr0_is_load     = read_data[5];
-    assign instr0_is_store    = read_data[4];
-    assign instr0_ls_size     = read_data[3:0];
+    // Decode from rd_data
+    assign instr0_id          = rd_data[247:241];
+    assign instr0_pc          = rd_data[240:177];
+    assign instr0             = rd_data[176:145];
+    assign instr0_lrs1        = rd_data[144:140];
+    assign instr0_lrs2        = rd_data[139:135];
+    assign instr0_lrd         = rd_data[134:130];
+    assign instr0_prd         = rd_data[129:124];
+    assign instr0_old_prd     = rd_data[123:118];
+    assign instr0_need_to_wb  = rd_data[117];
+    assign instr0_prs1        = rd_data[116:111];
+    assign instr0_prs2        = rd_data[110:105];
+    assign instr0_src1_is_reg = rd_data[104];
+    assign instr0_src2_is_reg = rd_data[103];
+    assign instr0_imm         = rd_data[102:39];
+    assign instr0_cx_type     = rd_data[38:33];
+    assign instr0_is_unsigned = rd_data[32];
+    assign instr0_alu_type    = rd_data[31:21];
+    assign instr0_muldiv_type = rd_data[20:8];
+    assign instr0_is_word     = rd_data[7];
+    assign instr0_is_imm      = rd_data[6];
+    assign instr0_is_load     = rd_data[5];
+    assign instr0_is_store    = rd_data[4];
+    assign instr0_ls_size     = rd_data[3:0];
 /* ------------------------------- walk logic ------------------------------- */
     reg                  needflush_valid_array       [0:ISSUE_QUEUE_DEPTH-1];
     always @(*) begin

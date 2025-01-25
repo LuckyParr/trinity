@@ -10,6 +10,7 @@
 `define IBUFFER_FIFO_WIDTH 32+48
 `define INST_CACHE_WIDTH 512
 
+
 /*
     0 = ADD
     1 = SET LESS THAN
@@ -138,4 +139,4 @@ end
 
 `define BHTBTB_INDEX_WIDTH 9
 `define INSTR_ID_WIDTH 7
-
+`define ROB_SIZE 64
