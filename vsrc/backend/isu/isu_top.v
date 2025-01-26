@@ -248,9 +248,7 @@ assign disp_instr0_valid = pipe2isu_instr0_valid;
     wire [123:0]              disp2rob_instr1_entrydata;
 
 
-// --------------------------------------------------------------------------
-// 1) Dispatch
-// --------------------------------------------------------------------------
+
 dispatch dispatch_inst (
     .clock(clock),
     .reset_n(reset_n),
@@ -310,8 +308,8 @@ dispatch dispatch_inst (
     .instr1_ls_size    (),
 
     // from ROB
-    .rob2disp_instr_cnt(rob2disp_instr_cnt),//i
-    .rob2disp_instr_id(rob2disp_instr_id  ),//i
+    .rob2disp_instr_cnt(rob2disp_instr_cnt ),//i
+    .rob2disp_instr_id (rob2disp_instr_id  ),//i
 
     // disp write robentry to ROB
     .disp2rob_instr0_valid    (disp2rob_instr0_valid    ),
@@ -339,10 +337,7 @@ dispatch dispatch_inst (
     .disp2isq_instr0_entrydata(disp2isq_instr0_entrydata)
 );
 
-//
-// --------------------------------------------------------------------------
-// 2) Busy Table
-// --------------------------------------------------------------------------
+
 busy_table busy_table_inst (
     .clk(clock),
     .reset_n(reset_n),
@@ -383,7 +378,7 @@ busy_table busy_table_inst (
     .walking_complete1(walking_complete1)
 );
 
-//
+
 // --------------------------------------------------------------------------
 // 3) Issue Queue (with new interface)
 // --------------------------------------------------------------------------

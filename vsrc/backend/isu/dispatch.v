@@ -92,8 +92,8 @@ module dispatch#()
     //write data to issue_queue
     output wire isq_in_wr_valid,
     input wire  isq_out_wr_ready,
-    //output wire disp2isq_wren0,
-    output wire [231-1:0]disp2isq_wrdata0,
+    //output wire disp2isq_instr0_wren,
+    output wire [231-1:0]disp2isq_instr0_entrydata,
 
     //flush signals
     input wire flush_valid,
@@ -136,8 +136,8 @@ assign disp2bt_instr1rs2_rdaddr = instr1_prs2; //use to set sleep bit in issue q
 
 
 /* ------------- send instr0 instr1 and sleep bit to issue queue ------------ */
-assign disp2isq_wren0 = disp_instr0_valid;
-assign disp2isq_wrdata0 = 
+assign disp2isq_instr0_wren = disp_instr0_valid;
+assign disp2isq_instr0_entrydata = 
                         {
                         rob2disp_instr_id ,//7   //[247 : 241]
                         instr0_pc         ,//64  //[240 : 177]         
