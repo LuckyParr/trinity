@@ -139,4 +139,5 @@ end
 
 `define BHTBTB_INDEX_WIDTH 9
 `define INSTR_ID_WIDTH 7
+`define ROB_SIZE_LOG 6
 `define ROB_SIZE 64
