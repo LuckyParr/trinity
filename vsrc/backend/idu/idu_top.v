@@ -7,15 +7,13 @@ module idu_top (
     input wire [31:0] ibuffer_predicttarget_out,
     input wire [31:0] ibuffer_inst_out,
     input wire [47:0] ibuffer_pc_out,
+    output wire idu2ifu_instr_ready,
+    input  wire  pipe2idu_instr_ready,
 
-    output wire [ 4:0] rs1,
-    output wire [ 4:0] rs2,
-    // input  wire [63:0] rs1_read_data,
-    // input  wire [63:0] rs2_read_data,
-    output wire [               4:0] rd,
-    // output wire [              63:0] src1,
-    // output wire [              63:0] src2,
-    output wire [              63:0] imm,
+    output wire [ 4:0              ]  rs1,
+    output wire [ 4:0              ]  rs2,
+    output wire [               4:0]  rd,
+    output wire [              63:0]  imm,
     output wire                       src1_is_reg,
     output wire                       src2_is_reg,
     output wire                       need_to_wb,
@@ -28,12 +26,14 @@ module idu_top (
     output wire                       is_store,
     output wire  [               3:0] ls_size,
     output wire  [`MULDIV_TYPE_RANGE] muldiv_type,
-    output wire [              47:0] decoder_instr_valid,
-    output wire                      decoder_predicttaken_out,
-    output wire [31:0]               decoder_predicttarget_out,
-    output wire [              31:0] decoder_inst_out,
-    output wire [              47:0] decoder_pc_out
+    output wire [              47:0]  decoder_instr_valid,
+    output wire [              47:0]  decoder_pc_out,
+    output wire [              31:0]  decoder_instr_out,
+    output wire                       decoder_predicttaken_out,
+    output wire [31:0]                decoder_predicttarget_out
 );
+
+    assign idu2ifu_instr_ready = pipe2idu_instr_ready;
 
     // Instantiate the decoder module
     decoder u_decoder (
@@ -69,7 +69,7 @@ module idu_top (
         .decoder_instr_valid(decoder_instr_valid),
         .decoder_predicttaken_out(decoder_predicttaken_out),
         .decoder_predicttarget_out(decoder_predicttarget_out),
-        .decoder_inst_out(decoder_inst_out),
+        .decoder_instr_out(decoder_instr_out),
         .decoder_pc_out(decoder_pc_out)
     );
 

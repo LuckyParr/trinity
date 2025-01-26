@@ -8,8 +8,8 @@ module isu_top (
     //---------------------------------------------------------------------------
     // Inputs from rename stage (instr0)
     //---------------------------------------------------------------------------
-    input  wire               instr0_valid,
-    output wire               disp2rn_instr0_ready, // from Dispatch
+    input  wire               pipe2isu_instr0_valid,
+    output wire               isu2pipe_instr0_ready, // from Dispatch
     input  wire [  `PC_RANGE] instr0_pc,
     input  wire [31:0]        instr0,
     input  wire [`LREG_RANGE] instr0_lrs1,
@@ -24,7 +24,7 @@ module isu_top (
     input wire [`PREG_RANGE]        instr0_prs2,
     input wire                      instr0_src1_is_reg,
     input wire                      instr0_src2_is_reg,
-    input wire [63:0]              instr0_imm,
+    input wire [63:0]               instr0_imm,
     input wire [`CX_TYPE_RANGE]     instr0_cx_type,
     input wire                      instr0_is_unsigned,
     input wire [`ALU_TYPE_RANGE]    instr0_alu_type,
@@ -33,13 +33,13 @@ module isu_top (
     input wire                      instr0_is_imm,
     input wire                      instr0_is_load,
     input wire                      instr0_is_store,
-    input wire [3:0]               instr0_ls_size,
+    input wire [3:0]                instr0_ls_size,
 
     //---------------------------------------------------------------------------
     // Inputs from rename stage (instr1)
     //---------------------------------------------------------------------------
-    input  wire               instr1_valid,
-    output wire               instr1_ready, // from Dispatch
+    input  wire               pipe2isu_instr1_valid,
+    output wire               isu2pipe_instr1_ready, // from Dispatch
     input  wire [  `PC_RANGE] instr1_pc,
     input  wire [31:0]        instr1,
     input  wire [`LREG_RANGE] instr1_lrs1,
@@ -54,7 +54,7 @@ module isu_top (
     input wire [`PREG_RANGE]        instr1_prs2,
     input wire                      instr1_src1_is_reg,
     input wire                      instr1_src2_is_reg,
-    input wire [63:0]              instr1_imm,
+    input wire [63:0]               instr1_imm,
     input wire [`CX_TYPE_RANGE]     instr1_cx_type,
     input wire                      instr1_is_unsigned,
     input wire [`ALU_TYPE_RANGE]    instr1_alu_type,
@@ -63,7 +63,7 @@ module isu_top (
     input wire                      instr1_is_imm,
     input wire                      instr1_is_load,
     input wire                      instr1_is_store,
-    input wire [3:0]               instr1_ls_size,
+    input wire [3:0]                instr1_ls_size,
 
     //---------------------------------------------------------------------------
     // Inputs from ROB to Dispatch
@@ -71,13 +71,7 @@ module isu_top (
     input  wire [`INSTR_ID_WIDTH-1:0] rob2disp_instr_cnt, // 7 bits
     input  wire [`INSTR_ID_WIDTH-1:0] rob2disp_instr_id,  // 7 bits
 
-    //---------------------------------------------------------------------------
-    // Outputs from Dispatch to ROB
-    //---------------------------------------------------------------------------
-    output wire                      disp2rob_wren0,
-    output wire [123:0]             disp2rob_wrdata0,
-    output wire                      disp2rob_wren1,
-    output wire [123:0]             disp2rob_wrdata1,
+
 
     //---------------------------------------------------------------------------
     // Dispatch <-> Busy Vector signals
@@ -96,22 +90,22 @@ module isu_top (
     input  wire       bt2disp_instr1rs2_busy,
 
     // Busy vector write ports (allocate)
-    output wire       alloc_instr0rd_en0,
-    output wire [5:0] alloc_instr0rd_addr0,
-    output wire       alloc_instr1rd_en1,
-    output wire [5:0] alloc_instr1rd_addr1,
+    output wire       disp2bt_alloc_instr0rd_en,
+    output wire [5:0] disp2bt_alloc_instr0rd_addr,
+    output wire       disp2bt_alloc_instr1rd_en,
+    output wire [5:0] disp2bt_alloc_instr1rd_addr,
 
     // Freed bits (2 free writes) from commit or elsewhere
-    input  wire       free_instr0rd_en0,
-    input  wire [5:0] free_instr0rd_addr0,
-    input  wire       free_instr1rd_en1,
-    input  wire [5:0] free_instr1rd_addr1,
+    input  wire       intwb2bt_free_instr0rd_en,
+    input  wire [5:0] intwb2bt_free_instr0rd_addr,
+    input  wire       memwb2bt_free_instr0rd_en,
+    input  wire [5:0] memwb2bt_free_instr0rd_addr,
 
     //---------------------------------------------------------------------------
     // Dispatch -> Issue Queue signals
     //---------------------------------------------------------------------------
-    output wire              disp2isq_wren0,
-    output wire [230:0]      disp2isq_wrdata0,
+    output wire              disp2isq_instr0_wren,
+    output wire [230:0]      disp2isq_instr0_entrydata,
 
     //---------------------------------------------------------------------------
     // Issue Queue <-> PRF signals
@@ -241,7 +235,19 @@ module isu_top (
     input wire [`PREG_RANGE] debug_preg31
 );
 
-//
+
+assign isu2pipe_instr0_ready  = disp_instr0_ready;
+assign disp_instr0_valid = pipe2isu_instr0_valid;
+
+
+
+// Outputs from Dispatch to ROB
+    wire                      disp2rob_instr0_valid    ;
+    wire [123:0]              disp2rob_instr0_entrydata;
+    wire                      disp2rob_instr1_valid    ;
+    wire [123:0]              disp2rob_instr1_entrydata;
+
+
 // --------------------------------------------------------------------------
 // 1) Dispatch
 // --------------------------------------------------------------------------
@@ -250,94 +256,94 @@ dispatch dispatch_inst (
     .reset_n(reset_n),
 
     // from rename for instr0
-    .instr0_valid(instr0_valid),
-    .disp2rn_instr0_ready(disp2rn_instr0_ready),
-    .instr0_pc(instr0_pc),
-    .instr0(instr0),
-    .instr0_lrs1(instr0_lrs1),
-    .instr0_lrs2(instr0_lrs2),
-    .instr0_lrd(instr0_lrd),
-    .instr0_prd(instr0_prd),
-    .instr0_old_prd(instr0_old_prd),
-    .instr0_need_to_wb(instr0_need_to_wb),
+    .disp_instr0_valid(pipe2isu_instr0_valid),//i
+    .disp_instr0_ready(isu2pipe_instr0_ready),//output
+    .instr0_pc        (instr0_pc            ),//i
+    .instr0           (instr0               ),//i
+    .instr0_lrs1      (instr0_lrs1          ),//i
+    .instr0_lrs2      (instr0_lrs2          ),//i
+    .instr0_lrd       (instr0_lrd           ),//i
+    .instr0_prd       (instr0_prd           ),//i
+    .instr0_old_prd   (instr0_old_prd       ),//i
+    .instr0_need_to_wb(instr0_need_to_wb    ),//i
 
-    .instr0_prs1(instr0_prs1),
-    .instr0_prs2(instr0_prs2),
+    .instr0_prs1       (instr0_prs1       ),
+    .instr0_prs2       (instr0_prs2       ),
     .instr0_src1_is_reg(instr0_src1_is_reg),
     .instr0_src2_is_reg(instr0_src2_is_reg),
-    .instr0_imm(instr0_imm),
-    .instr0_cx_type(instr0_cx_type),
+    .instr0_imm        (instr0_imm        ),
+    .instr0_cx_type    (instr0_cx_type    ),
     .instr0_is_unsigned(instr0_is_unsigned),
-    .instr0_alu_type(instr0_alu_type),
+    .instr0_alu_type   (instr0_alu_type   ),
     .instr0_muldiv_type(instr0_muldiv_type),
-    .instr0_is_word(instr0_is_word),
-    .instr0_is_imm(instr0_is_imm),
-    .instr0_is_load(instr0_is_load),
-    .instr0_is_store(instr0_is_store),
-    .instr0_ls_size(instr0_ls_size),
+    .instr0_is_word    (instr0_is_word    ),
+    .instr0_is_imm     (instr0_is_imm     ),
+    .instr0_is_load    (instr0_is_load    ),
+    .instr0_is_store   (instr0_is_store   ),
+    .instr0_ls_size    (instr0_ls_size    ),
 
     // from rename for instr1
-    .instr1_valid(instr1_valid),
-    .instr1_ready(instr1_ready),
-    .instr1_pc(instr1_pc),
-    .instr1(instr1),
-    .instr1_lrs1(instr1_lrs1),
-    .instr1_lrs2(instr1_lrs2),
-    .instr1_lrd(instr1_lrd),
-    .instr1_prd(instr1_prd),
-    .instr1_old_prd(instr1_old_prd),
-    .instr1_need_to_wb(instr1_need_to_wb),
+    .disp_instr1_valid(),
+    .disp_instr1_ready(),
+    .instr1_pc        (),
+    .instr1           (),
+    .instr1_lrs1      (),
+    .instr1_lrs2      (),
+    .instr1_lrd       (),
+    .instr1_prd       (),
+    .instr1_old_prd   (),
+    .instr1_need_to_wb(),
 
-    .instr1_prs1(instr1_prs1),
-    .instr1_prs2(instr1_prs2),
-    .instr1_src1_is_reg(instr1_src1_is_reg),
-    .instr1_src2_is_reg(instr1_src2_is_reg),
-    .instr1_imm(instr1_imm),
-    .instr1_cx_type(instr1_cx_type),
-    .instr1_is_unsigned(instr1_is_unsigned),
-    .instr1_alu_type(instr1_alu_type),
-    .instr1_muldiv_type(instr1_muldiv_type),
-    .instr1_is_word(instr1_is_word),
-    .instr1_is_imm(instr1_is_imm),
-    .instr1_is_load(instr1_is_load),
-    .instr1_is_store(instr1_is_store),
-    .instr1_ls_size(instr1_ls_size),
+    .instr1_prs1       (),
+    .instr1_prs2       (),
+    .instr1_src1_is_reg(),
+    .instr1_src2_is_reg(),
+    .instr1_imm        (),
+    .instr1_cx_type    (),
+    .instr1_is_unsigned(),
+    .instr1_alu_type   (),
+    .instr1_muldiv_type(),
+    .instr1_is_word    (),
+    .instr1_is_imm     (),
+    .instr1_is_load    (),
+    .instr1_is_store   (),
+    .instr1_ls_size    (),
 
     // from ROB
-    .rob2disp_instr_cnt(rob2disp_instr_cnt),
-    .rob2disp_instr_id(rob2disp_instr_id),
+    .rob2disp_instr_cnt(rob2disp_instr_cnt),//i
+    .rob2disp_instr_id(rob2disp_instr_id  ),//i
 
-    // to ROB
-    .disp2rob_wren0(disp2rob_wren0),
-    .disp2rob_wrdata0(disp2rob_wrdata0),
-    .disp2rob_wren1(disp2rob_wren1),
-    .disp2rob_wrdata1(disp2rob_wrdata1),
+    // disp write robentry to ROB
+    .disp2rob_instr0_valid    (disp2rob_instr0_valid    ),
+    .disp2rob_instr0_entrydata(disp2rob_instr0_entrydata),
+    .disp2rob_instr1_valid    (),
+    .disp2rob_instr1_entrydata(),
 
     // to busy_vector
     .disp2bt_instr0rs1_rdaddr(disp2bt_instr0rs1_rdaddr),
-    .bt2disp_instr0rs1_busy(bt2disp_instr0rs1_busy),
+    .bt2disp_instr0rs1_busy  (bt2disp_instr0rs1_busy  ),
     .disp2bt_instr0rs2_rdaddr(disp2bt_instr0rs2_rdaddr),
-    .bt2disp_instr0rs2_busy(bt2disp_instr0rs2_busy),
+    .bt2disp_instr0rs2_busy  (bt2disp_instr0rs2_busy  ),
     .disp2bt_instr1rs1_rdaddr(disp2bt_instr1rs1_rdaddr),
-    .bt2disp_instr1rs1_busy(bt2disp_instr1rs1_busy),
+    .bt2disp_instr1rs1_busy  (bt2disp_instr1rs1_busy  ),
     .disp2bt_instr1rs2_rdaddr(disp2bt_instr1rs2_rdaddr),
-    .bt2disp_instr1rs2_busy(bt2disp_instr1rs2_busy),
+    .bt2disp_instr1rs2_busy  (bt2disp_instr1rs2_busy  ),
 
-    .alloc_instr0rd_en0(alloc_instr0rd_en0),
-    .alloc_instr0rd_addr0(alloc_instr0rd_addr0),
-    .alloc_instr1rd_en1(alloc_instr1rd_en1),
-    .alloc_instr1rd_addr1(alloc_instr1rd_addr1),
+    .disp2bt_alloc_instr0rd_en(disp2bt_alloc_instr0rd_en),
+    .disp2bt_alloc_instr0rd_addr(disp2bt_alloc_instr0rd_addr),
+    .disp2bt_alloc_instr1rd_en(disp2bt_alloc_instr1rd_en),
+    .disp2bt_alloc_instr1rd_addr(disp2bt_alloc_instr1rd_addr),
 
     // to Issue Queue
-    .disp2isq_wren0(disp2isq_wren0),
-    .disp2isq_wrdata0(disp2isq_wrdata0)
+    .disp2isq_instr0_wren(disp2isq_instr0_wren),
+    .disp2isq_instr0_entrydata(disp2isq_instr0_entrydata)
 );
 
 //
 // --------------------------------------------------------------------------
-// 2) Busy Vector
+// 2) Busy Table
 // --------------------------------------------------------------------------
-busy_vector busy_vector_inst (
+busy_table busy_table_inst (
     .clk(clock),
     .reset_n(reset_n),
 
@@ -352,16 +358,16 @@ busy_vector busy_vector_inst (
     .bt2disp_instr1rs2_busy(bt2disp_instr1rs2_busy),
 
     // allocate
-    .alloc_instr0rd_en0(alloc_instr0rd_en0),
-    .alloc_instr0rd_addr0(alloc_instr0rd_addr0),
-    .alloc_instr1rd_en1(alloc_instr1rd_en1),
-    .alloc_instr1rd_addr1(alloc_instr1rd_addr1),
+    .disp2bt_alloc_instr0rd_en(disp2bt_alloc_instr0rd_en),
+    .disp2bt_alloc_instr0rd_addr(disp2bt_alloc_instr0rd_addr),
+    .disp2bt_alloc_instr1rd_en(disp2bt_alloc_instr1rd_en),
+    .disp2bt_alloc_instr1rd_addr(disp2bt_alloc_instr1rd_addr),
 
     // free
-    .free_instr0rd_en0(free_instr0rd_en0),
-    .free_instr0rd_addr0(free_instr0rd_addr0),
-    .free_instr1rd_en1(free_instr1rd_en1),
-    .free_instr1rd_addr1(free_instr1rd_addr1),
+    .intwb2bt_free_instr0rd_en  (intwb2bt_free_instr0rd_en  ),
+    .intwb2bt_free_instr0rd_addr(intwb2bt_free_instr0rd_addr),
+    .memwb2bt_free_instr0rd_en  (memwb2bt_free_instr0rd_en  ),
+    .memwb2bt_free_instr0rd_addr(memwb2bt_free_instr0rd_addr),
 
     // flush & walk logic from ROB
     .flush_valid(flush_valid),
@@ -390,10 +396,10 @@ issue_queue #(
     .reset_n         (reset_n),
 
     // Write interface (from Dispatch)
-    .wr_data         (disp2isq_wrdata0), // 248-bit instruction package
+    .wr_data         (disp2isq_instr0_entrydata), // 248-bit instruction package
     .wr_rs1_sleepbit (1'b0),             // or from your dispatch logic
     .wr_rs2_sleepbit (1'b0),             // or from your dispatch logic
-    .wr_valid        (disp2isq_wren0),   // rename -> dispatch -> issueq handshake
+    .wr_valid        (disp2isq_instr0_wren),   // rename -> dispatch -> issueq handshake
     .wr_ready        (/* unconnected or wire out if needed */),
     .queue_full      (/* unconnected or wire out if needed */),
 
@@ -527,12 +533,11 @@ rob #(
     .reset_n                (reset_n),
 
     // Write Port 0
-    .wr_en0                 (disp2rob_wren0),
-    .wr_data0               (disp2rob_wrdata0),
-
+    .disp2rob_instr0_valid                   (disp2rob_instr0_valid    ),
+    .disp2rob_instr0_entrydata               (disp2rob_instr0_entrydata),
     // Write Port 1
-    .wr_en1                 (disp2rob_wren1),
-    .wr_data1               (disp2rob_wrdata1),
+    .disp2rob_instr1_valid                   (),
+    .disp2rob_instr1_entrydata               (),
 
     // Status writes (from FU completion)
     .complete_wren0         (complete_wren0),

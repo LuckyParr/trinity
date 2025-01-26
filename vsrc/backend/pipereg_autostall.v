@@ -1,7 +1,10 @@
 module pipereg_autostall (
     input  wire               clock,
     input  wire               reset_n,
+    input wire                instr_valid_from_upper,
     output wire               instr_ready_to_upper,
+    input wire [      `INSTR_RANGE] instr,
+    input wire [         `PC_RANGE] pc,
     input  wire [`LREG_RANGE] lrs1,
     input  wire [`LREG_RANGE] lrs2,
     input  wire [`LREG_RANGE] lrd,
@@ -20,9 +23,6 @@ module pipereg_autostall (
     input wire                      is_store,
     input wire [               3:0] ls_size,
     input wire [`MULDIV_TYPE_RANGE] muldiv_type,
-    input wire                      instr_valid,
-    input wire [         `PC_RANGE] pc,
-    input wire [      `INSTR_RANGE] instr,
 
     //sig below is preg
     input wire [`PREG_RANGE] prs1,
@@ -39,11 +39,11 @@ module pipereg_autostall (
     //note: dont not to fill until mem stage done
     input wire [`RESULT_RANGE] opload_read_data_wb,
 
-    //flush
-    input flush_valid,
-
     // outputs
+    output reg                instr_valid_to_lower,
     input  wire               instr_ready_from_lower,
+    output reg [      `INSTR_RANGE] lower_instr,
+    output reg [         `PC_RANGE] lower_pc,
     output reg  [`LREG_RANGE] lower_lrs1,
     output reg  [`LREG_RANGE] lower_lrs2,
     output reg  [`LREG_RANGE] lower_lrd,
@@ -62,28 +62,26 @@ module pipereg_autostall (
     output reg                      lower_is_store,
     output reg [               3:0] lower_ls_size,
     output reg [`MULDIV_TYPE_RANGE] lower_muldiv_type,
-    output reg                      lower_instr_valid,
-    output reg [         `PC_RANGE] lower_pc,
-    output reg [      `INSTR_RANGE] lower_instr,
 
     output reg [`PREG_RANGE] lower_prs1,
     output reg [`PREG_RANGE] lower_prs2,
     output reg [`PREG_RANGE] lower_prd,
     output reg [`PREG_RANGE] lower_old_prd,
 
-
     output reg [`RESULT_RANGE] lower_ls_address,
     output reg [`RESULT_RANGE] lower_alu_result,
     output reg [`RESULT_RANGE] lower_bju_result,
     output reg [`RESULT_RANGE] lower_muldiv_result,
+    output reg [`RESULT_RANGE] lower_opload_read_data_wb,
+    //flush
+    input flush_valid
 
-    output reg [`RESULT_RANGE] lower_opload_read_data_wb
 );
-    wire in_fire = instr_valid & instr_ready_to_upper;
-    wire lower_fire = lower_instr_valid & instr_ready_from_lower;
+    wire in_fire = instr_valid_from_upper & instr_ready_to_upper;
+    wire lower_fire = instr_valid_to_lower & instr_ready_from_lower;
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n || flush_valid ) begin
-            lower_instr_valid         <= 'b0;
+            instr_valid_to_lower         <= 'b0;
             lower_lrs1                <= 'b0;
             lower_lrs2                <= 'b0;
             lower_lrd                 <= 'b0;
@@ -115,7 +113,7 @@ module pipereg_autostall (
             lower_prd                 <= 'b0;
             lower_old_prd             <= 'b0;
         end else if (in_fire) begin
-            lower_instr_valid         <= instr_valid;
+            instr_valid_to_lower         <= instr_valid_from_upper;
             lower_lrs1                <= lrs1;
             lower_lrs2                <= lrs2;
             lower_lrd                 <= lrd;
@@ -144,7 +142,7 @@ module pipereg_autostall (
             lower_prd                 <= prd;
             lower_old_prd             <= old_prd;
         end else if(lower_fire)begin
-            lower_instr_valid         <= 'b0;
+            instr_valid_to_lower         <= 'b0;
             //not need to assign other output signals, so they are automatically stalled(latched)
         end
     end

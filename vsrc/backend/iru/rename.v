@@ -25,6 +25,7 @@ module rename #()
 
     //instr 1 from decoder after pipereg
     input wire               instr1_valid,
+    output wire               instr1_ready,
     input wire [       31:0] instr1,
     input wire [`LREG_RANGE] instr1_lrs1,
     input wire [`LREG_RANGE] instr1_lrs2,
@@ -51,14 +52,14 @@ module rename #()
     output wire [`LREG_RANGE] rn2specrat_instr0_lrs1,
     output wire rn2specrat_instr0_lrs2_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr0_lrs2,
-    output wire rn2specrat_instr1_lrd_rden , 
+    output wire rn2specrat_instr0_lrd_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr0_lrd,
     
     output wire rn2specrat_instr1_lrs1_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr1_lrs1,
     output wire rn2specrat_instr1_lrs2_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr1_lrs2,
-    output wire rn2specrat_instr0_lrd_rden ,  
+    output wire rn2specrat_instr1_lrd_rden ,  
     output wire [`LREG_RANGE] rn2specrat_instr1_lrd,
 
     input wire [`PREG_RANGE] specrat2rn_instr0prs1,
@@ -76,8 +77,6 @@ module rename #()
 
     //flush signal
     input wire flush_valid,
-    //ready from disp
-    input wire disp2rn_instr_ready_feedthrough,
     //to dispatch instr 0
     output wire [`PREG_RANGE] rn2pipe_instr0_prs1,
     output wire [`PREG_RANGE] rn2pipe_instr0_prs2,
@@ -99,6 +98,7 @@ module rename #()
         
     //other info of instr0
     output wire                      rn2pipe_instr0_valid,
+    input wire                       pipe2rn_instr0_ready,
     output wire [ `LREG_RANGE      ] rn2pipe_instr0_lrs1,
     output wire [ `LREG_RANGE      ] rn2pipe_instr0_lrs2,
     output wire [ `LREG_RANGE      ] rn2pipe_instr0_lrd,
@@ -120,6 +120,7 @@ module rename #()
     output wire [`PREG_RANGE       ] rn2pipe_instr0_old_prd,
     //other info of instr1
     output wire                      rn2pipe_instr1_valid,
+    input wire                       pipe2rn_instr1_ready,
     output wire [ `LREG_RANGE      ] rn2pipe_instr1_lrs1,
     output wire [ `LREG_RANGE      ] rn2pipe_instr1_lrs2,
     output wire [ `LREG_RANGE      ] rn2pipe_instr1_lrd,
@@ -140,6 +141,10 @@ module rename #()
     output wire [               3:0] rn2pipe_instr1_ls_size,
     output wire [`PREG_RANGE       ] rn2pipe_instr1_old_prd
 );
+
+    assign instr0_ready = pipe2rn_instr0_ready;
+    //assign instr1_ready = pipe2rn_instr1_ready;
+
 /* --------------------------- determine if 6 reg is valid or not -------------------------- */
     wire instr0_lrs1_valid = instr0_valid & instr0_src1_is_reg;
     wire instr0_lrs2_valid = instr0_valid & instr0_src2_is_reg;
@@ -195,8 +200,8 @@ assign rn2specrat_instr1_lrd        = instr1_lrd;
 //read req:
 //handshake means rename need to fetch 2 free physical reg number from freelist
 //when flush, no need to fetch
-assign rn2fl_instr0_lrd_valid = instr0_lrd_valid && disp2rn_instr_ready_feedthrough && ~flush_valid; 
-assign rn2fl_instr1_lrd_valid = instr1_lrd_valid && ~flush_valid ;//&& disp2rn_instr_ready_feedthrough;//issue queue accept instr1 abililty due to implement future
+assign rn2fl_instr0_lrd_valid = instr0_lrd_valid && pipe2rn_instr0_ready && ~flush_valid; 
+assign rn2fl_instr1_lrd_valid = instr1_lrd_valid && ~flush_valid ;//&& pipe2rn_instr1_ready;//issue queue accept instr1 abililty due to implement future
 
 
 

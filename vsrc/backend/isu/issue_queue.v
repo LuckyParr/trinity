@@ -41,8 +41,8 @@ module issue_queue #(
     input  wire [63:0]        prf2isq_prs2_rddata,  // Data from isq2prf_prs2_rdaddr register
 
     /* ---------------------------- info write to fu ---------------------------- */
-    output reg                instr0_valid,
-    input  wire               instr0_ready,
+    output reg                isq_instr0_valid,
+    input  wire               isq_instr0_ready,
 
     output wire [63:0]                    instr0_src1,
     output wire [63:0]                    instr0_src2,
@@ -176,7 +176,7 @@ module issue_queue #(
 
             read_slot_index  <= 0;
             read_slot_valid  <= 1'b0;
-            instr0_valid     <= 1'b0;
+            isq_instr0_valid     <= 1'b0;
         end 
         else begin
             // -----------------------------
@@ -219,7 +219,7 @@ module issue_queue #(
             // -----------------------------
             // 4) Read (handshake) logic
             // -----------------------------
-            instr0_valid <= 1'b0; // default
+            isq_instr0_valid <= 1'b0; // default
 
             if (!read_slot_valid) begin
                 // We do NOT hold a slot. Check if we found one
@@ -245,8 +245,8 @@ module issue_queue #(
                 end
             end
 
-            // If you want `instr0_valid` to track the same as `rd_valid`, do:
-            instr0_valid <= read_slot_valid;
+            // If you want `isq_instr0_valid` to track the same as `rd_valid`, do:
+            isq_instr0_valid <= read_slot_valid;
         end
     end
 

@@ -8,7 +8,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module busy_vector (
+module busy_table (
     input wire clk,                         // Clock signal
     input wire reset_n,                     // Active-low reset signal
 
@@ -29,20 +29,20 @@ module busy_vector (
     output wire bt2disp_instr1rs2_busy,      // Data output for disp2bt_instr1rs2_rddata
 
     // Write Port 0 - Allocate Instruction 0
-    input wire alloc_instr0rd_en0,             // Enable for alloc_instr0rd_addr0
-    input wire [5:0] alloc_instr0rd_addr0,     // Address for alloc_instr0rd_addr0
+    input wire disp2bt_alloc_instr0rd_en,             // Enable for disp2bt_alloc_instr0rd_addr
+    input wire [5:0] disp2bt_alloc_instr0rd_addr,     // Address for disp2bt_alloc_instr0rd_addr
 
     // Write Port 1 - Allocate Instruction 1
-    input wire alloc_instr1rd_en1,             // Enable for alloc_instr1rd_addr1
-    input wire [5:0] alloc_instr1rd_addr1,     // Address for alloc_instr1rd_addr1
+    input wire disp2bt_alloc_instr1rd_en,             // Enable for disp2bt_alloc_instr1rd_addr
+    input wire [5:0] disp2bt_alloc_instr1rd_addr,     // Address for disp2bt_alloc_instr1rd_addr
 
     // Write Port 2 - Free Instruction 0
-    input wire free_instr0rd_en0,              // Enable for free_instr0rd_addr0
-    input wire [5:0] free_instr0rd_addr0,      // Address for free_instr0rd_addr0
+    input wire intwb2bt_free_instr0rd_en,              // Enable for intwb2bt_free_instr0rd_addr
+    input wire [5:0] intwb2bt_free_instr0rd_addr,      // Address for intwb2bt_free_instr0rd_addr
 
     // Write Port 3 - Free Instruction 1
-    input wire free_instr1rd_en1,              // Enable for free_instr1rd_addr1
-    input wire [5:0] free_instr1rd_addr1,       // Address for free_instr1rd_addr1
+    input wire memwb2bt_free_instr0rd_en,              // Enable for memwb2bt_free_instr0rd_addr
+    input wire [5:0] memwb2bt_free_instr0rd_addr,       // Address for memwb2bt_free_instr0rd_addr
 
 /* ------------------------------- walk logic ------------------------------- */
     input flush_valid,
@@ -68,21 +68,21 @@ module busy_vector (
             busy_vector <= 64'b0;
         end else begin
             // Allocation Ports - Set Bit to 1
-            if (alloc_instr0rd_en0)begin
-                busy_vector[alloc_instr0rd_addr0] <= 1'b1;                
+            if (disp2bt_alloc_instr0rd_en)begin
+                busy_vector[disp2bt_alloc_instr0rd_addr] <= 1'b1;                
             end
 
-            if (alloc_instr1rd_en1)begin
-                busy_vector[alloc_instr1rd_addr1] <= 1'b1;                
+            if (disp2bt_alloc_instr1rd_en)begin
+                busy_vector[disp2bt_alloc_instr1rd_addr] <= 1'b1;                
             end
 
             // Free Ports - Set Bit to 0
-            if (free_instr0rd_en0)begin
-                busy_vector[free_instr0rd_addr0] <= 1'b0;                
+            if (intwb2bt_free_instr0rd_en)begin
+                busy_vector[intwb2bt_free_instr0rd_addr] <= 1'b0;                
             end
 
-            if (free_instr1rd_en1)begin
-                busy_vector[free_instr1rd_addr1] <= 1'b0;                
+            if (memwb2bt_free_instr0rd_en)begin
+                busy_vector[memwb2bt_free_instr0rd_addr] <= 1'b0;                
             end
 
             if (walking_valid0 && ~walking_complete0)begin
@@ -99,37 +99,37 @@ module busy_vector (
     // Bypass Logic for Read Port 0
     wire bypass_instr0rs1;
     assign bypass_instr0rs1 = 
-           (alloc_instr0rd_en0 && (alloc_instr0rd_addr0 == disp2bt_instr0rs1_rdaddr)) ? 1'b1 :
-           (alloc_instr1rd_en1 && (alloc_instr1rd_addr1 == disp2bt_instr0rs1_rdaddr)) ? 1'b1 :
-           (free_instr0rd_en0 && (free_instr0rd_addr0 == disp2bt_instr0rs1_rdaddr)) ? 1'b0 :
-           (free_instr1rd_en1 && (free_instr1rd_addr1 == disp2bt_instr0rs1_rdaddr)) ? 1'b0 :
+           (disp2bt_alloc_instr0rd_en && (disp2bt_alloc_instr0rd_addr == disp2bt_instr0rs1_rdaddr)) ? 1'b1 :
+           (disp2bt_alloc_instr1rd_en && (disp2bt_alloc_instr1rd_addr == disp2bt_instr0rs1_rdaddr)) ? 1'b1 :
+           (intwb2bt_free_instr0rd_en && (intwb2bt_free_instr0rd_addr == disp2bt_instr0rs1_rdaddr)) ? 1'b0 :
+           (memwb2bt_free_instr0rd_en && (memwb2bt_free_instr0rd_addr == disp2bt_instr0rs1_rdaddr)) ? 1'b0 :
            busy_vector[disp2bt_instr0rs1_rdaddr];
 
     // Bypass Logic for Read Port 1
     wire bypass_instr0rs2;
     assign bypass_instr0rs2 = 
-           (alloc_instr0rd_en0 && (alloc_instr0rd_addr0 == disp2bt_instr0rs2_rdaddr)) ? 1'b1 :
-           (alloc_instr1rd_en1 && (alloc_instr1rd_addr1 == disp2bt_instr0rs2_rdaddr)) ? 1'b1 :
-           (free_instr0rd_en0 && (free_instr0rd_addr0 == disp2bt_instr0rs2_rdaddr)) ? 1'b0 :
-           (free_instr1rd_en1 && (free_instr1rd_addr1 == disp2bt_instr0rs2_rdaddr)) ? 1'b0 :
+           (disp2bt_alloc_instr0rd_en && (disp2bt_alloc_instr0rd_addr == disp2bt_instr0rs2_rdaddr)) ? 1'b1 :
+           (disp2bt_alloc_instr1rd_en && (disp2bt_alloc_instr1rd_addr == disp2bt_instr0rs2_rdaddr)) ? 1'b1 :
+           (intwb2bt_free_instr0rd_en && (intwb2bt_free_instr0rd_addr == disp2bt_instr0rs2_rdaddr)) ? 1'b0 :
+           (memwb2bt_free_instr0rd_en && (memwb2bt_free_instr0rd_addr == disp2bt_instr0rs2_rdaddr)) ? 1'b0 :
            busy_vector[disp2bt_instr0rs2_rdaddr];
 
     // Bypass Logic for Read Port 2
     wire bypass_instr1rs1;
     assign bypass_instr1rs1 = 
-           (alloc_instr0rd_en0 && (alloc_instr0rd_addr0 == disp2bt_instr1rs1_rdaddr)) ? 1'b1 :
-           (alloc_instr1rd_en1 && (alloc_instr1rd_addr1 == disp2bt_instr1rs1_rdaddr)) ? 1'b1 :
-           (free_instr0rd_en0 && (free_instr0rd_addr0 == disp2bt_instr1rs1_rdaddr)) ? 1'b0 :
-           (free_instr1rd_en1 && (free_instr1rd_addr1 == disp2bt_instr1rs1_rdaddr)) ? 1'b0 :
+           (disp2bt_alloc_instr0rd_en && (disp2bt_alloc_instr0rd_addr == disp2bt_instr1rs1_rdaddr)) ? 1'b1 :
+           (disp2bt_alloc_instr1rd_en && (disp2bt_alloc_instr1rd_addr == disp2bt_instr1rs1_rdaddr)) ? 1'b1 :
+           (intwb2bt_free_instr0rd_en && (intwb2bt_free_instr0rd_addr == disp2bt_instr1rs1_rdaddr)) ? 1'b0 :
+           (memwb2bt_free_instr0rd_en && (memwb2bt_free_instr0rd_addr == disp2bt_instr1rs1_rdaddr)) ? 1'b0 :
            busy_vector[disp2bt_instr1rs1_rdaddr];
 
     // Bypass Logic for Read Port 3
     wire bypass_instr1rs2;
     assign bypass_instr1rs2 = 
-           (alloc_instr0rd_en0 && (alloc_instr0rd_addr0 == disp2bt_instr1rs2_rdaddr)) ? 1'b1 :
-           (alloc_instr1rd_en1 && (alloc_instr1rd_addr1 == disp2bt_instr1rs2_rdaddr)) ? 1'b1 :
-           (free_instr0rd_en0 && (free_instr0rd_addr0 == disp2bt_instr1rs2_rdaddr)) ? 1'b0 :
-           (free_instr1rd_en1 && (free_instr1rd_addr1 == disp2bt_instr1rs2_rdaddr)) ? 1'b0 :
+           (disp2bt_alloc_instr0rd_en && (disp2bt_alloc_instr0rd_addr == disp2bt_instr1rs2_rdaddr)) ? 1'b1 :
+           (disp2bt_alloc_instr1rd_en && (disp2bt_alloc_instr1rd_addr == disp2bt_instr1rs2_rdaddr)) ? 1'b1 :
+           (intwb2bt_free_instr0rd_en && (intwb2bt_free_instr0rd_addr == disp2bt_instr1rs2_rdaddr)) ? 1'b0 :
+           (memwb2bt_free_instr0rd_en && (memwb2bt_free_instr0rd_addr == disp2bt_instr1rs2_rdaddr)) ? 1'b0 :
            busy_vector[disp2bt_instr1rs2_rdaddr];
 
     // Assigning read data with bypass logic

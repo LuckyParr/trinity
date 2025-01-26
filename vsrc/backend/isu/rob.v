@@ -13,12 +13,12 @@ module rob #(
     input  reset_n,  // Active-low reset
 
     // Write Port 0
-    input                  wr_en0,
-    input [DATA_WIDTH-1:0] wr_data0,
+    input                  disp2rob_instr0_valid,
+    input [DATA_WIDTH-1:0] disp2rob_instr0_entrydata,
 
     // Write Port 1
-    input                  wr_en1,
-    input [DATA_WIDTH-1:0] wr_data1,
+    input                  disp2rob_instr1_valid,
+    input [DATA_WIDTH-1:0] disp2rob_instr1_entrydata,
 
     // Status Write Port 0
     input                       complete_wren0,
@@ -121,9 +121,9 @@ module rob #(
             
         end else begin // is_idle
             // Count how many writes are requested in this cycle
-            write_count = wr_en0 + wr_en1;
-            if (write_count == 1 && wr_en0 && !full) begin
-                cqentry_data[enqueue_ptr]   <= wr_data0;
+            write_count = disp2rob_instr0_valid + disp2rob_instr1_valid;
+            if (write_count == 1 && disp2rob_instr0_valid && !full) begin
+                cqentry_data[enqueue_ptr]   <= disp2rob_instr0_entrydata;
                 cqentry_valid[enqueue_ptr]  <= 1'b1;
                 cqentry_index[enqueue_ptr]  <= instr_id;
                 cqentry_complete[enqueue_ptr] <= {STATUS_WIDTH{1'b0}}; // status defaults to 0
@@ -132,13 +132,13 @@ module rob #(
                 instr_avail_cnt <= instr_avail_cnt + 1 ;
                 //wr_count      <= wr_count + 1;
                 instr_id <= instr_id + 1;
-            end else if (write_count == 2 && wr_en1 && !full) begin
-                cqentry_data[enqueue_ptr]   <= wr_data0;
+            end else if (write_count == 2 && disp2rob_instr1_valid && !full) begin
+                cqentry_data[enqueue_ptr]   <= disp2rob_instr0_entrydata;
                 cqentry_valid[enqueue_ptr]  <= 1'b1;
                 cqentry_index[enqueue_ptr]  <= instr_id;
                 cqentry_complete[enqueue_ptr] <= {STATUS_WIDTH{1'b0}}; // status defaults to 0
 
-                cqentry_data[enqueue_ptr+1]   <= wr_data1;
+                cqentry_data[enqueue_ptr+1]   <= disp2rob_instr1_entrydata;
                 cqentry_valid[enqueue_ptr+1]  <= 1'b1;
                 cqentry_index[enqueue_ptr+1]  <= instr_id+1;
                 cqentry_complete[enqueue_ptr+1] <= {STATUS_WIDTH{1'b0}};
@@ -212,7 +212,7 @@ module rob #(
         end
     end
 
-    assign rob2fl_commit_valid0 = commit_valid;
+    assign rob2fl_commit_valid0 = commit_valid && commit_data[0]; //need_to_wb
     assign rob2fl_commit_old_prd = commit_data[6:1];
 
     assign rob2specrat_commit0_valid      = commit_valid;

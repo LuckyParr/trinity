@@ -56,8 +56,41 @@ module spec_rat #(
     input wire [5:0] walking_prd0,
     input wire [5:0] walking_prd1,
     input wire [4:0] walking_lrd0,
-    input wire [4:0] walking_lrd1
+    input wire [4:0] walking_lrd1,
 
+/* --------------------- arch_rat : 32 arch regfile content -------------------- */
+    output wire [`PREG_RANGE] debug_preg0,
+    output wire [`PREG_RANGE] debug_preg1,
+    output wire [`PREG_RANGE] debug_preg2,
+    output wire [`PREG_RANGE] debug_preg3,
+    output wire [`PREG_RANGE] debug_preg4,
+    output wire [`PREG_RANGE] debug_preg5,
+    output wire [`PREG_RANGE] debug_preg6,
+    output wire [`PREG_RANGE] debug_preg7,
+    output wire [`PREG_RANGE] debug_preg8,
+    output wire [`PREG_RANGE] debug_preg9,
+    output wire [`PREG_RANGE] debug_preg10,
+    output wire [`PREG_RANGE] debug_preg11,
+    output wire [`PREG_RANGE] debug_preg12,
+    output wire [`PREG_RANGE] debug_preg13,
+    output wire [`PREG_RANGE] debug_preg14,
+    output wire [`PREG_RANGE] debug_preg15,
+    output wire [`PREG_RANGE] debug_preg16,
+    output wire [`PREG_RANGE] debug_preg17,
+    output wire [`PREG_RANGE] debug_preg18,
+    output wire [`PREG_RANGE] debug_preg19,
+    output wire [`PREG_RANGE] debug_preg20,
+    output wire [`PREG_RANGE] debug_preg21,
+    output wire [`PREG_RANGE] debug_preg22,
+    output wire [`PREG_RANGE] debug_preg23,
+    output wire [`PREG_RANGE] debug_preg24,
+    output wire [`PREG_RANGE] debug_preg25,
+    output wire [`PREG_RANGE] debug_preg26,
+    output wire [`PREG_RANGE] debug_preg27,
+    output wire [`PREG_RANGE] debug_preg28,
+    output wire [`PREG_RANGE] debug_preg29,
+    output wire [`PREG_RANGE] debug_preg30,
+    output wire [`PREG_RANGE] debug_preg31
 );
 
     //hit situation
@@ -229,6 +262,7 @@ module spec_rat #(
 //   instr0_need_to_wb    //[0]
 //   };
 
+/* -------------------------------- arch_rat -------------------------------- */
 
 arch_rat u_arch_rat(
     .clock              (clock              ),
@@ -311,7 +345,5 @@ arch_rat u_arch_rat(
         debug_preg1,
         debug_preg0
     };
-
-
 
 endmodule

@@ -11,8 +11,8 @@ module decoder (
     input wire [47:0] ibuffer_pc_out,
   
     //to regfile read 
-    output reg  [ 4:0] rs1,
-    output reg  [ 4:0] rs2,
+    output reg  [ 4:0              ] rs1,
+    output reg  [ 4:0              ] rs2,
     output reg  [               4:0] rd,
     output reg  [              63:0] imm,
     output reg                       src1_is_reg,
@@ -29,14 +29,14 @@ module decoder (
     output reg  [`MULDIV_TYPE_RANGE] muldiv_type,
     //feedthrough
     output wire [              47:0] decoder_instr_valid,
+    output wire [              47:0] decoder_pc_out,
+    output wire [              31:0] decoder_instr_out,
     output wire                      decoder_predicttaken_out,
-    output wire [31:0]               decoder_predicttarget_out,
-    output wire [              31:0] decoder_inst_out,
-    output wire [              47:0] decoder_pc_out
+    output wire [31:0]               decoder_predicttarget_out
 
 );
     assign decoder_pc_out   = ibuffer_pc_out;
-    assign decoder_inst_out = ibuffer_inst_out;
+    assign decoder_instr_out = ibuffer_inst_out;
     assign decoder_instr_valid = ibuffer_instr_valid;
     assign decoder_predicttaken_out = ibuffer_predicttaken_out;
     assign decoder_predicttarget_out = ibuffer_predicttarget_out;
