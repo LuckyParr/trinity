@@ -111,7 +111,7 @@ module rob
     wire [    `ROB_SIZE-1:0] entry_need_to_wb_dec;
     wire [    `ROB_SIZE-1:0] entry_skip_dec;
     reg  [    `ROB_SIZE-1:0] commit_vld_dec;
-    reg  [    `ROB_SIZE-1:0] flush_needwalk_dec;
+    reg  [    `ROB_SIZE-1:0] needflush_dec;
 
     wire                     instr0_actually_enq;
     wire                     instr1_actually_enq;
@@ -127,6 +127,8 @@ module rob
 
 
 /* ------------------------ update enqueue_ptr logic ------------------------ */
+    //when instr0/1 comes from disp, calculate enq_num 
+    //enq_valid_dec[i] also act as wren for robentry
     always @(*) begin
         integer i;
         for (i = 0; i < `ROB_SIZE; i = i + 1) begin
@@ -149,7 +151,7 @@ module rob
             end
         end
     end
-
+    //use enq_num to update enqeue_ptr
     always @(posedge clock or negedge reset_n) begin
         if(~reset_n)begin
             enqueue_ptr <=0;
@@ -393,10 +395,10 @@ module rob
 
     always @(*) begin
         integer i;
-        flush_needwalk_dec = 'b0;
+        needflush_dec = 'b0;
         for (i = 0; i < `ROB_SIZE; i = i + 1) begin
             if (is_rollingback) begin
-                    flush_needwalk_dec[i] = flush_robid[`ROB_SIZE_LOG] ^ dequeue_ptr[`ROB_SIZE_LOG] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < dequeue_ptr[`ROB_SIZE_LOG-1:0]);
+                    needflush_dec[i] = flush_robid[`ROB_SIZE_LOG] ^ enqueue_ptr[`ROB_SIZE_LOG] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < enqueue_ptr[`ROB_SIZE_LOG-1:0]);
                 end
             end
         end
@@ -457,7 +459,7 @@ module rob
                 .entry_need_to_wb (entry_need_to_wb_dec[i]),//output
                 .entry_skip       (entry_skip_dec[i]      ),//output
                 .commit_vld       (commit_vld_dec[i]      ),//i
-                .flush_vld        (flush_needwalk_dec[i]       ) //i
+                .flush_vld        (needflush_dec[i]       ) //i
                                                           );
         end
     endgenerate

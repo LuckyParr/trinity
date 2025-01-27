@@ -141,3 +141,8 @@ end
 `define INSTR_ID_WIDTH 7
 `define ROB_SIZE_LOG 6
 `define ROB_SIZE 64
+
+`define ROB_STATE_IDLE 2'b00
+`define ROB_STATE_ROLLILNGBACK 2'b01
+`define ROB_STATE_WALKING 2'b10
+
