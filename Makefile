@@ -1,6 +1,16 @@
 V_FLAG = --cc --exe --build
 INCDIR = -I./tb/ \
-	-I./vsrc/
+	-I./vsrc/\
+	-I./vsrc/pipereg\
+	-I./vsrc/backend\
+	-I./vsrc/backend/decode\
+	-I./vsrc/backend/rename\
+	-I./vsrc/backend/isu\
+	-I./vsrc/backend/fu\
+	-I./vsrc/backend/dispatch\
+	-I./vsrc/frontend\
+	-I./vsrc/include/\
+	-I./build/rtl
 SIM_CPP = ./csrc/sim.cpp
 CSRC = ./csrc/dpic.cpp
 # REF = $(NOOP_HOME)/r2r/riscv64-nemu-interpreter-so

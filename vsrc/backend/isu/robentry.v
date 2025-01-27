@@ -11,14 +11,13 @@ module robentry
     input  wire [`PREG_RANGE] enq_old_prd,
     //debug
     input  wire               enq_need_to_wb,
-    input  wire               enq_skip,
+    // input  wire               enq_skip,
     /* -------------------------------- wireback -------------------------------- */
     input  wire               wb_set_complete,//
     input  wire               wb_set_skip,//
     /* ------------------------------- entry valid ------------------------------ */
-    output wire               entry_valid,
-    /* ------------------------------------ deq port ----------------------------------- */
-    output reg               ready_to_commit,
+    output reg               entry_ready_to_commit,
+    output reg               entry_valid,
     output reg               entry_complete,
     output reg [  `PC_RANGE] entry_pc,
     output reg [       31:0] entry_instr,
@@ -33,7 +32,7 @@ module robentry
     /* ------------------------------- flush logic ------------------------------ */
     input  wire               flush_vld
 );
-
+    assign entry_ready_to_commit = entry_valid & entry_complete;
 
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n | flush_vld) begin
