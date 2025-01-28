@@ -28,8 +28,8 @@ module simddr (
     always @(posedge clock or negedge reset_n) begin
         if (!reset_n) begin
             write_enable_latch   <= 1'b0;
-            ddr_write_data_latch <= 64'd0;
-            //ddr_write_mask_latch <= 64'd0;
+            ddr_write_data_latch <= 512'd0;
+            //ddr_write_mask_latch <= 512'd0;
             ddr_burst_mode_latch <= 1'b0;
         end  //else if(ddr_chip_enable  & ~operation_in_progress) begin
         else if (ddr_chip_enable) begin

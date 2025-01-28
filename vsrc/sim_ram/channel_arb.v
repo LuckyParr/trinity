@@ -25,7 +25,6 @@ module channel_arb (
     output reg  [ 63:0] ddr_index,           // 64-bit selected index to be sent to DDR
     output reg          ddr_write_enable,    // Write enable signal (1 for write, 0 for read)
     output reg          ddr_burst_mode,      // Burst mode signal, 1 when icache2arb_dbus_index is selected
-    output reg  [511:0] ddr_write_mask,      // Output write mask for opstore channel
     output reg  [511:0] ddr_write_data,      // Output write data for opstore channel
     input  wire [511:0] ddr_read_data,       // 512-bit data output for lw channel read
     input  wire         ddr_operation_done,
@@ -75,7 +74,6 @@ module channel_arb (
                 ddr_index        = dcache2arb_dbus_index;
                 ddr_burst_mode   = 1'b1;
                 ddr_write_data   = dcache2arb_dbus_write_data;
-                //ddr_write_mask   = dcache2arb_dbus_write_mask;
                 dcache2arb_dbus_operation_done = ddr_operation_done;
                 dcache2arb_dbus_index_ready = ddr_ready;
                 if(dcache2arb_dbus_operation_type == `DBUS_WRITE)begin
@@ -112,7 +110,6 @@ module channel_arb (
                 ddr_index        = 64'b0;
                 ddr_write_enable = 1'b0;
                 ddr_burst_mode   = 1'b0;
-                //ddr_write_mask   = 512'b0;
                 ddr_write_data   = 512'b0;
         
                 icache2arb_dbus_index_ready   = 1'b0;
