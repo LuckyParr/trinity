@@ -108,8 +108,9 @@ module core_top #(
     reg                       dcache2arb_dbus_index_valid;
     wire                      dcache2arb_dbus_index_ready;
     reg  [     `RESULT_RANGE] dcache2arb_dbus_index;
-    reg  [        `SRC_RANGE] dcache2arb_dbus_write_data;
-    reg  [        `SRC_RANGE] dcache2arb_dbus_write_mask;
+//    reg  [        `SRC_RANGE] dcache2arb_dbus_write_data;
+    reg  [ `CACHELINE512_RANGE] dcache2arb_dbus_write_data;
+    //reg  [        `SRC_RANGE] dcache2arb_dbus_write_mask;
     wire [ `CACHELINE512_RANGE] dcache2arb_dbus_read_data;
     wire                      dcache2arb_dbus_operation_done;
     wire [       `TBUS_OPTYPE_RANGE] dcache2arb_dbus_operation_type;
@@ -119,7 +120,7 @@ module core_top #(
     reg                       icache2arb_dbus_index_valid;
     wire                      icache2arb_dbus_index_ready;
     reg  [     `RESULT_RANGE] icache2arb_dbus_index;
-    reg  [        `SRC_RANGE] icache2arb_dbus_write_data;
+    reg  [ `CACHELINE512_RANGE] icache2arb_dbus_write_data;
     reg  [        `SRC_RANGE] icache2arb_dbus_write_mask;
     wire [ `CACHELINE512_RANGE] icache2arb_dbus_read_data;
     wire                      icache2arb_dbus_operation_done;
@@ -146,7 +147,7 @@ module core_top #(
         .dcache2arb_dbus_index_ready   (dcache2arb_dbus_index_ready),
         .dcache2arb_dbus_index         (dcache2arb_dbus_index),
         .dcache2arb_dbus_write_data    (dcache2arb_dbus_write_data),
-        .dcache2arb_dbus_write_mask    (dcache2arb_dbus_write_mask),
+        //.dcache2arb_dbus_write_mask    (dcache2arb_dbus_write_mask),
         .dcache2arb_dbus_read_data     (dcache2arb_dbus_read_data),
         .dcache2arb_dbus_operation_done(dcache2arb_dbus_operation_done),
         .dcache2arb_dbus_operation_type(dcache2arb_dbus_operation_type)
@@ -170,7 +171,7 @@ module core_top #(
         .icache2arb_dbus_index_ready   (icache2arb_dbus_index_ready),
         .icache2arb_dbus_index         (icache2arb_dbus_index),
         .icache2arb_dbus_write_data    (icache2arb_dbus_write_data),
-        .icache2arb_dbus_write_mask    (icache2arb_dbus_write_mask),
+        //.icache2arb_dbus_write_mask    (icache2arb_dbus_write_mask),
         .icache2arb_dbus_read_data     (icache2arb_dbus_read_data),
         .icache2arb_dbus_operation_done(icache2arb_dbus_operation_done),
         .icache2arb_dbus_operation_type()
@@ -422,7 +423,7 @@ module core_top #(
         .dcache2arb_dbus_index_ready     (dcache2arb_dbus_index_ready    ),
         .dcache2arb_dbus_index           (dcache2arb_dbus_index          ),
         .dcache2arb_dbus_write_data      (dcache2arb_dbus_write_data     ),
-        .dcache2arb_dbus_write_mask      (dcache2arb_dbus_write_mask     ),
+        //.dcache2arb_dbus_write_mask      (dcache2arb_dbus_write_mask     ),
         .dcache2arb_dbus_read_data       (dcache2arb_dbus_read_data      ),
         .dcache2arb_dbus_operation_done  (dcache2arb_dbus_operation_done ),
         .dcache2arb_dbus_operation_type  (dcache2arb_dbus_operation_type ),

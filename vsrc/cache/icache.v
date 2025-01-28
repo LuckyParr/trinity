@@ -23,8 +23,8 @@ module icache #(
     output wire                             icache2arb_dbus_index_valid,
     input  wire                             icache2arb_dbus_index_ready,
     output reg  [`DBUS_INDEX_RANGE ]        icache2arb_dbus_index,
-    output reg  [`DBUS_DATA_RANGE  ]        icache2arb_dbus_write_data,
-    output reg  [`DBUS_DATA_RANGE  ]        icache2arb_dbus_write_mask,
+    output reg  [`CACHELINE512_RANGE  ]        icache2arb_dbus_write_data,
+    //output reg  [`DBUS_DATA_RANGE  ]        icache2arb_dbus_write_mask,//TODO: delte mask,no use, all tie 1 in simddr
     input  wire [`CACHELINE512_RANGE ]        icache2arb_dbus_read_data,
     input  wire                             icache2arb_dbus_operation_done,
     output wire [`DBUS_OPTYPE_RANGE]        icache2arb_dbus_operation_type
@@ -644,13 +644,13 @@ module icache #(
             icache2arb_dbus_index_valid_internal    <= 0;
             icache2arb_dbus_index                   <= 0;
             icache2arb_dbus_write_data              <= 0;
-            icache2arb_dbus_write_mask              <= 0;
+            //icache2arb_dbus_write_mask              <= 0;
             icache2arb_dbus_operation_type          <= 0;
         end else if (state == READ_CACHE && next_state == WRITE_DDR) begin  //write back dirty data to ddr
             icache2arb_dbus_index_valid_internal    <= 1;
             icache2arb_dbus_index                   <= victimway_fulladdr_latch;
-            icache2arb_dbus_write_data              <= tbus_read_data_s2;  //128bit //no use in icache
-            icache2arb_dbus_write_mask              <= 0;//no use in icache
+            icache2arb_dbus_write_data              <= 0;//no use in icache
+            //icache2arb_dbus_write_mask              <= 0;//no use in icache
             icache2arb_dbus_operation_type          <= `TBUS_WRITE;
         end else if ((state == WRITE_DDR && icache2arb_dbus_index_ready) || (state == READ_DDR && icache2arb_dbus_index_ready)) begin  //write ddr/read ddr is fire
             icache2arb_dbus_index_valid_internal    <= 0;
@@ -658,14 +658,14 @@ module icache #(
             icache2arb_dbus_index_valid_internal    <= 1;
             icache2arb_dbus_index                   <= miss_read_align_addr;
             icache2arb_dbus_write_data              <= 0;
-            icache2arb_dbus_write_mask              <= 0;
+            //icache2arb_dbus_write_mask              <= 0;
             icache2arb_dbus_operation_type          <= `TBUS_READ;
         end else if (((state == LOOKUP) && (next_state == READ_DDR))) begin  //read cacheline from ddr 
             // 2nd condition means when state in READ_DDR,but ddr is busy,so have to wait till it finish
             icache2arb_dbus_index_valid_internal    <= 1;
             icache2arb_dbus_index                   <= miss_read_align_addr;
             icache2arb_dbus_write_data              <= 0;
-            icache2arb_dbus_write_mask              <= 0;
+            //icache2arb_dbus_write_mask              <= 0;
             icache2arb_dbus_operation_type          <= `TBUS_READ;
         end
     end

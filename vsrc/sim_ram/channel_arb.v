@@ -14,7 +14,7 @@ module channel_arb (
     output wire                 dcache2arb_dbus_index_ready,
     input  reg  [`RESULT_RANGE] dcache2arb_dbus_index,
     input  reg  [   511:0] dcache2arb_dbus_write_data,
-    input  reg  [   511:0] dcache2arb_dbus_write_mask,
+    //input  reg  [   511:0] dcache2arb_dbus_write_mask,
     output wire [   511:0] dcache2arb_dbus_read_data,
     output wire                 dcache2arb_dbus_operation_done,
     input  wire [  `DBUS_OPTYPE_RANGE] dcache2arb_dbus_operation_type,
@@ -75,7 +75,7 @@ module channel_arb (
                 ddr_index        = dcache2arb_dbus_index;
                 ddr_burst_mode   = 1'b1;
                 ddr_write_data   = dcache2arb_dbus_write_data;
-                ddr_write_mask   = dcache2arb_dbus_write_mask;
+                //ddr_write_mask   = dcache2arb_dbus_write_mask;
                 dcache2arb_dbus_operation_done = ddr_operation_done;
                 dcache2arb_dbus_index_ready = ddr_ready;
                 if(dcache2arb_dbus_operation_type == `DBUS_WRITE)begin
@@ -112,7 +112,7 @@ module channel_arb (
                 ddr_index        = 64'b0;
                 ddr_write_enable = 1'b0;
                 ddr_burst_mode   = 1'b0;
-                ddr_write_mask   = 512'b0;
+                //ddr_write_mask   = 512'b0;
                 ddr_write_data   = 512'b0;
         
                 icache2arb_dbus_index_ready   = 1'b0;

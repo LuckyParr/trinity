@@ -6,7 +6,7 @@ module simddr (
     input  wire [ 63:0] ddr_index,             // Address input (64 bits to address 524,288 entries)
     input  wire         ddr_write_enable,      // Write enable signal (1 for write, 0 for read)
     input  wire         ddr_burst_mode,        // Burst mode control (1 for 512-bit, 0 for 64-bit)
-    input  wire [511:0] ddr_write_mask,        // Write Mask
+    //input  wire [511:0] ddr_write_mask,        // Write Mask
     input  wire [511:0] ddr_write_data,        // 512-bit data input for single access write
     output reg  [511:0] ddr_read_data,  // 64-bit data output for single access read
     output wire         ddr_operation_done,
@@ -22,20 +22,20 @@ module simddr (
     );
 
     reg [511:0] ddr_write_data_latch;
-    reg [511:0] ddr_write_mask_latch;
+    //reg [511:0] ddr_write_mask_latch;
     reg         write_enable_latch;
     reg         ddr_burst_mode_latch;
     always @(posedge clock or negedge reset_n) begin
         if (!reset_n) begin
             write_enable_latch   <= 1'b0;
             ddr_write_data_latch <= 64'd0;
-            ddr_write_mask_latch <= 64'd0;
+            //ddr_write_mask_latch <= 64'd0;
             ddr_burst_mode_latch <= 1'b0;
         end  //else if(ddr_chip_enable  & ~operation_in_progress) begin
         else if (ddr_chip_enable) begin
             write_enable_latch   <= ddr_write_enable;
             ddr_write_data_latch <= ddr_write_data;
-            ddr_write_mask_latch <= ddr_write_mask;
+            //ddr_write_mask_latch <= ddr_write_mask;
             ddr_burst_mode_latch <= ddr_burst_mode;
         end
     end

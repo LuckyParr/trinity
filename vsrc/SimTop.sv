@@ -68,7 +68,7 @@ module SimTop (
         .ddr_index         (ddr_index),
         .ddr_write_enable  (ddr_write_enable),
         .ddr_burst_mode    (ddr_burst_mode),
-        .ddr_write_mask    (ddr_write_mask),
+        //.ddr_write_mask    (ddr_write_mask),
         .ddr_write_data    (ddr_write_data),
         .ddr_read_data     (ddr_read_data),
         .ddr_operation_done(ddr_operation_done),
