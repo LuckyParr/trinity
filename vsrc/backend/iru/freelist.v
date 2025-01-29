@@ -31,8 +31,8 @@ module freelist #(
     input wire is_walking,
     input wire walking_valid0,
     input wire walking_valid1,
-    input wire [5:0] walking_old_prd0,
-    input wire [5:0] walking_old_prd1
+    input wire [5:0] walking_old_prd0,//WRONG！TODO:delete
+    input wire [5:0] walking_old_prd1 //WRONG！TODO:delete
 
 );
 
