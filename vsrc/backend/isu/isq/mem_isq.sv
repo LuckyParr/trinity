@@ -25,15 +25,17 @@ module mem_isq #(
 
     // Update condition interface
     input  logic                      intwb2memisq_writeback_valid,
+    input  logic [CONDITION_WIDTH-1:0] intwb2memisq_writeback_mask,
     input  logic [`ROB_SIZE_LOG:0]    intwb2memisq_writeback_robid,
     input  logic [CONDITION_WIDTH-1:0] intwb2memisq_writeback_data // write back set sleep bit =1
 );
 
-    assign update_condition_valid  = intwb2memisq_writeback_valid;
-    assign update_condition_robid = intwb2memisq_writeback_robid;
-    assign update_condition_data = intwb2memisq_writeback_data;
+    wire update_condition_valid  = intwb2memisq_writeback_valid;
+    wire update_condition_mask   = intwb2memisq_writeback_mask;
+    wire update_condition_robid = intwb2memisq_writeback_robid;
+    wire update_condition_data = intwb2memisq_writeback_data;
 
-    circular_queue #(
+    circular_queue_1r1w #(
         .DEPTH           (DEPTH),
         .DATA_WIDTH      (DATA_WIDTH),
         .CONDITION_WIDTH (CONDITION_WIDTH)
@@ -60,6 +62,7 @@ module mem_isq #(
 
         // Update condition
         .update_condition_valid (update_condition_valid),
+        .update_condition_mask  (update_condition_mask),
         .update_condition_robid   (update_condition_robid),
         .update_condition_data  (update_condition_data)
     );

@@ -25,7 +25,8 @@ module circular_queue_1r1w #(
 
     // Update condition interface (pointer-based)
     input  logic                      update_condition_valid,
-    input  logic [`ROB_SIZE_LOG:0] update_condition_robid,
+    input  logic [CONDITION_WIDTH-1:0] update_condition_mask,
+    input  logic [`ROB_SIZE_LOG:0]    update_condition_robid,
     input  logic [CONDITION_WIDTH-1:0] update_condition_data
 );
 
@@ -84,6 +85,7 @@ module circular_queue_1r1w #(
 
                 // Update condition signals
                 .update_condition_valid (update_condition_valid_array[i]),
+                .update_condition_mask(update_condition_mask),
                 .update_condition_in    (update_condition_data),
 
                 // Outputs
@@ -194,9 +196,6 @@ module circular_queue_1r1w #(
                 end
             end
         end
-
-
-
 
 
 // disp2isq_wrdata0 = {

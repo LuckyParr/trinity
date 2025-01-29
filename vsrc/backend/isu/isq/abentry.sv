@@ -1,5 +1,5 @@
-module cqentry #(
-    parameter DATA_WIDTH      = 32,
+module abentry #(
+    parameter DATA_WIDTH      = 248,
     parameter CONDITION_WIDTH = 2,
     parameter INDEX_WIDTH     = 4
 )(
@@ -20,6 +20,7 @@ module cqentry #(
 
     // Update condition port (no conflict on same entry in same cycle)
     input  logic                       update_condition_valid,
+    input  logic [CONDITION_WIDTH-1:0] update_condition_mask, 
     input  logic [CONDITION_WIDTH-1:0] update_condition_in,
     
     // Outputs
@@ -54,11 +55,10 @@ module cqentry #(
                 index_out     <= index_in;
                 valid_out     <= valid_in;
             end
-            // Otherwise, hold current contents
-
-            // Finally, update condition if requested
+            //update condition bit
             if (update_condition_valid) begin
-                condition_out <= update_condition_in;
+                condition_out <= (update_condition_in & update_condition_mask) | 
+                                (condition_out & ~update_condition_mask);
             end
         end
     end
