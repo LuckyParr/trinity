@@ -335,9 +335,9 @@ module rob
     wire is_rollingback;
     wire is_walking;
 
-    assign is_idle = current_state == IDLE;
-    assign is_rollingback = current_state == ROLLBACK;
-    assign is_walking = current_state == WALK;
+    assign is_idle = (current_state == IDLE);
+    assign is_rollingback = (current_state == ROLLBACK);
+    assign is_walking = (current_state == WALK);
 
     reg [1:0] current_state;
     reg [1:0] next_state;

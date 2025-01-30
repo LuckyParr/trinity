@@ -26,15 +26,23 @@ module freelist #(
     // output full,
     // output empty
     //walk signal
-    input wire is_idle,
-    input wire is_rollingback,
-    input wire is_walking,
+    input wire [1:0] rob_state;
     input wire walking_valid0,
     input wire walking_valid1,
-    input wire [5:0] walking_old_prd0,//WRONG！TODO:delete
-    input wire [5:0] walking_old_prd1 //WRONG！TODO:delete
 
 );
+
+
+
+    wire is_idle;
+    wire is_rollback;
+    wire is_walk;
+
+    assign is_idle = (rob_state == IDLE);
+    assign is_rollback = (rob_state == ROLLBACK);
+    assign is_walk = (rob_state == WALK);
+
+
 
     // ----------------------------------------------------------
     // Local Parameters
@@ -94,11 +102,11 @@ always @(posedge clock or negedge reset_n) begin
         // ----------------------------------------------------------
         // Flush Operations
         // ----------------------------------------------------------
-        if (is_rollingback) begin
+        if (is_rollback) begin
             // Roll back the dequeue pointer to enqueue pointer
             dequeue_ptr <= enqueue_ptr;
 
-        end else if (is_walking) begin
+        end else if (is_walk) begin
             // "Walking" logic updates
             dequeue_ptr <= dequeue_ptr + walking_valid0 + walking_valid1;
 
