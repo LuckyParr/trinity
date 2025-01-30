@@ -155,7 +155,7 @@ module rob
     always @(posedge clock or negedge reset_n) begin
         if(~reset_n)begin
             enqueue_ptr <=0;
-        end else if(is_rollingback) begin
+        end else if(is_rollback) begin
             enqueue_ptr <= flush_robid + 1;
         end else begin
             enqueue_ptr <= enqueue_ptr + enq_num;         
@@ -332,12 +332,12 @@ module rob
     localparam WALK = 2'b10;
 
     wire is_idle;
-    wire is_rollingback;
-    wire is_walking;
+    wire is_rollback;
+    wire is_walk;
 
     assign is_idle = (current_state == IDLE);
-    assign is_rollingback = (current_state == ROLLBACK);
-    assign is_walking = (current_state == WALK);
+    assign is_rollback = (current_state == ROLLBACK);
+    assign is_walk = (current_state == WALK);
 
     reg [1:0] current_state;
     reg [1:0] next_state;
@@ -397,7 +397,7 @@ module rob
         integer i;
         needflush_dec = 'b0;
         for (i = 0; i < `ROB_SIZE; i = i + 1) begin
-            if (is_rollingback) begin
+            if (is_rollback) begin
                     needflush_dec[i] = flush_robid[`ROB_SIZE_LOG] ^ enqueue_ptr[`ROB_SIZE_LOG] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < enqueue_ptr[`ROB_SIZE_LOG-1:0]);
                 end
             end
@@ -408,19 +408,19 @@ module rob
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             walking_ptr <= 'b0;
-        end else if (is_rollingback) begin
+        end else if (is_rollback) begin
             walking_ptr <= dequeue_ptr;
-        end else if (is_walking) begin
+        end else if (is_walk) begin
             walking_ptr <= walking_ptr + 'd2;
         end
     end
 
-    assign rob_walk0_valid    = entry_valid_dec[walking_ptr[`ROB_SIZE_LOG-1:0]] & entry_need_to_wb_dec[walking_ptr[`ROB_SIZE_LOG-1:0]] & is_walking;
+    assign rob_walk0_valid    = entry_valid_dec[walking_ptr[`ROB_SIZE_LOG-1:0]] & entry_need_to_wb_dec[walking_ptr[`ROB_SIZE_LOG-1:0]] & is_walk;
     assign rob_walk0_lrd      = entry_lrd_dec[walking_ptr[`ROB_SIZE_LOG-1:0]];
     assign rob_walk0_prd      = entry_prd_dec[walking_ptr[`ROB_SIZE_LOG-1:0]];
     assign rob_walk0_complete = entry_complete_dec[walking_ptr[`ROB_SIZE_LOG-1:0]];
 
-    assign rob_walk1_valid    = entry_valid_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1] & entry_need_to_wb_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1] & is_walking;
+    assign rob_walk1_valid    = entry_valid_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1] & entry_need_to_wb_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1] & is_walk;
     assign rob_walk1_lrd      = entry_lrd_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1];
     assign rob_walk1_prd      = entry_prd_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1];
     assign rob_walk1_complete = entry_complete_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1];

@@ -65,8 +65,8 @@ module issue_queue #(
     input flush_valid,
     input [`INSTR_ID_WIDTH-1:0] flush_id,
     input wire is_idle,
-    input wire is_rollingback,
-    input wire is_walking,
+    input wire is_rollback,
+    input wire is_walk,
     input wire walking_valid0,
     input wire walking_valid1
 );
@@ -314,7 +314,7 @@ module issue_queue #(
 /* ------------------------------- walk logic ------------------------------- */
     reg                  needflush_valid_array       [0:ISSUE_QUEUE_DEPTH-1];
     always @(*) begin
-        if(is_rollingback) begin
+        if(is_rollback) begin
             for(i = 0; i < `ISSUE_QUEUE_DEPTH; i = i + 1)begin
                 if(valid_array[i] && ((flush_id[7] ^ data_array[i][247])^(flush_id[5:0] < data_array[i][246:241])))
                     needflush_valid_array[i] = 1'b1;

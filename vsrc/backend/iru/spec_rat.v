@@ -49,8 +49,8 @@ module spec_rat #(
 
 /* ------------------------------- walk_logic ------------------------------- */
     input wire is_idle,
-    input wire is_rollingback,
-    input wire is_walking,
+    input wire is_rollback,
+    input wire is_walk,
     input wire walking_valid0,
     input wire walking_valid1,
     input wire [5:0] walking_prd0,
@@ -117,9 +117,9 @@ module spec_rat #(
             end
         end
         else begin
-            if(is_rollingback)begin
+            if(is_rollback)begin
                     spec_rat <= arch_rat_content;
-            end else if (is_walking)begin
+            end else if (is_walk)begin
                 if(walking_valid0 && ~walk_lrd_hit)begin
                     spec_rat[walking_lrd0] <= walking_prd0;//prd is new physical reg number fetched from freelist, use it to upate arch_rat 
                 end

@@ -176,8 +176,8 @@ module isu_top (
     input  wire [`INSTR_ID_WIDTH-1:0] flush_id,
 
     output wire is_idle,
-    output wire is_rollingback,
-    output wire is_walking,
+    output wire is_rollback,
+    output wire is_walk,
     output wire walking_valid0,
     output wire walking_valid1,
     output wire [5:0] walking_prd0,
@@ -368,8 +368,8 @@ busy_table busy_table_inst (
     .flush_valid(flush_valid),
     .flush_id(flush_id),
     .is_idle(is_idle),
-    .is_rollingback(is_rollingback),
-    .is_walking(is_walking),
+    .is_rollback(is_rollback),
+    .is_walk(is_walk),
     .walking_valid0(walking_valid0),
     .walking_valid1(walking_valid1),
     .walking_prd0(walking_prd0),
@@ -443,8 +443,8 @@ issue_queue #(
     .flush_valid         (flush_valid),
     .flush_id            (flush_id),
     .is_idle             (is_idle),
-    .is_rollingback      (is_rollingback),
-    .is_walking          (is_walking),
+    .is_rollback      (is_rollback),
+    .is_walk          (is_walk),
     .walking_valid0      (walking_valid0),
     .walking_valid1      (walking_valid1)
 );
@@ -567,8 +567,8 @@ rob #(
 
     // walk
     .is_idle                 (is_idle),
-    .is_rollingback          (is_rollingback),
-    .is_walking              (is_walking),
+    .is_rollback          (is_rollback),
+    .is_walk              (is_walk),
     .walking_valid0          (walking_valid0),
     .walking_valid1          (walking_valid1),
     .walking_prd0            (walking_prd0),

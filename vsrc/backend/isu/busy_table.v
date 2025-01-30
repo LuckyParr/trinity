@@ -48,8 +48,8 @@ module busy_table (
     input flush_valid,
     input [`INSTR_ID_WIDTH-1:0] flush_id,
     input wire is_idle,
-    input wire is_rollingback,
-    input wire is_walking,
+    input wire is_rollback,
+    input wire is_walk,
     input wire walking_valid0,
     input wire walking_valid1,
     input wire [5:0] walking_prd0,
@@ -64,7 +64,7 @@ module busy_table (
 
     // Synchronous write operations with active-low reset
     always @(posedge clk) begin
-        if (!reset_n | is_rollingback) begin
+        if (!reset_n | is_rollback) begin
             busy_vector <= 64'b0;
         end else begin
             // Allocation Ports - Set Bit to 1

@@ -60,8 +60,8 @@ module rob #(
     input wire [`INSTR_ID_WIDTH-1:0]    flush_id, 
     //walk signal
     output wire is_idle,
-    output wire is_rollingback,
-    output wire is_walking,
+    output wire is_rollback,
+    output wire is_walk,
     output wire walking_valid0,
     output wire walking_valid1,
     output wire [5:0] walking_prd0,
@@ -113,11 +113,11 @@ module rob #(
                 cqentry_complete[i] <= {STATUS_WIDTH{1'b0}};
             end
 //        end else if (current_state == IDLE && next_state == ROLLBACK)begin // when flush_valid, ROLLBACK enqueue_ptr to flush_id
-        end else if (is_rollingback)begin // to align with other unit rollback action timing
+        end else if (is_rollback)begin // to align with other unit rollback action timing
                 enqueue_ptr   <= (flush_id[5:0]+1) % DEPTH; // rollback enqueue ptr
                 instr_id      <= flush_id + 1;       // rollback instr_id
                 cqentry_valid <= cqentry_valid & ~cqentry_needflush_valid;   // rollback valid vector 
-        end else if(is_walking)begin
+        end else if(is_walk)begin
             
         end else begin // is_idle
             // Count how many writes are requested in this cycle
@@ -227,8 +227,8 @@ localparam ROLLBACK = 2'b01;
 localparam WALK = 2'b10;
 
 assign is_idle = current_state == IDLE;
-assign is_rollingback = current_state == ROLLBACK;
-assign is_walking = current_state == WALK;
+assign is_rollback = current_state == ROLLBACK;
+assign is_walk = current_state == WALK;
 
 reg [1:0] current_state;
 reg [1:0] next_state;
@@ -282,15 +282,15 @@ end
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             walking_ptr <= 0;
-        end else if (is_rollingback) begin // happen in first cycle of walking
+        end else if (is_rollback) begin // happen in first cycle of walking
             walking_ptr <= dequeue_ptr;
-        end else if (is_walking) begin // begin to walk in second cycle of walking
+        end else if (is_walk) begin // begin to walk in second cycle of walking
             walking_ptr <= walking_ptr + 'd2;
         end
     end
 //check if 2 instr now is walking pass is valid or not
-assign walking_valid0 = cqentry_valid[walking_ptr] && cqentry_data[walking_ptr][0] && is_walking;//instr_need_to_wb
-assign walking_valid1 = cqentry_valid[walking_ptr+1] && cqentry_data[walking_ptr+1][0] && is_walking;
+assign walking_valid0 = cqentry_valid[walking_ptr] && cqentry_data[walking_ptr][0] && is_walk;//instr_need_to_wb
+assign walking_valid1 = cqentry_valid[walking_ptr+1] && cqentry_data[walking_ptr+1][0] && is_walk;
 assign walking_prd0 =  cqentry_data[walking_ptr][12 : 7];//prd
 assign walking_prd1 =  cqentry_data[walking_ptr+1][12 : 7];
 assign walking_complete0 = cqentry_complete[walking_ptr];
