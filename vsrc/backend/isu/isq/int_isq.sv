@@ -29,20 +29,66 @@ module int_isq #(
     input  logic                         deq_ready,  
 
     //-----------------------------------------------------
-    // Broadcast condition updates
+    // writeback to set condition to 1
     //-----------------------------------------------------
-    input  logic                         update_condition_valid,
-    input  logic [`ROB_SIZE_LOG:0]       update_condition_robid,
-    input  logic [CONDITION_WIDTH-1:0]  update_condition_mask,
-    input  logic [CONDITION_WIDTH-1:0]  update_condition_in,
+    input  wire                       writeback0_valid,
+    input  wire                       writeback0_need_to_wb,
+    input  wire [`PREG_RANGE]         writeback0_prd,
 
+    input wire                        writeback1_valid,
+    input wire                        writeback1_need_to_wb,
+    input wire [`PREG_RANGE]          writeback1_prd,
     //-----------------------------------------------------
     // Flush interface
     //-----------------------------------------------------
-    input  logic                   flush_valid,
-    input  logic [`ROB_SIZE_LOG:0]  flush_robid
+    input  logic                    flush_valid,
+    input  logic [`INSTR_ID_WIDTH:0]  flush_robid
 );
+    logic [DEPTH-1:0][DATA_WIDTH-1:0]      data_out_array;
+    logic [DEPTH-1:0][CONDITION_WIDTH-1:0] condition_out_array;
+    logic [DEPTH-1:0][INDEX_WIDTH-1:0]     index_out_array;
+    logic [DEPTH-1:0]                      valid_out_array;
 
+
+    //-----------------------------------------------------
+    // condition updates for writeback0
+    //-----------------------------------------------------
+    logic                         update_condition_valid;
+    logic [`INSTR_ID_WIDTH:0]       update_condition_robid;
+    logic [CONDITION_WIDTH-1:0]  update_condition_mask;
+    logic [CONDITION_WIDTH-1:0]  update_condition_in;
+
+    assign update_condition_valid = writeback0_valid && writeback0_need_to_wb && (writeback0_prd_match_prs1 || writeback0_prd_match_prs2);
+
+    wire writeback0_prd_match_prs1;
+    wire writeback0_prd_match_prs2;
+
+    always @(*) begin
+        integer i;
+        update_condition_mask = 0;
+        update_condition_in = 0;
+        update_condition_robid = 0;
+        writeback0_prd_match_prs1 = 0;
+        writeback0_prd_match_prs2 = 0;
+        for (i=0;i < DEPTH; i=i+1) begin
+            //instr0_prs1
+            if((data_out_array[i][116 : 111] == writeback0_prd) && valid_out_array[i])begin
+                update_condition_mask = 2'b10;
+                update_condition_in = 2'b10;
+                update_condition_robid = index_out_array[i];
+                writeback0_prd_match_prs1 = 1'b1;
+            end
+            //instr0_prs2
+            if((data_out_array[i][110 : 105] == writeback0_prd) && valid_out_array[i])begin
+                update_condition_mask = 2'b01;
+                update_condition_in = 2'b01;
+                update_condition_robid = index_out_array[i];
+                writeback0_prd_match_prs2 = 1'b1;
+            end            
+        end
+    end
+
+    
     // --------------------------------------------------------------------
     // Instantiate the age_buffer module
     // --------------------------------------------------------------------
@@ -77,7 +123,13 @@ module int_isq #(
 
         // Flush interface
         .flush_valid              (flush_valid),
-        .flush_robid              (flush_robid)
+        .flush_robid              (flush_robid),
+
+        //output array
+        .data_out_array     (data_out_array     ),
+        .condition_out_array(condition_out_array),
+        .index_out_array    (index_out_array    ),
+        .valid_out_array    (valid_out_array    )
     );
 
 endmodule

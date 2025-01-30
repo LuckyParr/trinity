@@ -1,4 +1,4 @@
-module age_buffer #(
+module age_buffer_1r1w #(
     parameter DATA_WIDTH      = 248,
     parameter CONDITION_WIDTH = 2,
     parameter INDEX_WIDTH     = 4,
@@ -28,13 +28,18 @@ module age_buffer #(
     //-----------------------------------------------------
     // Broadcast condition updates
     //-----------------------------------------------------
-    input  logic                         update_condition_valid,
-    input  logic [`ROB_SIZE_LOG:0]    update_condition_robid,
+    input  logic                        update_condition_valid,
+    input  logic [`ROB_SIZE_LOG:0]      update_condition_robid,
     input  logic [CONDITION_WIDTH-1:0]  update_condition_mask,
     input  logic [CONDITION_WIDTH-1:0]  update_condition_in,
     // Flush interface
     input  logic                      flush_valid,
-    input  logic [`ROB_SIZE_LOG:0] flush_robid
+    input  logic [`ROB_SIZE_LOG:0]    flush_robid,
+    //output array
+    output logic [DEPTH-1:0][DATA_WIDTH-1:0]      data_out_array,
+    output logic [DEPTH-1:0][CONDITION_WIDTH-1:0] condition_out_array,
+    output logic [DEPTH-1:0][INDEX_WIDTH-1:0]     index_out_array,
+    output logic [DEPTH-1:0]                      valid_out_array
 );
 
     // ----------------------------------------------------------
@@ -42,12 +47,9 @@ module age_buffer #(
     // ----------------------------------------------------------
     logic [DEPTH-1:0]                      wr_en;
     logic [DEPTH-1:0]                      clear_entry;
-
-    logic [DEPTH-1:0][DATA_WIDTH-1:0]      data_out_array;
-    logic [DEPTH-1:0][CONDITION_WIDTH-1:0] condition_out_array;
-    logic [DEPTH-1:0][INDEX_WIDTH-1:0]     index_out_array;
-    logic [DEPTH-1:0]                      valid_out_array;
     logic [DEPTH-1:0]                      rdy2dq_out_array;
+
+
 
     // age_matrix[i][j] = 1 => "entry i" is older than "entry j"
     logic [DEPTH-1:0][DEPTH-1:0] age_matrix;
