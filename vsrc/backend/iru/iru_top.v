@@ -58,10 +58,8 @@ module iru_top
     input wire                   rob2fl_commit_valid0,
 
     // Additional control signals
+    input wire [1:0]         rob_state,
     input wire               flush_valid,
-    input wire               is_idle,
-    input wire               is_rollback,
-    input wire               is_walk,
     input wire               walking_valid0,
     input wire               walking_valid1,
     input wire [`PREG_RANGE-1:0] walking_old_prd0,
@@ -178,13 +176,9 @@ freelist u_freelist(
     .rd_data0         (fl2rn_instr0prd),//i //instr0_freelist_resp
     .rd_en1           (1'b0),
     .rd_data1         (),
-    .is_idle          (is_idle),
-    .is_rollback   (is_rollback),
-    .is_walk       (is_walk),
+    .rob_state        (rob_state),
     .walking_valid0   (walking_valid0),
-    .walking_valid1   (walking_valid1),
-    .walking_old_prd0 (walking_old_prd0),
-    .walking_old_prd1 (walking_old_prd1)
+    .walking_valid1   (walking_valid1)
 );
 
 rename u_rename(
@@ -347,9 +341,7 @@ spec_rat u_spec_rat(
     .commit1_need_to_wb           (),
     .commit1_lrd                  (),
     .commit1_prd                  (),
-    .is_idle                      (is_idle                      ),
-    .is_rollback               (is_rollback               ),
-    .is_walk                   (is_walk                   ),
+    .rob_state                    (rob_state),
     .walking_valid0               (walking_valid0               ),
     .walking_valid1               (walking_valid1               ),
     .walking_prd0                 (walking_prd0                 ),

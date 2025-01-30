@@ -38,9 +38,9 @@ module freelist #(
     wire is_rollback;
     wire is_walk;
 
-    assign is_idle = (rob_state == IDLE);
-    assign is_rollback = (rob_state == ROLLBACK);
-    assign is_walk = (rob_state == WALK);
+    assign is_idle = (rob_state == `ROB_STATE_IDLE);
+    assign is_rollback = (rob_state == `ROB_STATE_ROLLIBACK);
+    assign is_walk = (rob_state == `ROB_STATE_WALK);
 
 
 

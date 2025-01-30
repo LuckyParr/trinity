@@ -48,9 +48,7 @@ module spec_rat #(
     input wire [5:0]            commit1_prd       ,
 
 /* ------------------------------- walk_logic ------------------------------- */
-    input wire is_idle,
-    input wire is_rollback,
-    input wire is_walk,
+    input wire [1:0] rob_state,
     input wire walking_valid0,
     input wire walking_valid1,
     input wire [5:0] walking_prd0,
@@ -92,6 +90,13 @@ module spec_rat #(
     output wire [`PREG_RANGE] debug_preg30,
     output wire [`PREG_RANGE] debug_preg31
 );
+    wire is_idle;
+    wire is_rollback;
+    wire is_walk;
+
+    assign is_idle = (rob_state == `ROB_STATE_IDLE);
+    assign is_rollback = (rob_state == `ROB_STATE_ROLLIBACK);
+    assign is_walk = (rob_state == `ROB_STATE_WALK);
 
     //hit situation
     wire rename_lrd_hit;

@@ -47,9 +47,7 @@ module busy_table (
 /* ------------------------------- walk logic ------------------------------- */
     input flush_valid,
     input [`INSTR_ID_WIDTH-1:0] flush_id,
-    input wire is_idle,
-    input wire is_rollback,
-    input wire is_walk,
+    input wire [1:0] rob_state,
     input wire walking_valid0,
     input wire walking_valid1,
     input wire [5:0] walking_prd0,
@@ -58,6 +56,13 @@ module busy_table (
     input wire walking_complete1
 
 );
+    wire is_idle;
+    wire is_rollback;
+    wire is_walk;
+
+    assign is_idle = (rob_state == `ROB_STATE_IDLE);
+    assign is_rollback = (rob_state == `ROB_STATE_ROLLIBACK);
+    assign is_walk = (rob_state == `ROB_STATE_WALK);
 
     // Internal 64-bit busy vector register
     reg [63:0] busy_vector;

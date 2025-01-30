@@ -174,10 +174,7 @@ module isu_top (
     input  wire                       flush_valid,
     input  wire [63:0]               flush_target,
     input  wire [`INSTR_ID_WIDTH-1:0] flush_id,
-
-    output wire is_idle,
-    output wire is_rollback,
-    output wire is_walk,
+    output wire [1:0] rob_state,
     output wire walking_valid0,
     output wire walking_valid1,
     output wire [5:0] walking_prd0,
@@ -186,8 +183,8 @@ module isu_top (
     output wire walking_complete1,
     output wire [4:0] walking_lrd0,
     output wire [4:0] walking_lrd1,
-    output wire [5:0] walking_old_prd0,
-    output wire [5:0] walking_old_prd1,
+    //output wire [5:0] walking_old_prd0,
+    //output wire [5:0] walking_old_prd1,
 
     //---------------------------------------------------------------------------
     // Physical Register File: 2R2W
@@ -367,9 +364,7 @@ busy_table busy_table_inst (
     // flush & walk logic from ROB
     .flush_valid(flush_valid),
     .flush_id(flush_id),
-    .is_idle(is_idle),
-    .is_rollback(is_rollback),
-    .is_walk(is_walk),
+    .rob_state(rob_state),
     .walking_valid0(walking_valid0),
     .walking_valid1(walking_valid1),
     .walking_prd0(walking_prd0),
@@ -441,12 +436,7 @@ issue_queue #(
 
     // flush & walk logic
     .flush_valid         (flush_valid),
-    .flush_id            (flush_id),
-    .is_idle             (is_idle),
-    .is_rollback      (is_rollback),
-    .is_walk          (is_walk),
-    .walking_valid0      (walking_valid0),
-    .walking_valid1      (walking_valid1)
+    .flush_id            (flush_id)
 );
 
 //
@@ -566,9 +556,7 @@ rob #(
     .flush_id                (flush_id),
 
     // walk
-    .is_idle                 (is_idle),
-    .is_rollback          (is_rollback),
-    .is_walk              (is_walk),
+    .rob_state               (rob_state),
     .walking_valid0          (walking_valid0),
     .walking_valid1          (walking_valid1),
     .walking_prd0            (walking_prd0),
@@ -576,9 +564,9 @@ rob #(
     .walking_complete0       (walking_complete0),
     .walking_complete1       (walking_complete1),
     .walking_lrd0            (walking_lrd0),
-    .walking_lrd1            (walking_lrd1),
-    .walking_old_prd0        (walking_old_prd0),
-    .walking_old_prd1        (walking_old_prd1)
+    .walking_lrd1            (walking_lrd1)
+    //.walking_old_prd0        (walking_old_prd0),
+    //.walking_old_prd1        (walking_old_prd1)
 );
 
 endmodule
