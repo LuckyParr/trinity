@@ -6,7 +6,7 @@ module memblock (
     output wire                  instr_ready,
     input  wire [  `INSTR_RANGE] instr, // for debug
     input  wire [     `PC_RANGE] pc,//for debug
-    input  wire [`INSTR_ID_WIDTH-1:0]            id,
+    input  wire [`INSTR_ID_WIDTH-1:0] robid,
 /* -------------------------- calculation meterial -------------------------- */
     input  wire [    `SRC_RANGE   ] src1    ,
     input  wire [    `SRC_RANGE   ] src2    ,
@@ -32,40 +32,45 @@ module memblock (
     output wire [  `TBUS_OPTYPE_RANGE] tbus_operation_type,
 
 /* -------------------------- output to wb pipereg -------------------------- */
-    // output valid, pc , inst, id
+    // output valid, pc , inst, robid
     // output wire [ `INSTR_RANGE] out_instr,
     // output wire [    `PC_RANGE] out_pc,
-    output wire                        out_instr_valid,
-    output wire [`INSTR_ID_WIDTH-1:0]  out_id,
-    output wire [`PREG_RANGE]   out_prd,
-    output wire                 out_need_to_wb,
-    output wire                 out_mmio_valid,
-    output wire [`RESULT_RANGE] out_opload_rddata, // output rddata at same cycle as operation_done
+    output wire                        memblock_out_instr_valid,
+    output wire [`INSTR_ID_WIDTH-1:0]  memblock_out_robid,
+    output wire [`PREG_RANGE]          memblock_out_prd,
+    output wire                        memblock_out_need_to_wb,
+    output wire                        memblock_out_mmio_valid,
+    output wire [`RESULT_RANGE]        memblock_out_opload_rddata, // output rddata at same cycle as operation_done
+    output wire [      `INSTR_RANGE ]  memblock_out_instr,//for debug
+    output wire [         `PC_RANGE ]  memblock_out_pc, //for debug
 
     /* -------------------------- redirect flush logic -------------------------- */
-    input  wire                     flush_valid,
-    input  wire   [7:0]             flush_id,
+    input  wire                          flush_valid,
+    input  wire   [`INSTR_ID_WIDTH-1:0]  flush_robid,
     output wire                     mem2dcache_flush // use to flush dcache process
 
 );
+    assign memblock_out_pc          =  pc;    
+    assign memblock_out_instr       =  instr; //for debug
+
     wire op_processing;
     //assign instr_ready = ~mem_stall;
     assign instr_ready = ~op_processing;//use this to stop issue queue from issuing, AND with exu ready then connect to isq 
 
     //when redirect instr from wb pipereg is older than current instr in exu, flush instr in exu
     wire need_flush;
-    assign need_flush = flush_valid && ((flush_id[7]^out_id[7])^(flush_id[6:0] < out_id[6:0]));
+    assign need_flush = flush_valid && ((flush_robid[7]^memblock_out_robid[7])^(flush_robid[6:0] < memblock_out_robid[6:0]));
     assign mem2dcache_flush = need_flush;
 
     reg                     need_to_wb_latch;
     reg [`INSTR_ID_WIDTH-1:0]               id_latch;
     reg [      `PREG_RANGE] prd_latch;
-    assign out_instr_valid = is_outstanding & (tbus_operation_done) & ~need_flush | out_mmio_valid;;
+    assign memblock_out_instr_valid = is_outstanding & (tbus_operation_done) & ~need_flush | memblock_out_mmio_valid;;
     // assign out_instr       = instr;
     // assign out_pc          = pc;
-    assign out_id          = id_latch;
-    assign out_prd         = prd_latch;
-    assign out_need_to_wb  = need_to_wb_latch;
+    assign memblock_out_robid          = id_latch;
+    assign memblock_out_prd         = prd_latch;
+    assign memblock_out_need_to_wb  = need_to_wb_latch;
 
 /* ---------------------------- calculate address --------------------------- */
     wire [`RESULT_RANGE] ls_address;
@@ -136,9 +141,9 @@ module memblock (
 
     always @(posedge clock or negedge reset_n) begin 
         if(reset_n == 1'b0) 
-            out_mmio_valid <= 0; 
+            memblock_out_mmio_valid <= 0; 
         else 
-            out_mmio_valid <= mmio_valid; 
+            memblock_out_mmio_valid <= mmio_valid; 
     end
 
     wire [         63:0] write_1b_mask = {56'b0, {8{1'b1}}};
@@ -161,28 +166,28 @@ module memblock (
 
                 5'b10001: begin
                     opload_read_data_wb_raw = (tbus_read_data >> ((ls_address[2:0]) * 8));
-                    out_opload_rddata     = {56'h0, opload_read_data_wb_raw[7:0]};
+                    memblock_out_opload_rddata     = {56'h0, opload_read_data_wb_raw[7:0]};
                 end
                 5'b01001: begin
                     opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2:1]) * 16);
-                    out_opload_rddata     = {48'h0, opload_read_data_wb_raw[15:0]};
+                    memblock_out_opload_rddata     = {48'h0, opload_read_data_wb_raw[15:0]};
                 end
                 5'b00101: begin
                     opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2]) * 32);
-                    out_opload_rddata     = {32'h0, opload_read_data_wb_raw[31:0]};
+                    memblock_out_opload_rddata     = {32'h0, opload_read_data_wb_raw[31:0]};
                 end
-                5'b00010: out_opload_rddata = tbus_read_data;
+                5'b00010: memblock_out_opload_rddata = tbus_read_data;
                 5'b10000: begin
                     opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2:0]) * 8);
-                    out_opload_rddata     = {{56{opload_read_data_wb_raw[7]}}, opload_read_data_wb_raw[7:0]};
+                    memblock_out_opload_rddata     = {{56{opload_read_data_wb_raw[7]}}, opload_read_data_wb_raw[7:0]};
                 end
                 5'b01000: begin
                     opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2:1]) * 16);
-                    out_opload_rddata     = {{48{opload_read_data_wb_raw[15]}}, opload_read_data_wb_raw[15:0]};
+                    memblock_out_opload_rddata     = {{48{opload_read_data_wb_raw[15]}}, opload_read_data_wb_raw[15:0]};
                 end
                 5'b00100: begin
                     opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2]) * 32);
-                    out_opload_rddata     = {{32{opload_read_data_wb_raw[31]}}, opload_read_data_wb_raw[31:0]};
+                    memblock_out_opload_rddata     = {{32{opload_read_data_wb_raw[31]}}, opload_read_data_wb_raw[31:0]};
                 end
                 default:  ;
             endcase
@@ -283,7 +288,7 @@ module memblock (
         if (~reset_n) begin
             id_latch <= 'b0;
         end else if (req_fire | mmio_valid) begin
-            id_latch <= id;
+            id_latch <= robid;
         end else if (tbus_operation_done | is_idle) begin
             id_latch <= 'b0;
         end

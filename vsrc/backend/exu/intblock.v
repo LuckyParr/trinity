@@ -6,9 +6,9 @@ module intblock #(
     input wire                      reset_n,
     input wire                      instr_valid,
     output wire                     instr_ready,
-    input wire  [      `INSTR_RANGE]   instr,  //for debug
-    input wire  [         `PC_RANGE ]  pc,
-    input reg   [`INSTR_ID_WIDTH-1:0]  id,
+    input wire   [      `INSTR_RANGE  ]  instr,  //for debug
+    input wire   [         `PC_RANGE  ]  pc,
+    input wire   [`INSTR_ID_WIDTH-1:0 ]  robid,
 
 /* -------------------------- calculation meterial -------------------------- */
     //input wire [       `LREG_RANGE] rs1,
@@ -34,30 +34,25 @@ module intblock #(
     input  wire                      predict_taken,
     input  wire [31:0              ] predict_target,
 /* ----------------------- output result to wb pipereg ---------------------- */
-    // output valid, pc, inst, id
-    output wire                      out_instr_valid,
-    output wire [      `INSTR_RANGE] out_instr,//for debug
-    output wire [         `PC_RANGE] out_pc, //for debug
-    output wire [`INSTR_ID_WIDTH-1:0]                out_id,
-    //exu result
-    // output wire [`RESULT_RANGE] alu_result,
-    // output wire [`RESULT_RANGE] bju_result,
-    // output wire [`RESULT_RANGE] muldiv_result,
-    output wire [`RESULT_RANGE] out_result,
-    output wire                 out_need_to_wb,
-    output wire [       `PREG_RANGE] out_prd,
-    //output wire [`RESULT_RANGE] ls_address,
+    // output valid, pc, inst, robid
+    output wire                 intblock_out_instr_valid,
+    output wire                 intblock_out_need_to_wb,
+    output wire [       `PREG_RANGE] intblock_out_prd,
+    output wire [`RESULT_RANGE     ] intblock_out_result,
     //redirect
-    output wire             redirect_valid,
-    output wire [`PC_RANGE] redirect_target,
+    output wire                        intblock_out_redirect_valid,
+    output wire [`PC_RANGE          ]  intblock_out_redirect_target,
+    output wire [`INSTR_ID_WIDTH-1:0]  intblock_out_robid,
+    output wire [      `INSTR_RANGE ]  intblock_out_instr,//for debug
+    output wire [         `PC_RANGE ]  intblock_out_pc, //for debug
     //bypass exu result to end of dec module
     //output wire [  `LREG_RANGE] ex_byp_rd,
     //output wire                 ex_byp_need_to_wb,
-    output wire [`RESULT_RANGE] ex_byp_result,
+    //output wire [`RESULT_RANGE] ex_byp_result,
 
 /* ---------------------- flush signal from wb pipereg ---------------------- */
-    input wire                     flush_valid,
-    input wire  [`INSTR_ID_WIDTH-1:0]              flush_id,
+    input wire                         flush_valid,
+    input wire  [`INSTR_ID_WIDTH-1:0]  flush_robid,
 
 
 /* --------------------------- btbbht update port -------------------------- */
@@ -81,21 +76,21 @@ module intblock #(
     assign instr_ready = 1'b1;
     //when redirect instr from wb pipereg is older than current instr in exu, flush instr in exu
     wire need_flush;
-    assign need_flush = flush_valid && ((flush_id[7]^out_id[7])^(flush_id[6:0] < out_id[6:0]));
+    assign need_flush = flush_valid && ((flush_robid[7]^intblock_out_robid[7])^(flush_robid[6:0] < intblock_out_robid[6:0]));
 
-    assign out_instr_valid =  need_flush? 0 :  instr_valid;
-    assign out_pc          =  pc;    
-    assign out_instr       =  instr; //for debug
-    assign out_id          =  id;
-    assign out_prd         =  prd;
-    assign redirect_valid  =  need_flush? 0 :  redirect_valid_internal;
+    assign intblock_out_instr_valid =  need_flush? 0 :  instr_valid;
+    assign intblock_out_pc          =  pc;    //for debug
+    assign intblock_out_instr       =  instr; //for debug
+    assign intblock_out_robid          =  robid;
+    assign intblock_out_prd         =  prd;
+    assign intblock_out_redirect_valid  =  need_flush? 0 :  redirect_valid_internal;
 
     //exu logic
     wire alu_valid = (|alu_type) & instr_valid;
     wire bju_valid = (|cx_type) & instr_valid;
     wire muldiv_valid = (|muldiv_type) & instr_valid;
-    assign out_result = (|alu_type) ? alu_result : (|cx_type) ? bju_result : (|muldiv_type) ? muldiv_result : 64'hDEADBEEF;
-    assign out_need_to_wb = need_to_wb;
+    assign intblock_out_result = (|alu_type) ? alu_result : (|cx_type) ? bju_result : (|muldiv_type) ? muldiv_result : 64'hDEADBEEF;
+    assign intblock_out_need_to_wb = need_to_wb;
 
 
     alu u_alu (
@@ -125,7 +120,7 @@ module intblock #(
         .is_unsigned    (is_unsigned),
         .dest           (bju_result),
         .redirect_valid (redirect_valid_internal),
-        .redirect_target(redirect_target),
+        .redirect_target(intblock_out_redirect_target),
         .bjusb_bht_write_enable (bjusb_bht_write_enable),                 
         .bjusb_bht_write_index (bjusb_bht_write_index),
         .bjusb_bht_write_counter_select (bjusb_bht_write_counter_select),   
@@ -150,7 +145,7 @@ module intblock #(
     //forwarding logic
     //assign ex_byp_rd         = rd;
     //assign ex_byp_need_to_wb = need_to_wb & instr_valid & (alu_valid | muldiv_valid | bju_valid);
-    assign ex_byp_result     = alu_valid ? alu_result : muldiv_valid ? muldiv_result : bju_valid ? bju_result : 64'hDEADBEEF;
+    //assign ex_byp_result     = alu_valid ? alu_result : muldiv_valid ? muldiv_result : bju_valid ? bju_result : 64'hDEADBEEF;
 
     //mem load to use bypass logic
     //wire              src1_need_forward;

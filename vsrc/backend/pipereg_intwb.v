@@ -9,6 +9,8 @@ module pipereg_intwb (
     input  wire                          intblock_out_redirect_valid,
     input  wire [63:0]                   intblock_out_redirect_target,
     input  wire [`INSTR_ID_WIDTH:0]      intblock_out_id,
+    input wire [      `INSTR_RANGE]      intblock_out_instr,//for debug
+    input wire [         `PC_RANGE]      intblock_out_pc, //for debug
     input  wire                           bjusb_bht_write_enable,
     input  wire [`BHTBTB_INDEX_WIDTH-1:0] bjusb_bht_write_index,
     input  wire [1:0]                     bjusb_bht_write_counter_select,
