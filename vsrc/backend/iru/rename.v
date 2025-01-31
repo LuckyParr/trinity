@@ -24,7 +24,7 @@ module rename #()
     input wire [               3:0] instr0_ls_size,
 
     //instr 1 from decoder after pipereg
-    input wire               instr1_valid,
+    input wire                instr1_valid,
     output wire               instr1_ready,
     input wire [       31:0] instr1,
     input wire [`LREG_RANGE] instr1_lrs1,
@@ -47,55 +47,54 @@ module rename #()
     input wire       instr1_is_store,
     input wire [3:0] instr1_ls_size,
 
-    // 6 read port to spec_rat
+/* --------------------------- port with spec_rat --------------------------- */
+    //instr0
+    // 3 read port to spec_rat for instr0
     output wire rn2specrat_instr0_lrs1_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr0_lrs1,
     output wire rn2specrat_instr0_lrs2_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr0_lrs2,
     output wire rn2specrat_instr0_lrd_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr0_lrd,
-    
+    //instr0 read result
+    input wire [`PREG_RANGE] specrat2rn_instr0prs1,
+    input wire [`PREG_RANGE] specrat2rn_instr0prs2,
+    input wire [`PREG_RANGE] specrat2rn_instr0prd,
+    //rename write port to spec_rat : to write rd new physical reg number of instr0
+    output wire rn2specrat_instr0_lrd_wren,
+    output wire [`LREG_RANGE] rn2specrat_instr0_lrd_wraddr,
+    output wire [`PREG_RANGE] rn2specrat_instr0_lrd_wrdata,
+    // instr1
+    // 3 read port to spec_rat for instr1    
     output wire rn2specrat_instr1_lrs1_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr1_lrs1,
     output wire rn2specrat_instr1_lrs2_rden , 
     output wire [`LREG_RANGE] rn2specrat_instr1_lrs2,
     output wire rn2specrat_instr1_lrd_rden ,  
     output wire [`LREG_RANGE] rn2specrat_instr1_lrd,
-
-    input wire [`PREG_RANGE] specrat2rn_instr0prs1,
-    input wire [`PREG_RANGE] specrat2rn_instr0prs2,
-    input wire [`PREG_RANGE] specrat2rn_instr0prd,
+    //instr1 read result
     input wire [`PREG_RANGE] specrat2rn_instr1prs1,
     input wire [`PREG_RANGE] specrat2rn_instr1prs2,
     input wire [`PREG_RANGE] specrat2rn_instr1prd,
-
+    //rename write port to spec_rat : to write rd new physical reg number of instr1 
+    output wire rn2specrat_instr1_lrd_wren,
+    output wire [`LREG_RANGE] rn2specrat_instr1_lrd_wraddr,
+    output wire [`PREG_RANGE] rn2specrat_instr1_lrd_wrdata,
+    
+    /* --------------------------- port with freelist --------------------------- */
     // 2 read port to freelist
     output wire rn2fl_instr0_lrd_valid,
-    output wire rn2fl_instr1_lrd_valid,
     input wire [`PREG_RANGE] fl2rn_instr0prd,
+    output wire rn2fl_instr1_lrd_valid,
     input wire [`PREG_RANGE] fl2rn_instr1prd,
 
     //flush signal
     input wire flush_valid,
-    //to dispatch instr 0
+    /* ---------------------------- output to pipereg --------------------------- */
+    //prs1/prs2/prd
     output wire [`PREG_RANGE] rn2pipe_instr0_prs1,
     output wire [`PREG_RANGE] rn2pipe_instr0_prs2,
     output wire [`PREG_RANGE] rn2pipe_instr0_prd,
-    //to dispatch instr 1
-    output wire [`PREG_RANGE] rn2pipe_instr1_prs1,
-    output wire [`PREG_RANGE] rn2pipe_instr1_prs2,
-    output wire [`PREG_RANGE] rn2pipe_instr1_prd,
-
-
-    //rename write port to spec_rat : to write new physical reg number 
-    output wire rn2specrat_instr0_lrd_wren,
-    output wire [`LREG_RANGE] rn2specrat_instr0_lrd_wraddr,
-    output wire [`PREG_RANGE] rn2specrat_instr0_lrd_wrdata,
-
-    output wire rn2specrat_instr1_lrd_wren,
-    output wire [`LREG_RANGE] rn2specrat_instr1_lrd_wraddr,
-    output wire [`PREG_RANGE] rn2specrat_instr1_lrd_wrdata,
-        
     //other info of instr0
     output wire                      rn2pipe_instr0_valid,
     input wire                       pipe2rn_instr0_ready,
@@ -118,6 +117,11 @@ module rename #()
     output wire                      rn2pipe_instr0_is_store,
     output wire [               3:0] rn2pipe_instr0_ls_size,
     output wire [`PREG_RANGE       ] rn2pipe_instr0_old_prd,
+
+    //prs1/prs2/prd
+    output wire [`PREG_RANGE] rn2pipe_instr1_prs1,
+    output wire [`PREG_RANGE] rn2pipe_instr1_prs2,
+    output wire [`PREG_RANGE] rn2pipe_instr1_prd,
     //other info of instr1
     output wire                      rn2pipe_instr1_valid,
     input wire                       pipe2rn_instr1_ready,
@@ -170,7 +174,7 @@ hazardchecker u_hazardchecker(
     .instr1_lrs2_valid (instr1_lrs2_valid ),
     .instr1_lrd        (instr1_lrd        ),
     .instr1_lrd_valid  (instr1_lrd_valid  ),
-    .raw_hazard_rs1    (raw_hazard_rs1    ),//output
+    .raw_hazard_rs1    (raw_hazard_rs1    ),//output //when truly 2 instr comes, this need to send to int_isq to set sleep bit = 1
     .raw_hazard_rs2    (raw_hazard_rs2    ),//output 
     .waw_hazard        (waw_hazard        ) //output
 );

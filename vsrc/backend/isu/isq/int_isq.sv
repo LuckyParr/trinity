@@ -44,14 +44,17 @@ module int_isq #(
     input  logic                      flush_valid,
     input  logic [`INSTR_ID_WIDTH:0]  flush_robid,
 
-    output logic intisq_can_enq
+    output logic intisq_can_enq,
+    output logic intisq_instr0_is_load,
+    output logic intisq_instr0_is_store
 );
     //output array
     logic [DEPTH-1:0][DATA_WIDTH-1:0]      data_out_array;
     logic [DEPTH-1:0][CONDITION_WIDTH-1:0] condition_out_array;
     logic [DEPTH-1:0][INDEX_WIDTH-1:0]     index_out_array;
     logic [DEPTH-1:0]                      valid_out_array;
-
+    assign intisq_instr0_is_load = deq_valid && deq_data[5];
+    assign intisq_instr0_is_store = deq_valid && deq_data[4];
 
     //-----------------------------------------------------
     // condition updates for writeback0
