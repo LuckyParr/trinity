@@ -12,7 +12,7 @@ module age_buffer_1r1w #(
     //-----------------------------------------------------
     input  logic [DATA_WIDTH-1:0]       enq_data,
     input  logic [CONDITION_WIDTH-1:0]  enq_condition,
-    input  logic [INDEX_WIDTH-1:0]      enq_index,
+    //input  logic [INDEX_WIDTH-1:0]      enq_index,
     input  logic                         enq_valid,  // Request to enqueue
     output logic                         enq_ready,  // Indicate we can accept data
 
@@ -64,6 +64,9 @@ module age_buffer_1r1w #(
             update_condition_valid_array[j] = (update_condition_robid == data_out[j][247:241]) && update_condition_valid;
         end
     end
+
+    //dont need enq_index in age_buffer
+    assign enq_index = 'b0;
     // ----------------------------------------------------------
     // Generate sub-entries
     // ----------------------------------------------------------

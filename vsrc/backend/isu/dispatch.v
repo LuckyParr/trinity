@@ -1,10 +1,13 @@
-module dispatch#()
-(
+module dispatch #(
+    parameter DATA_WIDTH = 248,
+    parameter CONDITION_WIDTH = 2,
+    parameter INDEX_WIDTH     = 4
+)(
     input  wire               clock,
     input  wire               reset_n,
-    /* --------------------------- from rename instr0 --------------------------- */
-    input  wire               disp_instr0_valid,
-    output wire               disp_instr0_ready,
+    /* ---------------------------instr0 from rename  --------------------------- */
+    input  wire               pipe2disp_instr0_valid,
+    output wire               disp2pipe_instr0_ready,
     //data to rob
     input  wire  [  `PC_RANGE] instr0_pc,
     input  wire  [       31:0] instr0,
@@ -30,10 +33,9 @@ module dispatch#()
     input wire                      instr0_is_store,
     input wire [               3:0] instr0_ls_size,
 
-
-    /* --------------------------- from rename instr1 --------------------------- */
-    input  wire               disp_instr1_valid,
-    output wire               disp_instr1_ready,
+    /* ---------------------------instr1 from rename  --------------------------- */
+    input  wire               pipe2disp_instr1_valid,
+    output wire               disp2pipe_instr1_ready,
     //data to rob
     input  wire [  `PC_RANGE] instr1_pc,
     input  wire [       31:0] instr1,
@@ -59,17 +61,38 @@ module dispatch#()
     input wire                      instr1_is_store,
     input wire [               3:0] instr1_ls_size,
 
-    // signal from rob
-    input wire [`INSTR_ID_WIDTH-1:0] rob2disp_instr_cnt, //7 bit
-    input wire [`INSTR_ID_WIDTH-1:0] rob2disp_instr_id, //7 bit
+    /* ------------------------------ port with rob ----------------------------- */
+    //signal from rob
+    input wire rob_can_enq,
+    input wire [`INSTR_ID_WIDTH-1:0] rob2disp_instr_robid, //7 bit, robid send to isq
+    input wire [1:0] rob_state,
+    //write port
+    output wire disp2rob_instr0_enq_valid,
+    output wire [  `PC_RANGE] disp2rob_instr0_pc,
+    output wire [       31:0] disp2rob_instr0,
+    output wire [`LREG_RANGE] disp2rob_instr0_lrd,
+    output wire [`PREG_RANGE] disp2rob_instr0_prd,
+    output wire [`PREG_RANGE] disp2rob_instr0_old_prd,
+    output wire               disp2rob_instr0_need_to_wb,
+    //output wire [124-1:0] disp2rob_instr0_entrydata,
+    output wire disp2rob_instr1_enq_valid,
+    output wire [  `PC_RANGE] disp2rob_instr1_pc,
+    output wire [       31:0] disp2rob_instr1,
+    output wire [`LREG_RANGE] disp2rob_instr1_lrd,
+    output wire [`PREG_RANGE] disp2rob_instr1_prd,
+    output wire [`PREG_RANGE] disp2rob_instr1_old_prd,
+    output wire               disp2rob_instr1_need_to_wb,
+    //output wire [124-1:0] disp2rob_instr1_entrydata,
+    
+    /* ------------------------------ port with isq ----------------------------- */
+    //write data to issue_queue
+    input wire intisq_can_enq,
+    output wire disp2intisq_enq_valid,
+    input wire intisq2disp_enq_ready,//useless
+    output wire [DATA_WIDTH-1:0]disp2intisq_instr0_enq_data,
+    output wire [CONDITION_WIDTH-1:0] disp2intisq_instr0_enq_condition,
 
-    //write rob
-    output wire disp2rob_instr0_valid,
-    output wire [124-1:0] disp2rob_instr0_entrydata,
-    output wire disp2rob_instr1_valid
-    output wire [124-1:0] disp2rob_instr1_entrydata,
-
-    // read from busy_vector
+    /* -------------------------- port with busy_table -------------------------- */
     // Read Port 0
     output wire [5:0] disp2bt_instr0rs1_rdaddr, // Address for disp2bt_instr0rs1_busy
     input wire bt2disp_instr0rs1_busy,      // Data output for disp2bt_instr0rs1_busy
@@ -83,44 +106,54 @@ module dispatch#()
     output wire [5:0] disp2bt_instr1rs2_rdaddr, // Address for disp2bt_instr1rs2_busy
     input wire bt2disp_instr1rs2_busy,      // Data output for disp2bt_instr1rs2_busy
     
-    // write busy bit to 1 in busy_vector
+    // write busy bit to 1 in busy_table
     output wire       disp2bt_alloc_instr0rd_en,             // Enable for alloc_instr0rd_addr0
     output wire [5:0] disp2bt_alloc_instr0rd_addr,     // Address for alloc_instr0rd_addr0
     output wire       disp2bt_alloc_instr1rd_en,             // Enable for alloc_instr1rd_addr1
     output wire [5:0] disp2bt_alloc_instr1rd_addr,     // Address for alloc_instr1rd_addr1
 
-    //write data to issue_queue
-    output wire isq_in_wr_valid,
-    input wire  isq_out_wr_ready,
-    //output wire disp2isq_instr0_wren,
-    output wire [248-1:0]disp2isq_instr0_entrydata,
-
+    /* ---------------------------- flush logic ---------------------------- */
     //flush signals
-    input wire flush_valid,
-    input wire [`INSTR_ID_WIDTH-1:0] flush_id,
-
-    //walk
-    input wire [1:0] rob_state
+    input wire flush_valid
 
 );
-//ready
-assign disp_instr0_ready = (rob2disp_instr_cnt < `ROB_SIZE) && isq_out_wr_ready && ~flush_valid && (rob_state == `ROB_STATE_IDLE);
-assign isq_in_wr_valid = disp_instr0_valid && ~flush_valid;
+//disp2pipe ready
+assign disp2pipe_instr0_ready = rob_can_enq && intisq_can_enq && ~flush_valid && (rob_state == `ROB_STATE_IDLE);
+assign disp2pipe_instr1_ready = 1'b0;
+//disp2intisp signal
+assign disp2intisq_enq_valid = pipe2disp_instr0_valid && ~flush_valid;
+assign disp2intisq_instr0_enq_condition = 2'b0;
 
 /* --------------------- write instr0 and instr1 to rob --------------------- */
-assign disp2rob_instr0_valid = disp_instr0_valid;
-assign disp2rob_instr0_entrydata = { instr0_pc           ,//[123:60]
-                            instr0              ,//[59:28]
-                            instr0_lrs1         ,//[27:23]
-                            instr0_lrs2         ,//[22:18]
-                            instr0_lrd          ,//[17:13]
-                            instr0_prd          ,//[12:7]
-                            instr0_old_prd      ,//[6:1]
-                            instr0_need_to_wb    //[0]
-                            };
-
-assign disp2rob_instr1_valid = disp_instr1_valid;
-assign disp2rob_instr1_entrydata = {instr1_pc,instr1,instr1_lrs1,instr1_lrs2,instr1_lrd,instr1_prd,instr1_old_prd,instr1_need_to_wb};
+assign disp2rob_instr0_enq_valid = pipe2disp_instr0_valid;
+assign disp2rob_instr0_pc         = instr0_pc;        
+assign disp2rob_instr0            = instr0;           
+assign disp2rob_instr0_lrs1       = instr0_lrs1;      
+assign disp2rob_instr0_lrs2       = instr0_lrs2;      
+assign disp2rob_instr0_lrd        = instr0_lrd;       
+assign disp2rob_instr0_prd        = instr0_prd;       
+assign disp2rob_instr0_old_prd    = instr0_old_prd;   
+assign disp2rob_instr0_need_to_wb = instr0_need_to_wb;
+// assign disp2rob_instr0_entrydata = { 
+//                             instr0_pc           ,//[123:60]
+//                             instr0              ,//[59:28]
+//                             instr0_lrs1         ,//[27:23]
+//                             instr0_lrs2         ,//[22:18]
+//                             instr0_lrd          ,//[17:13]
+//                             instr0_prd          ,//[12:7]
+//                             instr0_old_prd      ,//[6:1]
+//                             instr0_need_to_wb    //[0]
+//                             };
+assign disp2rob_instr1_eenq_valid = pipe2disp_instr1_valid;
+assign disp2rob_instr1_pc         = instr1_pc;        
+assign disp2rob_instr1            = instr1;           
+assign disp2rob_instr1_lrs1       = instr1_lrs1;      
+assign disp2rob_instr1_lrs2       = instr1_lrs2;      
+assign disp2rob_instr1_lrd        = instr1_lrd;       
+assign disp2rob_instr1_prd        = instr1_prd;       
+assign disp2rob_instr1_old_prd    = instr1_old_prd;   
+assign disp2rob_instr1_need_to_wb = instr1_need_to_wb;
+//assign disp2rob_instr1_entrydata = {instr1_pc,instr1,instr1_lrs1,instr1_lrs2,instr1_lrd,instr1_prd,instr1_old_prd,instr1_need_to_wb};
 
 /* ------------ write prd0 and prd1 busy bit to 1 in busy_vector ------------ */
 assign disp2bt_alloc_instr0rd_en = instr0_need_to_wb;
@@ -136,10 +169,10 @@ assign disp2bt_instr1rs2_rdaddr = instr1_prs2; //use to set sleep bit in issue q
 
 
 /* ------------- send instr0 instr1 and sleep bit to issue queue ------------ */
-assign disp2isq_instr0_wren = disp_instr0_valid;
-assign disp2isq_instr0_entrydata = 
+assign disp2isq_instr0_wren = pipe2disp_instr0_valid;
+assign disp2intisq_instr0_enq_data = 
                         {
-                        rob2disp_instr_id ,//7   //[247 : 241]
+                        rob2disp_instr_robid ,//7   //[247 : 241]
                         instr0_pc         ,//64  //[240 : 177]         
                         instr0            ,//32  //[176 : 145]         
                         instr0_lrs1       ,//5   //[144 : 140]         

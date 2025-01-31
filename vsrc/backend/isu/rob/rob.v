@@ -2,16 +2,10 @@ module rob
 (
     input wire               clock,
     input wire               reset_n,
-    //ready sigs,cause dispathc only can dispatch when rob,IQ,SQ both have avail entry
-    input wire               iq_can_alloc0,
-    input wire               iq_can_alloc1,
-    input wire               sq_can_alloc,
-    //rob enq logic
+     /* ----------------------------- rob write logic ---------------------------- */
     input wire               instr0_enq_valid,
     input wire [  `PC_RANGE] instr0_pc,
     input wire [       31:0] instr0,
-    // input wire [`LREG_RANGE] instr0_lrs1,
-    // input wire [`LREG_RANGE] instr0_lrs2,
     input wire [`LREG_RANGE] instr0_lrd,
     input wire [`PREG_RANGE] instr0_prd,
     input wire [`PREG_RANGE] instr0_old_prd,
@@ -20,34 +14,27 @@ module rob
     input wire               instr1_enq_valid,
     input wire [  `PC_RANGE] instr1_pc,
     input wire [       31:0] instr1,
-    // input wire [`LREG_RANGE] instr1_lrs1,
-    // input wire [`LREG_RANGE] instr1_lrs2,
     input wire [`LREG_RANGE] instr1_lrd,
     input wire [`PREG_RANGE] instr1_prd,
     input wire [`PREG_RANGE] instr1_old_prd,
     input wire               instr1_need_to_wb,
-
-    //rob_counter
-    output reg [`ROB_SIZE_LOG-1:0] rob_counter,
-
-    //robidx output put
-    output reg [`ROB_SIZE_LOG:0] instr_robid,//id send to dispatch
-
+    //output reg [`ROB_SIZE_LOG:0] rob2disp_instr_cnt,
+    output reg [`ROB_SIZE_LOG:0] rob2disp_instr_robid,
+    output reg rob_can_enq,
+/* ---------------------------- write back logic from wb pipe---------------------------- */
     //write back port
     input wire                     intb_writeback0_valid,
     input wire [`ROB_SIZE_LOG:0]   intb_writeback0_robid,
     // input wire                     writeback0_need_to_wb,
-
     input wire                     memb_writeback0_valid,
     input wire [`ROB_SIZE_LOG:0]   memb_writeback0_robid,
     // input wire                     writeback1_need_to_wb,
     input wire                     memb_writeback0_mmio,
-
     input wire                     intb_writeback1_valid,
     input wire [`ROB_SIZE_LOG:0]   intb_writeback1_robid,
     // input wire                     writeback2_need_to_wb,
 
-    //commit port
+    /* --------------------------- output commit port --------------------------- */
     output wire                     commit0_valid,
     output wire [        `PC_RANGE] commit0_pc,
     output wire [             31:0] commit0_instr,
@@ -58,7 +45,6 @@ module rob
     output wire [`ROB_SIZE_LOG:0]   commit0_robid,       //used to wakeup storequeue
     // debug
     output wire                     commit0_skip,
-
 
     output wire                     commit1_valid,
     output wire [        `PC_RANGE] commit1_pc,
@@ -71,12 +57,10 @@ module rob
     // debug
     output wire                     commit1_skip,
 
-    //flush
+    /* ------------------------------- flush and walk logic ------------------------------ */
     input wire                     flush_valid,
-    // input wire [             63:0] flush_target,
     input wire [`ROB_SIZE_LOG:0  ] flush_robid,
 
-    /* ------------------------------- walk logic ------------------------------- */
     output reg  [        1:0] rob_state,
     output wire               rob_walk0_valid,
     output wire               rob_walk0_complete,
@@ -88,6 +72,10 @@ module rob
     output wire               rob_walk1_complete
 
 ); 
+    assign rob_can_enq = (rob_counter < `ROB_SIZE);
+    //assign rob2disp_instr_cnt = rob_counter;
+    assign rob2disp_instr_robid = instr_robid;
+
 /* ----------------------------- internal signal ---------------------------- */
     //robentry input
     reg  [    `ROB_SIZE-1:0] enq_valid_dec;//act as wren signal in robentry
@@ -123,7 +111,7 @@ module rob
     reg  [  `ROB_SIZE_LOG:0] enq_num;
     reg  [  `ROB_SIZE_LOG:0] deq_num;
 
-    assign instr_robid = enqueue_ptr;
+    wire instr_robid = enqueue_ptr;
 
 
 /* ------------------------ update enqueue_ptr logic ------------------------ */
@@ -429,8 +417,10 @@ module rob
 /* ----------------------------- internal signal ---------------------------- */
 
 
-    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0 & sq_can_alloc;
-    assign instr1_actually_enq = instr1_enq_valid & iq_can_alloc1;    
+//    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0;
+//    assign instr1_actually_enq = instr1_enq_valid & iq_can_alloc1;    
+    assign instr0_actually_enq = instr0_enq_valid ;
+    assign instr1_actually_enq = instr1_enq_valid ;    
 
     genvar i;
     generate

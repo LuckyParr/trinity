@@ -15,7 +15,7 @@ module int_isq #(
     //-----------------------------------------------------
     input  logic [DATA_WIDTH-1:0]       enq_data,
     input  logic [CONDITION_WIDTH-1:0]  enq_condition,
-    input  logic [INDEX_WIDTH-1:0]      enq_index,
+    //input  logic [INDEX_WIDTH-1:0]      enq_index,
     input  logic                         enq_valid,  
     output logic                         enq_ready,  
 
@@ -41,9 +41,12 @@ module int_isq #(
     //-----------------------------------------------------
     // Flush interface
     //-----------------------------------------------------
-    input  logic                    flush_valid,
-    input  logic [`INSTR_ID_WIDTH:0]  flush_robid
+    input  logic                      flush_valid,
+    input  logic [`INSTR_ID_WIDTH:0]  flush_robid,
+
+    output logic intisq_can_enq
 );
+    //output array
     logic [DEPTH-1:0][DATA_WIDTH-1:0]      data_out_array;
     logic [DEPTH-1:0][CONDITION_WIDTH-1:0] condition_out_array;
     logic [DEPTH-1:0][INDEX_WIDTH-1:0]     index_out_array;
@@ -53,7 +56,7 @@ module int_isq #(
     //-----------------------------------------------------
     // condition updates for writeback0
     //-----------------------------------------------------
-    logic                         update_condition_valid;
+    logic                           update_condition_valid;
     logic [`INSTR_ID_WIDTH:0]       update_condition_robid;
     logic [CONDITION_WIDTH-1:0]  update_condition_mask;
     logic [CONDITION_WIDTH-1:0]  update_condition_in;
@@ -87,7 +90,8 @@ module int_isq #(
             end            
         end
     end
-
+    //check if age buffer have available entry
+    assign intisq_can_enq = enq_ready;
     
     // --------------------------------------------------------------------
     // Instantiate the age_buffer module
@@ -104,7 +108,7 @@ module int_isq #(
         // Enqueue
         .enq_data                 (enq_data),
         .enq_condition            (enq_condition),
-        .enq_index                (enq_index),
+        //.enq_index                (enq_index),
         .enq_valid                (enq_valid),
         .enq_ready                (enq_ready),
 

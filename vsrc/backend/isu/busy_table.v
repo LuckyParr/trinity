@@ -1,13 +1,4 @@
 `timescale 1ns / 1ps
-////////////////////////////////////////////////////////////////////////////////
-// Description: 
-//
-// A busy vector module with a 64-bit vector, supporting 4 read ports and 4 write ports.
-// Read ports output the busy status based on provided addresses, incorporating bypass logic.
-// Write ports can set or clear specific bits based on enable signals.
-
-////////////////////////////////////////////////////////////////////////////////
-
 module busy_table (
     input wire clk,                         // Clock signal
     input wire reset_n,                     // Active-low reset signal
