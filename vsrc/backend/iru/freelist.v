@@ -7,24 +7,25 @@ module freelist #(
     input reset_n,                      // Active-low reset signal
 
     // Write Port 0
-    input wr_en0,
-    input [DATA_WIDTH-1:0] wr_data0,
+    //input wr_en0,
+    input commit0_valid,
+    input commit0_need_to_wb,
+    input [DATA_WIDTH-1:0] commit0_old_prd,
 
     // Write Port 1
-    input wr_en1,
-    input [DATA_WIDTH-1:0] wr_data1,
+    //input wr_en1,
+    input commit1_valid,
+    input commit1_need_to_wb,
+    input [DATA_WIDTH-1:0] commit1_old_prd,
 
     // Read Port 0
-    input rd_en0,
-    output reg [DATA_WIDTH-1:0] rd_data0,
+    input rn2fl_instr0_lrd_valid,
+    output reg [DATA_WIDTH-1:0] fl2rn_instr0prd,
 
     // Read Port 1
-    input rd_en1,
-    output reg [DATA_WIDTH-1:0] rd_data1,
+    input rn2fl_instr1_lrd_valid,
+    output reg [DATA_WIDTH-1:0] fl2rn_instr1prd,
 
-    // // Status Flags
-    // output full,
-    // output empty
     //walk signal
     input wire [1:0] rob_state;
     input wire walking_valid0,
@@ -32,7 +33,8 @@ module freelist #(
 
 );
 
-
+    wire wr_en0 = commit0_valid && commit0_need_to_wb;
+    wire wr_en1 = commit1_valid && commit1_need_to_wb;
 
     wire is_idle;
     wire is_rollback;
@@ -87,14 +89,14 @@ always @(posedge clock or negedge reset_n) begin
         write_count = wr_en0 + wr_en1;
         // Single write
         if (write_count == 1 && wr_en0 ) begin
-            mem[enqueue_ptr]       <= wr_data0;
+            mem[enqueue_ptr]       <= commit0_old_prd;
             valid_mem[enqueue_ptr] <= 1'b1;            
             enqueue_ptr <= (enqueue_ptr + 1) % DEPTH;
         // Double write
         end else if (write_count == 2 && wr_en1 ) begin
-            mem[enqueue_ptr]         <= wr_data0;
+            mem[enqueue_ptr]         <= commit0_old_prd;
             valid_mem[enqueue_ptr]   <= 1'b1;
-            mem[enqueue_ptr + 1]     <= wr_data1;
+            mem[enqueue_ptr + 1]     <= commit1_old_prd;
             valid_mem[enqueue_ptr + 1] <= 1'b1;
             enqueue_ptr <= (enqueue_ptr + 2) % DEPTH;
         end
@@ -125,19 +127,19 @@ always @(posedge clock or negedge reset_n) begin
 
         end else begin
             // Normal read logic
-            read_count = rd_en0 + rd_en1;
+            read_count = rn2fl_instr0_lrd_valid + rn2fl_instr1_lrd_valid;
 
             // Single read
-            if (read_count == 1 && rd_en0) begin
-                // rd_data0 <= mem[dequeue_ptr];    // if reading out
+            if (read_count == 1 && rn2fl_instr0_lrd_valid) begin
+                // fl2rn_instr0prd <= mem[dequeue_ptr];    // if reading out
                 valid_mem[dequeue_ptr] <= 1'b0;
                 dequeue_ptr            <= (dequeue_ptr + 1) % DEPTH;
                 // rd_count               <= rd_count + 1;
 
             // Double read
-            end else if (read_count == 2 && rd_en1) begin
-                // rd_data0 <= mem[dequeue_ptr];      // if reading out
-                // rd_data1 <= mem[dequeue_ptr + 1];  // if reading out
+            end else if (read_count == 2 && rn2fl_instr1_lrd_valid) begin
+                // fl2rn_instr0prd <= mem[dequeue_ptr];      // if reading out
+                // fl2rn_instr1prd <= mem[dequeue_ptr + 1];  // if reading out
                 valid_mem[dequeue_ptr]     <= 1'b0;
                 valid_mem[dequeue_ptr + 1] <= 1'b0;
                 dequeue_ptr               <= (dequeue_ptr + 2) % DEPTH;
@@ -149,15 +151,15 @@ end
 
 
     always @(*) begin
-        if (read_count == 1 && rd_en0 ) begin
-            rd_data0               = mem[dequeue_ptr];
-            rd_data1               = 0;            
-        end else if (read_count == 2 && rd_en1 )begin
-            rd_data0               = mem[dequeue_ptr];
-            rd_data1               = mem[dequeue_ptr+1];            
+        if (read_count == 1 && rn2fl_instr0_lrd_valid ) begin
+            fl2rn_instr0prd               = mem[dequeue_ptr];
+            fl2rn_instr1prd               = 0;            
+        end else if (read_count == 2 && rn2fl_instr1_lrd_valid )begin
+            fl2rn_instr0prd               = mem[dequeue_ptr];
+            fl2rn_instr1prd               = mem[dequeue_ptr+1];            
         end else begin
-            rd_data0 = 0;
-            rd_data1 = 0;
+            fl2rn_instr0prd = 0;
+            fl2rn_instr1prd = 0;
         end
     end
 

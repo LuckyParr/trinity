@@ -15,8 +15,8 @@ module idu_top(
     input  wire                      flush_valid,
 
     // ports with iru
-    input  wire                      isu_instr_ready,
-    output wire                      idu_instr_valid,
+    input  wire                      iru2idu_instr_ready,
+    output wire                      idu2iru_instr_valid,
     output wire [`INSTR_RANGE]       idu_instr,
     output wire [`PC_RANGE]          idu_pc,
     output wire [`LREG_RANGE]        idu_lrs1,
@@ -156,8 +156,8 @@ module idu_top(
         .opload_read_data_wb        (),
 
         // Outputs to next pipeline stage
-        .instr_valid_to_lower       (idu_instr_valid),
-        .instr_ready_from_lower     (isu_instr_ready),//input feedthrough
+        .instr_valid_to_lower       (idu2iru_instr_valid),
+        .instr_ready_from_lower     (iru2idu_instr_ready),//input feedthrough
 
         .idu_instr                  (idu_instr),
         .idu_pc                     (idu_pc),
