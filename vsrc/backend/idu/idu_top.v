@@ -2,19 +2,20 @@ module idu_top(
     input  wire                      clock,
     input  wire                      reset_n,
 
-    // 来自 ibuffer 的输入信号
+    // ports with ibuffer
     input  wire                      fifo_empty,
     input  wire                      ibuffer_instr_valid,
     input  wire                      ibuffer_predicttaken_out,
-    input  wire [31:0]              ibuffer_predicttarget_out,
-    input  wire [31:0]              ibuffer_inst_out,
-    input  wire [47:0]              ibuffer_pc_out,
+    input  wire [31:0]               ibuffer_predicttarget_out,
+    input  wire [31:0]               ibuffer_inst_out,
+    input  wire [47:0]               ibuffer_pc_out,
+    output wire                      ibuffer_read_en,
 
-    // 流水线控制或冲刷
+    // flush signals from intwb
     input  wire                      flush_valid,
-    input  wire                      instr_ready_from_lower,
 
-    // 输出到下一级流水线的信号 (已更名为 idu_xxx)
+    // ports with iru
+    input  wire                      isu_instr_ready,
     output wire                      idu_instr_valid,
     output wire [`INSTR_RANGE]       idu_instr,
     output wire [`PC_RANGE]          idu_pc,
@@ -43,7 +44,7 @@ module idu_top(
 );
 
     //----------------------------------
-    // 中间连线：decoder -> pipereg_autostall
+    // Internal signals: decoder -> pipereg_autostall
     //----------------------------------
     wire [4:0]                dec_rs1;
     wire [4:0]                dec_rs2;
@@ -62,7 +63,7 @@ module idu_top(
     wire [3:0]                dec_ls_size;
     wire [`MULDIV_TYPE_RANGE] dec_muldiv_type;
 
-    // 这里假设 decoder_instr_valid 是 1 位有效信号（而不是 48 位）
+    // Decoder output signals (instruction valid, PC, instruction, etc.)
     wire                      dec_instr_valid;
     wire [47:0]              dec_pc_out;
     wire [31:0]              dec_instr_out;
@@ -70,13 +71,13 @@ module idu_top(
     wire [31:0]              dec_predicttarget_out;
 
     //----------------------------------
-    // 实例化 decoder
+    // Instantiate decoder module
     //----------------------------------
     decoder u_decoder (
         .clock                      (clock),
         .reset_n                    (reset_n),
 
-        // 来自 ibuffer 的输入
+        // Inputs from ibuffer
         .fifo_empty                 (fifo_empty),
         .ibuffer_instr_valid        (ibuffer_instr_valid),
         .ibuffer_predicttaken_out   (ibuffer_predicttaken_out),
@@ -84,7 +85,7 @@ module idu_top(
         .ibuffer_inst_out           (ibuffer_inst_out),
         .ibuffer_pc_out             (ibuffer_pc_out),
 
-        // 解码后输出(读寄存器/控制信号等)
+        // Decoding outputs (registers, control signals, etc.)
         .rs1                        (dec_rs1),
         .rs2                        (dec_rs2),
         .rd                         (dec_rd),
@@ -102,7 +103,7 @@ module idu_top(
         .ls_size                    (dec_ls_size),
         .muldiv_type                (dec_muldiv_type),
 
-        // feedthrough
+        // Feedthrough signals
         .decoder_instr_valid        (dec_instr_valid),
         .decoder_pc_out             (dec_pc_out),
         .decoder_instr_out          (dec_instr_out),
@@ -111,15 +112,15 @@ module idu_top(
     );
 
     //----------------------------------
-    // 实例化 pipereg_autostall
+    // Instantiate pipereg_autostall
     //----------------------------------
-    pipereg_autostall u_pipereg_autostall (
+    pipereg_autostall u_idu_pipereg_autostall (
         .clock                      (clock),
         .reset_n                    (reset_n),
 
-        // 上游(这里是decoder) -> pipe_reg
+        // Inputs from decoder -> pipeline register
         .instr_valid_from_upper     (dec_instr_valid),
-        .instr_ready_to_upper       (/* 如果需要可拉出来 */),
+        .instr_ready_to_upper       (ibuffer_read_en),//output
 
         .instr                      (dec_instr_out),
         .pc                         (dec_pc_out),
@@ -141,55 +142,55 @@ module idu_top(
         .ls_size                    (dec_ls_size),
         .muldiv_type                (dec_muldiv_type),
 
-        // 如果有物理寄存器重命名信息，请在此接相应信号
+        // Optional: If physical register renaming information is needed, map them here
         .prs1                       (),
         .prs2                       (),
         .prd                        (),
         .old_prd                    (),
 
-        // 来自EXU执行后的结果(用于回写或旁路                          )
+        // Results from EXU for write-back or bypassing
         .ls_address                 (),
         .alu_result                 (),
         .bju_result                 (),
         .muldiv_result              (),
         .opload_read_data_wb        (),
 
-        // 输出到下一级
+        // Outputs to next pipeline stage
         .instr_valid_to_lower       (idu_instr_valid),
-        .instr_ready_from_lower     (instr_ready_from_lower),
+        .instr_ready_from_lower     (isu_instr_ready),//input feedthrough
 
-        .lower_instr                (idu_instr),
-        .lower_pc                   (idu_pc),
-        .lower_lrs1                 (idu_lrs1),
-        .lower_lrs2                 (idu_lrs2),
-        .lower_lrd                  (idu_lrd),
-        .lower_imm                  (idu_imm),
-        .lower_src1_is_reg          (idu_src1_is_reg),
-        .lower_src2_is_reg          (idu_src2_is_reg),
-        .lower_need_to_wb           (idu_need_to_wb),
+        .idu_instr                  (idu_instr),
+        .idu_pc                     (idu_pc),
+        .idu_lrs1                   (idu_lrs1),
+        .idu_lrs2                   (idu_lrs2),
+        .idu_lrd                    (idu_lrd),
+        .idu_imm                    (idu_imm),
+        .idu_src1_is_reg            (idu_src1_is_reg),
+        .idu_src2_is_reg            (idu_src2_is_reg),
+        .idu_need_to_wb             (idu_need_to_wb),
 
-        .lower_cx_type              (idu_cx_type),
-        .lower_is_unsigned          (idu_is_unsigned),
-        .lower_alu_type             (idu_alu_type),
-        .lower_is_word              (idu_is_word),
-        .lower_is_load              (idu_is_load),
-        .lower_is_imm               (idu_is_imm),
-        .lower_is_store             (idu_is_store),
-        .lower_ls_size              (idu_ls_size),
-        .lower_muldiv_type          (idu_muldiv_type),
+        .idu_cx_type                (idu_cx_type),
+        .idu_is_unsigned            (idu_is_unsigned),
+        .idu_alu_type               (idu_alu_type),
+        .idu_is_word                (idu_is_word),
+        .idu_is_load                (idu_is_load),
+        .idu_is_imm                 (idu_is_imm),
+        .idu_is_store               (idu_is_store),
+        .idu_ls_size                (idu_ls_size),
+        .idu_muldiv_type            (idu_muldiv_type),
 
-        .lower_prs1                 (idu_prs1),
-        .lower_prs2                 (idu_prs2),
-        .lower_prd                  (idu_prd),
-        .lower_old_prd              (idu_old_prd),
+        .idu_prs1                   (),
+        .idu_prs2                   (),
+        .idu_prd                    (),
+        .idu_old_prd                (),
 
-        .lower_ls_address           (),
-        .lower_alu_result           (),
-        .lower_bju_result           (),
-        .lower_muldiv_result        (),
-        .lower_opload_read_data_wb  (),
+        .idu_ls_address             (),
+        .idu_alu_result             (),
+        .idu_bju_result             (),
+        .idu_muldiv_result          (),
+        .idu_opload_read_data_wb    (),
 
-        // flush
+        // Flush signal
         .flush_valid                (flush_valid)
     );
 

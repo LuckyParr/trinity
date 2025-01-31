@@ -8,7 +8,7 @@ module pipereg_intwb (
     input  wire [63:0]                   intblock_out_result,
     input  wire                          intblock_out_redirect_valid,
     input  wire [63:0]                   intblock_out_redirect_target,
-    input  wire [`INSTR_ID_WIDTH:0]      intblock_out_id,
+    input  wire [`INSTR_ID_WIDTH:0]      intblock_out_robid,
     input wire [      `INSTR_RANGE]      intblock_out_instr,//for debug
     input wire [         `PC_RANGE]      intblock_out_pc, //for debug
     input  wire                           bjusb_bht_write_enable,
@@ -28,7 +28,7 @@ module pipereg_intwb (
     output reg [63:0]                   intwb_result,
     output reg                          intwb_redirect_valid,// rename to flush_valid
     output reg [63:0]                   intwb_redirect_target,// rename to flush_target
-    output reg [`INSTR_ID_WIDTH-1:0]    intwb_id, // rename to flush_id
+    output reg [`INSTR_ID_WIDTH-1:0]    intwb_robid, // rename to flush_id
     output reg                          intwb_bjusb_bht_write_enable,
     output reg [`BHTBTB_INDEX_WIDTH-1:0]intwb_bjusb_bht_write_index,
     output reg [1:0]                    intwb_bjusb_bht_write_counter_select,
@@ -48,7 +48,7 @@ module pipereg_intwb (
     `MACRO_DFF_NONEN(intwb_result, intblock_out_result, 64)
     `MACRO_DFF_NONEN(intwb_redirect_valid, intblock_out_redirect_valid, 1)
     `MACRO_DFF_NONEN(intwb_redirect_target, intblock_out_redirect_target, 64)
-    `MACRO_DFF_NONEN(intwb_id, intblock_out_id,`INSTR_ID_WIDTH)
+    `MACRO_DFF_NONEN(intwb_robid, intblock_out_robid,`INSTR_ID_WIDTH)
 
     `MACRO_DFF_NONEN(intwb_bjusb_bht_write_enable        , bjusb_bht_write_enable, 1)
     `MACRO_DFF_NONEN(intwb_bjusb_bht_write_index         , bjusb_bht_write_index, `BHTBTB_INDEX_WIDTH)

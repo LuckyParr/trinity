@@ -5,7 +5,7 @@ module ibuffer (
     input wire        pc_operation_done,
     input wire [`ICACHE_FETCHWIDTH128_RANGE] admin2ib_instr,        // 64-bit input data from arbiter (two instructions, 32 bits each)
     input wire [ 3:0] admin2ib_instr_valid,  // 2-bit validity indicator (11 or 01)
-    input wire        fifo_read_en,         // External read enable signal for FIFO
+    input wire        ibuffer_read_en,         // External read enable signal for FIFO
     input wire        redirect_valid,        // Clear signal for ibuffer
     input wire [63:0] pc,
 
@@ -66,7 +66,7 @@ module ibuffer (
         .reset_n      (reset_n),
         .data_in      (inst_buffer[write_index]),  // Input to FIFO
         .write_en     (valid_counter > 0),         // Write enable based on counter
-        .read_en      (fifo_read_en),
+        .read_en      (ibuffer_read_en),
         .redirect_valid (redirect_valid),             // Pass clear signal to FIFO
         .data_out     (fifo_data_out),
         .empty        (fifo_empty),
