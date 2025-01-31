@@ -97,11 +97,31 @@ module isu_top #(
     output wire                     commit1_skip,
 
     // ISQ outputs
-    output wire [DATA_WIDTH-1:0]    deq_data,
-    output wire [CONDITION_WIDTH-1:0] deq_condition,
-    output wire [INDEX_WIDTH-1:0]   deq_index,
-    output wire                     deq_valid,
-    input  wire                     deq_ready,
+    output wire [6:0]  isu2exu_instr0_robid       ,
+    output wire [63:0] isu2exu_instr0_pc          ,
+    output wire [31:0] isu2exu_instr0             ,
+    output wire [4:0]  isu2exu_instr0_lrs1        ,
+    output wire [4:0]  isu2exu_instr0_lrs2        ,
+    output wire [4:0]  isu2exu_instr0_lrd         ,
+    output wire [5:0]  isu2exu_instr0_prd         ,
+    output wire [5:0]  isu2exu_instr0_old_prd     ,
+    output wire        isu2exu_instr0_need_to_wb  ,
+    output wire [5:0]  isu2exu_instr0_prs1        ,
+    output wire [5:0]  isu2exu_instr0_prs2        ,
+    output wire        isu2exu_instr0_src1_is_reg ,
+    output wire        isu2exu_instr0_src2_is_reg ,
+    output wire [63:0] isu2exu_instr0_imm         ,
+    output wire [5:0]  isu2exu_instr0_cx_type     ,
+    output wire        isu2exu_instr0_is_unsigned ,
+    output wire [10:0] isu2exu_instr0_alu_type    ,
+    output wire [12:0] isu2exu_instr0_muldiv_type ,
+    output wire        isu2exu_instr0_is_word     ,
+    output wire        isu2exu_instr0_is_imm      ,
+    output wire        isu2exu_instr0_is_load     ,
+    output wire        isu2exu_instr0_is_store    ,
+    output wire [3:0]  isu2exu_instr0_ls_size     ,
+    output wire                       deq_valid,
+    input  wire                       deq_ready,
 
     // Debug outputs
     output wire [1:0]               rob_state,
@@ -113,9 +133,42 @@ module isu_top #(
     output wire [`LREG_RANGE]        rob_walk1_lrd,
     output wire [`PREG_RANGE]        rob_walk1_prd,
     output wire                     rob_walk1_complete,
-    //intisq indicate instr0 is load or store 
-    output wire intisq_instr0_is_load,
-    output wire intisq_instr0_is_store
+    // //intisq indicate instr0 is load or store 
+    // output wire isu2exu_instr0_is_load,
+    // output wire isu2exu_instr0_is_store,
+    //preg content from arch_rat
+    input wire [`PREG_RANGE] debug_preg0,
+    input wire [`PREG_RANGE] debug_preg1,
+    input wire [`PREG_RANGE] debug_preg2,
+    input wire [`PREG_RANGE] debug_preg3,
+    input wire [`PREG_RANGE] debug_preg4,
+    input wire [`PREG_RANGE] debug_preg5,
+    input wire [`PREG_RANGE] debug_preg6,
+    input wire [`PREG_RANGE] debug_preg7,
+    input wire [`PREG_RANGE] debug_preg8,
+    input wire [`PREG_RANGE] debug_preg9,
+    input wire [`PREG_RANGE] debug_preg10,
+    input wire [`PREG_RANGE] debug_preg11,
+    input wire [`PREG_RANGE] debug_preg12,
+    input wire [`PREG_RANGE] debug_preg13,
+    input wire [`PREG_RANGE] debug_preg14,
+    input wire [`PREG_RANGE] debug_preg15,
+    input wire [`PREG_RANGE] debug_preg16,
+    input wire [`PREG_RANGE] debug_preg17,
+    input wire [`PREG_RANGE] debug_preg18,
+    input wire [`PREG_RANGE] debug_preg19,
+    input wire [`PREG_RANGE] debug_preg20,
+    input wire [`PREG_RANGE] debug_preg21,
+    input wire [`PREG_RANGE] debug_preg22,
+    input wire [`PREG_RANGE] debug_preg23,
+    input wire [`PREG_RANGE] debug_preg24,
+    input wire [`PREG_RANGE] debug_preg25,
+    input wire [`PREG_RANGE] debug_preg26,
+    input wire [`PREG_RANGE] debug_preg27,
+    input wire [`PREG_RANGE] debug_preg28,
+    input wire [`PREG_RANGE] debug_preg29,
+    input wire [`PREG_RANGE] debug_preg30,
+    input wire [`PREG_RANGE] debug_preg31
 );
     //wb free busy_table
     wire intwb2bt_free_instr0rd_en =   intwb_instr_valid &&  intwb_need_to_wb;         
@@ -161,6 +214,9 @@ module isu_top #(
     wire [DATA_WIDTH-1:0] disp2intisq_instr0_enq_data;
     wire [CONDITION_WIDTH-1:0] disp2intisq_instr0_enq_condition;
 
+    wire [DATA_WIDTH-1:0]      deq_data;
+    wire [CONDITION_WIDTH-1:0] deq_condition;
+    wire [INDEX_WIDTH-1:0]     deq_index;
 
     dispatch u_dispatch(
         .clock                            (clock                            ),
@@ -314,30 +370,59 @@ int_isq
     .INDEX_WIDTH     (INDEX_WIDTH     ),
     .DEPTH           (DEPTH           )
 )
-u_int_isq(
-    .clock                 (clock                 ),
-    .reset_n               (reset_n               ),
-    .enq_data              (enq_data              ),
-    .enq_condition         (enq_condition         ),
-    .enq_valid             (enq_valid             ),
-    .enq_ready             (enq_ready             ),
-    .deq_data              (deq_data              ),
-    .deq_condition         (deq_condition         ),
-    .deq_index             (deq_index             ),
-    .deq_valid             (deq_valid             ),
-    .deq_ready             (deq_ready             ),
-    .writeback0_valid      (writeback0_valid      ),
-    .writeback0_need_to_wb (writeback0_need_to_wb ),
-    .writeback0_prd        (writeback0_prd        ),
-    .writeback1_valid      (writeback1_valid      ),
-    .writeback1_need_to_wb (writeback1_need_to_wb ),
-    .writeback1_prd        (writeback1_prd        ),
-    .flush_valid           (flush_valid           ),
-    .flush_robid           (flush_robid           ),
-    .intisq_can_enq        (intisq_can_enq        ),
-    .intisq_instr0_is_load        (intisq_instr0_is_load        ),
-    .intisq_instr0_is_store       (intisq_instr0_is_store       )
+u_int_isq                          (
+    .clock                         (clock                        ),
+    .reset_n                       (reset_n                      ),
+    .enq_data                      (enq_data                     ),
+    .enq_condition                 (enq_condition                ),
+    .enq_valid                     (enq_valid                    ),
+    .enq_ready                     (enq_ready                    ),
+    .deq_data                      (deq_data                     ),
+    .deq_condition                 (deq_condition                ),
+    .deq_index                     (deq_index                    ),
+    .deq_valid                     (deq_valid                    ),
+    .deq_ready                     (deq_ready                    ),
+    .writeback0_valid              (writeback0_valid             ),
+    .writeback0_need_to_wb         (writeback0_need_to_wb        ),
+    .writeback0_prd                (writeback0_prd               ),
+    .writeback1_valid              (writeback1_valid             ),
+    .writeback1_need_to_wb         (writeback1_need_to_wb        ),
+    .writeback1_prd                (writeback1_prd               ),
+    .flush_valid                   (flush_valid                  ),
+    .flush_robid                   (flush_robid                  ),
+    .intisq_can_enq                (intisq_can_enq               )
 );
+// Decode each field of deq_data:
+    assign isu2exu_instr0_robid        = deq_data[247:241];
+    assign isu2exu_instr0_pc           = deq_data[240:177];
+    assign isu2exu_instr0              = deq_data[176:145];
+    assign isu2exu_instr0_lrs1         = deq_data[144:140];
+    assign isu2exu_instr0_lrs2         = deq_data[139:135];
+    assign isu2exu_instr0_lrd          = deq_data[134:130];
+    assign isu2exu_instr0_prd          = deq_data[129:124];
+    assign isu2exu_instr0_old_prd      = deq_data[123:118];
+    assign isu2exu_instr0_need_to_wb   = deq_data[117];
+    assign isu2exu_instr0_prs1         = deq_data[116:111];
+    assign isu2exu_instr0_prs2         = deq_data[110:105];
+    assign isu2exu_instr0_src1_is_reg  = deq_data[104];
+    assign isu2exu_instr0_src2_is_reg  = deq_data[103];
+    assign isu2exu_instr0_imm          = deq_data[102:39];
+    assign isu2exu_instr0_cx_type      = deq_data[38:33];
+    assign isu2exu_instr0_is_unsigned  = deq_data[32];
+    assign isu2exu_instr0_alu_type     = deq_data[31:21];
+    assign isu2exu_instr0_muldiv_type  = deq_data[20:8];
+    assign isu2exu_instr0_is_word      = deq_data[7];
+    assign isu2exu_instr0_is_imm       = deq_data[6];
+    assign isu2exu_instr0_is_load      = deq_data[5];
+    assign isu2exu_instr0_is_store     = deq_data[4];
+    assign isu2exu_instr0_ls_size      = deq_data[3:0];
+
+   // assign isu2exu_instr0_is_load = deq_valid && isu2exu_instr0_is_load;
+   // assign isu2exu_instr0_is_store = deq_valid && isu2exu_instr0_is_store;
+    wire intisq2prf_instr0_src1_is_reg = deq_valid && isu2exu_instr0_src1_is_reg;
+    wire intisq2prf_inst0_prs1         = {6{deq_valid}} & isu2exu_instr0_prs1;
+    wire intisq2prf_instr0_src2_is_reg = deq_valid && isu2exu_instr0_src2_is_reg;
+    wire intisq2prf_inst0_prs2         = {6{deq_valid}} & isu2exu_instr0_prs2; 
 
 
 busy_table u_busy_table(
@@ -370,6 +455,55 @@ busy_table u_busy_table(
     .walking_complete1           (walking_complete1           )
 );
 
+pregfile_64x64_2r2w u_pregfile_64x64_2r2w(
+    .clk          (clk          ),
+    .reset_n      (reset_n      ),
+    .wren0        (wren0        ),
+    .waddr0       (waddr0       ),
+    .wdata0       (wdata0       ),
+    .wren1        (wren1        ),
+    .waddr1       (waddr1       ),
+    .wdata1       (wdata1       ),
+    //READ PORT
+    .rden0        (intisq2prf_instr0_src1_is_reg        ),
+    .raddr0       (intisq2prf_inst0_prs1       ),
+    .rdata0       (prf2exu_src1       ),
+    .rden1        (intisq2prf_instr0_src2_is_re        ),
+    .raddr1       (intisq2prf_inst0_prs2       ),
+    .rdata1       (prf2exu_src2       ),
+    .debug_preg0  (debug_preg0  ),
+    .debug_preg1  (debug_preg1  ),
+    .debug_preg2  (debug_preg2  ),
+    .debug_preg3  (debug_preg3  ),
+    .debug_preg4  (debug_preg4  ),
+    .debug_preg5  (debug_preg5  ),
+    .debug_preg6  (debug_preg6  ),
+    .debug_preg7  (debug_preg7  ),
+    .debug_preg8  (debug_preg8  ),
+    .debug_preg9  (debug_preg9  ),
+    .debug_preg10 (debug_preg10 ),
+    .debug_preg11 (debug_preg11 ),
+    .debug_preg12 (debug_preg12 ),
+    .debug_preg13 (debug_preg13 ),
+    .debug_preg14 (debug_preg14 ),
+    .debug_preg15 (debug_preg15 ),
+    .debug_preg16 (debug_preg16 ),
+    .debug_preg17 (debug_preg17 ),
+    .debug_preg18 (debug_preg18 ),
+    .debug_preg19 (debug_preg19 ),
+    .debug_preg20 (debug_preg20 ),
+    .debug_preg21 (debug_preg21 ),
+    .debug_preg22 (debug_preg22 ),
+    .debug_preg23 (debug_preg23 ),
+    .debug_preg24 (debug_preg24 ),
+    .debug_preg25 (debug_preg25 ),
+    .debug_preg26 (debug_preg26 ),
+    .debug_preg27 (debug_preg27 ),
+    .debug_preg28 (debug_preg28 ),
+    .debug_preg29 (debug_preg29 ),
+    .debug_preg30 (debug_preg30 ),
+    .debug_preg31 (debug_preg31 )
+);
 
 
 endmodule
