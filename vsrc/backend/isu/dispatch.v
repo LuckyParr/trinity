@@ -1,8 +1,5 @@
-module dispatch #(
-    parameter DATA_WIDTH = 248,
-    parameter CONDITION_WIDTH = 2,
-    parameter INDEX_WIDTH     = 4
-)(
+module dispatch 
+(
     input  wire               clock,
     input  wire               reset_n,
     /* ---------------------------instr0 from rename  --------------------------- */
@@ -32,6 +29,9 @@ module dispatch #(
     input wire                      instr0_is_load,
     input wire                      instr0_is_store,
     input wire [               3:0] instr0_ls_size,
+    input wire                iru2isu_instr0_predicttaken,
+    input wire [31:0]         iru2isu_instr0_predicttarge,
+
 
     /* ---------------------------instr1 from rename  --------------------------- */
     input  wire               iru2isu_instr1_valid,
@@ -60,6 +60,9 @@ module dispatch #(
     input wire                      instr1_is_load,
     input wire                      instr1_is_store,
     input wire [               3:0] instr1_ls_size,
+    input wire                iru2isu_instr1_predicttaken,
+    input wire [31:0]         iru2isu_instr1_predicttarge,
+
 
     /* ------------------------------ port with rob ----------------------------- */
     //signal from rob
@@ -89,8 +92,8 @@ module dispatch #(
     input wire intisq_can_enq,
     output wire disp2intisq_enq_valid,
     input wire intisq2disp_enq_ready,//useless
-    output wire [DATA_WIDTH-1:0]disp2intisq_instr0_enq_data,
-    output wire [CONDITION_WIDTH-1:0] disp2intisq_instr0_enq_condition,
+    output wire [`ISU_DATA_WIDTH-1:0]disp2intisq_instr0_enq_data,
+    output wire [`ISQ_CONDITION_WIDTH-1:0] disp2intisq_instr0_enq_condition,
 
     /* -------------------------- port with busy_table -------------------------- */
     // Read Port 0
@@ -172,6 +175,8 @@ assign disp2bt_instr1rs2_rdaddr = instr1_prs2; //use to set sleep bit in issue q
 assign disp2isq_instr0_wren = iru2isu_instr0_valid;
 assign disp2intisq_instr0_enq_data = 
                         {
+                        iru2isu_instr0_predicttaken,  //1  [280:280]
+                        iru2isu_instr0_predicttarge, //32  [279:248]
                         rob2disp_instr_robid ,//7   //[247 : 241]
                         instr0_pc         ,//64  //[240 : 177]         
                         instr0            ,//32  //[176 : 145]         

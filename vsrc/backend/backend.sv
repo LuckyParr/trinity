@@ -31,7 +31,7 @@ module backend #(
     output        [5:0] commit0_robid,
     output              commit0_skip,
     
-    // 内存总线接口
+    // TBUS 
     output              tbus_index_valid,
     input               tbus_index_ready,
     output       [31:0] tbus_index,
@@ -41,10 +41,9 @@ module backend #(
     input               tbus_operation_done,
     output              tbus_operation_type,
     
-    // 数据缓存控制
     output              mem2dcache_flush,
     
-    // 分支预测更新接口
+    //bht btb port
     output              intwb_bjusb_bht_write_enable,
     output        [9:0] intwb_bjusb_bht_write_index,
     output              intwb_bjusb_bht_write_counter_select,
@@ -57,42 +56,76 @@ module backend #(
     output        [9:0] intwb_bjusb_btb_write_index,
     output       [47:0] intwb_bjusb_btb_din,
     
-    // 重定向接口
     output              intwb_redirect_valid,
-    output       [31:0] intwb_redirect_target,
+    output       [31:0] intwb_redirect_target
     
-    // 调试接口
-    output       [31:0] debug_preg0,
-    output       [31:0] debug_preg1,
-    // ... 其他debug_preg信号到31
-    output       [31:0] debug_preg31
 );
+//---------------- internal signals ----------------//
 
-//---------------- 内部线网声明 ----------------//
+/* --------------------- arch_rat : 32 arch regfile content -------------------- */
+    wire [`PREG_RANGE] debug_preg0;
+    wire [`PREG_RANGE] debug_preg1;
+    wire [`PREG_RANGE] debug_preg2;
+    wire [`PREG_RANGE] debug_preg3;
+    wire [`PREG_RANGE] debug_preg4;
+    wire [`PREG_RANGE] debug_preg5;
+    wire [`PREG_RANGE] debug_preg6;
+    wire [`PREG_RANGE] debug_preg7;
+    wire [`PREG_RANGE] debug_preg8;
+    wire [`PREG_RANGE] debug_preg9;
+    wire [`PREG_RANGE] debug_preg10;
+    wire [`PREG_RANGE] debug_preg11;
+    wire [`PREG_RANGE] debug_preg12;
+    wire [`PREG_RANGE] debug_preg13;
+    wire [`PREG_RANGE] debug_preg14;
+    wire [`PREG_RANGE] debug_preg15;
+    wire [`PREG_RANGE] debug_preg16;
+    wire [`PREG_RANGE] debug_preg17;
+    wire [`PREG_RANGE] debug_preg18;
+    wire [`PREG_RANGE] debug_preg19;
+    wire [`PREG_RANGE] debug_preg20;
+    wire [`PREG_RANGE] debug_preg21;
+    wire [`PREG_RANGE] debug_preg22;
+    wire [`PREG_RANGE] debug_preg23;
+    wire [`PREG_RANGE] debug_preg24;
+    wire [`PREG_RANGE] debug_preg25;
+    wire [`PREG_RANGE] debug_preg26;
+    wire [`PREG_RANGE] debug_preg27;
+    wire [`PREG_RANGE] debug_preg28;
+    wire [`PREG_RANGE] debug_preg29;
+    wire [`PREG_RANGE] debug_preg30;
+    wire [`PREG_RANGE] debug_preg31;
+
 // IDU <-> IRU
+wire              iru2idu_instr_ready;
 wire              idu2iru_instr_valid;
-wire       [31:0] idu_instr;
-wire       [31:0] idu_pc;
-wire        [4:0] idu_lrs1;
-wire        [4:0] idu_lrs2;
-wire        [4:0] idu_lrd;
-wire       [31:0] idu_imm;
-wire              idu_src1_is_reg;
-wire              idu_src2_is_reg;
-wire              idu_need_to_wb;
-wire        [2:0] idu_cx_type;
-wire              idu_is_unsigned;
-wire        [3:0] idu_alu_type;
-wire              idu_is_word;
-wire              idu_is_load;
-wire              idu_is_imm;
-wire              idu_is_store;
-wire        [1:0] idu_ls_size;
-wire        [2:0] idu_muldiv_type;
-wire        [5:0] idu_prs1;
-wire        [5:0] idu_prs2;
-wire        [5:0] idu_prd;
-wire        [5:0] idu_old_prd;
+wire       [31:0] idu2iru_instr;
+wire       [31:0] idu2iru_pc;
+wire        [4:0] idu2iru_lrs1;
+wire        [4:0] idu2iru_lrs2;
+wire        [4:0] idu2iru_lrd;
+wire       [31:0] idu2iru_imm;
+wire              idu2iru_src1_is_reg;
+wire              idu2iru_src2_is_reg;
+wire              idu2iru_need_to_wb;
+wire        [2:0] idu2iru_cx_type;
+wire              idu2iru_is_unsigned;
+wire        [3:0] idu2iru_alu_type;
+wire              idu2iru_is_word;
+wire              idu2iru_is_load;
+wire              idu2iru_is_imm;
+wire              idu2iru_is_store;
+wire        [1:0] idu2iru_ls_size;
+wire        [2:0] idu2iru_muldiv_type;
+wire        [5:0] idu2iru_prs1;
+wire        [5:0] idu2iru_prs2;
+wire        [5:0] idu2iru_prd;
+wire        [5:0] idu2iru_old_prd;
+wire              idu2iru_instr0_predicttaken_out;
+wire [31:0]       idu2iru_instr0_predicttarge_out;
+wire              iru2isu_instr0_predicttaken_out;
+wire [31:0]       iru2isu_instr0_predicttarge_out;
+
 
 // IRU <-> ISU
 wire              iru2isu_instr0_valid;
@@ -183,6 +216,7 @@ assign instr_goto_memblock = isu2exu_instr0_is_store || isu2exu_instr0_is_load;
 assign int_instr_valid = deq_valid && ~instr_goto_memblock;
 assign mem_instr_valid = deq_valid && instr_goto_memblock;
 
+//TODO add _instr0_ to output port
 idu_top u_idu_top(
     .clock                     (clock                     ),
     .reset_n                   (reset_n                   ),
@@ -196,31 +230,33 @@ idu_top u_idu_top(
     .flush_valid               (flush_valid               ),
     .iru2idu_instr_ready       (iru2idu_instr_ready       ),
     .idu2iru_instr_valid       (idu2iru_instr_valid       ),
-    .idu_instr                 (idu_instr                 ),
-    .idu_pc                    (idu_pc                    ),
-    .idu_lrs1                  (idu_lrs1                  ),
-    .idu_lrs2                  (idu_lrs2                  ),
-    .idu_lrd                   (idu_lrd                   ),
-    .idu_imm                   (idu_imm                   ),
-    .idu_src1_is_reg           (idu_src1_is_reg           ),
-    .idu_src2_is_reg           (idu_src2_is_reg           ),
-    .idu_need_to_wb            (idu_need_to_wb            ),
-    .idu_cx_type               (idu_cx_type               ),
-    .idu_is_unsigned           (idu_is_unsigned           ),
-    .idu_alu_type              (idu_alu_type              ),
-    .idu_is_word               (idu_is_word               ),
-    .idu_is_load               (idu_is_load               ),
-    .idu_is_imm                (idu_is_imm                ),
-    .idu_is_store              (idu_is_store              ),
-    .idu_ls_size               (idu_ls_size               ),
-    .idu_muldiv_type           (idu_muldiv_type           ),
-    .idu_prs1                  (idu_prs1                  ),
-    .idu_prs2                  (idu_prs2                  ),
-    .idu_prd                   (idu_prd                   ),
-    .idu_old_prd               (idu_old_prd               )
+    .idu2iru_instr                 (idu2iru_instr                 ),
+    .idu2iru_pc                    (idu2iru_pc                    ),
+    .idu2iru_lrs1                  (idu2iru_lrs1                  ),
+    .idu2iru_lrs2                  (idu2iru_lrs2                  ),
+    .idu2iru_lrd                   (idu2iru_lrd                   ),
+    .idu2iru_imm                   (idu2iru_imm                   ),
+    .idu2iru_src1_is_reg           (idu2iru_src1_is_reg           ),
+    .idu2iru_src2_is_reg           (idu2iru_src2_is_reg           ),
+    .idu2iru_need_to_wb            (idu2iru_need_to_wb            ),
+    .idu2iru_cx_type               (idu2iru_cx_type               ),
+    .idu2iru_is_unsigned           (idu2iru_is_unsigned           ),
+    .idu2iru_alu_type              (idu2iru_alu_type              ),
+    .idu2iru_is_word               (idu2iru_is_word               ),
+    .idu2iru_is_load               (idu2iru_is_load               ),
+    .idu2iru_is_imm                (idu2iru_is_imm                ),
+    .idu2iru_is_store              (idu2iru_is_store              ),
+    .idu2iru_ls_size               (idu2iru_ls_size               ),
+    .idu2iru_muldiv_type           (idu2iru_muldiv_type           ),
+    .idu2iru_prs1                  (idu2iru_prs1                  ),
+    .idu2iru_prs2                  (idu2iru_prs2                  ),
+    .idu2iru_prd                   (idu2iru_prd                   ),
+    .idu2iru_old_prd               (idu2iru_old_prd               ),
+    .idu2iru_instr0_predicttaken_out      (idu2iru_instr0_predicttaken_out),
+    .idu2iru_instr0_predicttarge_out      (idu2iru_instr0_predicttarge_out)
 );
 
-
+//TODO add idu2iru/ iru2isu prefix
 iru_top u_iru_top(
     .clock                  (clock                  ),
     .reset_n                (reset_n                ),
@@ -254,6 +290,8 @@ iru_top u_iru_top(
     .instr0_is_load         (idu_instr0_is_load         ),
     .instr0_is_store        (idu_instr0_is_store        ),
     .instr0_ls_size         (idu_instr0_ls_size         ),
+    .idu2iru_instr0_predicttaken_out (idu2iru_instr0_predicttaken_out),
+    .idu2iru_instr0_predicttarge_out (idu2iru_instr0_predicttarge_out),
     .idu2iru_instr1_valid   (),
     .iru2idu_instr1_ready   (),
     .instr1                 (),
@@ -274,6 +312,8 @@ iru_top u_iru_top(
     .instr1_is_load         (),
     .instr1_is_store        (),
     .instr1_ls_size         (),
+    .idu2iru_instr1_predicttaken_out (),
+    .idu2iru_instr1_predicttarge_out (),
     .rob_state              (rob_state              ),
     .walking_valid0         (walking_valid0         ),
     .walking_valid1         (walking_valid1         ),
@@ -306,6 +346,8 @@ iru_top u_iru_top(
     .iru_instr0_prs2        (iru_instr0_prs2        ),
     .iru_instr0_prd         (iru_instr0_prd         ),
     .iru_instr0_old_prd     (iru_instr0_old_prd     ),
+    .iru2isu_instr0_predicttaken_out (iru2isu_instr0_predicttaken_out),
+    .iru2isu_instr0_predicttarge_out (iru2isu_instr0_predicttarge_out),
     .debug_preg0            (debug_preg0            ),
     .debug_preg1            (debug_preg1            ),
     .debug_preg2            (debug_preg2            ),

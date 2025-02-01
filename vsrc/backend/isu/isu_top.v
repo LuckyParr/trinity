@@ -31,6 +31,10 @@ module isu_top #(
     input  wire               instr0_is_load,
     input  wire               instr0_is_store,
     input  wire [        3:0] instr0_ls_size,
+    input wire                iru2isu_instr0_predicttaken,
+    input wire [31:0]         iru2isu_instr0_predicttarge,
+
+
 
     input  wire               iru2isu_instr1_valid,
     output wire               isu2iru_instr1_ready,
@@ -46,7 +50,7 @@ module isu_top #(
     input  wire [`PREG_RANGE]  instr1_prs2,
     input  wire               instr1_src1_is_reg,
     input  wire               instr1_src2_is_reg,
-    input  wire [       63:0] instr1_imm,
+    input  wire [       63:0       ] instr1_imm,
     input  wire [    `CX_TYPE_RANGE] instr1_cx_type,
     input  wire               instr1_is_unsigned,
     input  wire [   `ALU_TYPE_RANGE] instr1_alu_type,
@@ -56,6 +60,9 @@ module isu_top #(
     input  wire               instr1_is_load,
     input  wire               instr1_is_store,
     input  wire [        3:0] instr1_ls_size,
+    input wire                iru2isu_instr1_predicttaken,
+    input wire [31:0]         iru2isu_instr1_predicttarge,
+
 
     // Writeback inputs
     input  wire                     intwb_instr_valid,
@@ -68,8 +75,6 @@ module isu_top #(
     input  wire [`PREG_RANGE]        memwb_prd,
     input  wire                     memwb_need_to_wb,
     input  wire                     memwb_mmio_valid,
-
-  
 
     // Flush inputs
     input  wire                     flush_valid,
@@ -245,7 +250,7 @@ module isu_top #(
         .instr0_is_load                   (instr0_is_load                   ),
         .instr0_is_store                  (instr0_is_store                  ),
         .instr0_ls_size                   (instr0_ls_size                   ),
-        .iru2isu_instr1_valid           (),
+        .iru2isu_instr1_valid             (),
         .isu2iru_instr1_ready             (),
         .instr1_pc                        (),
         .instr1                           (),

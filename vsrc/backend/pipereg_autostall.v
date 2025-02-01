@@ -35,9 +35,11 @@ module pipereg_autostall (
     input wire [`RESULT_RANGE] alu_result,
     input wire [`RESULT_RANGE] bju_result,
     input wire [`RESULT_RANGE] muldiv_result,
-
-    //note: dont not to fill until mem stage done
     input wire [`RESULT_RANGE] opload_read_data_wb,
+
+    input  wire                predicttaken_out,
+    input  wire [31:0]         predicttarget_out,
+ 
 
     // outputs
     output reg                instr_valid_to_lower,
@@ -73,6 +75,9 @@ module pipereg_autostall (
     output reg [`RESULT_RANGE] lower_bju_result,
     output reg [`RESULT_RANGE] lower_muldiv_result,
     output reg [`RESULT_RANGE] lower_opload_read_data_wb,
+    
+    output  wire                lower_predicttaken_out,
+    output  wire [31:0]         lower_predicttarget_out,
     //flush
     input flush_valid
 
@@ -112,8 +117,11 @@ module pipereg_autostall (
             lower_prs2                <= 'b0;
             lower_prd                 <= 'b0;
             lower_old_prd             <= 'b0;
+
+            predicttaken_out          <= 'b0;
+            predicttarget_out         <= 'b0;
         end else if (in_fire) begin
-            instr_valid_to_lower         <= instr_valid_from_upper;
+            instr_valid_to_lower      <= instr_valid_from_upper;
             lower_lrs1                <= lrs1;
             lower_lrs2                <= lrs2;
             lower_lrd                 <= lrd;
@@ -141,6 +149,9 @@ module pipereg_autostall (
             lower_prs2                <= prs2;
             lower_prd                 <= prd;
             lower_old_prd             <= old_prd;
+            
+            lower_predicttaken_out    <= predicttaken;
+            lower_predicttarget_out   <= predicttarge;
         end else if(lower_fire)begin
             instr_valid_to_lower         <= 'b0;
             //not need to assign other output signals, so they are automatically stalled(latched)
