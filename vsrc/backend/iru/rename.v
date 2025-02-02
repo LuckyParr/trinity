@@ -3,7 +3,7 @@ module rename #()
     //instr 0 from decoder after pipereg
     input  wire               instr0_valid,
     output wire               instr0_ready,
-    input  wire [       31:0] instr0,
+    input  wire [       31:0] instr0_instr,
     input  wire [`LREG_RANGE] instr0_lrs1,
     input  wire [`LREG_RANGE] instr0_lrs2,
     input  wire [`LREG_RANGE] instr0_lrd,
@@ -22,11 +22,13 @@ module rename #()
     input wire                      instr0_is_load,
     input wire                      instr0_is_store,
     input wire [               3:0] instr0_ls_size,
+    input wire                      instr0_predicttaken,
+    input wire [31:0]               instr0_predicttarget,
 
     //instr 1 from decoder after pipereg
     input wire                instr1_valid,
     output wire               instr1_ready,
-    input wire [       31:0] instr1,
+    input wire [       31:0] instr1_instr,
     input wire [`LREG_RANGE] instr1_lrs1,
     input wire [`LREG_RANGE] instr1_lrs2,
     input wire [`LREG_RANGE] instr1_lrd,
@@ -46,6 +48,9 @@ module rename #()
     input wire       instr1_is_load,
     input wire       instr1_is_store,
     input wire [3:0] instr1_ls_size,
+    input wire                      instr1_predicttaken,
+    input wire [31:0]               instr1_predicttarget,
+
 
 /* --------------------------- port with spec_rat --------------------------- */
     //instr0
@@ -102,7 +107,7 @@ module rename #()
     output wire [ `LREG_RANGE      ] rn2pipe_instr0_lrs2,
     output wire [ `LREG_RANGE      ] rn2pipe_instr0_lrd,
     output wire [   `PC_RANGE      ] rn2pipe_instr0_pc,
-    output wire [`INSTR_RANGE      ] rn2pipe_instr0,
+    output wire [`INSTR_RANGE      ] rn2pipe_instr0_instr,
     output wire [              63:0] rn2pipe_instr0_imm,
     output wire                      rn2pipe_instr0_src1_is_reg,
     output wire                      rn2pipe_instr0_src2_is_reg,
@@ -117,6 +122,9 @@ module rename #()
     output wire                      rn2pipe_instr0_is_store,
     output wire [               3:0] rn2pipe_instr0_ls_size,
     output wire [`PREG_RANGE       ] rn2pipe_instr0_old_prd,
+    output wire                      rn2pipe_instr0_predicttaken,
+    output wire [31:0]               rn2pipe_instr0_predicttarget,
+
 
     //prs1/prs2/prd
     output wire [`PREG_RANGE] rn2pipe_instr1_prs1,
@@ -129,7 +137,7 @@ module rename #()
     output wire [ `LREG_RANGE      ] rn2pipe_instr1_lrs2,
     output wire [ `LREG_RANGE      ] rn2pipe_instr1_lrd,
     output wire [   `PC_RANGE      ] rn2pipe_instr1_pc,
-    output wire [`INSTR_RANGE      ] rn2pipe_instr1,
+    output wire [`INSTR_RANGE      ] rn2pipe_instr1_instr,
     output wire [              63:0] rn2pipe_instr1_imm,
     output wire                      rn2pipe_instr1_src1_is_reg,
     output wire                      rn2pipe_instr1_src2_is_reg,
@@ -143,7 +151,10 @@ module rename #()
     output wire                      rn2pipe_instr1_is_load,
     output wire                      rn2pipe_instr1_is_store,
     output wire [               3:0] rn2pipe_instr1_ls_size,
-    output wire [`PREG_RANGE       ] rn2pipe_instr1_old_prd
+    output wire [`PREG_RANGE       ] rn2pipe_instr1_old_prd,
+    output wire                      rn2pipe_instr1_predicttaken,
+    output wire [31:0]               rn2pipe_instr1_predicttarget
+
 );
 
     assign instr0_ready = pipe2rn_instr0_ready;
@@ -245,7 +256,7 @@ assign rn2specrat_instr1_lrd_wrdata = fl2rn_instr1prd;
     assign rn2pipe_instr0_lrs2        = instr0_lrs2;
     assign rn2pipe_instr0_lrd         = instr0_lrd;
     assign rn2pipe_instr0_pc          = instr0_pc;
-    assign rn2pipe_instr0             = instr0;
+    assign rn2pipe_instr0_instr       = instr0_instr;
     assign rn2pipe_instr0_old_prd     = specrat2rn_instr0prd;
 
     assign rn2pipe_instr0_imm         = instr0_imm;
@@ -261,6 +272,9 @@ assign rn2specrat_instr1_lrd_wrdata = fl2rn_instr1prd;
     assign rn2pipe_instr0_is_load     = instr0_is_load;
     assign rn2pipe_instr0_is_store    = instr0_is_store;
     assign rn2pipe_instr0_ls_size     = instr0_ls_size;
+    assign rn2pipe_instr0_predicttaken  = instr0_predicttaken;
+    assign rn2pipe_instr0_predicttarget = instr0_predicttarget;
+
 
 
 
@@ -269,7 +283,7 @@ assign rn2specrat_instr1_lrd_wrdata = fl2rn_instr1prd;
     assign rn2pipe_instr1_lrs2        = instr1_lrs2;
     assign rn2pipe_instr1_lrd         = instr1_lrd;
     assign rn2pipe_instr1_pc          = instr1_pc;
-    assign rn2pipe_instr1             = instr1;
+    assign rn2pipe_instr1_instr             = instr1_instr;
     assign rn2pipe_instr1_old_prd     = specrat2rn_instr1prd;
 
     assign rn2pipe_instr1_imm         = instr1_imm;
@@ -285,6 +299,8 @@ assign rn2specrat_instr1_lrd_wrdata = fl2rn_instr1prd;
     assign rn2pipe_instr1_is_load     = instr1_is_load;
     assign rn2pipe_instr1_is_store    = instr1_is_store;
     assign rn2pipe_instr1_ls_size     = instr1_ls_size;
+    assign rn2pipe_instr1_predicttaken  = instr1_predicttaken;
+    assign rn2pipe_instr1_predicttarget = instr1_predicttarget;
 
 
 endmodule

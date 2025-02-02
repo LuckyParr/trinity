@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 module busy_table (
-    input wire clk,                         // Clock signal
+    input wire clock,                         // Clock signal
     input wire reset_n,                     // Active-low reset signal
 
     // Read Port 0
@@ -59,7 +59,7 @@ module busy_table (
     reg [63:0] busy_vector;
 
     // Synchronous write operations with active-low reset
-    always @(posedge clk) begin
+    always @(posedge clock) begin
         if (!reset_n | is_rollback) begin
             busy_vector <= 64'b0;
         end else begin

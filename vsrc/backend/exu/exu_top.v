@@ -58,8 +58,9 @@ module exu_top #(
     output wire                         intwb_need_to_wb,
     output wire [`PREG_RANGE]           intwb_prd,
     output wire [`RESULT_RANGE]         intwb_result,
-    output wire                         intwb_redirect_valid,
-    output wire [63:0]                  intwb_redirect_target,
+    output wire                         flush_valid,
+    output wire [63:0]                  flush_target,
+    output wire [`INSTR_ID_WIDTH-1:0]   flush_robid,
     output wire [`INSTR_ID_WIDTH-1:0]   intwb_robid,
     output wire [      `INSTR_RANGE ]   intwb_instr,
     output wire [         `PC_RANGE ]   intwb_pc,
@@ -70,7 +71,7 @@ module exu_top #(
     output wire [`PREG_RANGE]           memwb_prd,
     output wire                         memwb_need_to_wb,
     output wire                         memwb_mmio_valid,
-    output wire [`RESULT_RANGE]         memwb_opload_rddata,
+    output wire [`RESULT_RANGE]         memwb_result,
     output wire [      `INSTR_RANGE ]   memwb_instr,
     output wire [         `PC_RANGE ]   memwb_pc,
 
@@ -90,6 +91,8 @@ module exu_top #(
     // Dcache Flush
     output wire                         mem2dcache_flush
 );
+
+    assign flush_robid = intwb_robid;
 
     // Intblock internal signals
     wire                        intblock_out_instr_valid;
@@ -188,8 +191,8 @@ module exu_top #(
         .intwb_need_to_wb                       (intwb_need_to_wb),
         .intwb_prd                              (intwb_prd),
         .intwb_result                           (intwb_result),
-        .intwb_redirect_valid                   (intwb_redirect_valid),
-        .intwb_redirect_target                  (intwb_redirect_target),
+        .intwb_redirect_valid                   (flush_valid),
+        .intwb_redirect_target                  (flush_target),
         .intwb_robid                            (intwb_robid),
         .intwb_bjusb_bht_write_enable           (intwb_bjusb_bht_write_enable        ),
         .intwb_bjusb_bht_write_index            (intwb_bjusb_bht_write_index         ),
@@ -259,7 +262,7 @@ module exu_top #(
         .memwb_prd               (memwb_prd             ),
         .memwb_need_to_wb        (memwb_need_to_wb      ),
         .memwb_mmio_valid        (memwb_mmio_valid      ),
-        .memwb_opload_rddata     (memwb_opload_rddata   )
+        .memwb_opload_rddata     (memwb_result   )
                                                                 );
 
 endmodule
