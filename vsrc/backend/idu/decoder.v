@@ -124,7 +124,7 @@ module decoder (
             funct3           = ibuffer_inst_out[14:12];
             funct7           = ibuffer_inst_out[31:25];
             //when lrd = 0, no need to assign a new physical reg from freelist
-            lrd_is_not_zero  = |lrd;
+            lrd_is_not_zero  = |rd;
             case (opcode)
                 OPCODE_LUI: begin
                     imm               = imm_utype_64;

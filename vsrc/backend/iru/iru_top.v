@@ -263,9 +263,6 @@ module iru_top (
     //        Rename
     // ======================
     rename u_rename (
-
-        .clock                       (clock                                     ),
-        .reset_n                     (reset_n                                   ),
 /* ----------------------------------- iru ---------------------------------- */
         //input instr from iru
         .instr0_valid                (idu2iru_instr0_valid                      ),

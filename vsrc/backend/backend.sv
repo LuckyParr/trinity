@@ -1,4 +1,3 @@
-//complete core_top
 //compile and debug
 //remove redundant parameter and define
 module backend #(
@@ -15,7 +14,6 @@ module backend #(
     
     output                              flush_valid,
     output       [63:0]                 flush_target,
-    output       [`INSTR_ID_WIDTH-1:0]  flush_robid,          
         
     // TBUS 
     output              tbus_index_valid,
@@ -42,6 +40,7 @@ module backend #(
     output       [47:0] intwb_btb_din    
 );
 //---------------- internal signals ----------------//
+    wire       [`INSTR_ID_WIDTH-1:0]  flush_robid;
     // commit signals
     wire              commit0_valid     ;
     wire       [31:0] commit0_pc        ;
@@ -185,16 +184,15 @@ wire              intwb_instr_valid;
 wire        [5:0] intwb_robid;
 wire        [5:0] intwb_prd;
 wire              intwb_need_to_wb;
-wire [`RESULT_RANGE]     intwb_result,
+wire [`RESULT_RANGE]     intwb_result;
 
 wire              memwb_instr_valid;
-wire        [5:0] memwb_robid;
-wire        [5:0] memwb_prd;
-wire              memwb_need_to_wb;
-wire              memwb_mmio_valid;
-wire [`RESULT_RANGE]     memwb_result,
+wire        [5:0] memwb_robid      ;
+wire        [5:0] memwb_prd        ;
+wire              memwb_need_to_wb ;
+wire              memwb_mmio_valid ;
+wire [`RESULT_RANGE]     memwb_result;
 
-wire              exu_available;
 wire              deq_valid;
 wire              deq_ready;
 
@@ -211,7 +209,6 @@ wire              rob_walk1_complete;
 
 wire              int_instr_ready;
 wire              mem_instr_ready;
-wire              instr_goto_memblock;
 
 
 //TODO add _instr0_ to output port
@@ -254,289 +251,289 @@ idu_top u_idu_top(
 );
 
 //TODO add idu2iru/ iru2isu prefix
-iru_top u_iru_top(
-    .clock                  (clock                  ),
-    .reset_n                (reset_n                ),
-    .commit0_valid          (commit0_valid          ),
-    .commit0_need_to_wb     (commit0_need_to_wb     ),
-    .commit0_lrd            (commit0_lrd            ),
-    .commit0_new_prd        (commit0_new_prd        ),
-    .commit0_old_prd        (commit0_old_prd        ),
-    .commit1_valid          (commit1_valid          ),
-    .commit1_need_to_wb     (commit1_need_to_wb     ),
-    .commit1_lrd            (commit1_lrd            ),
-    .commit1_new_prd        (commit1_new_prd        ),
-    .commit1_old_prd        (commit1_old_prd        ),
-    .idu2iru_instr0_valid   (idu2iru_instr0_valid   ),
-    .iru2idu_instr0_ready   (iru2idu_instr0_ready   ),
-    .idu2iru_instr0_instr                 (idu2iru_instr0_instr                 ),//input
-    .idu2iru_instr0_lrs1            (idu2iru_instr0_lrs1            ),
-    .idu2iru_instr0_lrs2            (idu2iru_instr0_lrs2            ),
-    .idu2iru_instr0_lrd             (idu2iru_instr0_lrd             ),
-    .idu2iru_instr0_pc              (idu2iru_instr0_pc              ),
-    .idu2iru_instr0_imm             (idu2iru_instr0_imm             ),
-    .idu2iru_instr0_src1_is_reg     (idu2iru_instr0_src1_is_reg     ),
-    .idu2iru_instr0_src2_is_reg     (idu2iru_instr0_src2_is_reg     ),
-    .idu2iru_instr0_need_to_wb      (idu2iru_instr0_need_to_wb      ),
-    .idu2iru_instr0_cx_type         (idu2iru_instr0_cx_type         ),
-    .idu2iru_instr0_is_unsigned     (idu2iru_instr0_is_unsigned     ),
-    .idu2iru_instr0_alu_type        (idu2iru_instr0_alu_type        ),
-    .idu2iru_instr0_muldiv_type     (idu2iru_instr0_muldiv_type     ),
-    .idu2iru_instr0_is_word         (idu2iru_instr0_is_word         ),
-    .idu2iru_instr0_is_imm          (idu2iru_instr0_is_imm          ),
-    .idu2iru_instr0_is_load         (idu2iru_instr0_is_load         ),
-    .idu2iru_instr0_is_store        (idu2iru_instr0_is_store        ),
-    .idu2iru_instr0_ls_size         (idu2iru_instr0_ls_size         ),
-    .idu2iru_instr0_predicttaken    (idu2iru_instr0_predicttaken),
-    .idu2iru_instr0_predicttarget   (idu2iru_instr0_predicttarget),
-    .idu2iru_instr1_valid   (),
-    .iru2idu_instr1_ready   (),
-    .idu2iru_instr1_instr           (),
-    .idu2iru_instr1_lrs1            (),
-    .idu2iru_instr1_lrs2            (),
-    .idu2iru_instr1_lrd             (),
-    .idu2iru_instr1_pc              (),
-    .idu2iru_instr1_imm             (),
-    .idu2iru_instr1_src1_is_reg     (),
-    .idu2iru_instr1_src2_is_reg     (),
-    .idu2iru_instr1_need_to_wb      (),
-    .idu2iru_instr1_cx_type         (),
-    .idu2iru_instr1_is_unsigned     (),
-    .idu2iru_instr1_alu_type        (),
-    .idu2iru_instr1_muldiv_type     (),
-    .idu2iru_instr1_is_word         (),
-    .idu2iru_instr1_is_imm          (),
-    .idu2iru_instr1_is_load         (),
-    .idu2iru_instr1_is_store        (),
-    .idu2iru_instr1_ls_size         (),
-    .idu2iru_instr1_predicttaken (),
-    .idu2iru_instr1_predicttarge (),
-    .rob_state              (rob_state              ),
-    .walking_valid0         (walking_valid0         ),
-    .walking_valid1         (walking_valid1         ),
-    .walking_prd0           (walking_prd0           ),
-    .walking_prd1           (walking_prd1           ),
-    .walking_lrd0           (walking_lrd0           ),
-    .walking_lrd1           (walking_lrd1           ),
-    .flush_valid            (flush_valid            ),
-    .iru2isu_instr0_valid   (iru2isu_instr0_valid   ),
-    .isu2iru_instr0_ready   (isu2iru_instr0_ready   ),
-    .iru2isu_instr0_instr       (iru2isu_instr0_instr       ),//output
-    .iru2isu_instr0_pc          (iru2isu_instr0_pc          ),
-    .iru2isu_instr0_lrs1        (iru2isu_instr0_lrs1        ),
-    .iru2isu_instr0_lrs2        (iru2isu_instr0_lrs2        ),
-    .iru2isu_instr0_lrd         (iru2isu_instr0_lrd         ),
-    .iru2isu_instr0_imm         (iru2isu_instr0_imm         ),
-    .iru2isu_instr0_src1_is_reg (iru2isu_instr0_src1_is_reg ),
-    .iru2isu_instr0_src2_is_reg (iru2isu_instr0_src2_is_reg ),
-    .iru2isu_instr0_need_to_wb  (iru2isu_instr0_need_to_wb  ),
-    .iru2isu_instr0_cx_type     (iru2isu_instr0_cx_type     ),
-    .iru2isu_instr0_is_unsigned (iru2isu_instr0_is_unsigned ),
-    .iru2isu_instr0_alu_type    (iru2isu_instr0_alu_type    ),
-    .iru2isu_instr0_muldiv_type (iru2isu_instr0_muldiv_type ),
-    .iru2isu_instr0_is_word     (iru2isu_instr0_is_word     ),
-    .iru2isu_instr0_is_imm      (iru2isu_instr0_is_imm      ),
-    .iru2isu_instr0_is_load     (iru2isu_instr0_is_load     ),
-    .iru2isu_instr0_is_store    (iru2isu_instr0_is_store    ),
-    .iru2isu_instr0_ls_size     (iru2isu_instr0_ls_size     ),
-    .iru2isu_instr0_prs1        (iru2isu_instr0_prs1        ),
-    .iru2isu_instr0_prs2        (iru2isu_instr0_prs2        ),
-    .iru2isu_instr0_prd         (iru2isu_instr0_prd         ),
-    .iru2isu_instr0_old_prd     (iru2isu_instr0_old_prd     ),
-    .iru2isu_instr0_predicttaken (iru2isu_instr0_predicttaken),
-    .iru2isu_instr0_predicttarget (iru2isu_instr0_predicttarget),
-    .debug_preg0            (debug_preg0            ),
-    .debug_preg1            (debug_preg1            ),
-    .debug_preg2            (debug_preg2            ),
-    .debug_preg3            (debug_preg3            ),
-    .debug_preg4            (debug_preg4            ),
-    .debug_preg5            (debug_preg5            ),
-    .debug_preg6            (debug_preg6            ),
-    .debug_preg7            (debug_preg7            ),
-    .debug_preg8            (debug_preg8            ),
-    .debug_preg9            (debug_preg9            ),
-    .debug_preg10           (debug_preg10           ),
-    .debug_preg11           (debug_preg11           ),
-    .debug_preg12           (debug_preg12           ),
-    .debug_preg13           (debug_preg13           ),
-    .debug_preg14           (debug_preg14           ),
-    .debug_preg15           (debug_preg15           ),
-    .debug_preg16           (debug_preg16           ),
-    .debug_preg17           (debug_preg17           ),
-    .debug_preg18           (debug_preg18           ),
-    .debug_preg19           (debug_preg19           ),
-    .debug_preg20           (debug_preg20           ),
-    .debug_preg21           (debug_preg21           ),
-    .debug_preg22           (debug_preg22           ),
-    .debug_preg23           (debug_preg23           ),
-    .debug_preg24           (debug_preg24           ),
-    .debug_preg25           (debug_preg25           ),
-    .debug_preg26           (debug_preg26           ),
-    .debug_preg27           (debug_preg27           ),
-    .debug_preg28           (debug_preg28           ),
-    .debug_preg29           (debug_preg29           ),
-    .debug_preg30           (debug_preg30           ),
-    .debug_preg31           (debug_preg31           )
-);
+iru_top u_iru_top                   (
+    .clock                          (clock                                  ),
+    .reset_n                        (reset_n                                ),
+    .commit0_valid                  (commit0_valid                          ),
+    .commit0_need_to_wb             (commit0_need_to_wb                     ),
+    .commit0_lrd                    (commit0_lrd                            ),
+    .commit0_new_prd                (commit0_new_prd                        ),
+    .commit0_old_prd                (commit0_old_prd                        ),
+    .commit1_valid                  (commit1_valid                          ),
+    .commit1_need_to_wb             (commit1_need_to_wb                     ),
+    .commit1_lrd                    (commit1_lrd                            ),
+    .commit1_new_prd                (commit1_new_prd                        ),
+    .commit1_old_prd                (commit1_old_prd                        ),
+    .idu2iru_instr0_valid           (idu2iru_instr0_valid                   ),
+    .iru2idu_instr0_ready           (iru2idu_instr0_ready                   ),
+    .idu2iru_instr0_instr           (idu2iru_instr0_instr                   ),//input
+    .idu2iru_instr0_lrs1            (idu2iru_instr0_lrs1                    ),
+    .idu2iru_instr0_lrs2            (idu2iru_instr0_lrs2                    ),
+    .idu2iru_instr0_lrd             (idu2iru_instr0_lrd                     ),
+    .idu2iru_instr0_pc              (idu2iru_instr0_pc                      ),
+    .idu2iru_instr0_imm             (idu2iru_instr0_imm                     ),
+    .idu2iru_instr0_src1_is_reg     (idu2iru_instr0_src1_is_reg             ),
+    .idu2iru_instr0_src2_is_reg     (idu2iru_instr0_src2_is_reg             ),
+    .idu2iru_instr0_need_to_wb      (idu2iru_instr0_need_to_wb              ),
+    .idu2iru_instr0_cx_type         (idu2iru_instr0_cx_type                 ),
+    .idu2iru_instr0_is_unsigned     (idu2iru_instr0_is_unsigned             ),
+    .idu2iru_instr0_alu_type        (idu2iru_instr0_alu_type                ),
+    .idu2iru_instr0_muldiv_type     (idu2iru_instr0_muldiv_type             ),
+    .idu2iru_instr0_is_word         (idu2iru_instr0_is_word                 ),
+    .idu2iru_instr0_is_imm          (idu2iru_instr0_is_imm                  ),
+    .idu2iru_instr0_is_load         (idu2iru_instr0_is_load                 ),
+    .idu2iru_instr0_is_store        (idu2iru_instr0_is_store                ),
+    .idu2iru_instr0_ls_size         (idu2iru_instr0_ls_size                 ),
+    .idu2iru_instr0_predicttaken    (idu2iru_instr0_predicttaken            ),
+    .idu2iru_instr0_predicttarget   (idu2iru_instr0_predicttarget           ),
+    .idu2iru_instr1_valid           (                                       ),
+    .iru2idu_instr1_ready           (                                       ),
+    .idu2iru_instr1_instr           (                                       ),
+    .idu2iru_instr1_lrs1            (                                       ),
+    .idu2iru_instr1_lrs2            (                                       ),
+    .idu2iru_instr1_lrd             (                                       ),
+    .idu2iru_instr1_pc              (                                       ),
+    .idu2iru_instr1_imm             (                                       ),
+    .idu2iru_instr1_src1_is_reg     (                                       ),
+    .idu2iru_instr1_src2_is_reg     (                                       ),
+    .idu2iru_instr1_need_to_wb      (                                       ),
+    .idu2iru_instr1_cx_type         (                                       ),
+    .idu2iru_instr1_is_unsigned     (                                       ),
+    .idu2iru_instr1_alu_type        (                                       ),
+    .idu2iru_instr1_muldiv_type     (                                       ),
+    .idu2iru_instr1_is_word         (                                       ),
+    .idu2iru_instr1_is_imm          (                                       ),
+    .idu2iru_instr1_is_load         (                                       ),
+    .idu2iru_instr1_is_store        (                                       ),
+    .idu2iru_instr1_ls_size         (                                       ),
+    .idu2iru_instr1_predicttaken    (                                       ),
+    .idu2iru_instr1_predicttarget    (                                       ),
+    .rob_state                      (rob_state                              ),
+    .walking_valid0                 (walking_valid0                         ),
+    .walking_valid1                 (walking_valid1                         ),
+    .walking_prd0                   (walking_prd0                           ),
+    .walking_prd1                   (walking_prd1                           ),
+    .walking_lrd0                   (walking_lrd0                           ),
+    .walking_lrd1                   (walking_lrd1                           ),
+    .flush_valid                    (flush_valid                            ),
+    .iru2isu_instr0_valid           (iru2isu_instr0_valid                   ),
+    .isu2iru_instr0_ready           (isu2iru_instr0_ready                   ),
+    .iru2isu_instr0_instr           (iru2isu_instr0_instr                   ),//output
+    .iru2isu_instr0_pc              (iru2isu_instr0_pc                      ),
+    .iru2isu_instr0_lrs1            (iru2isu_instr0_lrs1                    ),
+    .iru2isu_instr0_lrs2            (iru2isu_instr0_lrs2                    ),
+    .iru2isu_instr0_lrd             (iru2isu_instr0_lrd                     ),
+    .iru2isu_instr0_imm             (iru2isu_instr0_imm                     ),
+    .iru2isu_instr0_src1_is_reg     (iru2isu_instr0_src1_is_reg             ),
+    .iru2isu_instr0_src2_is_reg     (iru2isu_instr0_src2_is_reg             ),
+    .iru2isu_instr0_need_to_wb      (iru2isu_instr0_need_to_wb              ),
+    .iru2isu_instr0_cx_type         (iru2isu_instr0_cx_type                 ),
+    .iru2isu_instr0_is_unsigned     (iru2isu_instr0_is_unsigned             ),
+    .iru2isu_instr0_alu_type        (iru2isu_instr0_alu_type                ),
+    .iru2isu_instr0_muldiv_type     (iru2isu_instr0_muldiv_type             ),
+    .iru2isu_instr0_is_word         (iru2isu_instr0_is_word                 ),
+    .iru2isu_instr0_is_imm          (iru2isu_instr0_is_imm                  ),
+    .iru2isu_instr0_is_load         (iru2isu_instr0_is_load                 ),
+    .iru2isu_instr0_is_store        (iru2isu_instr0_is_store                ),
+    .iru2isu_instr0_ls_size         (iru2isu_instr0_ls_size                 ),
+    .iru2isu_instr0_prs1            (iru2isu_instr0_prs1                    ),
+    .iru2isu_instr0_prs2            (iru2isu_instr0_prs2                    ),
+    .iru2isu_instr0_prd             (iru2isu_instr0_prd                     ),
+    .iru2isu_instr0_old_prd         (iru2isu_instr0_old_prd                 ),
+    .iru2isu_instr0_predicttaken    (iru2isu_instr0_predicttaken            ),
+    .iru2isu_instr0_predicttarget   (iru2isu_instr0_predicttarget           ),
+    .debug_preg0                    (debug_preg0                            ),
+    .debug_preg1                    (debug_preg1                            ),
+    .debug_preg2                    (debug_preg2                            ),
+    .debug_preg3                    (debug_preg3                            ),
+    .debug_preg4                    (debug_preg4                            ),
+    .debug_preg5                    (debug_preg5                            ),
+    .debug_preg6                    (debug_preg6                            ),
+    .debug_preg7                    (debug_preg7                            ),
+    .debug_preg8                    (debug_preg8                            ),
+    .debug_preg9                    (debug_preg9                            ),
+    .debug_preg10                   (debug_preg10                           ),
+    .debug_preg11                   (debug_preg11                           ),
+    .debug_preg12                   (debug_preg12                           ),
+    .debug_preg13                   (debug_preg13                           ),
+    .debug_preg14                   (debug_preg14                           ),
+    .debug_preg15                   (debug_preg15                           ),
+    .debug_preg16                   (debug_preg16                           ),
+    .debug_preg17                   (debug_preg17                           ),
+    .debug_preg18                   (debug_preg18                           ),
+    .debug_preg19                   (debug_preg19                           ),
+    .debug_preg20                   (debug_preg20                           ),
+    .debug_preg21                   (debug_preg21                           ),
+    .debug_preg22                   (debug_preg22                           ),
+    .debug_preg23                   (debug_preg23                           ),
+    .debug_preg24                   (debug_preg24                           ),
+    .debug_preg25                   (debug_preg25                           ),
+    .debug_preg26                   (debug_preg26                           ),
+    .debug_preg27                   (debug_preg27                           ),
+    .debug_preg28                   (debug_preg28                           ),
+    .debug_preg29                   (debug_preg29                           ),
+    .debug_preg30                   (debug_preg30                           ),
+    .debug_preg31                   (debug_preg31                           )
+                                                                            );
 
 
 isu_top u_isu_top                             (
-    .clock                                    (clock                      ),
-    .reset_n                                  (reset_n                    ),
-    .iru2isu_instr0_valid                     (iru2isu_instr0_valid       ),
-    .isu2iru_instr0_ready                     (isu2iru_instr0_ready       ),
-    .iru2isu_instr0_pc                        (iru2isu_instr0_pc                  ),
+    .clock                                    (clock                                    ),
+    .reset_n                                  (reset_n                                  ),
+    .iru2isu_instr0_valid                     (iru2isu_instr0_valid                     ),
+    .isu2iru_instr0_ready                     (isu2iru_instr0_ready                     ),
+    .iru2isu_instr0_pc                        (iru2isu_instr0_pc                        ),
     .iru2isu_instr0_instr                     (iru2isu_instr0_instr                     ),
-    .iru2isu_instr0_lrs1                      (iru2isu_instr0_lrs1                ),
-    .iru2isu_instr0_lrs2                      (iru2isu_instr0_lrs2                ),
-    .iru2isu_instr0_lrd                       (iru2isu_instr0_lrd                 ),
-    .iru2isu_instr0_prd                       (iru2isu_instr0_prd                 ),
-    .iru2isu_instr0_old_prd                   (iru2isu_instr0_old_prd             ),
-    .iru2isu_instr0_need_to_wb                (iru2isu_instr0_need_to_wb          ),
-    .iru2isu_instr0_prs1                      (iru2isu_instr0_prs1                ),
-    .iru2isu_instr0_prs2                      (iru2isu_instr0_prs2                ),
-    .iru2isu_instr0_src1_is_reg               (iru2isu_instr0_src1_is_reg         ),
-    .iru2isu_instr0_src2_is_reg               (iru2isu_instr0_src2_is_reg         ),
-    .iru2isu_instr0_imm                       (iru2isu_instr0_imm                 ),
-    .iru2isu_instr0_cx_type                   (iru2isu_instr0_cx_type             ),
-    .iru2isu_instr0_is_unsigned               (iru2isu_instr0_is_unsigned         ),
-    .iru2isu_instr0_alu_type                  (iru2isu_instr0_alu_type            ),
-    .iru2isu_instr0_muldiv_type               (iru2isu_instr0_muldiv_type         ),
-    .iru2isu_instr0_is_word                   (iru2isu_instr0_is_word             ),
-    .iru2isu_instr0_is_imm                    (iru2isu_instr0_is_imm              ),
-    .iru2isu_instr0_is_load                   (iru2isu_instr0_is_load             ),
-    .iru2isu_instr0_is_store                  (iru2isu_instr0_is_store            ),
-    .iru2isu_instr0_ls_size                   (iru2isu_instr0_ls_size             ),
-    .iru2isu_instr0_predicttaken              (iru2isu_instr0_predicttaken),
-    .iru2isu_instr0_predicttarget             (iru2isu_instr0_predicttarget),
-    .iru2isu_instr1_valid                     (),
-    .isu2iru_instr1_ready                     (),
-    .iru2isu_instr1_pc                        (),
-    .iru2isu_instr1_instr                     (),
-    .iru2isu_instr1_lrs1                      (),
-    .iru2isu_instr1_lrs2                      (),
-    .iru2isu_instr1_lrd                       (),
-    .iru2isu_instr1_prd                       (),
-    .iru2isu_instr1_old_prd                   (),
-    .iru2isu_instr1_need_to_wb                (),
-    .iru2isu_instr1_prs1                      (),
-    .iru2isu_instr1_prs2                      (),
-    .iru2isu_instr1_src1_is_reg               (),
-    .iru2isu_instr1_src2_is_reg               (),
-    .iru2isu_instr1_imm                       (),
-    .iru2isu_instr1_cx_type                   (),
-    .iru2isu_instr1_is_unsigned               (),
-    .iru2isu_instr1_alu_type                  (),
-    .iru2isu_instr1_muldiv_type               (),
-    .iru2isu_instr1_is_word                   (),
-    .iru2isu_instr1_is_imm                    (),
-    .iru2isu_instr1_is_load                   (),
-    .iru2isu_instr1_is_store                  (),
-    .iru2isu_instr1_ls_size                   (),
-    .iru2isu_instr0_predicttaken              (),
-    .iru2isu_instr0_predicttarget             (),
-    .intwb_instr_valid                        (intwb_instr_valid          ),//input
-    .intwb_robid                              (intwb_robid                ),//input
-    .intwb_prd                                (intwb_prd                  ),//input
-    .intwb_need_to_wb                         (intwb_need_to_wb           ),//input
-    .intwb_result                             (intwb_result)
-    .memwb_instr_valid                        (memwb_instr_valid          ),//input
-    .memwb_robid                              (memwb_robid                ),//input
-    .memwb_prd                                (memwb_prd                  ),//input
-    .memwb_need_to_wb                         (memwb_need_to_wb           ),//input
-    .memwb_mmio_valid                         (memwb_mmio_valid           ),//input
-    .memwb_result                             (memwb_result)
-    .flush_valid                              (flush_valid                ),//input
-    .flush_robid                              (flush_robid                ),//input
-    .commit0_valid                            (commit0_valid              ),//OUTUPT
-    .commit0_pc                               (commit0_pc                 ),//OUTUPT
-    .commit0_instr                            (commit0_instr              ),//OUTUPT
-    .commit0_lrd                              (commit0_lrd                ),//OUTUPT
-    .commit0_prd                              (commit0_prd                ),//OUTUPT
-    .commit0_old_prd                          (commit0_old_prd            ),//OUTUPT
-    .commit0_need_to_wb                       (commit0_need_to_wb         ),//OUTUPT
-    .commit0_robid                            (commit0_robid              ),//OUTUPT
-    .commit0_skip                             (commit0_skip               ),//OUTUPT
-    .commit1_valid                            (),
-    .commit1_pc                               (),
-    .commit1_instr                            (),
-    .commit1_lrd                              (),
-    .commit1_prd                              (),
-    .commit1_old_prd                          (),
-    .commit1_robid                            (),
-    .commit1_need_to_wb                       (),
-    .commit1_skip                             (),
-    .isu2exu_instr0_robid                     (isu2exu_instr0_robid       ),
-    .isu2exu_instr0_pc                        (isu2exu_instr0_pc          ),
-    .isu2exu_instr0_instr                     (isu2exu_instr0_instr       ),
-    .isu2exu_instr0_lrs1                      (isu2exu_instr0_lrs1        ),
-    .isu2exu_instr0_lrs2                      (isu2exu_instr0_lrs2        ),
-    .isu2exu_instr0_lrd                       (isu2exu_instr0_lrd         ),
-    .isu2exu_instr0_prd                       (isu2exu_instr0_prd         ),
-    .isu2exu_instr0_old_prd                   (isu2exu_instr0_old_prd     ),
-    .isu2exu_instr0_need_to_wb                (isu2exu_instr0_need_to_wb  ),
-    .isu2exu_instr0_prs1                      (isu2exu_instr0_prs1        ),
-    .isu2exu_instr0_prs2                      (isu2exu_instr0_prs2        ),
-    .isu2exu_instr0_src1_is_reg               (isu2exu_instr0_src1_is_reg ),
-    .isu2exu_instr0_src2_is_reg               (isu2exu_instr0_src2_is_reg ),
-    .isu2exu_instr0_imm                       (isu2exu_instr0_imm         ),
-    .isu2exu_instr0_cx_type                   (isu2exu_instr0_cx_type     ),
-    .isu2exu_instr0_is_unsigned               (isu2exu_instr0_is_unsigned ),
-    .isu2exu_instr0_alu_type                  (isu2exu_instr0_alu_type    ),
-    .isu2exu_instr0_muldiv_type               (isu2exu_instr0_muldiv_type ),
-    .isu2exu_instr0_is_word                   (isu2exu_instr0_is_word     ),
-    .isu2exu_instr0_is_imm                    (isu2exu_instr0_is_imm      ),
-    .isu2exu_instr0_is_load                   (isu2exu_instr0_is_load     ),
-    .isu2exu_instr0_is_store                  (isu2exu_instr0_is_store    ),
-    .isu2exu_instr0_ls_size                   (isu2exu_instr0_ls_size     ),
-    .isu2exu_instr0_predicttaken              (isu2exu_instr0_predicttaken),
-    .isu2exu_instr0_predicttarget             (isu2exu_instr0_predicttarget),
-    .isu2exu_instr0_src1                      (isu2exu_instr0_src1        ),
-    .isu2exu_instr0_src2                      (isu2exu_instr0_src2        ),
-    .deq_valid                                (deq_valid                  ),
-    .deq_ready                                (deq_ready                  ),
-    .rob_state                                (rob_state                  ),//OUTPUT
-    .rob_walk0_valid                          (rob_walk0_valid            ),//OUTPUT
-    .rob_walk0_complete                       (rob_walk0_complete         ),//OUTPUT
-    .rob_walk0_lrd                            (rob_walk0_lrd              ),//OUTPUT
-    .rob_walk0_prd                            (rob_walk0_prd              ),//OUTPUT
-    .rob_walk1_valid                          (rob_walk1_valid            ),//OUTPUT
-    .rob_walk1_lrd                            (rob_walk1_lrd              ),//OUTPUT
-    .rob_walk1_prd                            (rob_walk1_prd              ),//OUTPUT
-    .rob_walk1_complete                       (rob_walk1_complete         ),//OUTPUT
-    .debug_preg0                              (debug_preg0                ),//input
-    .debug_preg1                              (debug_preg1                ),//input
-    .debug_preg2                              (debug_preg2                ),//input
-    .debug_preg3                              (debug_preg3                ),//input
-    .debug_preg4                              (debug_preg4                ),//input
-    .debug_preg5                              (debug_preg5                ),//input
-    .debug_preg6                              (debug_preg6                ),//input
-    .debug_preg7                              (debug_preg7                ),//input
-    .debug_preg8                              (debug_preg8                ),//input
-    .debug_preg9                              (debug_preg9                ),//input
-    .debug_preg10                             (debug_preg10               ),//input
-    .debug_preg11                             (debug_preg11               ),//input
-    .debug_preg12                             (debug_preg12               ),//input
-    .debug_preg13                             (debug_preg13               ),//input
-    .debug_preg14                             (debug_preg14               ),//input
-    .debug_preg15                             (debug_preg15               ),//input
-    .debug_preg16                             (debug_preg16               ),//input
-    .debug_preg17                             (debug_preg17               ),//input
-    .debug_preg18                             (debug_preg18               ),//input
-    .debug_preg19                             (debug_preg19               ),//input
-    .debug_preg20                             (debug_preg20               ),//input
-    .debug_preg21                             (debug_preg21               ),//input
-    .debug_preg22                             (debug_preg22               ),//input
-    .debug_preg23                             (debug_preg23               ),//input
-    .debug_preg24                             (debug_preg24               ),//input
-    .debug_preg25                             (debug_preg25               ),//input
-    .debug_preg26                             (debug_preg26               ),//input
-    .debug_preg27                             (debug_preg27               ),//input
-    .debug_preg28                             (debug_preg28               ),//input
-    .debug_preg29                             (debug_preg29               ),//input
-    .debug_preg30                             (debug_preg30               ),//input
-    .debug_preg31                             (debug_preg31               )
-);
+    .iru2isu_instr0_lrs1                      (iru2isu_instr0_lrs1                      ),
+    .iru2isu_instr0_lrs2                      (iru2isu_instr0_lrs2                      ),
+    .iru2isu_instr0_lrd                       (iru2isu_instr0_lrd                       ),
+    .iru2isu_instr0_prd                       (iru2isu_instr0_prd                       ),
+    .iru2isu_instr0_old_prd                   (iru2isu_instr0_old_prd                   ),
+    .iru2isu_instr0_need_to_wb                (iru2isu_instr0_need_to_wb                ),
+    .iru2isu_instr0_prs1                      (iru2isu_instr0_prs1                      ),
+    .iru2isu_instr0_prs2                      (iru2isu_instr0_prs2                      ),
+    .iru2isu_instr0_src1_is_reg               (iru2isu_instr0_src1_is_reg               ),
+    .iru2isu_instr0_src2_is_reg               (iru2isu_instr0_src2_is_reg               ),
+    .iru2isu_instr0_imm                       (iru2isu_instr0_imm                       ),
+    .iru2isu_instr0_cx_type                   (iru2isu_instr0_cx_type                   ),
+    .iru2isu_instr0_is_unsigned               (iru2isu_instr0_is_unsigned               ),
+    .iru2isu_instr0_alu_type                  (iru2isu_instr0_alu_type                  ),
+    .iru2isu_instr0_muldiv_type               (iru2isu_instr0_muldiv_type               ),
+    .iru2isu_instr0_is_word                   (iru2isu_instr0_is_word                   ),
+    .iru2isu_instr0_is_imm                    (iru2isu_instr0_is_imm                    ),
+    .iru2isu_instr0_is_load                   (iru2isu_instr0_is_load                   ),
+    .iru2isu_instr0_is_store                  (iru2isu_instr0_is_store                  ),
+    .iru2isu_instr0_ls_size                   (iru2isu_instr0_ls_size                   ),
+    .iru2isu_instr0_predicttaken              (iru2isu_instr0_predicttaken              ),
+    .iru2isu_instr0_predicttarget             (iru2isu_instr0_predicttarget             ),
+    .iru2isu_instr1_valid                     (                                         ),
+    .isu2iru_instr1_ready                     (                                         ),
+    .iru2isu_instr1_pc                        (                                         ),
+    .iru2isu_instr1_instr                     (                                         ),
+    .iru2isu_instr1_lrs1                      (                                         ),
+    .iru2isu_instr1_lrs2                      (                                         ),
+    .iru2isu_instr1_lrd                       (                                         ),
+    .iru2isu_instr1_prd                       (                                         ),
+    .iru2isu_instr1_old_prd                   (                                         ),
+    .iru2isu_instr1_need_to_wb                (                                         ),
+    .iru2isu_instr1_prs1                      (                                         ),
+    .iru2isu_instr1_prs2                      (                                         ),
+    .iru2isu_instr1_src1_is_reg               (                                         ),
+    .iru2isu_instr1_src2_is_reg               (                                         ),
+    .iru2isu_instr1_imm                       (                                         ),
+    .iru2isu_instr1_cx_type                   (                                         ),
+    .iru2isu_instr1_is_unsigned               (                                         ),
+    .iru2isu_instr1_alu_type                  (                                         ),
+    .iru2isu_instr1_muldiv_type               (                                         ),
+    .iru2isu_instr1_is_word                   (                                         ),
+    .iru2isu_instr1_is_imm                    (                                         ),
+    .iru2isu_instr1_is_load                   (                                         ),
+    .iru2isu_instr1_is_store                  (                                         ),
+    .iru2isu_instr1_ls_size                   (                                         ),
+    .iru2isu_instr1_predicttaken              (                                         ),
+    .iru2isu_instr1_predicttarget             (                                         ),
+    .intwb_instr_valid                        (intwb_instr_valid                        ),//input
+    .intwb_robid                              (intwb_robid                              ),//input
+    .intwb_prd                                (intwb_prd                                ),//input
+    .intwb_need_to_wb                         (intwb_need_to_wb                         ),//input
+    .intwb_result                             (intwb_result                             ),
+    .memwb_instr_valid                        (memwb_instr_valid                        ),//input
+    .memwb_robid                              (memwb_robid                              ),//input
+    .memwb_prd                                (memwb_prd                                ),//input
+    .memwb_need_to_wb                         (memwb_need_to_wb                         ),//input
+    .memwb_mmio_valid                         (memwb_mmio_valid                         ),//input
+    .memwb_result                             (memwb_result                             ),
+    .flush_valid                              (flush_valid                              ),//input
+    .flush_robid                              (flush_robid                              ),//input
+    .commit0_valid                            (commit0_valid                            ),//OUTUPT
+    .commit0_pc                               (commit0_pc                               ),//OUTUPT
+    .commit0_instr                            (commit0_instr                            ),//OUTUPT
+    .commit0_lrd                              (commit0_lrd                              ),//OUTUPT
+    .commit0_prd                              (commit0_prd                              ),//OUTUPT
+    .commit0_old_prd                          (commit0_old_prd                          ),//OUTUPT
+    .commit0_need_to_wb                       (commit0_need_to_wb                       ),//OUTUPT
+    .commit0_robid                            (commit0_robid                            ),//OUTUPT
+    .commit0_skip                             (commit0_skip                             ),//OUTUPT
+    .commit1_valid                            (                                         ),
+    .commit1_pc                               (                                         ),
+    .commit1_instr                            (                                         ),
+    .commit1_lrd                              (                                         ),
+    .commit1_prd                              (                                         ),
+    .commit1_old_prd                          (                                         ),
+    .commit1_robid                            (                                         ),
+    .commit1_need_to_wb                       (                                         ),
+    .commit1_skip                             (                                         ),
+    .isu2exu_instr0_robid                     (isu2exu_instr0_robid                     ),
+    .isu2exu_instr0_pc                        (isu2exu_instr0_pc                        ),
+    .isu2exu_instr0_instr                     (isu2exu_instr0_instr                     ),
+    .isu2exu_instr0_lrs1                      (isu2exu_instr0_lrs1                      ),
+    .isu2exu_instr0_lrs2                      (isu2exu_instr0_lrs2                      ),
+    .isu2exu_instr0_lrd                       (isu2exu_instr0_lrd                       ),
+    .isu2exu_instr0_prd                       (isu2exu_instr0_prd                       ),
+    .isu2exu_instr0_old_prd                   (isu2exu_instr0_old_prd                   ),
+    .isu2exu_instr0_need_to_wb                (isu2exu_instr0_need_to_wb                ),
+    .isu2exu_instr0_prs1                      (isu2exu_instr0_prs1                      ),
+    .isu2exu_instr0_prs2                      (isu2exu_instr0_prs2                      ),
+    .isu2exu_instr0_src1_is_reg               (isu2exu_instr0_src1_is_reg               ),
+    .isu2exu_instr0_src2_is_reg               (isu2exu_instr0_src2_is_reg               ),
+    .isu2exu_instr0_imm                       (isu2exu_instr0_imm                       ),
+    .isu2exu_instr0_cx_type                   (isu2exu_instr0_cx_type                   ),
+    .isu2exu_instr0_is_unsigned               (isu2exu_instr0_is_unsigned               ),
+    .isu2exu_instr0_alu_type                  (isu2exu_instr0_alu_type                  ),
+    .isu2exu_instr0_muldiv_type               (isu2exu_instr0_muldiv_type               ),
+    .isu2exu_instr0_is_word                   (isu2exu_instr0_is_word                   ),
+    .isu2exu_instr0_is_imm                    (isu2exu_instr0_is_imm                    ),
+    .isu2exu_instr0_is_load                   (isu2exu_instr0_is_load                   ),
+    .isu2exu_instr0_is_store                  (isu2exu_instr0_is_store                  ),
+    .isu2exu_instr0_ls_size                   (isu2exu_instr0_ls_size                   ),
+    .isu2exu_instr0_predicttaken              (isu2exu_instr0_predicttaken              ),
+    .isu2exu_instr0_predicttarget             (isu2exu_instr0_predicttarget             ),
+    .isu2exu_instr0_src1                      (isu2exu_instr0_src1                      ),
+    .isu2exu_instr0_src2                      (isu2exu_instr0_src2                      ),
+    .deq_valid                                (deq_valid                                ),
+    .deq_ready                                (deq_ready                                ),
+    .rob_state                                (rob_state                                ),//OUTPUT
+    .rob_walk0_valid                          (rob_walk0_valid                          ),//OUTPUT
+    .rob_walk0_complete                       (rob_walk0_complete                       ),//OUTPUT
+    .rob_walk0_lrd                            (rob_walk0_lrd                            ),//OUTPUT
+    .rob_walk0_prd                            (rob_walk0_prd                            ),//OUTPUT
+    .rob_walk1_valid                          (rob_walk1_valid                          ),//OUTPUT
+    .rob_walk1_lrd                            (rob_walk1_lrd                            ),//OUTPUT
+    .rob_walk1_prd                            (rob_walk1_prd                            ),//OUTPUT
+    .rob_walk1_complete                       (rob_walk1_complete                       ),//OUTPUT
+    .debug_preg0                              (debug_preg0                              ),//input
+    .debug_preg1                              (debug_preg1                              ),//input
+    .debug_preg2                              (debug_preg2                              ),//input
+    .debug_preg3                              (debug_preg3                              ),//input
+    .debug_preg4                              (debug_preg4                              ),//input
+    .debug_preg5                              (debug_preg5                              ),//input
+    .debug_preg6                              (debug_preg6                              ),//input
+    .debug_preg7                              (debug_preg7                              ),//input
+    .debug_preg8                              (debug_preg8                              ),//input
+    .debug_preg9                              (debug_preg9                              ),//input
+    .debug_preg10                             (debug_preg10                             ),//input
+    .debug_preg11                             (debug_preg11                             ),//input
+    .debug_preg12                             (debug_preg12                             ),//input
+    .debug_preg13                             (debug_preg13                             ),//input
+    .debug_preg14                             (debug_preg14                             ),//input
+    .debug_preg15                             (debug_preg15                             ),//input
+    .debug_preg16                             (debug_preg16                             ),//input
+    .debug_preg17                             (debug_preg17                             ),//input
+    .debug_preg18                             (debug_preg18                             ),//input
+    .debug_preg19                             (debug_preg19                             ),//input
+    .debug_preg20                             (debug_preg20                             ),//input
+    .debug_preg21                             (debug_preg21                             ),//input
+    .debug_preg22                             (debug_preg22                             ),//input
+    .debug_preg23                             (debug_preg23                             ),//input
+    .debug_preg24                             (debug_preg24                             ),//input
+    .debug_preg25                             (debug_preg25                             ),//input
+    .debug_preg26                             (debug_preg26                             ),//input
+    .debug_preg27                             (debug_preg27                             ),//input
+    .debug_preg28                             (debug_preg28                             ),//input
+    .debug_preg29                             (debug_preg29                             ),//input
+    .debug_preg30                             (debug_preg30                             ),//input
+    .debug_preg31                             (debug_preg31                             )
+                                                                                        );
 
 // //intblock always can accept, mem can accept only when no operation in process
 wire exu_available = int_instr_ready && mem_instr_ready;
@@ -549,8 +546,6 @@ wire mem_instr_valid = deq_valid && instr_goto_memblock;
 exu_top u_exu_top                         (
     .clock                                (clock                                           ),
     .reset_n                              (reset_n                                         ),
-    .flush_valid                          (flush_valid                                     ),
-    .flush_robid                          (flush_robid                                     ),
     .int_instr_valid                      (int_instr_valid                                 ),
     .int_instr_ready                      (int_instr_ready                                 ),
     .int_instr                            (isu2exu_instr0_instr                            ),

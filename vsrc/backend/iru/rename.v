@@ -1,5 +1,4 @@
-module rename #()
-(
+module rename (
     //instr 0 from decoder after pipereg
     input  wire               instr0_valid,
     output wire               instr0_ready,

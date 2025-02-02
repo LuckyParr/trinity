@@ -72,6 +72,9 @@ module intblock #(
     output wire [128:0] bjusb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
 );
     wire redirect_valid_internal;
+    wire [`RESULT_RANGE] alu_result;
+    wire [`RESULT_RANGE] muldiv_result;
+    wire [`RESULT_RANGE] bju_result;
 
     assign instr_ready = 1'b1;
     //when redirect instr from wb pipereg is older than current instr in exu, flush instr in exu
@@ -106,33 +109,34 @@ module intblock #(
         .result     (alu_result)
     );
 
-    bju u_bju (
-        .clock (clock),
-        .reset_n (reset_n),
-        .src1           (src1),
-        .src2           (src2),
-        .imm            (imm),
-        .predict_taken      (predict_taken), 
-        .predict_target     (predict_target), 
-        .pc             (pc),
-        .cx_type        (cx_type),
-        .valid          (bju_valid),
-        .is_unsigned    (is_unsigned),
-        .dest           (bju_result),
-        .redirect_valid (redirect_valid_internal),
-        .redirect_target(intblock_out_redirect_target),
-        .bjusb_bht_write_enable (bjusb_bht_write_enable),                 
-        .bjusb_bht_write_index (bjusb_bht_write_index),
+    bju u_bju                           (
+        .clock                          (clock                         ),
+        .reset_n                        (reset_n                       ),
+        .src1                           (src1                          ),
+        .src2                           (src2                          ),
+        .imm                            (imm                           ),
+        .predict_taken                  (predict_taken                 ), 
+        .predict_target                 (predict_target                ), 
+        .pc                             (pc                            ),
+        .cx_type                        (cx_type                       ),
+        .valid                          (bju_valid                     ),
+        .is_unsigned                    (is_unsigned                   ),
+        .dest                           (bju_result                    ),
+        .redirect_valid                 (redirect_valid_internal       ),
+        .redirect_target                (intblock_out_redirect_target  ),
+        .bjusb_bht_write_enable         (bjusb_bht_write_enable        ),                 
+        .bjusb_bht_write_index          (bjusb_bht_write_index         ),
         .bjusb_bht_write_counter_select (bjusb_bht_write_counter_select),   
-        .bjusb_bht_write_inc (bjusb_bht_write_inc),                    
-        .bjusb_bht_write_dec (bjusb_bht_write_dec),                    
-        .bjusb_bht_valid_in (bjusb_bht_valid_in),  
-        .bjusb_btb_ce (bjusb_btb_ce),           
-        .bjusb_btb_we (bjusb_btb_we),           
-        .bjusb_btb_wmask (bjusb_btb_wmask),
-        .bjusb_btb_write_index (bjusb_btb_write_index),
-        .bjusb_btb_din (bjusb_btb_din)             
-    );
+        .bjusb_bht_write_inc            (bjusb_bht_write_inc           ),                    
+        .bjusb_bht_write_dec            (bjusb_bht_write_dec           ),                    
+        .bjusb_bht_valid_in             (bjusb_bht_valid_in            ),  
+        .bjusb_btb_ce                   (bjusb_btb_ce                  ),           
+        .bjusb_btb_we                   (bjusb_btb_we                  ),           
+        .bjusb_btb_wmask                (bjusb_btb_wmask               ),
+        .bjusb_btb_write_index          (bjusb_btb_write_index         ),
+        .bjusb_btb_din                  (bjusb_btb_din                 )             
+
+);
 
     muldiv u_muldiv (
         .src1       (src1),

@@ -1,4 +1,3 @@
-`timescale 1ns / 1ps
 module busy_table (
     input wire clock,                         // Clock signal
     input wire reset_n,                     // Active-low reset signal

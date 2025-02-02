@@ -85,9 +85,9 @@ module memblock (
     localparam PENDING = 2'b01;
     localparam OUTSTANDING = 2'b10;
     reg  [1:0] ls_state;
-    wire       is_idle = ls_state == IDLE;
-    wire       is_pending = ls_state == PENDING;
-    wire       is_outstanding = ls_state == OUTSTANDING;
+    wire       is_idle = (ls_state == IDLE);
+    wire       is_pending = (ls_state == PENDING);
+    wire       is_outstanding = (ls_state == OUTSTANDING);
     /*
     0 = B
     1 = HALF WORD
@@ -256,7 +256,7 @@ module memblock (
 
     //assign mem_stall =  (~is_idle | tbus_index_valid) & //when tbus_index_valid = 1, means lsu have an req due to send, stall immediately
     //                    ~((is_outstanding) & (opload_operation_done | opstore_operation_done)); //when operation done, no need to stall anymore
-    assign op_processing = ~idle;                     
+    assign op_processing = ~is_idle;                     
 
 
     /* -------------------------------------------------------------------------- */

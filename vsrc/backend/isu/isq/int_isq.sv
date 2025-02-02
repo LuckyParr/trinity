@@ -33,6 +33,7 @@ module int_isq (
     //-----------------------------------------------------
     // Flush interface
     //-----------------------------------------------------
+    input  logic [1:0]                rob_state,
     input  logic                      flush_valid,
     input  logic [`INSTR_ID_WIDTH:0]  flush_robid,
 
@@ -112,6 +113,7 @@ module int_isq (
         .update_condition_in      (update_condition_in),
 
         // Flush interface
+        .rob_state                (rob_state),
         .flush_valid              (flush_valid),
         .flush_robid              (flush_robid),
 

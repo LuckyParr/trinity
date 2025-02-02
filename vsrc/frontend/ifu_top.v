@@ -1,4 +1,4 @@
-module ifu (
+module ifu_top (
     input wire clock,
     input wire reset_n,
 
@@ -92,10 +92,11 @@ module ifu (
         .ibuffer_inst_out          (ibuffer_inst_out         ),
         .ibuffer_pc_out            (ibuffer_pc_out           ),
         .fifo_empty                (fifo_empty               ),
-        .mem_stall                 (mem_stall                ),
+        .backend_stall             (backend_stall                ),
         .admin2ib_predicttaken     (admin2ib_predicttaken    ),
         .admin2ib_predicttarget    (admin2ib_predicttarget   )
-                                                             );
+
+);
 
 
     instr_admin u_instr_admin           (

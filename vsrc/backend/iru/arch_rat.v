@@ -1,4 +1,3 @@
-`timescale 1ns / 1ps
 
 module arch_rat (
     input wire clock,

@@ -1,6 +1,5 @@
-`timescale 1ns / 1ps
 module spec_rat #(
-    parameter DATA_WIDTH = 124;
+    parameter DATA_WIDTH = 124
 )
 (
     input wire clock,

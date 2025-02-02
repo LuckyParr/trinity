@@ -161,7 +161,7 @@ assign disp2rob_instr1_need_to_wb = instr1_need_to_wb;
 /* ------------ write prd0 and prd1 busy bit to 1 in busy_vector ------------ */
 assign disp2bt_alloc_instr0rd_en = instr0_need_to_wb;
 assign disp2bt_alloc_instr0rd_addr = instr0_prd;
-assign disp2bt_alloc_instr1rd_en = instr1_need_to_wb
+assign disp2bt_alloc_instr1rd_en = instr1_need_to_wb;
 assign disp2bt_alloc_instr1rd_addr = instr1_prd;
 
 /* ------- read instr0 and instr1 rs1 rs2 busy status from busy_vector ------ */

@@ -1,6 +1,5 @@
 `include "defines.sv"
-module pipereg_memwb #(
-) (
+module pipereg_memwb (
     input  wire                          clock,
     input  wire                          reset_n,
     input wire                          memblock_out_instr_valid,
@@ -18,7 +17,7 @@ module pipereg_memwb #(
     output wire [`PREG_RANGE]             memwb_prd,
     output wire                           memwb_need_to_wb,
     output wire                           memwb_mmio_valid,
-    output wire [`RESULT_RANGE]           memwb_opload_rddata, 
+    output wire [`RESULT_RANGE]           memwb_opload_rddata 
 );
 
     `MACRO_DFF_NONEN(memwb_instr_valid  , memblock_out_instr_valid, 1)

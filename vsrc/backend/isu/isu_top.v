@@ -105,7 +105,7 @@ module isu_top (
     input  wire               deq_ready                   ,
     output wire [6:0]         isu2exu_instr0_robid        ,
     output wire [63:0]        isu2exu_instr0_pc           ,
-    output wire [31:0]        isu2exu_instr0              ,
+    output wire [31:0]        isu2exu_instr0_instr              ,
     output wire [4:0]         isu2exu_instr0_lrs1         ,
     output wire [4:0]         isu2exu_instr0_lrs2         ,
     output wire [4:0]         isu2exu_instr0_lrd          ,
@@ -401,7 +401,7 @@ int_isq u_int_isq
     .clock                         (clock                        ),
     .reset_n                       (reset_n                      ),
     //tell disp isq is available
-    .intisq_can_enq                (intisq_can_enq               )
+    .intisq_can_enq                (intisq_can_enq               ),
     //enq port
     .enq_valid                     (enq_valid                    ),
     .enq_ready                     (enq_ready                    ),
@@ -418,6 +418,7 @@ int_isq u_int_isq
     .writeback0_need_to_wb         (intwb_need_to_wb              ),
     .writeback0_prd                (intwb_prd                     ),
     //flush kill young instr in isq    
+    .rob_state(rob_state),
     .flush_valid                   (flush_valid                   ),
     .flush_robid                   (flush_robid                   ),
     //writeback from memwb
@@ -432,7 +433,7 @@ int_isq u_int_isq
     assign isu2exu_instr0_predicttarget = deq_data[279:248];
     assign isu2exu_instr0_robid         = deq_data[247:241];
     assign isu2exu_instr0_pc            = deq_data[240:177];
-    assign isu2exu_instr0               = deq_data[176:145];
+    assign isu2exu_instr0_instr               = deq_data[176:145];
     assign isu2exu_instr0_lrs1          = deq_data[144:140];
     assign isu2exu_instr0_lrs2          = deq_data[139:135];
     assign isu2exu_instr0_lrd           = deq_data[134:130];

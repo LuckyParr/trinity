@@ -16,6 +16,14 @@ module core_top #(
     input  wire         ddr_ready,           // Indicates if DDR is ready for new operation
     output reg          flop_commit_valid
 );
+    wire mem2dcache_flush;
+    // ibuffer outputs
+    wire        ibuffer_instr_valid      ;
+    wire        ibuffer_instr_ready      ;
+    wire [31:0] ibuffer_inst_out         ;
+    wire [63:0] ibuffer_pc_out           ;
+    wire        ibuffer_predicttaken_out ;
+    wire [31:0] ibuffer_predicttarget_out;
     //bhtbtb write interface
     wire                          intwb_bht_write_enable        ;       
     wire [BHTBTB_INDEX_WIDTH-1:0] intwb_bht_write_index         ;       
@@ -203,7 +211,6 @@ backend u_backend(
     .ibuffer_pc_out                       (ibuffer_pc_out                       ),
     .flush_valid                          (flush_valid                          ),
     .flush_target                         (flush_target                         ),
-    .flush_robid                          (flush_robid                          ),
     .tbus_index_valid                     (tbus_index_valid                     ),
     .tbus_index_ready                     (tbus_index_ready                     ),
     .tbus_index                           (tbus_index                           ),

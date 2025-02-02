@@ -4,7 +4,7 @@ module pipereg_intwb (
     input  wire                          reset_n,
     input  wire                          intblock_out_instr_valid,
     input  wire                          intblock_out_need_to_wb,
-    input  wire [`PREG_LENGTH-1:0]       intblock_out_prd,
+    input  wire [`PREG_RANGE]       intblock_out_prd,
     input  wire [63:0]                   intblock_out_result,
     input  wire                          intblock_out_redirect_valid,
     input  wire [63:0]                   intblock_out_redirect_target,
@@ -24,7 +24,7 @@ module pipereg_intwb (
     input  wire [128:0]                   bjusb_btb_din,
     output reg                          intwb_instr_valid,
     output reg                          intwb_need_to_wb,
-    output reg [`PREG_LENGTH-1:0]       intwb_prd,
+    output reg [`PREG_RANGE]       intwb_prd,
     output reg [63:0]                   intwb_result,
     output reg                          intwb_redirect_valid,// rename to flush_valid
     output reg [63:0]                   intwb_redirect_target,// rename to flush_target
@@ -44,7 +44,7 @@ module pipereg_intwb (
 
     `MACRO_DFF_NONEN(intwb_instr_valid, intblock_out_instr_valid, 1)
     `MACRO_DFF_NONEN(intwb_need_to_wb, intblock_out_need_to_wb, 1)
-    `MACRO_DFF_NONEN(intwb_prd, intblock_out_prd, `PREG_LENGTH)
+    `MACRO_DFF_NONEN(intwb_prd, intblock_out_prd, 6)
     `MACRO_DFF_NONEN(intwb_result, intblock_out_result, 64)
     `MACRO_DFF_NONEN(intwb_redirect_valid, intblock_out_redirect_valid, 1)
     `MACRO_DFF_NONEN(intwb_redirect_target, intblock_out_redirect_target, 64)

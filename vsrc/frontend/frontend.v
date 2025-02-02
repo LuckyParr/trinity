@@ -43,7 +43,7 @@ module frontend (
     wire        fifo_empty; //for debug
 
     // Instance of the ifu module
-    ifu ifu_inst                  (
+    ifu_top u_ifu_top                  (
         .clock                    (clock                    ),
         .reset_n                  (reset_n                  ),
         .boot_addr                (48'h80000000            ),

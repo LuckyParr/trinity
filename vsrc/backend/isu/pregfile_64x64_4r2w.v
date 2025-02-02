@@ -83,10 +83,10 @@ module pregfile_64x64_4r2w (
             end
         end
         else begin
-            if (wren0 && (waddr0 != `PREG_LENGTH'b0)) begin
+            if (wren0 && (waddr0 != 6'b0)) begin
                 pregfile[waddr0] <= wdata0;
             end
-            if (wren1 && (waddr1 != `PREG_LENGTH'b0)) begin
+            if (wren1 && (waddr1 != 6'b0)) begin
                 pregfile[waddr1] <= wdata1;
             end
         end
@@ -103,22 +103,22 @@ module pregfile_64x64_4r2w (
     //====================================================================
     // 3) HAZARD BYPASS (FORWARDING) LOGIC
     //====================================================================
-    wire [63:0] bypassed_data0 = (wren1 && (waddr1 == raddr0) && (waddr1 != `PREG_LENGTH'b0)) ? wdata1 :
-                                 (wren0 && (waddr0 == raddr0) && (waddr0 != `PREG_LENGTH'b0)) ? wdata0 :
+    wire [63:0] bypassed_data0 = (wren1 && (waddr1 == raddr0) && (waddr1 != 6'b0)) ? wdata1 :
+                                 (wren0 && (waddr0 == raddr0) && (waddr0 != 6'b0)) ? wdata0 :
                                   raw_data0;
 
-    wire [63:0] bypassed_data1 = (wren1 && (waddr1 == raddr1) && (waddr1 != `PREG_LENGTH'b0)) ? wdata1 :
-                                 (wren0 && (waddr0 == raddr1) && (waddr0 != `PREG_LENGTH'b0)) ? wdata0 :
+    wire [63:0] bypassed_data1 = (wren1 && (waddr1 == raddr1) && (waddr1 != 6'b0)) ? wdata1 :
+                                 (wren0 && (waddr0 == raddr1) && (waddr0 != 6'b0)) ? wdata0 :
                                   raw_data1;
 
     // Bypass logic for read port 2
-    wire [63:0] bypassed_data2 = (wren1 && (waddr1 == raddr2) && (waddr1 != `PREG_LENGTH'b0)) ? wdata1 :
-                                 (wren0 && (waddr0 == raddr2) && (waddr0 != `PREG_LENGTH'b0)) ? wdata0 :
+    wire [63:0] bypassed_data2 = (wren1 && (waddr1 == raddr2) && (waddr1 != 6'b0)) ? wdata1 :
+                                 (wren0 && (waddr0 == raddr2) && (waddr0 != 6'b0)) ? wdata0 :
                                   raw_data2;
 
     // Bypass logic for read port 3
-    wire [63:0] bypassed_data3 = (wren1 && (waddr1 == raddr3) && (waddr1 != `PREG_LENGTH'b0)) ? wdata1 :
-                                 (wren0 && (waddr0 == raddr3) && (waddr0 != `PREG_LENGTH'b0)) ? wdata0 :
+    wire [63:0] bypassed_data3 = (wren1 && (waddr1 == raddr3) && (waddr1 != 6'b0)) ? wdata1 :
+                                 (wren0 && (waddr0 == raddr3) && (waddr0 != 6'b0)) ? wdata0 :
                                   raw_data3;
 
     //====================================================================

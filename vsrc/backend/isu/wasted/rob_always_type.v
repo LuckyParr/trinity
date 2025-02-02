@@ -1,4 +1,3 @@
-`timescale 1ns / 1ps
 
 module rob #(
     parameter DATA_WIDTH   = 124, // 64 pc + 32 instr + 5 lrs1 + 5 lrs2 + 5 lrd + 6 prd + 6 old_prd + 1 rd_valid = 124 bits

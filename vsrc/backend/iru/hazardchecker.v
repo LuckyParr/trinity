@@ -1,10 +1,3 @@
-`timescale 1ns / 1ps
-////////////////////////////////////////////////////////////////////////////////
-// Description: 
-//      This module checks for RAW and WAW hazards between two RISC-V instructions.
-//      Each instruction provides source registers (lrs1, lrs2) and a destination register (lrd),
-//      along with valid signals indicating if each register field is valid.
-////////////////////////////////////////////////////////////////////////////////
 
 module hazardchecker (
     // Instruction 0 Inputs

@@ -28,15 +28,18 @@ module age_buffer_1r1w (
     input  logic [`ISQ_CONDITION_WIDTH-1:0]  update_condition_mask,
     input  logic [`ISQ_CONDITION_WIDTH-1:0]  update_condition_in,
     // Flush interface
+    input  logic  [1:0]               rob_state, 
     input  logic                      flush_valid,
     input  logic [`ROB_SIZE_LOG:0]    flush_robid,
     //output array
     output logic [`ISQ_DEPTH-1:0][`ISQ_DATA_WIDTH-1:0]      data_out_array,
     output logic [`ISQ_DEPTH-1:0][`ISQ_CONDITION_WIDTH-1:0] condition_out_array,
     output logic [`ISQ_DEPTH-1:0][`ISQ_INDEX_WIDTH-1:0]     index_out_array,
-    output logic [`ISQ_DEPTH-1:0]                      valid_out_array
+    output logic [`ISQ_DEPTH-1:0]                           valid_out_array
 );
 
+
+    logic [`ISQ_DEPTH-1:0] update_condition_valid_array;
     // ----------------------------------------------------------
     // Sub-entry outputs and control signals
     // ----------------------------------------------------------
@@ -51,17 +54,18 @@ module age_buffer_1r1w (
     logic [`ISQ_DEPTH-1:0] needflush_array;
 
 /* ----------------- writeback to update condition bit logic ---------------- */
+
     //lets assume robid lie in [247:241] for now
     // Decode update_condition_robid -> one-hot
     integer j;
     always_comb begin
         for (j = 0; j < `ISQ_DEPTH; j++) begin
-            update_condition_valid_array[j] = (update_condition_robid == data_out[j][247:241]) && update_condition_valid;
+            update_condition_valid_array[j] = (update_condition_robid == data_out_array[j][247:241]) && update_condition_valid;
         end
     end
 
     //dont need enq_index in age_buffer
-    assign enq_index = 'b0;
+    wire enq_index = 'b0;
     // ----------------------------------------------------------
     // Generate sub-entries
     // ----------------------------------------------------------
@@ -134,7 +138,7 @@ module age_buffer_1r1w (
                 // If no j is older and we haven't chosen an oldest yet
                 if (!any_j_older && !oldest_found) begin
                     oldest_idx_for_deq = i;
-                    oldest_found       = 1'btrue;
+                    oldest_found       = 1'b1;
                 end
             end
         end
@@ -217,8 +221,8 @@ module age_buffer_1r1w (
         integer i;
         needflush_array = 'b0;
         for (i = 0; i < `ISQ_DEPTH; i = i + 1) begin
-            if (rob_state == `ROB_STATE_ROLLILNGBACK) begin
-                    needflush_array[i] = flush_robid[`ROB_SIZE_LOG] ^ data_out[i][247] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < data_out[i][246:241]);
+            if (rob_state == `ROB_STATE_ROLLIBACK) begin
+                    needflush_array[i] = flush_robid[`ROB_SIZE_LOG] ^ data_out_array[i][247] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < data_out_array[i][246:241]);
                 end
             end
         end

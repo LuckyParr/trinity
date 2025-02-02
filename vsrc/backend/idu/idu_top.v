@@ -43,7 +43,7 @@ module idu_top(
 
     output wire                      idu2iru_instr0_predicttaken,
     output wire [31:0]               idu2iru_instr0_predicttarget
-);t
+);
 
     //----------------------------------
     // Internal signals: decoder -> pipereg_autostall

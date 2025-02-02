@@ -1,4 +1,3 @@
-`timescale 1ns / 1ps
 module freelist #(
     parameter DATA_WIDTH = 6,  //data store physical reg number
     parameter DEPTH      = 32  //number of free ohysical reg
@@ -27,9 +26,9 @@ module freelist #(
     output reg [DATA_WIDTH-1:0] fl2rn_instr1prd,
 
     //walk signal
-    input wire [1:0] rob_state;
+    input wire [1:0] rob_state,
     input wire walking_valid0,
-    input wire walking_valid1,
+    input wire walking_valid1
 
 );
 
@@ -74,7 +73,7 @@ always @(posedge clock or negedge reset_n) begin
         // ----------------------------------------------------------
         enqueue_ptr <= 0;
         dequeue_ptr <= 0;
-        rd_count    <= 0;
+        //rd_count    <= 0;
         // (If you have wr_count or other counters, reset them here as well)
 
         for (i = 0; i < DEPTH; i = i + 1) begin
@@ -114,12 +113,10 @@ always @(posedge clock or negedge reset_n) begin
 
             if (walking_valid0) begin
                 valid_mem[dequeue_ptr] <= 1'b1; // restore valid
-                mem[dequeue_ptr]       <= walking_old_prd0;
             end
             
             if (walking_valid1) begin
                 valid_mem[dequeue_ptr + 1] <= 1'b1; // restore valid
-                mem[dequeue_ptr + 1]       <= walking_old_prd1;
             end
         // ----------------------------------------------------------
         // Read Operations
