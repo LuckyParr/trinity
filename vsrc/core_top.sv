@@ -10,7 +10,6 @@ module core_top #(
     output wire [ 63:0] ddr_index,           // 19-bit selected index to be sent to DDR
     output wire         ddr_write_enable,    // Write enable signal (1 for write, 0 for read)
     output wire         ddr_burst_mode,      // Burst mode signal, 1 when pc_index is selected
-    output wire [511:0] ddr_write_mask,      // Output write mask for opstore channel
     output wire [511:0] ddr_write_data,      // Output write data for opstore channel
     input  wire [511:0] ddr_read_data,       // 64-bit data output for lw channel read
     input  wire         ddr_operation_done,
@@ -108,8 +107,7 @@ module core_top #(
     reg                       dcache2arb_dbus_index_valid;
     wire                      dcache2arb_dbus_index_ready;
     reg  [     `RESULT_RANGE] dcache2arb_dbus_index;
-    reg  [        `SRC_RANGE] dcache2arb_dbus_write_data;
-    reg  [        `SRC_RANGE] dcache2arb_dbus_write_mask;
+    reg  [ `CACHELINE512_RANGE] dcache2arb_dbus_write_data;
     wire [ `CACHELINE512_RANGE] dcache2arb_dbus_read_data;
     wire                      dcache2arb_dbus_operation_done;
     wire [       `TBUS_OPTYPE_RANGE] dcache2arb_dbus_operation_type;
@@ -119,7 +117,7 @@ module core_top #(
     reg                       icache2arb_dbus_index_valid;
     wire                      icache2arb_dbus_index_ready;
     reg  [     `RESULT_RANGE] icache2arb_dbus_index;
-    reg  [        `SRC_RANGE] icache2arb_dbus_write_data;
+    reg  [ `CACHELINE512_RANGE] icache2arb_dbus_write_data;
     reg  [        `SRC_RANGE] icache2arb_dbus_write_mask;
     wire [ `CACHELINE512_RANGE] icache2arb_dbus_read_data;
     wire                      icache2arb_dbus_operation_done;
@@ -146,7 +144,6 @@ module core_top #(
         .dcache2arb_dbus_index_ready   (dcache2arb_dbus_index_ready),
         .dcache2arb_dbus_index         (dcache2arb_dbus_index),
         .dcache2arb_dbus_write_data    (dcache2arb_dbus_write_data),
-        .dcache2arb_dbus_write_mask    (dcache2arb_dbus_write_mask),
         .dcache2arb_dbus_read_data     (dcache2arb_dbus_read_data),
         .dcache2arb_dbus_operation_done(dcache2arb_dbus_operation_done),
         .dcache2arb_dbus_operation_type(dcache2arb_dbus_operation_type)
@@ -170,7 +167,6 @@ module core_top #(
         .icache2arb_dbus_index_ready   (icache2arb_dbus_index_ready),
         .icache2arb_dbus_index         (icache2arb_dbus_index),
         .icache2arb_dbus_write_data    (icache2arb_dbus_write_data),
-        .icache2arb_dbus_write_mask    (icache2arb_dbus_write_mask),
         .icache2arb_dbus_read_data     (icache2arb_dbus_read_data),
         .icache2arb_dbus_operation_done(icache2arb_dbus_operation_done),
         .icache2arb_dbus_operation_type()
@@ -854,7 +850,7 @@ pipereg_autostall u_pipereg_autostall_iru2isu(
         .dcache2arb_dbus_index_ready     (dcache2arb_dbus_index_ready    ),
         .dcache2arb_dbus_index           (dcache2arb_dbus_index          ),
         .dcache2arb_dbus_write_data      (dcache2arb_dbus_write_data     ),
-        .dcache2arb_dbus_write_mask      (dcache2arb_dbus_write_mask     ),
+        //.dcache2arb_dbus_write_mask      (dcache2arb_dbus_write_mask     ),
         .dcache2arb_dbus_read_data       (dcache2arb_dbus_read_data      ),
         .dcache2arb_dbus_operation_done  (dcache2arb_dbus_operation_done ),
         .dcache2arb_dbus_operation_type  (dcache2arb_dbus_operation_type ),
@@ -863,7 +859,6 @@ pipereg_autostall u_pipereg_autostall_iru2isu(
         .ddr_index          (ddr_index),
         .ddr_write_enable   (ddr_write_enable),
         .ddr_burst_mode     (ddr_burst_mode),
-        .ddr_write_mask     (ddr_write_mask),
         .ddr_write_data     (ddr_write_data),
         .ddr_read_data      (ddr_read_data),
         .ddr_operation_done (ddr_operation_done),

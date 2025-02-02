@@ -27,7 +27,6 @@ module SimTop (
     wire [ 63:0] ddr_index;  // 19-bit selected index to be sent to DDR
     wire         ddr_write_enable;  // Write enable signal (1 for write; 0 for read)
     wire         ddr_burst_mode;  // Burst mode signal; 1 when pc_index is selected
-    wire [ 511:0] ddr_write_mask;  // Output write mask for opstore channel
     wire [ 511:0] ddr_write_data;  // Output write data for opstore channel
     wire [ 511:0] ddr_read_data;  // 64-bit data output for lw channel read
     wire         ddr_operation_done;
@@ -50,7 +49,6 @@ module SimTop (
         .ddr_index             (ddr_index),
         .ddr_write_enable      (ddr_write_enable),
         .ddr_burst_mode        (ddr_burst_mode),
-        .ddr_write_mask(ddr_write_mask),
         .ddr_write_data(ddr_write_data),
         .ddr_read_data  (ddr_read_data),
         .ddr_operation_done    (ddr_operation_done),
@@ -68,7 +66,6 @@ module SimTop (
         .ddr_index         (ddr_index),
         .ddr_write_enable  (ddr_write_enable),
         .ddr_burst_mode    (ddr_burst_mode),
-        .ddr_write_mask    (ddr_write_mask),
         .ddr_write_data    (ddr_write_data),
         .ddr_read_data     (ddr_read_data),
         .ddr_operation_done(ddr_operation_done),

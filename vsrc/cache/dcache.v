@@ -23,8 +23,7 @@ module dcache #(
     output wire                     dcache2arb_dbus_index_valid,
     input  wire                     dcache2arb_dbus_index_ready,
     output reg  [`DBUS_INDEX_RANGE] dcache2arb_dbus_index,
-    output reg  [`DBUS_DATA_RANGE ] dcache2arb_dbus_write_data,
-    output reg  [`DBUS_DATA_RANGE ] dcache2arb_dbus_write_mask,
+    output reg  [`CACHELINE512_RANGE ] dcache2arb_dbus_write_data,
     input  wire [`CACHELINE512_RANGE] dcache2arb_dbus_read_data,
     input  wire                     dcache2arb_dbus_operation_done,
     output wire [`DBUS_OPTYPE_RANGE ] dcache2arb_dbus_operation_type
@@ -360,7 +359,24 @@ module dcache #(
             end
         end
     end
+    // //collect dirty 512 cacheline
+    // reg [512-1:0] dataarray_dout_banks_dirty512;
+    // always @(*) begin
+    //     integer i;
+    //     dataarray_dout_banks_dirty512 = 'b0;
+    //     for (i = 0; i < `DATARAM_BANKNUM; i = i + 1) begin
+    //             dataarray_dout_banks_dirty512[((i+1)*64-1):i*64] = dataarray_dout_banks[i];
+    //     end
+    // end
+// Collect dirty 512 cacheline
+reg [511:0] dataarray_dout_banks_dirty512;
 
+always @(*) begin
+    dataarray_dout_banks_dirty512 = 'b0;
+    for (integer i = 0; i < `DATARAM_BANKNUM; i = i + 1) begin
+        dataarray_dout_banks_dirty512[i*64 +: 64] = dataarray_dout_banks[i];
+    end
+end
     /* -------------------------------------------------------------------------- */
     /*      Stage sx : when (state == READ_DDR) and opreation_done     */
     /* -------------------------------------------------------------------------- */
@@ -622,13 +638,24 @@ module dcache #(
             dataarray_readsetaddr  = 0;
             dataarray_wmask_banks  = write_mask_8banks;
         end else if (next_state == READ_CACHE) begin  //read dataarray
-            dataarray_we           = 0;
-            dataarray_ce_way       = lookup_hitway_onehot_s1;
-            dataarray_ce_bank      = bankaddr_onehot_or;
-            dataarray_din_banks    = dataarray_din_banks_allzero;
-            dataarray_writesetaddr = 0;
-            dataarray_readsetaddr  = ls_addr_or[14:6];
-            dataarray_wmask_banks  = dataarray_din_banks_allzero;
+            if(read_hit_s1)begin
+                dataarray_we           = 0;
+                dataarray_ce_way       = lookup_hitway_onehot_s1;
+                dataarray_ce_bank      = bankaddr_onehot_or;
+                dataarray_din_banks    = dataarray_din_banks_allzero;
+                dataarray_writesetaddr = 0;
+                dataarray_readsetaddr  = ls_addr_or[14:6];
+                dataarray_wmask_banks  = dataarray_din_banks_allzero;
+            end else begin // lu_miss_full_vicdirty
+                dataarray_we           = 0;
+                dataarray_ce_way       = victimway_oh_s1;
+                dataarray_ce_bank      = 8'hff;
+                dataarray_din_banks    = dataarray_din_banks_allzero;
+                dataarray_writesetaddr = 0;
+                dataarray_readsetaddr  = ls_addr_or[14:6];
+                dataarray_wmask_banks  = dataarray_din_banks_allzero; 
+            end
+
         end else if (next_state == REFILL_READ) begin  //write 512 ddr read data
             dataarray_we           = 1;
             dataarray_ce_way       = victimway_oh_s1;
@@ -708,13 +735,11 @@ module dcache #(
             dcache2arb_dbus_index_valid_internal    <= 0;
             dcache2arb_dbus_index          <= 0;
             dcache2arb_dbus_write_data     <= 0;
-            dcache2arb_dbus_write_mask     <= 0;
             dcache2arb_dbus_operation_type <= 0;
         end else if (state == READ_CACHE && next_state == WRITE_DDR) begin  //write back dirty data to ddr
             dcache2arb_dbus_index_valid_internal    <= 1;
             dcache2arb_dbus_index          <= victimway_fulladdr_latch;
-            dcache2arb_dbus_write_data     <= tbus_read_data_s2;  //64bit
-            dcache2arb_dbus_write_mask     <= write_mask_or;
+            dcache2arb_dbus_write_data     <= dataarray_dout_banks_dirty512;  //512bit
             dcache2arb_dbus_operation_type <= `TBUS_WRITE;
         end else if ((state == WRITE_DDR && dcache2arb_dbus_index_ready) || (state == READ_DDR && dcache2arb_dbus_index_ready)) begin  //write ddr/read ddr is fire
             dcache2arb_dbus_index_valid_internal    <= 0;
@@ -722,14 +747,12 @@ module dcache #(
             dcache2arb_dbus_index_valid_internal    <= 1;
             dcache2arb_dbus_index          <= miss_read_align_addr;
             dcache2arb_dbus_write_data     <= 0;
-            dcache2arb_dbus_write_mask     <= 0;
             dcache2arb_dbus_operation_type <= `TBUS_READ;
         end else if (((state == LOOKUP) && (next_state == READ_DDR))) begin  //read cacheline from ddr 
             // 2nd condition means when state in READ_DDR,but ddr is busy,so have to wait till it finish
             dcache2arb_dbus_index_valid_internal    <= 1;
             dcache2arb_dbus_index          <= miss_read_align_addr;
             dcache2arb_dbus_write_data     <= 0;
-            dcache2arb_dbus_write_mask     <= 0;
             dcache2arb_dbus_operation_type <= `TBUS_READ;
         end
     end
