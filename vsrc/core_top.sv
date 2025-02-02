@@ -18,18 +18,18 @@ module core_top #(
 );
     //bhtbtb write interface
     //BHT Write Interface
-    wire                   wb_bht_write_enable        ;                         // Write enable signal
-    wire [BHTBTB_INDEX_WIDTH-1:0] wb_bht_write_index         ;        // Set index for write operation
-    wire [1:0]             wb_bht_write_counter_select;           // Counter select (0 to 3) within the set
-    wire                   wb_bht_write_inc           ;                            // Increment signal for the counter
-    wire                   wb_bht_write_dec           ;                            // Decrement signal for the counter
-    wire                   wb_bht_valid_in            ;                             // Valid signal for the write operation
+    wire                          intwb_bht_write_enable        ;                         // Write enable signal
+    wire [BHTBTB_INDEX_WIDTH-1:0] intwb_bht_write_index         ;        // Set index for write operation
+    wire [1:0]                    intwb_bht_write_counter_select;           // Counter select (0 to 3) within the set
+    wire                          intwb_bht_write_inc           ;                            // Increment signal for the counter
+    wire                          intwb_bht_write_dec           ;                            // Decrement signal for the counter
+    wire                          intwb_bht_valid_in            ;                             // Valid signal for the write operation
     //BTB Write Interface
-    wire         wb_btb_ce   ;                    // Chip enable
-    wire         wb_btb_we   ;                    // Write enable
-    wire [128:0] wb_btb_wmask;
-    wire [8:0]   wb_btb_write_index;           // Write address (9 bits for 512 sets)
-    wire [128:0] wb_btb_din  ;        // Data input (1 valid bit + 4 targets * 32 bits)
+    wire         intwb_btb_ce   ;                    // Chip enable
+    wire         intwb_btb_we   ;                    // Write enable
+    wire [128:0] intwb_btb_wmask;
+    wire [8:0]   intwb_btb_write_index;           // Write address (9 bits for 512 sets)
+    wire [128:0] intwb_btb_din  ;        // Data input (1 valid bit + 4 targets * 32 bits)
 
 
     wire                      chip_enable = 1'b1;
@@ -126,284 +126,9 @@ module core_top #(
 
 
 
-    dcache u_dcache (
-        .clock                         (clock),
-        .reset_n                       (reset_n),
-        .flush                         (redirect_valid),
-        //tbus channel from backend lsu (mem.v)
-        .tbus_index_valid              (tbus_index_valid),
-        .tbus_index_ready              (tbus_index_ready),
-        .tbus_index                    (tbus_index),
-        .tbus_write_data               (tbus_write_data),
-        .tbus_write_mask               (tbus_write_mask),
-        .tbus_read_data                (tbus_read_data),
-        .tbus_operation_done           (tbus_operation_done),
-        .tbus_operation_type           (tbus_operation_type),
-        // dcache channel for lsu operation
-        .dcache2arb_dbus_index_valid   (dcache2arb_dbus_index_valid),
-        .dcache2arb_dbus_index_ready   (dcache2arb_dbus_index_ready),
-        .dcache2arb_dbus_index         (dcache2arb_dbus_index),
-        .dcache2arb_dbus_write_data    (dcache2arb_dbus_write_data),
-        .dcache2arb_dbus_read_data     (dcache2arb_dbus_read_data),
-        .dcache2arb_dbus_operation_done(dcache2arb_dbus_operation_done),
-        .dcache2arb_dbus_operation_type(dcache2arb_dbus_operation_type)
-    );
-
-    icache u_icache (
-        .clock                         (clock),
-        .reset_n                       (reset_n),
-        .flush                         (redirect_valid),
-        //tbus channel from pc_ctrl
-        .tbus_index_valid              (pc_index_valid),
-        .tbus_index_ready              (pc_index_ready),
-        .tbus_index                    (pc_index),
-        .tbus_write_data               ('b0),
-        .tbus_write_mask               ('b0),
-        .tbus_read_data                (pc_read_inst),
-        .tbus_operation_done           (pc_operation_done),
-        .tbus_operation_type           (2'b00),     
-        //icache channel for reading inst from ddr
-        .icache2arb_dbus_index_valid   (icache2arb_dbus_index_valid),
-        .icache2arb_dbus_index_ready   (icache2arb_dbus_index_ready),
-        .icache2arb_dbus_index         (icache2arb_dbus_index),
-        .icache2arb_dbus_write_data    (icache2arb_dbus_write_data),
-        .icache2arb_dbus_read_data     (icache2arb_dbus_read_data),
-        .icache2arb_dbus_operation_done(icache2arb_dbus_operation_done),
-        .icache2arb_dbus_operation_type()
-    );
-
-    frontend u_frontend            (
-        .clock                     (clock                    ),
-        .reset_n                   (reset_n                  ),
-        .redirect_valid            (redirect_valid           ),
-        .redirect_target           (redirect_target          ),
-        .pc_index_valid            (pc_index_valid           ),
-        .pc_index_ready            (pc_index_ready           ),
-        .pc_operation_done         (pc_operation_done        ),
-        .pc_read_inst              (pc_read_inst             ),
-        .pc_index                  (pc_index                 ),
-        .fifo_read_en              (~mem_stall               ),           //when mem stall,ibuf can not to read instr anymore!
-        //.clear_ibuffer_ext       (redirect_valid           ),
-        .rs1                       (rs1                      ),
-        .rs2                       (rs2                      ),
-        .rd                        (rd                       ),
-        .src1_muxed                (src1                     ),
-        .src2_muxed                (src2                     ),
-        .imm                       (imm                      ),
-        .src1_is_reg               (src1_is_reg              ),
-        .src2_is_reg               (src2_is_reg              ),
-        .need_to_wb                (need_to_wb               ),
-        .cx_type                   (cx_type                  ),
-        .is_unsigned               (is_unsigned              ),
-        .alu_type                  (alu_type                 ),
-        .is_word                   (is_word                  ),
-        .is_imm                    (is_imm                   ),
-        .is_load                   (is_load                  ),
-        .is_store                  (is_store                 ),
-        .ls_size                   (ls_size                  ),
-        .muldiv_type               (muldiv_type              ),
-        .decoder_instr_valid       (decoder_instr_valid      ),
-        .decoder_predicttaken_out  (decoder_predicttaken_out ),
-        .decoder_predicttarget_out (decoder_predicttarget_out),
-        .decoder_pc_out            (decoder_pc_out           ),
-        .decoder_inst_out          (decoder_inst_out         ),
-        //write back enable
-        .writeback_valid    (regfile_write_valid),
-        .writeback_rd       (regfile_write_rd   ),
-        .writeback_data     (regfile_write_data ),
-
-        .exe_byp_rd        (exe_byp_rd                        ),
-        .exe_byp_need_to_wb(exe_byp_need_to_wb                ),
-        .exe_byp_result    (exe_byp_result                    ),
-        .mem_stall         (mem_stall                         ),
-        //bhtbtb
-        .bht_write_enable         (wb_bht_write_enable        ),                 
-        .bht_write_index          (wb_bht_write_index         ),
-        .bht_write_counter_select (wb_bht_write_counter_select),   
-        .bht_write_inc            (wb_bht_write_inc           ),                    
-        .bht_write_dec            (wb_bht_write_dec           ),                    
-        .bht_valid_in             (wb_bht_valid_in            ),  
-        .btb_ce                   (wb_btb_ce                  ),           
-        .btb_we                   (wb_btb_we                  ),           
-        .btb_wmask                (wb_btb_wmask               ),
-        .btb_write_index          (wb_btb_write_index               ),
-        .btb_din                  (wb_btb_din                 )        
-
-    );
-    wire                      out_valid;
-    wire [       `LREG_RANGE] out_rs1;
-    wire [       `LREG_RANGE] out_rs2;
-    wire [       `LREG_RANGE] out_rd;
-    wire [        `SRC_RANGE] out_src1;
-    wire [        `SRC_RANGE] out_src2;
-    wire [        `SRC_RANGE] out_imm;
-    wire                      out_src1_is_reg;
-    wire                      out_src2_is_reg;
-    wire                      out_need_to_wb;
-    wire [    `CX_TYPE_RANGE] out_cx_type;
-    wire                      out_is_unsigned;
-    wire [   `ALU_TYPE_RANGE] out_alu_type;
-    wire                      out_is_word;
-    wire                      out_is_load;
-    wire                      out_is_imm;
-    wire                      out_is_store;
-    wire [               3:0] out_ls_size;
-    wire [`MULDIV_TYPE_RANGE] out_muldiv_type;
-    wire                      out_instr_valid;
-    wire                      out_predict_taken;
-    wire [31:0]               out_predict_target;
-    wire [         `PC_RANGE] out_pc;
-    wire [      `INSTR_RANGE] out_instr;
-
-    pipereg u_pipereg_dec2exu (
-        .clock                  (clock),
-        .reset_n                (reset_n),
-        .stall                  (mem_stall),//mem_stall latch output of this pipereg
-        .redirect_flush         (redirect_valid),
-        .rs1                    (rs1),
-        .rs2                    (rs2),
-        .rd                     (rd),
-        .src1                   (src1),
-        .src2                   (src2),
-        .imm                    (imm),
-        .src1_is_reg            (src1_is_reg),
-        .src2_is_reg            (src2_is_reg),
-        .need_to_wb             (need_to_wb),
-        .cx_type                (cx_type),
-        .is_unsigned            (is_unsigned),
-        .alu_type               (alu_type),
-        .is_word                (is_word),
-        .is_load                (is_load),
-        .is_imm                 (is_imm),
-        .is_store               (is_store),
-        .ls_size                (ls_size),
-        .muldiv_type            (muldiv_type),
-        .instr_valid            (decoder_instr_valid),
-        .predict_taken          (decoder_predicttaken_out),
-        .predict_target         (decoder_predicttarget_out),
-        .pc                     (decoder_pc_out),
-        .instr                  (decoder_inst_out),
-        .ls_address             ('b0),
-        .alu_result             ('b0),
-        .bju_result             ('b0),
-        .muldiv_result          ('b0),
-        .opload_read_data_wb    ('b0),
-        .out_rs1                (out_rs1),
-        .out_rs2                (out_rs2),
-        .out_rd                 (out_rd),
-        .out_src1               (out_src1),
-        .out_src2               (out_src2),
-        .out_imm                (out_imm),
-        .out_src1_is_reg        (out_src1_is_reg),
-        .out_src2_is_reg        (out_src2_is_reg),
-        .out_need_to_wb         (out_need_to_wb),
-        .out_cx_type            (out_cx_type),
-        .out_is_unsigned        (out_is_unsigned),
-        .out_alu_type           (out_alu_type),
-        .out_is_word            (out_is_word),
-        .out_is_load            (out_is_load),
-        .out_is_imm             (out_is_imm),
-        .out_is_store           (out_is_store),
-        .out_ls_size            (out_ls_size),
-        .out_muldiv_type        (out_muldiv_type),
-        .out_instr_valid        (out_instr_valid),
-        .out_predict_taken      (out_predict_taken),
-        .out_predict_target     (out_predict_target),
-        .out_pc                 (out_pc),
-        .out_instr              (out_instr),
-        .out_ls_address         (),
-        .out_alu_result         (),
-        .out_bju_result         (),
-        .out_muldiv_result      (),
-        .out_opload_read_data_wb(),
-        //bhtbtb pipe
-        .bht_write_enable         ('b0),                 
-        .bht_write_index          ('b0),
-        .bht_write_counter_select ('b0),   
-        .bht_write_inc            ('b0),                    
-        .bht_write_dec            ('b0),                    
-        .bht_valid_in             ('b0),  
-        .btb_ce                   ('b0),           
-        .btb_we                   ('b0),           
-        .btb_wmask                ('b0),
-        .btb_write_index          ('b0),
-        .btb_din                  ('b0),
-        .out_bht_write_enable         (),                 
-        .out_bht_write_index          (),
-        .out_bht_write_counter_select (),   
-        .out_bht_write_inc            (),                    
-        .out_bht_write_dec            (),                    
-        .out_bht_valid_in             (),  
-        .out_btb_ce                   (),           
-        .out_btb_we                   (),           
-        .out_btb_wmask                (),
-        .out_btb_write_index          (),
-        .out_btb_din                  ()       
-
-    );
-
-
-    backend u_backend (
-        .clock              (clock),
-        .reset_n            (reset_n),
-        .rs1                (out_rs1),
-        .rs2                (out_rs2),
-        .rd                 (out_rd),
-        .src1               (out_src1),
-        .src2               (out_src2),
-        .imm                (out_imm),
-        .src1_is_reg        (out_src1_is_reg),
-        .src2_is_reg        (out_src2_is_reg),
-        .need_to_wb         (out_need_to_wb),
-        .cx_type            (out_cx_type),
-        .is_unsigned        (out_is_unsigned),
-        .alu_type           (out_alu_type),
-        .is_word            (out_is_word),
-        .is_load            (out_is_load),
-        .is_imm             (out_is_imm),
-        .is_store           (out_is_store),
-        .ls_size            (out_ls_size),
-        .muldiv_type        (out_muldiv_type),
-        .instr_valid        (out_instr_valid),
-        .predict_taken      (out_predict_taken), 
-        .predict_target     (out_predict_target), 
-        .pc                 (out_pc),
-        .instr              (out_instr),
-        .regfile_write_valid(regfile_write_valid),
-        .regfile_write_rd   (regfile_write_rd),
-        .regfile_write_data (regfile_write_data),
-        .redirect_valid     (redirect_valid),//output
-        .redirect_target    (redirect_target),
-        .mem_stall          (mem_stall),
-        //trinity bus channel
-        .tbus_index_valid   (tbus_index_valid),
-        .tbus_index_ready   (tbus_index_ready),
-        .tbus_index         (tbus_index),
-        .tbus_write_data    (tbus_write_data),
-        .tbus_write_mask    (tbus_write_mask),
-        .tbus_read_data     (tbus_read_data),
-        .tbus_operation_done(tbus_operation_done),
-        .tbus_operation_type(tbus_operation_type),
-        .flop_commit_valid  (flop_commit_valid),
-        .exe_byp_rd         (exe_byp_rd),
-        .exe_byp_need_to_wb (exe_byp_need_to_wb),
-        .exe_byp_result     (exe_byp_result),
-        .wb_bht_write_enable         (wb_bht_write_enable        ),                 
-        .wb_bht_write_index          (wb_bht_write_index         ),
-        .wb_bht_write_counter_select (wb_bht_write_counter_select),   
-        .wb_bht_write_inc            (wb_bht_write_inc           ),                    
-        .wb_bht_write_dec            (wb_bht_write_dec           ),                    
-        .wb_bht_valid_in             (wb_bht_valid_in            ),  
-        .wb_btb_ce                   (wb_btb_ce                  ),           
-        .wb_btb_we                   (wb_btb_we                  ),           
-        .wb_btb_wmask                (wb_btb_wmask               ),
-        .wb_btb_write_index                (wb_btb_write_index               ),
-        .wb_btb_din                  (wb_btb_din                 ) 
-
-    );
-
-
-
+/* -------------------------------------------------------------------------- */
+/*                             channel_arb / icache / dcache                  */
+/* -------------------------------------------------------------------------- */
     channel_arb u_channel_arb (
         .clock            (clock),
         .reset_n          (reset_n),
@@ -433,6 +158,216 @@ module core_top #(
         .ddr_ready          (ddr_ready)
         //.redirect_valid     (redirect_valid)
     );
+
+
+    icache u_icache (
+        .clock                         (clock),
+        .reset_n                       (reset_n),
+        .flush                         (redirect_valid),
+        //tbus channel from pc_ctrl
+        .tbus_index_valid              (pc_index_valid),
+        .tbus_index_ready              (pc_index_ready),
+        .tbus_index                    (pc_index),
+        .tbus_write_data               ('b0),
+        .tbus_write_mask               ('b0),
+        .tbus_read_data                (pc_read_inst),
+        .tbus_operation_done           (pc_operation_done),
+        .tbus_operation_type           (2'b00),     
+        //icache channel for reading inst from ddr
+        .icache2arb_dbus_index_valid   (icache2arb_dbus_index_valid),
+        .icache2arb_dbus_index_ready   (icache2arb_dbus_index_ready),
+        .icache2arb_dbus_index         (icache2arb_dbus_index),
+        .icache2arb_dbus_write_data    (icache2arb_dbus_write_data),
+        .icache2arb_dbus_read_data     (icache2arb_dbus_read_data),
+        .icache2arb_dbus_operation_done(icache2arb_dbus_operation_done),
+        .icache2arb_dbus_operation_type()
+    );
+    dcache u_dcache (
+        .clock                         (clock),
+        .reset_n                       (reset_n),
+        .flush                         (redirect_valid),
+        //tbus channel from backend lsu (mem.v)
+        .tbus_index_valid              (tbus_index_valid),
+        .tbus_index_ready              (tbus_index_ready),
+        .tbus_index                    (tbus_index),
+        .tbus_write_data               (tbus_write_data),
+        .tbus_write_mask               (tbus_write_mask),
+        .tbus_read_data                (tbus_read_data),
+        .tbus_operation_done           (tbus_operation_done),
+        .tbus_operation_type           (tbus_operation_type),
+        // dcache channel for lsu operation
+        .dcache2arb_dbus_index_valid   (dcache2arb_dbus_index_valid),
+        .dcache2arb_dbus_index_ready   (dcache2arb_dbus_index_ready),
+        .dcache2arb_dbus_index         (dcache2arb_dbus_index),
+        .dcache2arb_dbus_write_data    (dcache2arb_dbus_write_data),
+        .dcache2arb_dbus_read_data     (dcache2arb_dbus_read_data),
+        .dcache2arb_dbus_operation_done(dcache2arb_dbus_operation_done),
+        .dcache2arb_dbus_operation_type(dcache2arb_dbus_operation_type)
+    );
+
+/* -------------------------------------------------------------------------- */
+/*                                     frontend                               */
+/* -------------------------------------------------------------------------- */
+
+frontend u_frontend(
+    .clock                          (clock                          ),
+    .reset_n                        (reset_n                        ),
+    //redirect
+    .redirect_valid                 (flush_valid                 ),
+    .redirect_target                (flush_target                ),
+    //instr fetch from ddr
+    .pc_index_valid                 (pc_index_valid                 ),
+    .pc_index_ready                 (pc_index_ready                 ),
+    .pc_operation_done              (pc_operation_done              ),
+    .pc_read_inst                   (pc_read_inst                   ),
+    .pc_index                       (pc_index                       ),
+    //output to backend
+    .ibuffer_instr_ready            (ibuffer_instr_ready            ),
+    .ibuffer_instr_valid            (ibuffer_instr_valid            ),
+    .ibuffer_inst_out               (ibuffer_inst_out               ),
+    .ibuffer_pc_out                 (ibuffer_pc_out                 ),
+    .ibuffer_predicttaken_out       (ibuffer_predicttaken_out       ),
+    .ibuffer_predicttarget_out      (ibuffer_predicttarget_out      ),
+    .intwb_bht_write_enable         (intwb_bht_write_enable         ),
+    .intwb_bht_write_index          (intwb_bht_write_index          ),
+    .intwb_bht_write_counter_select (intwb_bht_write_counter_select ),
+    .intwb_bht_write_inc            (intwb_bht_write_inc            ),
+    .intwb_bht_write_dec            (intwb_bht_write_dec            ),
+    .intwb_bht_valid_in             (intwb_bht_valid_in             ),
+    .intwb_btb_ce                   (intwb_btb_ce                   ),
+    .intwb_btb_we                   (intwb_btb_we                   ),
+    .intwb_btb_wmask                (intwb_btb_wmask                ),
+    .intwb_btb_write_index          (intwb_btb_write_index          ),
+    .intwb_btb_din                  (intwb_btb_din                  )
+);
+
+
+
+
+    // frontend u_frontend            (
+    //     .clock                     (clock                    ),
+    //     .reset_n                   (reset_n                  ),
+    //     .redirect_valid            (redirect_valid           ),
+    //     .redirect_target           (redirect_target          ),
+    //     .pc_index_valid            (pc_index_valid           ),
+    //     .pc_index_ready            (pc_index_ready           ),
+    //     .pc_operation_done         (pc_operation_done        ),
+    //     .pc_read_inst              (pc_read_inst             ),
+    //     .pc_index                  (pc_index                 ),
+    //     .fifo_read_en              (~mem_stall               ),           //when mem stall,ibuf can not to read instr anymore!
+    //     //.clear_ibuffer_ext       (redirect_valid           ),
+    //     .rs1                       (rs1                      ),
+    //     .rs2                       (rs2                      ),
+    //     .rd                        (rd                       ),
+    //     .src1_muxed                (src1                     ),
+    //     .src2_muxed                (src2                     ),
+    //     .imm                       (imm                      ),
+    //     .src1_is_reg               (src1_is_reg              ),
+    //     .src2_is_reg               (src2_is_reg              ),
+    //     .need_to_wb                (need_to_wb               ),
+    //     .cx_type                   (cx_type                  ),
+    //     .is_unsigned               (is_unsigned              ),
+    //     .alu_type                  (alu_type                 ),
+    //     .is_word                   (is_word                  ),
+    //     .is_imm                    (is_imm                   ),
+    //     .is_load                   (is_load                  ),
+    //     .is_store                  (is_store                 ),
+    //     .ls_size                   (ls_size                  ),
+    //     .muldiv_type               (muldiv_type              ),
+    //     .decoder_instr_valid       (decoder_instr_valid      ),
+    //     .decoder_predicttaken_out  (decoder_predicttaken_out ),
+    //     .decoder_predicttarget_out (decoder_predicttarget_out),
+    //     .decoder_pc_out            (decoder_pc_out           ),
+    //     .decoder_inst_out          (decoder_inst_out         ),
+    //     //write back enable
+    //     .writeback_valid    (regfile_write_valid),
+    //     .writeback_rd       (regfile_write_rd   ),
+    //     .writeback_data     (regfile_write_data ),
+
+    //     .exe_byp_rd        (exe_byp_rd                        ),
+    //     .exe_byp_need_to_wb(exe_byp_need_to_wb                ),
+    //     .exe_byp_result    (exe_byp_result                    ),
+    //     .mem_stall         (mem_stall                         ),
+    //     //bhtbtb
+    //     .bht_write_enable         (wb_bht_write_enable        ),                 
+    //     .bht_write_index          (wb_bht_write_index         ),
+    //     .bht_write_counter_select (wb_bht_write_counter_select),   
+    //     .bht_write_inc            (wb_bht_write_inc           ),                    
+    //     .bht_write_dec            (wb_bht_write_dec           ),                    
+    //     .bht_valid_in             (wb_bht_valid_in            ),  
+    //     .btb_ce                   (wb_btb_ce                  ),           
+    //     .btb_we                   (wb_btb_we                  ),           
+    //     .btb_wmask                (wb_btb_wmask               ),
+    //     .btb_write_index          (wb_btb_write_index               ),
+    //     .btb_din                  (wb_btb_din                 )        
+
+    // );
+
+
+/* -------------------------------------------------------------------------- */
+/*                                   backend                                  */
+/* -------------------------------------------------------------------------- */
+
+    // backend u_backend (
+    //     .clock              (clock),
+    //     .reset_n            (reset_n),
+    //     .rs1                (out_rs1),
+    //     .rs2                (out_rs2),
+    //     .rd                 (out_rd),
+    //     .src1               (out_src1),
+    //     .src2               (out_src2),
+    //     .imm                (out_imm),
+    //     .src1_is_reg        (out_src1_is_reg),
+    //     .src2_is_reg        (out_src2_is_reg),
+    //     .need_to_wb         (out_need_to_wb),
+    //     .cx_type            (out_cx_type),
+    //     .is_unsigned        (out_is_unsigned),
+    //     .alu_type           (out_alu_type),
+    //     .is_word            (out_is_word),
+    //     .is_load            (out_is_load),
+    //     .is_imm             (out_is_imm),
+    //     .is_store           (out_is_store),
+    //     .ls_size            (out_ls_size),
+    //     .muldiv_type        (out_muldiv_type),
+    //     .instr_valid        (out_instr_valid),
+    //     .predict_taken      (out_predict_taken), 
+    //     .predict_target     (out_predict_target), 
+    //     .pc                 (out_pc),
+    //     .instr              (out_instr),
+    //     .regfile_write_valid(regfile_write_valid),
+    //     .regfile_write_rd   (regfile_write_rd),
+    //     .regfile_write_data (regfile_write_data),
+    //     .redirect_valid     (redirect_valid),//output
+    //     .redirect_target    (redirect_target),
+    //     .mem_stall          (mem_stall),
+    //     //trinity bus channel
+    //     .tbus_index_valid   (tbus_index_valid),
+    //     .tbus_index_ready   (tbus_index_ready),
+    //     .tbus_index         (tbus_index),
+    //     .tbus_write_data    (tbus_write_data),
+    //     .tbus_write_mask    (tbus_write_mask),
+    //     .tbus_read_data     (tbus_read_data),
+    //     .tbus_operation_done(tbus_operation_done),
+    //     .tbus_operation_type(tbus_operation_type),
+    //     .flop_commit_valid  (flop_commit_valid),
+    //     .exe_byp_rd         (exe_byp_rd),
+    //     .exe_byp_need_to_wb (exe_byp_need_to_wb),
+    //     .exe_byp_result     (exe_byp_result),
+    //     .wb_bht_write_enable         (wb_bht_write_enable        ),                 
+    //     .wb_bht_write_index          (wb_bht_write_index         ),
+    //     .wb_bht_write_counter_select (wb_bht_write_counter_select),   
+    //     .wb_bht_write_inc            (wb_bht_write_inc           ),                    
+    //     .wb_bht_write_dec            (wb_bht_write_dec           ),                    
+    //     .wb_bht_valid_in             (wb_bht_valid_in            ),  
+    //     .wb_btb_ce                   (wb_btb_ce                  ),           
+    //     .wb_btb_we                   (wb_btb_we                  ),           
+    //     .wb_btb_wmask                (wb_btb_wmask               ),
+    //     .wb_btb_write_index                (wb_btb_write_index               ),
+    //     .wb_btb_din                  (wb_btb_din                 ) 
+
+    // );
+
+
 
 
 

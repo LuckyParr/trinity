@@ -14,7 +14,7 @@ module ifu (
 
     // Inputs for instruction buffer
     input wire [`ICACHE_FETCHWIDTH128_RANGE] pc_read_inst,      // 128-bit input data for instructions
-    input wire        fifo_read_en,      // External read enable signal for FIFO
+    input wire        ibuffer_instr_ready,      // External read enable signal for FIFO
     //input wire        clear_ibuffer_ext, // External clear signal for ibuffer
 
     // Outputs from ibuffer
@@ -28,7 +28,7 @@ module ifu (
     // Outputs from pc_ctrl
     output wire [63:0] pc_index,  // Selected bits [21:3] of the PC for DDR index
 
-    input wire mem_stall,
+    input wire backend_stall,
     // BHT Write Interface
     input wire bht_write_enable,                 // Write enable for BHT
     input wire [8:0] bht_write_index,            // Set index for BHT write operation
@@ -75,27 +75,27 @@ module ifu (
 
 
     // Instantiate the ibuffer module
-    ibuffer ibuffer_inst (
-        .clock              (clock),
-        .reset_n            (reset_n),
-        .pc                 (pc),
-        .pc_index_ready     (pc_index_ready),
-        .pc_operation_done  (pc_operation_done),
-        .admin2ib_instr      (admin2ib_instr),
-        .admin2ib_instr_valid(admin2ib_instr_valid),
-        .fifo_read_en       (fifo_read_en),
-        .redirect_valid      (redirect_valid),    // OR external and internal clear signals
-        .fetch_inst         (fetch_inst),
-        .ibuffer_predicttaken_out (ibuffer_predicttaken_out),
+    ibuffer ibuffer_inst           (
+        .clock                     (clock                    ),
+        .reset_n                   (reset_n                  ),
+        .pc                        (pc                       ),
+        .pc_index_ready            (pc_index_ready           ),
+        .pc_operation_done         (pc_operation_done        ),
+        .admin2ib_instr            (admin2ib_instr           ),
+        .admin2ib_instr_valid      (admin2ib_instr_valid     ),
+        .ibuffer_instr_ready       (ibuffer_instr_ready      ),
+        .redirect_valid            (redirect_valid           ),    // OR external and internal clear signals
+        .fetch_inst                (fetch_inst               ),
+        .ibuffer_predicttaken_out  (ibuffer_predicttaken_out ),
         .ibuffer_predicttarget_out (ibuffer_predicttarget_out),
-        .ibuffer_instr_valid(ibuffer_instr_valid),
-        .ibuffer_inst_out   (ibuffer_inst_out),
-        .ibuffer_pc_out     (ibuffer_pc_out),
-        .fifo_empty         (fifo_empty),
-        .mem_stall          (mem_stall),
-        .admin2ib_predicttaken (admin2ib_predicttaken),
-        .admin2ib_predicttarget (admin2ib_predicttarget)
-    );
+        .ibuffer_instr_valid       (ibuffer_instr_valid      ),
+        .ibuffer_inst_out          (ibuffer_inst_out         ),
+        .ibuffer_pc_out            (ibuffer_pc_out           ),
+        .fifo_empty                (fifo_empty               ),
+        .mem_stall                 (mem_stall                ),
+        .admin2ib_predicttaken     (admin2ib_predicttaken    ),
+        .admin2ib_predicttarget    (admin2ib_predicttarget   )
+                                                             );
 
 
     instr_admin u_instr_admin           (
