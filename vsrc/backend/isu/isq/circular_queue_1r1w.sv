@@ -35,17 +35,17 @@ module circular_queue_1r1w #(
     // 'entry_id_dispatcher' increments on enqueue only
     logic [SELFID_WIDTH-1:0] entry_id_dispatcher;
 
-    logic [DATA_WIDTH-1:0]      data_out_array      [0:DEPTH-1];
-    logic [CONDITION_WIDTH-1:0] condition_out_array [0:DEPTH-1];
-    logic [SELFID_WIDTH-1:0]    index_out_array     [0:DEPTH-1];
-    logic                       valid_out_array     [0:DEPTH-1];
-    logic                       rdy2dq_out_array    [0:DEPTH-1];
+    logic [DATA_WIDTH-1:0]      data_out_dec      [0:DEPTH-1];
+    logic [CONDITION_WIDTH-1:0] condition_out_dec [0:DEPTH-1];
+    logic [SELFID_WIDTH-1:0]    index_out_dec     [0:DEPTH-1];
+    logic                       valid_out_dec     [0:DEPTH-1];
+    logic                       rdy2dq_out_dec    [0:DEPTH-1];
 
     // Write/clear/update signals
-    logic [0:DEPTH-1] wr_en_array;
-    logic [0:DEPTH-1] clear_array;
-    logic [0:DEPTH-1] needflush_array;
-    logic [0:DEPTH-1] update_condition_valid_array;
+    logic [0:DEPTH-1] wr_en_dec;
+    logic [0:DEPTH-1] clear_dec;
+    logic [0:DEPTH-1] needflush_dec;
+    logic [0:DEPTH-1] update_condition_valid_dec;
 
     // Next input signals used when wr_en=1
     logic [DATA_WIDTH-1:0]      data_in_next;
@@ -59,11 +59,11 @@ module circular_queue_1r1w #(
     integer j;
     always_comb begin
         for (j = 0; j < DEPTH; j++) begin
-            update_condition_valid_array[j] = (update_condition_robid == data_out[j][247:241]) && update_condition_valid;
+            update_condition_valid_dec[j] = (update_condition_robid == data_out[j][247:241]) && update_condition_valid;
         end
     end
 
-    // Generate cqentry array
+    // Generate cqentry dec
     genvar i;
     generate
         for (i = 0; i < DEPTH; i++) begin : gen_cqentries
@@ -75,8 +75,8 @@ module circular_queue_1r1w #(
                 .clock   (clock),
                 .reset_n (reset_n),
 
-                .wr_en   (wr_en_array[i]),
-                .clear_entry (clear_array[i]),
+                .wr_en   (wr_en_dec[i]),
+                .clear_entry (clear_dec[i]),
 
                 .data_in      (data_in_next),
                 .condition_in (condition_in_next),
@@ -84,16 +84,16 @@ module circular_queue_1r1w #(
                 .valid_in     (valid_in_next),
 
                 // Update condition signals
-                .update_condition_valid (update_condition_valid_array[i]),
+                .update_condition_valid (update_condition_valid_dec[i]),
                 .update_condition_mask(update_condition_mask),
                 .update_condition_in    (update_condition_data),
 
                 // Outputs
-                .data_out       (data_out_array[i]),
-                .condition_out  (condition_out_array[i]),
-                .index_out      (index_out_array[i]),
-                .valid_out      (valid_out_array[i]),
-                .ready_to_dequeue_out (rdy2dq_out_array[i])
+                .data_out       (data_out_dec[i]),
+                .condition_out  (condition_out_dec[i]),
+                .index_out      (index_out_dec[i]),
+                .valid_out      (valid_out_dec[i]),
+                .ready_to_dequeue_out (rdy2dq_out_dec[i])
             );
         end
     endgenerate
@@ -134,12 +134,12 @@ module circular_queue_1r1w #(
     end
 
     // Dequeue logic
-    wire front_ready = rdy2dq_out_array[dequeue_ptr];
+    wire front_ready = rdy2dq_out_dec[dequeue_ptr];
     assign dequeue_valid = (!empty) && front_ready;
 
-    assign dequeue_data      = data_out_array[dequeue_ptr];
-    assign dequeue_condition = condition_out_array[dequeue_ptr];
-    assign dequeue_selfid     = index_out_array[dequeue_ptr];
+    assign dequeue_data      = data_out_dec[dequeue_ptr];
+    assign dequeue_condition = condition_out_dec[dequeue_ptr];
+    assign dequeue_selfid     = index_out_dec[dequeue_ptr];
 
     always_ff @(posedge clock or negedge reset_n) begin
         if (!reset_n) begin
@@ -157,8 +157,8 @@ module circular_queue_1r1w #(
     // 4) Wr_en & Clear signals
     // ----------------------------------------------------
     always_comb begin
-        wr_en_array  = '0;
-        clear_array  = '0;
+        wr_en_dec  = '0;
+        clear_dec  = '0;
 
         data_in_next       = '0;
         condition_in_next  = '0;
@@ -167,7 +167,7 @@ module circular_queue_1r1w #(
 
         // Enqueue
         if (enqueue_valid && enqueue_ready && !flush_valid) begin
-            wr_en_array[enqueue_ptr] = 1'b1;
+            wr_en_dec[enqueue_ptr] = 1'b1;
 
             data_in_next      = enqueue_data;
             condition_in_next = enqueue_condition;
@@ -177,10 +177,10 @@ module circular_queue_1r1w #(
 
         // Dequeue => clear that slot
         if (dequeue_valid && dequeue_ready) begin
-            clear_array[dequeue_ptr] = 1'b1;
+            clear_dec[dequeue_ptr] = 1'b1;
         end
         if (rob_state == `ROB_STATE_ROLLILNGBACK) begin
-            clear_array = needflush_array;
+            clear_dec = needflush_dec;
         end
     end
 
@@ -189,10 +189,10 @@ module circular_queue_1r1w #(
 //find req younger than flush_robid
     always @(*) begin
         integer i;
-        needflush_array = 'b0;
+        needflush_dec = 'b0;
         for (i = 0; i < DEPTH; i = i + 1) begin
             if (rob_state == `ROB_STATE_ROLLILNGBACK) begin
-                    needflush_array[i] = flush_robid[`ROB_SIZE_LOG] ^ data_out[i][247] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < data_out[i][246:241]);
+                    needflush_dec[i] = flush_robid[`ROB_SIZE_LOG] ^ data_out[i][247] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < data_out[i][246:241]);
                 end
             end
         end

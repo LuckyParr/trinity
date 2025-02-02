@@ -39,11 +39,11 @@ module int_isq (
 
     output logic intisq_can_enq               
 );
-    //output array
-    logic [`ISQ_DEPTH-1:0][`ISQ_DATA_WIDTH-1:0]      data_out_array;
-    logic [`ISQ_DEPTH-1:0][`ISQ_CONDITION_WIDTH-1:0] condition_out_array;
-    logic [`ISQ_DEPTH-1:0][`ISQ_INDEX_WIDTH-1:0]     index_out_array;
-    logic [`ISQ_DEPTH-1:0]                           valid_out_array;
+    //output dec
+    logic [`ISQ_DEPTH-1:0][`ISQ_DATA_WIDTH-1:0]      data_out_dec;
+    logic [`ISQ_DEPTH-1:0][`ISQ_CONDITION_WIDTH-1:0] condition_out_dec;
+    logic [`ISQ_DEPTH-1:0][`ISQ_INDEX_WIDTH-1:0]     index_out_dec;
+    logic [`ISQ_DEPTH-1:0]                           valid_out_dec;
 
     //-----------------------------------------------------
     // condition updates for writeback0
@@ -67,17 +67,17 @@ module int_isq (
         writeback0_prd_match_prs2 = 0;
         for (i=0;i < `ISQ_DEPTH; i=i+1) begin
             //instr0_prs1
-            if((data_out_array[i][116 : 111] == writeback0_prd) && valid_out_array[i])begin
+            if((data_out_dec[i][116 : 111] == writeback0_prd) && valid_out_dec[i])begin
                 update_condition_mask = 2'b10;
                 update_condition_in = 2'b10;
-                update_condition_robid = index_out_array[i];
+                update_condition_robid = index_out_dec[i];
                 writeback0_prd_match_prs1 = 1'b1;
             end
             //instr0_prs2
-            if((data_out_array[i][110 : 105] == writeback0_prd) && valid_out_array[i])begin
+            if((data_out_dec[i][110 : 105] == writeback0_prd) && valid_out_dec[i])begin
                 update_condition_mask = 2'b01;
                 update_condition_in = 2'b01;
-                update_condition_robid = index_out_array[i];
+                update_condition_robid = index_out_dec[i];
                 writeback0_prd_match_prs2 = 1'b1;
             end            
         end
@@ -117,11 +117,11 @@ module int_isq (
         .flush_valid              (flush_valid),
         .flush_robid              (flush_robid),
 
-        //output array
-        .data_out_array     (data_out_array     ),
-        .condition_out_array(condition_out_array),
-        .index_out_array    (index_out_array    ),
-        .valid_out_array    (valid_out_array    )
+        //output dec
+        .data_out_dec     (data_out_dec     ),
+        .condition_out_dec(condition_out_dec),
+        .index_out_dec    (index_out_dec    ),
+        .valid_out_dec    (valid_out_dec    )
     );
 
 endmodule

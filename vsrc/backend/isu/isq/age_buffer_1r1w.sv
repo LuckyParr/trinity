@@ -31,27 +31,27 @@ module age_buffer_1r1w (
     input  logic  [1:0]               rob_state, 
     input  logic                      flush_valid,
     input  logic [`ROB_SIZE_LOG:0]    flush_robid,
-    //output array
-    output logic [`ISQ_DEPTH-1:0][`ISQ_DATA_WIDTH-1:0]      data_out_array,
-    output logic [`ISQ_DEPTH-1:0][`ISQ_CONDITION_WIDTH-1:0] condition_out_array,
-    output logic [`ISQ_DEPTH-1:0][`ISQ_INDEX_WIDTH-1:0]     index_out_array,
-    output logic [`ISQ_DEPTH-1:0]                           valid_out_array
+    //output dec
+    output logic [`ISQ_DEPTH-1:0][`ISQ_DATA_WIDTH-1:0]      data_out_dec,
+    output logic [`ISQ_DEPTH-1:0][`ISQ_CONDITION_WIDTH-1:0] condition_out_dec,
+    output logic [`ISQ_DEPTH-1:0][`ISQ_INDEX_WIDTH-1:0]     index_out_dec,
+    output logic [`ISQ_DEPTH-1:0]                           valid_out_dec
 );
 
 
-    logic [`ISQ_DEPTH-1:0] update_condition_valid_array;
+    logic [`ISQ_DEPTH-1:0] update_condition_valid_dec;
     // ----------------------------------------------------------
     // Sub-entry outputs and control signals
     // ----------------------------------------------------------
     logic [`ISQ_DEPTH-1:0]                      wr_en;
     logic [`ISQ_DEPTH-1:0]                      clear_entry;
-    logic [`ISQ_DEPTH-1:0]                      rdy2dq_out_array;
+    logic [`ISQ_DEPTH-1:0]                      rdy2dq_out_dec;
 
 
 
     // age_matrix[i][j] = 1 => "entry i" is older than "entry j"
     logic [`ISQ_DEPTH-1:0][`ISQ_DEPTH-1:0] age_matrix;
-    logic [`ISQ_DEPTH-1:0] needflush_array;
+    logic [`ISQ_DEPTH-1:0] needflush_dec;
 
 /* ----------------- writeback to update condition bit logic ---------------- */
 
@@ -60,7 +60,7 @@ module age_buffer_1r1w (
     integer j;
     always_comb begin
         for (j = 0; j < `ISQ_DEPTH; j++) begin
-            update_condition_valid_array[j] = (update_condition_robid == data_out_array[j][247:241]) && update_condition_valid;
+            update_condition_valid_dec[j] = (update_condition_robid == data_out_dec[j][247:241]) && update_condition_valid;
         end
     end
 
@@ -87,16 +87,16 @@ module age_buffer_1r1w (
                 .valid_in               (1'b1),
 
                 // Condition updates
-                .update_condition_valid (update_condition_valid_array[g]),
+                .update_condition_valid (update_condition_valid_dec[g]),
                 .update_condition_mask  (update_condition_mask),
                 .update_condition_in    (update_condition_in),
 
                 // Outputs
-                .data_out               (data_out_array[g]),
-                .condition_out          (condition_out_array[g]),
-                .index_out              (index_out_array[g]),
-                .valid_out              (valid_out_array[g]),
-                .ready_to_dequeue_out   (rdy2dq_out_array[g])
+                .data_out               (data_out_dec[g]),
+                .condition_out          (condition_out_dec[g]),
+                .index_out              (index_out_dec[g]),
+                .valid_out              (valid_out_dec[g]),
+                .ready_to_dequeue_out   (rdy2dq_out_dec[g])
             );
         end
     endgenerate
@@ -108,7 +108,7 @@ module age_buffer_1r1w (
     always_comb begin
         free_idx_for_enq = -1;
         for (int i = 0; i < `ISQ_DEPTH; i++) begin
-            if (valid_out_array[i] == 1'b0) begin
+            if (valid_out_dec[i] == 1'b0) begin
                 free_idx_for_enq = i;
                 break;
             end
@@ -125,11 +125,11 @@ module age_buffer_1r1w (
         oldest_found       = 1'b0;
 
         for (int i = 0; i < `ISQ_DEPTH; i++) begin
-            if (rdy2dq_out_array[i]) begin
+            if (rdy2dq_out_dec[i]) begin
                 // Check if there's any j that is older than i
                 logic any_j_older = 1'b0;
                 for (int j = 0; j < `ISQ_DEPTH; j++) begin
-                    if (j != i && valid_out_array[j] && age_matrix[j][i]) begin
+                    if (j != i && valid_out_dec[j] && age_matrix[j][i]) begin
                         any_j_older = 1'b1;
                         break;
                     end
@@ -151,9 +151,9 @@ module age_buffer_1r1w (
     assign deq_valid = oldest_found;
 
     // For output data (dequeue path)
-    assign deq_data      = (oldest_found) ? data_out_array[oldest_idx_for_deq]      : '0;
-    assign deq_condition = (oldest_found) ? condition_out_array[oldest_idx_for_deq] : '0;
-    assign deq_index     = (oldest_found) ? index_out_array[oldest_idx_for_deq]     : '0;
+    assign deq_data      = (oldest_found) ? data_out_dec[oldest_idx_for_deq]      : '0;
+    assign deq_condition = (oldest_found) ? condition_out_dec[oldest_idx_for_deq] : '0;
+    assign deq_index     = (oldest_found) ? index_out_dec[oldest_idx_for_deq]     : '0;
 
     // ----------------------------------------------------------
     // Main sequential block
@@ -173,7 +173,7 @@ module age_buffer_1r1w (
         end
         else begin
             if(flush_valid)begin
-                clear_entry <= needflush_array;
+                clear_entry <= needflush_dec;
             end
             // ================================
             // Enqueue if enq_valid & enq_ready
@@ -185,7 +185,7 @@ module age_buffer_1r1w (
                 // The new entry is "younger" than all existing valid entries
                 for (int j = 0; j < `ISQ_DEPTH; j++) begin
                     if (j != free_idx_for_enq) begin
-                        if (valid_out_array[j]) begin
+                        if (valid_out_dec[j]) begin
                             // j is older than free_idx_for_enq
                             age_matrix[j][free_idx_for_enq] <= 1'b1;
                             age_matrix[free_idx_for_enq][j] <= 1'b0;
@@ -219,10 +219,10 @@ module age_buffer_1r1w (
 //find req younger than flush_robid
     always @(*) begin
         integer i;
-        needflush_array = 'b0;
+        needflush_dec = 'b0;
         for (i = 0; i < `ISQ_DEPTH; i = i + 1) begin
             if (rob_state == `ROB_STATE_ROLLIBACK) begin
-                    needflush_array[i] = flush_robid[`ROB_SIZE_LOG] ^ data_out_array[i][247] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < data_out_array[i][246:241]);
+                    needflush_dec[i] = flush_robid[`ROB_SIZE_LOG] ^ data_out_dec[i][247] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < data_out_dec[i][246:241]);
                 end
             end
         end
