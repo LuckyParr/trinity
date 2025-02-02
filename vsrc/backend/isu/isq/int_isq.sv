@@ -5,11 +5,11 @@ module int_isq (
     //-----------------------------------------------------
     // Enqueue interface
     //-----------------------------------------------------
-    input  logic [`ISQ_DATA_WIDTH-1:0]       enq_data,
-    input  logic [`ISQ_CONDITION_WIDTH-1:0]  enq_condition,
+    input  logic [`ISQ_DATA_WIDTH-1:0]         enq_data,
+    input  logic [`ISQ_CONDITION_WIDTH-1:0]    enq_condition,
     //input  logic [`ISQ_INDEX_WIDTH-1:0]      enq_index,
-    input  logic                         enq_valid,  
-    output logic                         enq_ready,  
+    input  logic                               enq_valid,  
+    output logic                               enq_ready,  
 
     //-----------------------------------------------------
     // Dequeue interface
@@ -17,8 +17,8 @@ module int_isq (
     output logic [`ISQ_DATA_WIDTH-1:0]       deq_data,
     output logic [`ISQ_CONDITION_WIDTH-1:0]  deq_condition,
     output logic [`ISQ_INDEX_WIDTH-1:0]      deq_index,
-    output logic                         deq_valid,  
-    input  logic                         deq_ready,  
+    output logic                             deq_valid,  
+    input  logic                             deq_ready,  
 
     //-----------------------------------------------------
     // writeback to set condition to 1
@@ -42,7 +42,7 @@ module int_isq (
     logic [`ISQ_DEPTH-1:0][`ISQ_DATA_WIDTH-1:0]      data_out_array;
     logic [`ISQ_DEPTH-1:0][`ISQ_CONDITION_WIDTH-1:0] condition_out_array;
     logic [`ISQ_DEPTH-1:0][`ISQ_INDEX_WIDTH-1:0]     index_out_array;
-    logic [`ISQ_DEPTH-1:0]                      valid_out_array;
+    logic [`ISQ_DEPTH-1:0]                           valid_out_array;
 
     //-----------------------------------------------------
     // condition updates for writeback0

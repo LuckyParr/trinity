@@ -3,7 +3,6 @@ module idu_top(
     input  wire                      reset_n,
 
     // ports with ibuffer
-    input  wire                      fifo_empty,
     input  wire                      ibuffer_instr_valid,
     input  wire                      ibuffer_predicttaken_out,
     input  wire [31:0]               ibuffer_predicttarget_out,
@@ -120,7 +119,7 @@ module idu_top(
         .clock                      (clock),
         .reset_n                    (reset_n),
 
-        // Inputs from decoder -> pipeline register
+        /* --------------------------- Inputs from decoder -------------------------- */
         .instr_valid_from_upper     (dec_instr_valid),
         .instr_ready_to_upper       (ibuffer_instr_ready),//output
 
@@ -144,13 +143,11 @@ module idu_top(
         .ls_size                    (dec_ls_size),
         .muldiv_type                (dec_muldiv_type),
 
-        // Optional: If physical register renaming information is needed, map them here
         .prs1                       (),
         .prs2                       (),
         .prd                        (),
         .old_prd                    (),
 
-        // Results from EXU for write-back or bypassing
         .ls_address                 (),
         .alu_result                 (),
         .bju_result                 (),
@@ -158,9 +155,9 @@ module idu_top(
         .opload_read_data_wb        (),
 
         .predicttaken               (dec_predicttaken_out),
-        .predicttarget               (dec_predicttarge_out),
+        .predicttarget              (dec_predicttarge_out),
 
-        // Outputs to next pipeline stage
+        /* ----------------------------- Outputs to IRU ----------------------------- */
         .instr_valid_to_lower       (idu2iru_instr_valid),
         .instr_ready_from_lower     (iru2idu_instr_ready),//input feedthrough
 
@@ -196,9 +193,9 @@ module idu_top(
         .lower_opload_read_data_wb    (),
 
         .lower_predicttaken           (idu2iru_instr0_predicttaken),
-        .lower_predicttarget           (idu2iru_instr0_predicttarget),
+        .lower_predicttarget          (idu2iru_instr0_predicttarget),
         // Flush signal
-        .flush_valid                (flush_valid)
+        .flush_valid                  (flush_valid)//input
     );
 
 endmodule

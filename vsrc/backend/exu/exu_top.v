@@ -4,10 +4,6 @@ module exu_top #(
     input wire                          clock,
     input wire                          reset_n,
 
-    // Common Inputs
-    input wire                          flush_valid,
-    input wire  [`INSTR_ID_WIDTH-1:0]   flush_robid,
-
     // Intblock Inputs
     input wire                          int_instr_valid,
     output wire                         int_instr_ready,
@@ -58,13 +54,13 @@ module exu_top #(
     output wire                         intwb_need_to_wb,
     output wire [`PREG_RANGE]           intwb_prd,
     output wire [`RESULT_RANGE]         intwb_result,
-    output wire                         flush_valid,
-    output wire [63:0]                  flush_target,
-    output wire [`INSTR_ID_WIDTH-1:0]   flush_robid,
     output wire [`INSTR_ID_WIDTH-1:0]   intwb_robid,
     output wire [      `INSTR_RANGE ]   intwb_instr,
     output wire [         `PC_RANGE ]   intwb_pc,
-
+    
+    output wire                         flush_valid,
+    output wire [63:0]                  flush_target,
+    output wire [`INSTR_ID_WIDTH-1:0]   flush_robid,
     // Memblock Outputs
     output wire                         memwb_instr_valid,
     output wire [`INSTR_ID_WIDTH-1:0]   memwb_robid,

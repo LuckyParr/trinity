@@ -37,7 +37,7 @@ module busy_table (
 
 /* ------------------------------- walk logic ------------------------------- */
     input flush_valid,
-    input [`INSTR_ID_WIDTH-1:0] flush_id,
+    input [`INSTR_ID_WIDTH-1:0] flush_robid,//TODO, use robid to kill young instr
     input wire [1:0] rob_state,
     input wire walking_valid0,
     input wire walking_valid1,

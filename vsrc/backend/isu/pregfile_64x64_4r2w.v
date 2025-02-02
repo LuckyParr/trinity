@@ -133,7 +133,7 @@ module pregfile_64x64_4r2w (
     DifftestArchIntRegState u_DifftestArchIntRegState (
         .clock      (clock),
         .enable     (1'b1),
-        .io_value_0 (pregfile[debug_preg0]),
+        .io_value_0 (pregfile[debug_preg0]),//debug_preg0: physical reg number of arch reg 0
         .io_value_1 (pregfile[debug_preg1]),
         .io_value_2 (pregfile[debug_preg2]),
         .io_value_3 (pregfile[debug_preg3]),

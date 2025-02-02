@@ -491,6 +491,8 @@ isu_top u_isu_top                             (
     .isu2exu_instr0_ls_size                   (isu2exu_instr0_ls_size     ),
     .isu2exu_instr0_predicttaken              (isu2exu_instr0_predicttaken),
     .isu2exu_instr0_predicttarget             (isu2exu_instr0_predicttarget),
+    .isu2exu_instr0_src1                      (isu2exu_instr0_src1        ),
+    .isu2exu_instr0_src2                      (isu2exu_instr0_src2        ),
     .deq_valid                                (deq_valid                  ),
     .deq_ready                                (deq_ready                  ),
     .rob_state                                (rob_state                  ),//OUTPUT
@@ -538,13 +540,13 @@ isu_top u_isu_top                             (
 
 // //intblock always can accept, mem can accept only when no operation in process
 wire exu_available = int_instr_ready && mem_instr_ready;
-assign isu2iru_instr0_ready = exu_available;
-assign isu2iru_instr1_ready = 'b0;
+wire isu2iru_instr0_ready = exu_available;
+wire isu2iru_instr1_ready = 'b0;
 wire instr_goto_memblock = isu2exu_instr0_is_store || isu2exu_instr0_is_load;
 wire int_instr_valid = deq_valid && ~instr_goto_memblock;
 wire mem_instr_valid = deq_valid && instr_goto_memblock;
 
-exu_top u_exu_top(
+exu_top u_exu_top                         (
     .clock                                (clock                                           ),
     .reset_n                              (reset_n                                         ),
     .flush_valid                          (flush_valid                                     ),
@@ -592,8 +594,8 @@ exu_top u_exu_top(
     .intwb_need_to_wb                     (intwb_need_to_wb                                ),
     .intwb_prd                            (intwb_prd                                       ),
     .intwb_result                         (intwb_result                                    ),
-    .flush_valid                 (flush_valid                                     ),//rename signal
-    .flush_target                (flush_target                                    ),//rename signal
+    .flush_valid                          (flush_valid                                     ),//rename signal
+    .flush_target                         (flush_target                                    ),//rename signal
     .flush_robid                          (flush_robid                                     ),
     .intwb_robid                          (intwb_robid                                     ),
     .intwb_instr                          (                                                ),
@@ -606,18 +608,18 @@ exu_top u_exu_top(
     .memwb_result                         (memwb_result                                    ),//rename signal
     .memwb_instr                          (                                                ),
     .memwb_pc                             (                                                ),
-    .intwb_bht_write_enable         (intwb_bht_write_enable                    ),
-    .intwb_bht_write_index          (intwb_bht_write_index                     ),
-    .intwb_bht_write_counter_select (intwb_bht_write_counter_select            ),
-    .intwb_bht_write_inc            (intwb_bht_write_inc                       ),
-    .intwb_bht_write_dec            (intwb_bht_write_dec                       ),
-    .intwb_bht_valid_in             (intwb_bht_valid_in                        ),
-    .intwb_btb_ce                   (intwb_btb_ce                              ),
-    .intwb_btb_we                   (intwb_btb_we                              ),
-    .intwb_btb_wmask                (intwb_btb_wmask                           ),
-    .intwb_btb_write_index          (intwb_btb_write_index                     ),
-    .intwb_btb_din                  (intwb_btb_din                             ),
-    .mem2dcache_flush               (mem2dcache_flush                                )
+    .intwb_bht_write_enable               (intwb_bht_write_enable                    ),
+    .intwb_bht_write_index                (intwb_bht_write_index                     ),
+    .intwb_bht_write_counter_select       (intwb_bht_write_counter_select            ),
+    .intwb_bht_write_inc                  (intwb_bht_write_inc                       ),
+    .intwb_bht_write_dec                  (intwb_bht_write_dec                       ),
+    .intwb_bht_valid_in                   (intwb_bht_valid_in                        ),
+    .intwb_btb_ce                         (intwb_btb_ce                              ),
+    .intwb_btb_we                         (intwb_btb_we                              ),
+    .intwb_btb_wmask                      (intwb_btb_wmask                           ),
+    .intwb_btb_write_index                (intwb_btb_write_index                     ),
+    .intwb_btb_din                        (intwb_btb_din                             ),
+    .mem2dcache_flush                     (mem2dcache_flush                                )
                                                                                            );
 
 

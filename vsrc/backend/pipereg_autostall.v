@@ -65,15 +65,15 @@ module pipereg_autostall (
     output reg [               3:0] lower_ls_size,
     output reg [`MULDIV_TYPE_RANGE] lower_muldiv_type,
 
-    output reg [`PREG_RANGE] lower_prs1,
-    output reg [`PREG_RANGE] lower_prs2,
-    output reg [`PREG_RANGE] lower_prd,
+    output reg [`PREG_RANGE] lower_prs1   ,
+    output reg [`PREG_RANGE] lower_prs2   ,
+    output reg [`PREG_RANGE] lower_prd    ,
     output reg [`PREG_RANGE] lower_old_prd,
 
-    output reg [`RESULT_RANGE] lower_ls_address,
-    output reg [`RESULT_RANGE] lower_alu_result,
-    output reg [`RESULT_RANGE] lower_bju_result,
-    output reg [`RESULT_RANGE] lower_muldiv_result,
+    output reg [`RESULT_RANGE] lower_ls_address         ,
+    output reg [`RESULT_RANGE] lower_alu_result         ,
+    output reg [`RESULT_RANGE] lower_bju_result         ,
+    output reg [`RESULT_RANGE] lower_muldiv_result      ,
     output reg [`RESULT_RANGE] lower_opload_read_data_wb,
     
     output  wire                lower_predicttaken,
