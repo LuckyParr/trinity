@@ -9,7 +9,7 @@ module idu_top(
     input  wire [31:0]               ibuffer_predicttarget_out,
     input  wire [31:0]               ibuffer_inst_out,
     input  wire [47:0]               ibuffer_pc_out,
-    output wire                      ibuffer_read_en,
+    output wire                      ibuffer_instr_ready,
 
     // flush signals from intwb
     input  wire                      flush_valid,
@@ -81,7 +81,6 @@ module idu_top(
         .reset_n                    (reset_n),
 
         // Inputs from ibuffer
-        .fifo_empty                 (fifo_empty),
         .ibuffer_instr_valid        (ibuffer_instr_valid),
         .ibuffer_predicttaken_out   (ibuffer_predicttaken_out),
         .ibuffer_predicttarget_out  (ibuffer_predicttarget_out),
@@ -123,7 +122,7 @@ module idu_top(
 
         // Inputs from decoder -> pipeline register
         .instr_valid_from_upper     (dec_instr_valid),
-        .instr_ready_to_upper       (ibuffer_read_en),//output
+        .instr_ready_to_upper       (ibuffer_instr_ready),//output
 
         .instr                      (dec_instr_out),
         .pc                         (dec_pc_out),

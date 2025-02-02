@@ -76,17 +76,17 @@ module exu_top #(
     output wire [         `PC_RANGE ]   memwb_pc,
 
     // BHT/BTB Update
-    output wire                          intwb_bjusb_bht_write_enable,
-    output wire [BHTBTB_INDEX_WIDTH-1:0] intwb_bjusb_bht_write_index,
-    output wire [1:0]                    intwb_bjusb_bht_write_counter_select,
-    output wire                          intwb_bjusb_bht_write_inc,
-    output wire                          intwb_bjusb_bht_write_dec,
-    output wire                          intwb_bjusb_bht_valid_in,
-    output wire                          intwb_bjusb_btb_ce,
-    output wire                          intwb_bjusb_btb_we,
-    output wire [128:0]                  intwb_bjusb_btb_wmask,
-    output wire [8:0]                    intwb_bjusb_btb_write_index,
-    output wire [128:0]                  intwb_bjusb_btb_din,
+    output wire                          intwb_bht_write_enable,
+    output wire [BHTBTB_INDEX_WIDTH-1:0] intwb_bht_write_index,
+    output wire [1:0]                    intwb_bht_write_counter_select,
+    output wire                          intwb_bht_write_inc,
+    output wire                          intwb_bht_write_dec,
+    output wire                          intwb_bht_valid_in,
+    output wire                          intwb_btb_ce,
+    output wire                          intwb_btb_we,
+    output wire [128:0]                  intwb_btb_wmask,
+    output wire [8:0]                    intwb_btb_write_index,
+    output wire [128:0]                  intwb_btb_din,
 
     // Dcache Flush
     output wire                         mem2dcache_flush
@@ -194,17 +194,17 @@ module exu_top #(
         .intwb_redirect_valid                   (flush_valid),
         .intwb_redirect_target                  (flush_target),
         .intwb_robid                            (intwb_robid),
-        .intwb_bjusb_bht_write_enable           (intwb_bjusb_bht_write_enable        ),
-        .intwb_bjusb_bht_write_index            (intwb_bjusb_bht_write_index         ),
-        .intwb_bjusb_bht_write_counter_select   (intwb_bjusb_bht_write_counter_select),
-        .intwb_bjusb_bht_write_inc              (intwb_bjusb_bht_write_inc           ),
-        .intwb_bjusb_bht_write_dec              (intwb_bjusb_bht_write_dec           ),
-        .intwb_bjusb_bht_valid_in               (intwb_bjusb_bht_valid_in            ),
-        .intwb_bjusb_btb_ce                     (intwb_bjusb_btb_ce                  ),
-        .intwb_bjusb_btb_we                     (intwb_bjusb_btb_we                  ),
-        .intwb_bjusb_btb_wmask                  (intwb_bjusb_btb_wmask               ),
-        .intwb_bjusb_btb_write_index            (intwb_bjusb_btb_write_index         ),
-        .intwb_bjusb_btb_din                    (intwb_bjusb_btb_din                 )
+        .intwb_bjusb_bht_write_enable           (intwb_bht_write_enable        ),
+        .intwb_bjusb_bht_write_index            (intwb_bht_write_index         ),
+        .intwb_bjusb_bht_write_counter_select   (intwb_bht_write_counter_select),
+        .intwb_bjusb_bht_write_inc              (intwb_bht_write_inc           ),
+        .intwb_bjusb_bht_write_dec              (intwb_bht_write_dec           ),
+        .intwb_bjusb_bht_valid_in               (intwb_bht_valid_in            ),
+        .intwb_bjusb_btb_ce                     (intwb_btb_ce                  ),
+        .intwb_bjusb_btb_we                     (intwb_btb_we                  ),
+        .intwb_bjusb_btb_wmask                  (intwb_btb_wmask               ),
+        .intwb_bjusb_btb_write_index            (intwb_btb_write_index         ),
+        .intwb_bjusb_btb_din                    (intwb_btb_din                 )
     );
 
     // Instantiate memblock

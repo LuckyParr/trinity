@@ -6,28 +6,17 @@ module backend #(
     input               clock,
     input               reset_n,
     
-    input               fifo_empty,
     input               ibuffer_instr_valid,
+    output              ibuffer_instr_ready,//backend control ibuffer read stall(backend_stall) and fifo_read_en
     input               ibuffer_predicttaken_out,
     input        [31:0] ibuffer_predicttarget_out,
     input        [31:0] ibuffer_inst_out,
     input        [31:0] ibuffer_pc_out,
-    output logic        ibuffer_read_en,
     
-    output              flush_valid,
-    input               flush_robid,          
-    
-    // commit port
-    output              commit0_valid,
-    output       [31:0] commit0_pc,
-    output       [31:0] commit0_instr,
-    output        [4:0] commit0_lrd,
-    output        [5:0] commit0_prd,
-    output        [5:0] commit0_old_prd,
-    output              commit0_need_to_wb,
-    output        [5:0] commit0_robid,
-    output              commit0_skip,
-    
+    output                              flush_valid,
+    output       [63:0]                 flush_target,
+    output       [`INSTR_ID_WIDTH-1:0]  flush_robid,          
+        
     // TBUS 
     output              tbus_index_valid,
     input               tbus_index_ready,
@@ -37,27 +26,42 @@ module backend #(
     input        [31:0] tbus_read_data,
     input               tbus_operation_done,
     output              tbus_operation_type,
-    
     output              mem2dcache_flush,
-    
+
     //bht btb port
-    output              intwb_bjusb_bht_write_enable,
-    output        [9:0] intwb_bjusb_bht_write_index,
-    output              intwb_bjusb_bht_write_counter_select,
-    output              intwb_bjusb_bht_write_inc,
-    output              intwb_bjusb_bht_write_dec,
-    output              intwb_bjusb_bht_valid_in,
-    output              intwb_bjusb_btb_ce,
-    output              intwb_bjusb_btb_we,
-    output        [3:0] intwb_bjusb_btb_wmask,
-    output        [9:0] intwb_bjusb_btb_write_index,
-    output       [47:0] intwb_bjusb_btb_din,
-    
-    output              intwb_redirect_valid,
-    output       [31:0] intwb_redirect_target
-    
+    output              intwb_bht_write_enable,
+    output        [9:0] intwb_bht_write_index,
+    output              intwb_bht_write_counter_select,
+    output              intwb_bht_write_inc,
+    output              intwb_bht_write_dec,
+    output              intwb_bht_valid_in,
+    output              intwb_btb_ce,
+    output              intwb_btb_we,
+    output        [3:0] intwb_btb_wmask,
+    output        [9:0] intwb_btb_write_index,
+    output       [47:0] intwb_btb_din    
 );
 //---------------- internal signals ----------------//
+    // commit signals
+    wire              commit0_valid     ;
+    wire       [31:0] commit0_pc        ;
+    wire       [31:0] commit0_instr     ;
+    wire        [4:0] commit0_lrd       ;
+    wire        [5:0] commit0_prd       ;
+    wire        [5:0] commit0_old_prd   ;
+    wire              commit0_need_to_wb;
+    wire        [5:0] commit0_robid     ;
+    wire              commit0_skip      ;
+
+    wire              commit1_valid     ;
+    wire       [31:0] commit1_pc        ;
+    wire       [31:0] commit1_instr     ;
+    wire        [4:0] commit1_lrd       ;
+    wire        [5:0] commit1_prd       ;
+    wire        [5:0] commit1_old_prd   ;
+    wire              commit1_need_to_wb;
+    wire        [5:0] commit1_robid     ;
+    wire              commit1_skip      ;
 
 /* --------------------- arch_rat : 32 arch regfile content -------------------- */
     wire [`PREG_RANGE] debug_preg0;
@@ -214,13 +218,12 @@ wire              instr_goto_memblock;
 idu_top u_idu_top(
     .clock                     (clock                     ),
     .reset_n                   (reset_n                   ),
-    .fifo_empty                (fifo_empty                ),
     .ibuffer_instr_valid       (ibuffer_instr_valid       ),
     .ibuffer_predicttaken_out  (ibuffer_predicttaken_out  ),
     .ibuffer_predicttarget_out (ibuffer_predicttarget_out ),
     .ibuffer_inst_out          (ibuffer_inst_out          ),
     .ibuffer_pc_out            (ibuffer_pc_out            ),
-    .ibuffer_read_en           (ibuffer_read_en           ),
+    .ibuffer_instr_ready           (ibuffer_instr_ready           ),
     .flush_valid               (flush_valid               ),
     .iru2idu_instr_ready       (iru2idu_instr_ready       ),
     .idu2iru_instr_valid       (idu2iru_instr_valid       ),
@@ -600,21 +603,21 @@ exu_top u_exu_top(
     .memwb_prd                            (memwb_prd                                       ),
     .memwb_need_to_wb                     (memwb_need_to_wb                                ),
     .memwb_mmio_valid                     (memwb_mmio_valid                                ),
-    .memwb_result                  (memwb_result                                    ),//rename signal
+    .memwb_result                         (memwb_result                                    ),//rename signal
     .memwb_instr                          (                                                ),
     .memwb_pc                             (                                                ),
-    .intwb_bjusb_bht_write_enable         (intwb_bjusb_bht_write_enable                    ),
-    .intwb_bjusb_bht_write_index          (intwb_bjusb_bht_write_index                     ),
-    .intwb_bjusb_bht_write_counter_select (intwb_bjusb_bht_write_counter_select            ),
-    .intwb_bjusb_bht_write_inc            (intwb_bjusb_bht_write_inc                       ),
-    .intwb_bjusb_bht_write_dec            (intwb_bjusb_bht_write_dec                       ),
-    .intwb_bjusb_bht_valid_in             (intwb_bjusb_bht_valid_in                        ),
-    .intwb_bjusb_btb_ce                   (intwb_bjusb_btb_ce                              ),
-    .intwb_bjusb_btb_we                   (intwb_bjusb_btb_we                              ),
-    .intwb_bjusb_btb_wmask                (intwb_bjusb_btb_wmask                           ),
-    .intwb_bjusb_btb_write_index          (intwb_bjusb_btb_write_index                     ),
-    .intwb_bjusb_btb_din                  (intwb_bjusb_btb_din                             ),
-    .mem2dcache_flush                     (mem2dcache_flush                                )
+    .intwb_bht_write_enable         (intwb_bht_write_enable                    ),
+    .intwb_bht_write_index          (intwb_bht_write_index                     ),
+    .intwb_bht_write_counter_select (intwb_bht_write_counter_select            ),
+    .intwb_bht_write_inc            (intwb_bht_write_inc                       ),
+    .intwb_bht_write_dec            (intwb_bht_write_dec                       ),
+    .intwb_bht_valid_in             (intwb_bht_valid_in                        ),
+    .intwb_btb_ce                   (intwb_btb_ce                              ),
+    .intwb_btb_we                   (intwb_btb_we                              ),
+    .intwb_btb_wmask                (intwb_btb_wmask                           ),
+    .intwb_btb_write_index          (intwb_btb_write_index                     ),
+    .intwb_btb_din                  (intwb_btb_din                             ),
+    .mem2dcache_flush               (mem2dcache_flush                                )
                                                                                            );
 
 

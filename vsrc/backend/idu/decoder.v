@@ -3,7 +3,6 @@ module decoder (
     input wire        clock,
     input wire        reset_n,
     //ibuffer signal
-    input wire        fifo_empty,
     input wire        ibuffer_instr_valid,
     input wire        ibuffer_predicttaken_out,
     input wire [31:0] ibuffer_predicttarget_out,
