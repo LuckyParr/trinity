@@ -5,7 +5,7 @@ module rob
      /* ----------------------------- rob write logic ---------------------------- */
     input wire               instr0_enq_valid,
     input wire [  `PC_RANGE] instr0_pc,
-    input wire [       31:0] instr0,
+    input wire [       31:0] instr0_instr,
     input wire [`LREG_RANGE] instr0_lrd,
     input wire [`PREG_RANGE] instr0_prd,
     input wire [`PREG_RANGE] instr0_old_prd,
@@ -13,7 +13,7 @@ module rob
 
     input wire               instr1_enq_valid,
     input wire [  `PC_RANGE] instr1_pc,
-    input wire [       31:0] instr1,
+    input wire [       31:0] instr1_instr,
     input wire [`LREG_RANGE] instr1_lrd,
     input wire [`PREG_RANGE] instr1_prd,
     input wire [`PREG_RANGE] instr1_old_prd,
@@ -173,10 +173,10 @@ module rob
         for (i = 0; i < `ROB_SIZE; i = i + 1) begin
             enq_instr_dec[i] = 'b0;
             if (instr0_enq_valid & (enqueue_ptr[`ROB_SIZE_LOG-1:0] == i[`ROB_SIZE_LOG-1:0])) begin
-                enq_instr_dec[i] = instr0;
+                enq_instr_dec[i] = instr0_instr;
             end
             if (instr1_enq_valid & ((enqueue_ptr[`ROB_SIZE_LOG-1:0] + 1) == i[`ROB_SIZE_LOG-1:0])) begin
-                enq_instr_dec[i] = instr1;
+                enq_instr_dec[i] = instr1_instr;
             end
         end
     end

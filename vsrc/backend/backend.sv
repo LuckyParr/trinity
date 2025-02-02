@@ -121,10 +121,10 @@ wire        [5:0] idu2iru_prs1;
 wire        [5:0] idu2iru_prs2;
 wire        [5:0] idu2iru_prd;
 wire        [5:0] idu2iru_old_prd;
-wire              idu2iru_instr0_predicttaken_out;
-wire [31:0]       idu2iru_instr0_predicttarge_out;
-wire              iru2isu_instr0_predicttaken_out;
-wire [31:0]       iru2isu_instr0_predicttarge_out;
+wire              idu2iru_instr0_predicttaken;
+wire [31:0]       idu2iru_instr0_predicttarget;
+wire              iru2isu_instr0_predicttaken;
+wire [31:0]       iru2isu_instr0_predicttarget;
 
 
 // IRU <-> ISU
@@ -155,7 +155,7 @@ wire        [5:0] iru_instr0_old_prd;
 // ISU <-> EXU
 wire        [5:0] isu2exu_instr0_robid;
 wire       [31:0] isu2exu_instr0_pc;
-wire       [31:0] isu2exu_instr0;
+wire       [31:0] isu2exu_instr0_instr;
 wire        [4:0] isu2exu_instr0_lrs1;
 wire        [4:0] isu2exu_instr0_lrs2;
 wire        [4:0] isu2exu_instr0_lrd;
@@ -176,6 +176,8 @@ wire              isu2exu_instr0_is_imm;
 wire              isu2exu_instr0_is_load;
 wire              isu2exu_instr0_is_store;
 wire        [1:0] isu2exu_instr0_ls_size;
+wire                isu2exu_instr0_predicttaken;
+wire [31:0]         isu2exu_instr0_predicttarget;
 
 // EXU反馈信号
 wire              intwb_instr_valid;
@@ -252,8 +254,8 @@ idu_top u_idu_top(
     .idu2iru_prs2                  (idu2iru_prs2                  ),
     .idu2iru_prd                   (idu2iru_prd                   ),
     .idu2iru_old_prd               (idu2iru_old_prd               ),
-    .idu2iru_instr0_predicttaken_out      (idu2iru_instr0_predicttaken_out),
-    .idu2iru_instr0_predicttarge_out      (idu2iru_instr0_predicttarge_out)
+    .idu2iru_instr0_predicttaken      (idu2iru_instr0_predicttaken),
+    .idu2iru_instr0_predicttarget      (idu2iru_instr0_predicttarget)
 );
 
 //TODO add idu2iru/ iru2isu prefix
@@ -290,8 +292,8 @@ iru_top u_iru_top(
     .instr0_is_load         (idu_instr0_is_load         ),
     .instr0_is_store        (idu_instr0_is_store        ),
     .instr0_ls_size         (idu_instr0_ls_size         ),
-    .idu2iru_instr0_predicttaken_out (idu2iru_instr0_predicttaken_out),
-    .idu2iru_instr0_predicttarge_out (idu2iru_instr0_predicttarge_out),
+    .idu2iru_instr0_predicttaken (idu2iru_instr0_predicttaken),
+    .idu2iru_instr0_predicttarget (idu2iru_instr0_predicttarget),
     .idu2iru_instr1_valid   (),
     .iru2idu_instr1_ready   (),
     .instr1                 (),
@@ -346,8 +348,8 @@ iru_top u_iru_top(
     .iru_instr0_prs2        (iru_instr0_prs2        ),
     .iru_instr0_prd         (iru_instr0_prd         ),
     .iru_instr0_old_prd     (iru_instr0_old_prd     ),
-    .iru2isu_instr0_predicttaken_out (iru2isu_instr0_predicttaken_out),
-    .iru2isu_instr0_predicttarge_out (iru2isu_instr0_predicttarge_out),
+    .iru2isu_instr0_predicttaken (iru2isu_instr0_predicttaken),
+    .iru2isu_instr0_predicttarget (iru2isu_instr0_predicttarget),
     .debug_preg0            (debug_preg0            ),
     .debug_preg1            (debug_preg1            ),
     .debug_preg2            (debug_preg2            ),
@@ -410,6 +412,8 @@ isu_top u_isu_top(
     .instr0_is_load             (iru_instr0_is_load             ),
     .instr0_is_store            (iru_instr0_is_store            ),
     .instr0_ls_size             (iru_instr0_ls_size             ),
+    .iru2isu_instr0_predicttaken  (iru2isu_instr0_predicttaken),
+    .iru2isu_instr0_predicttarget (iru2isu_instr0_predicttarget),
     .iru2isu_instr1_valid       (),
     .isu2iru_instr1_ready       (),
     .instr1_pc                  (),
@@ -434,6 +438,8 @@ isu_top u_isu_top(
     .instr1_is_load             (),
     .instr1_is_store            (),
     .instr1_ls_size             (),
+    .iru2isu_instr0_predicttaken  (),
+    .iru2isu_instr0_predicttarget (),
     .intwb_instr_valid          (intwb_instr_valid          ),//input
     .intwb_robid                (intwb_robid                ),//input
     .intwb_prd                  (intwb_prd                  ),//input
@@ -465,7 +471,7 @@ isu_top u_isu_top(
     .commit1_skip               (),
     .isu2exu_instr0_robid       (isu2exu_instr0_robid       ),
     .isu2exu_instr0_pc          (isu2exu_instr0_pc          ),
-    .isu2exu_instr0             (isu2exu_instr0             ),
+    .isu2exu_instr0             (isu2exu_instr0_instr             ),
     .isu2exu_instr0_lrs1        (isu2exu_instr0_lrs1        ),
     .isu2exu_instr0_lrs2        (isu2exu_instr0_lrs2        ),
     .isu2exu_instr0_lrd         (isu2exu_instr0_lrd         ),
@@ -486,6 +492,8 @@ isu_top u_isu_top(
     .isu2exu_instr0_is_load     (isu2exu_instr0_is_load     ),
     .isu2exu_instr0_is_store    (isu2exu_instr0_is_store    ),
     .isu2exu_instr0_ls_size     (isu2exu_instr0_ls_size     ),
+    .isu2exu_instr0_predicttaken(isu2exu_instr0_predicttaken),
+    .isu2exu_instr0_predicttarget(isu2exu_instr0_predicttarget),
     .deq_valid                  (deq_valid                  ),
     .deq_ready                  (deq_ready                  ),
     .rob_state                  (rob_state                  ),//OUTPUT
@@ -546,35 +554,35 @@ exu_top u_exu_top(
     .flush_robid                          (flush_robid                          ),
     .int_instr_valid                      (int_instr_valid                      ),
     .int_instr_ready                      (int_instr_ready                      ),
-    .int_instr                            (isu2exu_instr                            ),
-    .int_pc                               (isu2exu_pc                               ),
-    .int_robid                            (isu2exu_robid                            ),
-    .int_src1                             (isu2exu_src1                             ),
-    .int_src2                             (isu2exu_src2                             ),
-    .int_prd                              (isu2exu_prd                              ),
-    .int_imm                              (isu2exu_imm                              ),
-    .int_need_to_wb                       (isu2exu_need_to_wb                       ),
-    .int_cx_type                          (isu2exu_cx_type                          ),
-    .int_is_unsigned                      (isu2exu_is_unsigned                      ),
-    .int_alu_type                         (isu2exu_alu_type                         ),
-    .int_muldiv_type                      (isu2exu_muldiv_type                      ),
-    .int_is_imm                           (isu2exu_is_imm                           ),
-    .int_is_word                          (isu2exu_is_word                          ),
-    .int_predict_taken                    (isu2exu_predict_taken                    ),
-    .int_predict_target                   (isu2exu_predict_target                   ),
+    .int_instr                            (isu2exu_instr0_instr                            ),
+    .int_pc                               (isu2exu_instr0_pc                               ),
+    .int_robid                            (isu2exu_instr0_robid                            ),
+    .int_src1                             (isu2exu_instr0_src1                             ),
+    .int_src2                             (isu2exu_instr0_src2                             ),
+    .int_prd                              (isu2exu_instr0_prd                              ),
+    .int_imm                              (isu2exu_instr0_imm                              ),
+    .int_need_to_wb                       (isu2exu_instr0_need_to_wb                       ),
+    .int_cx_type                          (isu2exu_instr0_cx_type                          ),
+    .int_is_unsigned                      (isu2exu_instr0_is_unsigned                      ),
+    .int_alu_type                         (isu2exu_instr0_alu_type                         ),
+    .int_muldiv_type                      (isu2exu_instr0_muldiv_type                      ),
+    .int_is_imm                           (isu2exu_instr0_is_imm                           ),
+    .int_is_word                          (isu2exu_instr0_is_word                          ),
+    .int_predict_taken                    (isu2exu_instr0_predicttaken                    ),
+    .int_predict_target                   (isu2exu_instr0_predicttarget                   ),
     .mem_instr_valid                      (mem_instr_valid                      ),
     .mem_instr_ready                      (mem_instr_ready                      ),
-    .mem_instr                            (isu2exu_instr                            ),
-    .mem_pc                               (isu2exu_pc                               ),
-    .mem_robid                            (isu2exu_robid                            ),
-    .mem_src1                             (isu2exu_src1                             ),
-    .mem_src2                             (isu2exu_src2                             ),
-    .mem_prd                              (isu2exu_prd                              ),
-    .mem_imm                              (isu2exu_imm                              ),
-    .mem_is_load                          (isu2exu_is_load                          ),
-    .mem_is_store                         (isu2exu_is_store                         ),
-    .mem_is_unsigned                      (isu2exu_is_unsigned                      ),
-    .mem_ls_size                          (isu2exu_ls_size                          ),
+    .mem_instr                            (isu2exu_instr0_instr                            ),
+    .mem_pc                               (isu2exu_instr0_pc                               ),
+    .mem_robid                            (isu2exu_instr0_robid                            ),
+    .mem_src1                             (isu2exu_instr0_src1                             ),
+    .mem_src2                             (isu2exu_instr0_src2                             ),
+    .mem_prd                              (isu2exu_instr0_prd                              ),
+    .mem_imm                              (isu2exu_instr0_imm                              ),
+    .mem_is_load                          (isu2exu_instr0_is_load                          ),
+    .mem_is_store                         (isu2exu_instr0_is_store                         ),
+    .mem_is_unsigned                      (isu2exu_instr0_is_unsigned                      ),
+    .mem_ls_size                          (isu2exu_instr0_ls_size                          ),
     .tbus_index_valid                     (tbus_index_valid                     ),
     .tbus_index_ready                     (tbus_index_ready                     ),
     .tbus_index                           (tbus_index                           ),

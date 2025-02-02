@@ -1,67 +1,63 @@
-module isu_top #(
-    parameter DATA_WIDTH      = 248,
-    parameter CONDITION_WIDTH = 2,
-    parameter INDEX_WIDTH     = 4,
-)(
+module isu_top (
     input  wire               clock,
     input  wire               reset_n,
 
     // Dispatch inputs from rename stage
     input  wire               iru2isu_instr0_valid,
     output wire               isu2iru_instr0_ready,
-    input  wire [  `PC_RANGE]  instr0_pc,
-    input  wire [       31:0] instr0,
-    input  wire [`LREG_RANGE]  instr0_lrs1,
-    input  wire [`LREG_RANGE]  instr0_lrs2,
-    input  wire [`LREG_RANGE]  instr0_lrd,
-    input  wire [`PREG_RANGE]  instr0_prd,
-    input  wire [`PREG_RANGE]  instr0_old_prd,
-    input  wire                instr0_need_to_wb,
-    input  wire [`PREG_RANGE]  instr0_prs1,
-    input  wire [`PREG_RANGE]  instr0_prs2,
-    input  wire               instr0_src1_is_reg,
-    input  wire               instr0_src2_is_reg,
-    input  wire [       63:0] instr0_imm,
-    input  wire [    `CX_TYPE_RANGE] instr0_cx_type,
-    input  wire               instr0_is_unsigned,
-    input  wire [   `ALU_TYPE_RANGE] instr0_alu_type,
-    input  wire [`MULDIV_TYPE_RANGE] instr0_muldiv_type,
-    input  wire               instr0_is_word,
-    input  wire               instr0_is_imm,
-    input  wire               instr0_is_load,
-    input  wire               instr0_is_store,
-    input  wire [        3:0] instr0_ls_size,
-    input wire                iru2isu_instr0_predicttaken,
-    input wire [31:0]         iru2isu_instr0_predicttarge,
+    input  wire [  `PC_RANGE]         instr0_pc,
+    input  wire [       31:0]         instr0_instr,
+    input  wire [`LREG_RANGE]         instr0_lrs1,
+    input  wire [`LREG_RANGE]         instr0_lrs2,
+    input  wire [`LREG_RANGE]         instr0_lrd,
+    input  wire [`PREG_RANGE]         instr0_prd,
+    input  wire [`PREG_RANGE]         instr0_old_prd,
+    input  wire                       instr0_need_to_wb,
+    input  wire [`PREG_RANGE]         instr0_prs1,
+    input  wire [`PREG_RANGE]         instr0_prs2,
+    input  wire                       instr0_src1_is_reg,
+    input  wire                       instr0_src2_is_reg,
+    input  wire [       63:0       ]  instr0_imm,
+    input  wire [    `CX_TYPE_RANGE]  instr0_cx_type,
+    input  wire                       instr0_is_unsigned,
+    input  wire [   `ALU_TYPE_RANGE]  instr0_alu_type,
+    input  wire [`MULDIV_TYPE_RANGE]  instr0_muldiv_type,
+    input  wire                       instr0_is_word,
+    input  wire                       instr0_is_imm,
+    input  wire                       instr0_is_load,
+    input  wire                       instr0_is_store,
+    input  wire [        3:0]         instr0_ls_size,
+    input wire                iru2isu_instr0_predicttaken ,
+    input wire [31:0]         iru2isu_instr0_predicttarget,
 
 
 
     input  wire               iru2isu_instr1_valid,
     output wire               isu2iru_instr1_ready,
-    input  wire [  `PC_RANGE]  instr1_pc,
-    input  wire [       31:0] instr1,
-    input  wire [`LREG_RANGE]  instr1_lrs1,
-    input  wire [`LREG_RANGE]  instr1_lrs2,
-    input  wire [`LREG_RANGE]  instr1_lrd,
-    input  wire [`PREG_RANGE]  instr1_prd,
-    input  wire [`PREG_RANGE]  instr1_old_prd,
-    input  wire               instr1_need_to_wb,
-    input  wire [`PREG_RANGE]  instr1_prs1,
-    input  wire [`PREG_RANGE]  instr1_prs2,
-    input  wire               instr1_src1_is_reg,
-    input  wire               instr1_src2_is_reg,
-    input  wire [       63:0       ] instr1_imm,
-    input  wire [    `CX_TYPE_RANGE] instr1_cx_type,
-    input  wire               instr1_is_unsigned,
-    input  wire [   `ALU_TYPE_RANGE] instr1_alu_type,
-    input  wire [`MULDIV_TYPE_RANGE] instr1_muldiv_type,
-    input  wire               instr1_is_word,
-    input  wire               instr1_is_imm,
-    input  wire               instr1_is_load,
-    input  wire               instr1_is_store,
-    input  wire [        3:0] instr1_ls_size,
-    input wire                iru2isu_instr1_predicttaken,
-    input wire [31:0]         iru2isu_instr1_predicttarge,
+    input  wire [  `PC_RANGE]         instr1_pc,
+    input  wire [       31:0]         instr1_instr,
+    input  wire [`LREG_RANGE]         instr1_lrs1,
+    input  wire [`LREG_RANGE]         instr1_lrs2,
+    input  wire [`LREG_RANGE]         instr1_lrd,
+    input  wire [`PREG_RANGE]         instr1_prd,
+    input  wire [`PREG_RANGE]         instr1_old_prd,
+    input  wire                       instr1_need_to_wb,
+    input  wire [`PREG_RANGE]         instr1_prs1,
+    input  wire [`PREG_RANGE]         instr1_prs2,
+    input  wire                       instr1_src1_is_reg,
+    input  wire                       instr1_src2_is_reg,
+    input  wire [       63:0       ]  instr1_imm,
+    input  wire [    `CX_TYPE_RANGE]  instr1_cx_type,
+    input  wire                       instr1_is_unsigned,
+    input  wire [   `ALU_TYPE_RANGE]  instr1_alu_type,
+    input  wire [`MULDIV_TYPE_RANGE]  instr1_muldiv_type,
+    input  wire                       instr1_is_word,
+    input  wire                       instr1_is_imm,
+    input  wire                       instr1_is_load,
+    input  wire                       instr1_is_store,
+    input  wire [        3:0]         instr1_ls_size,
+    input wire                iru2isu_instr1_predicttaken ,
+    input wire [31:0]         iru2isu_instr1_predicttarget,
 
 
     // Writeback inputs
@@ -127,6 +123,9 @@ module isu_top #(
     output wire [3:0]  isu2exu_instr0_ls_size     ,
     output wire                       deq_valid,
     input  wire                       deq_ready,
+    output wire                isu2exu_instr0_predicttaken,
+    output wire [31:0]         isu2exu_instr0_predicttarget,
+
 
     // Debug outputs
     output wire [1:0]               rob_state,
@@ -216,12 +215,12 @@ module isu_top #(
 
     wire intisq_can_enq;
     wire disp2intisq_enq_valid;
-    wire [DATA_WIDTH-1:0] disp2intisq_instr0_enq_data;
-    wire [CONDITION_WIDTH-1:0] disp2intisq_instr0_enq_condition;
+    wire [`ISQ_DATA_WIDTH-1:0] disp2intisq_instr0_enq_data;
+    wire [`ISQ_CONDITION_WIDTH-1:0] disp2intisq_instr0_enq_condition;
 
-    wire [DATA_WIDTH-1:0]      deq_data;
-    wire [CONDITION_WIDTH-1:0] deq_condition;
-    wire [INDEX_WIDTH-1:0]     deq_index;
+    wire [`ISQ_DATA_WIDTH-1:0]      deq_data;
+    wire [`ISQ_CONDITION_WIDTH-1:0] deq_condition;
+    wire [`ISQ_INDEX_WIDTH-1:0]     deq_index;
 
     dispatch u_dispatch(
         .clock                            (clock                            ),
@@ -229,7 +228,7 @@ module isu_top #(
         .iru2isu_instr0_valid             (iru2isu_instr0_valid           ),
         .isu2iru_instr0_ready             (isu2iru_instr0_ready           ),
         .instr0_pc                        (instr0_pc                        ),
-        .instr0                           (instr0                           ),
+        .instr0_instr                           (instr0_instr                           ),
         .instr0_lrs1                      (instr0_lrs1                      ),
         .instr0_lrs2                      (instr0_lrs2                      ),
         .instr0_lrd                       (instr0_lrd                       ),
@@ -250,10 +249,12 @@ module isu_top #(
         .instr0_is_load                   (instr0_is_load                   ),
         .instr0_is_store                  (instr0_is_store                  ),
         .instr0_ls_size                   (instr0_ls_size                   ),
+        .iru2isu_instr0_predicttaken (iru2isu_instr0_predicttaken ), 
+        .iru2isu_instr0_predicttarget(iru2isu_instr0_predicttarget),
         .iru2isu_instr1_valid             (),
         .isu2iru_instr1_ready             (),
         .instr1_pc                        (),
-        .instr1                           (),
+        .instr1_instr                           (),
         .instr1_lrs1                      (),
         .instr1_lrs2                      (),
         .instr1_lrd                       (),
@@ -274,6 +275,8 @@ module isu_top #(
         .instr1_is_load                   (),
         .instr1_is_store                  (),
         .instr1_ls_size                   (),
+        .iru2isu_instr1_predicttaken (iru2isu_instr1_predicttaken ), 
+        .iru2isu_instr1_predicttarget(iru2isu_instr1_predicttarget),
         .rob_can_enq                      (rob_can_enq                      ),
         .rob2disp_instr_robid             (rob2disp_instr_robid             ),
         .rob_state                        (rob_state                        ),
@@ -318,14 +321,14 @@ module isu_top #(
         .reset_n             (reset_n                   ),
         .instr0_enq_valid    (disp2rob_instr0_enq_valid ),
         .instr0_pc           (disp2rob_instr0_pc        ),
-        .instr0              (disp2rob_instr0           ),
+        .instr0_instr              (disp2rob_instr0           ),
         .instr0_lrd          (disp2rob_instr0_lrd       ),
         .instr0_prd          (disp2rob_instr0_prd       ),
         .instr0_old_prd      (disp2rob_instr0_old_prd   ),
         .instr0_need_to_wb   (disp2rob_instr0_need_to_wb),
         .instr1_enq_valid    (),
         .instr1_pc           (),
-        .instr1              (),
+        .instr1_instr              (),
         .instr1_lrd          (),
         .instr1_prd          (),
         .instr1_old_prd      (),
@@ -368,14 +371,7 @@ module isu_top #(
         .rob_walk1_complete  (rob_walk1_complete        )
 );
 
-int_isq 
-#(
-    .DATA_WIDTH      (DATA_WIDTH      ),
-    .CONDITION_WIDTH (CONDITION_WIDTH ),
-    .INDEX_WIDTH     (INDEX_WIDTH     ),
-    .DEPTH           (DEPTH           )
-)
-u_int_isq                          (
+int_isq u_int_isq                          (
     .clock                         (clock                        ),
     .reset_n                       (reset_n                      ),
     .enq_data                      (enq_data                     ),
@@ -398,6 +394,8 @@ u_int_isq                          (
     .intisq_can_enq                (intisq_can_enq               )
 );
 // Decode each field of deq_data:
+    assign isu2exu_instr0_predicttaken = deq_data[280:280];
+    assign isu2exu_instr0_predicttarget = deq_data[279:248];
     assign isu2exu_instr0_robid        = deq_data[247:241];
     assign isu2exu_instr0_pc           = deq_data[240:177];
     assign isu2exu_instr0              = deq_data[176:145];

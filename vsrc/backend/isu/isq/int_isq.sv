@@ -1,30 +1,22 @@
-module int_isq #(
-    //------------------------------------------------------------------
-    // Match parameters used by age_buffer
-    //------------------------------------------------------------------
-    parameter DATA_WIDTH      = 248,
-    parameter CONDITION_WIDTH = 2,
-    parameter INDEX_WIDTH     = 4,
-    parameter DEPTH           = 8
-)(
+module int_isq (
     input  logic                   clock,
     input  logic                   reset_n,
 
     //-----------------------------------------------------
     // Enqueue interface
     //-----------------------------------------------------
-    input  logic [DATA_WIDTH-1:0]       enq_data,
-    input  logic [CONDITION_WIDTH-1:0]  enq_condition,
-    //input  logic [INDEX_WIDTH-1:0]      enq_index,
+    input  logic [`ISQ_DATA_WIDTH-1:0]       enq_data,
+    input  logic [`ISQ_CONDITION_WIDTH-1:0]  enq_condition,
+    //input  logic [`ISQ_INDEX_WIDTH-1:0]      enq_index,
     input  logic                         enq_valid,  
     output logic                         enq_ready,  
 
     //-----------------------------------------------------
     // Dequeue interface
     //-----------------------------------------------------
-    output logic [DATA_WIDTH-1:0]       deq_data,
-    output logic [CONDITION_WIDTH-1:0]  deq_condition,
-    output logic [INDEX_WIDTH-1:0]      deq_index,
+    output logic [`ISQ_DATA_WIDTH-1:0]       deq_data,
+    output logic [`ISQ_CONDITION_WIDTH-1:0]  deq_condition,
+    output logic [`ISQ_INDEX_WIDTH-1:0]      deq_index,
     output logic                         deq_valid,  
     input  logic                         deq_ready,  
 
@@ -47,18 +39,18 @@ module int_isq #(
     output logic intisq_can_enq               
 );
     //output array
-    logic [DEPTH-1:0][DATA_WIDTH-1:0]      data_out_array;
-    logic [DEPTH-1:0][CONDITION_WIDTH-1:0] condition_out_array;
-    logic [DEPTH-1:0][INDEX_WIDTH-1:0]     index_out_array;
-    logic [DEPTH-1:0]                      valid_out_array;
+    logic [`ISQ_DEPTH-1:0][`ISQ_DATA_WIDTH-1:0]      data_out_array;
+    logic [`ISQ_DEPTH-1:0][`ISQ_CONDITION_WIDTH-1:0] condition_out_array;
+    logic [`ISQ_DEPTH-1:0][`ISQ_INDEX_WIDTH-1:0]     index_out_array;
+    logic [`ISQ_DEPTH-1:0]                      valid_out_array;
 
     //-----------------------------------------------------
     // condition updates for writeback0
     //-----------------------------------------------------
     logic                           update_condition_valid;
     logic [`INSTR_ID_WIDTH:0]       update_condition_robid;
-    logic [CONDITION_WIDTH-1:0]  update_condition_mask;
-    logic [CONDITION_WIDTH-1:0]  update_condition_in;
+    logic [`ISQ_CONDITION_WIDTH-1:0]  update_condition_mask;
+    logic [`ISQ_CONDITION_WIDTH-1:0]  update_condition_in;
 
     assign update_condition_valid = writeback0_valid && writeback0_need_to_wb && (writeback0_prd_match_prs1 || writeback0_prd_match_prs2);
 
@@ -72,7 +64,7 @@ module int_isq #(
         update_condition_robid = 0;
         writeback0_prd_match_prs1 = 0;
         writeback0_prd_match_prs2 = 0;
-        for (i=0;i < DEPTH; i=i+1) begin
+        for (i=0;i < `ISQ_DEPTH; i=i+1) begin
             //instr0_prs1
             if((data_out_array[i][116 : 111] == writeback0_prd) && valid_out_array[i])begin
                 update_condition_mask = 2'b10;
@@ -95,12 +87,7 @@ module int_isq #(
     // --------------------------------------------------------------------
     // Instantiate the age_buffer module
     // --------------------------------------------------------------------
-    age_buffer_1r1w #(
-        .DATA_WIDTH      (DATA_WIDTH),
-        .CONDITION_WIDTH (CONDITION_WIDTH),
-        .INDEX_WIDTH     (INDEX_WIDTH),
-        .DEPTH           (DEPTH)
-    ) u_age_buffer (
+    age_buffer_1r1w  u_age_buffer (
         .clock                    (clock),
         .reset_n                  (reset_n),
 

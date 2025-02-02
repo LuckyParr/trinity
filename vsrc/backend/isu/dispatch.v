@@ -7,7 +7,7 @@ module dispatch
     output wire               isu2iru_instr0_ready,
     //data to rob
     input  wire  [  `PC_RANGE] instr0_pc,
-    input  wire  [       31:0] instr0,
+    input  wire  [       31:0] instr0_instr,
     input  wire  [`LREG_RANGE] instr0_lrs1,
     input  wire  [`LREG_RANGE] instr0_lrs2,
     input  wire  [`LREG_RANGE] instr0_lrd,
@@ -30,7 +30,7 @@ module dispatch
     input wire                      instr0_is_store,
     input wire [               3:0] instr0_ls_size,
     input wire                iru2isu_instr0_predicttaken,
-    input wire [31:0]         iru2isu_instr0_predicttarge,
+    input wire [31:0]         iru2isu_instr0_predicttarget,
 
 
     /* ---------------------------instr1 from rename  --------------------------- */
@@ -38,7 +38,7 @@ module dispatch
     output wire               isu2iru_instr1_ready,
     //data to rob
     input  wire [  `PC_RANGE] instr1_pc,
-    input  wire [       31:0] instr1,
+    input  wire [       31:0] instr1_instr,
     input  wire [`LREG_RANGE] instr1_lrs1,
     input  wire [`LREG_RANGE] instr1_lrs2,
     input  wire [`LREG_RANGE] instr1_lrd,
@@ -61,7 +61,7 @@ module dispatch
     input wire                      instr1_is_store,
     input wire [               3:0] instr1_ls_size,
     input wire                iru2isu_instr1_predicttaken,
-    input wire [31:0]         iru2isu_instr1_predicttarge,
+    input wire [31:0]         iru2isu_instr1_predicttarget,
 
 
     /* ------------------------------ port with rob ----------------------------- */
@@ -92,7 +92,7 @@ module dispatch
     input wire intisq_can_enq,
     output wire disp2intisq_enq_valid,
     input wire intisq2disp_enq_ready,//useless
-    output wire [`ISU_DATA_WIDTH-1:0]disp2intisq_instr0_enq_data,
+    output wire [`ISQ_DATA_WIDTH-1:0]disp2intisq_instr0_enq_data,
     output wire [`ISQ_CONDITION_WIDTH-1:0] disp2intisq_instr0_enq_condition,
 
     /* -------------------------- port with busy_table -------------------------- */
@@ -130,7 +130,7 @@ assign disp2intisq_instr0_enq_condition = 2'b0;
 /* --------------------- write instr0 and instr1 to rob --------------------- */
 assign disp2rob_instr0_enq_valid = iru2isu_instr0_valid;
 assign disp2rob_instr0_pc         = instr0_pc;        
-assign disp2rob_instr0            = instr0;           
+assign disp2rob_instr0            = instr0_instr;           
 assign disp2rob_instr0_lrs1       = instr0_lrs1;      
 assign disp2rob_instr0_lrs2       = instr0_lrs2;      
 assign disp2rob_instr0_lrd        = instr0_lrd;       
@@ -139,7 +139,7 @@ assign disp2rob_instr0_old_prd    = instr0_old_prd;
 assign disp2rob_instr0_need_to_wb = instr0_need_to_wb;
 // assign disp2rob_instr0_entrydata = { 
 //                             instr0_pc           ,//[123:60]
-//                             instr0              ,//[59:28]
+//                             instr0_instr              ,//[59:28]
 //                             instr0_lrs1         ,//[27:23]
 //                             instr0_lrs2         ,//[22:18]
 //                             instr0_lrd          ,//[17:13]
@@ -149,14 +149,14 @@ assign disp2rob_instr0_need_to_wb = instr0_need_to_wb;
 //                             };
 assign disp2rob_instr1_eenq_valid = iru2isu_instr1_valid;
 assign disp2rob_instr1_pc         = instr1_pc;        
-assign disp2rob_instr1            = instr1;           
+assign disp2rob_instr1            = instr1_instr;           
 assign disp2rob_instr1_lrs1       = instr1_lrs1;      
 assign disp2rob_instr1_lrs2       = instr1_lrs2;      
 assign disp2rob_instr1_lrd        = instr1_lrd;       
 assign disp2rob_instr1_prd        = instr1_prd;       
 assign disp2rob_instr1_old_prd    = instr1_old_prd;   
 assign disp2rob_instr1_need_to_wb = instr1_need_to_wb;
-//assign disp2rob_instr1_entrydata = {instr1_pc,instr1,instr1_lrs1,instr1_lrs2,instr1_lrd,instr1_prd,instr1_old_prd,instr1_need_to_wb};
+//assign disp2rob_instr1_entrydata = {instr1_pc,instr1_instr,instr1_lrs1,instr1_lrs2,instr1_lrd,instr1_prd,instr1_old_prd,instr1_need_to_wb};
 
 /* ------------ write prd0 and prd1 busy bit to 1 in busy_vector ------------ */
 assign disp2bt_alloc_instr0rd_en = instr0_need_to_wb;
@@ -176,10 +176,10 @@ assign disp2isq_instr0_wren = iru2isu_instr0_valid;
 assign disp2intisq_instr0_enq_data = 
                         {
                         iru2isu_instr0_predicttaken,  //1  [280:280]
-                        iru2isu_instr0_predicttarge, //32  [279:248]
+                        iru2isu_instr0_predicttarget, //32  [279:248]
                         rob2disp_instr_robid ,//7   //[247 : 241]
                         instr0_pc         ,//64  //[240 : 177]         
-                        instr0            ,//32  //[176 : 145]         
+                        instr0_instr            ,//32  //[176 : 145]         
                         instr0_lrs1       ,//5   //[144 : 140]         
                         instr0_lrs2       ,//5   //[139 : 135]         
                         instr0_lrd        ,//5   //[134 : 130]         
