@@ -42,9 +42,9 @@ module idu_top(
     output wire [`PREG_RANGE]        idu2iru_prd,
     output wire [`PREG_RANGE]        idu2iru_old_prd,
 
-    output wire                      idu2iru_instr0_predicttaken_out,
-    output wire [31:0]               idu2iru_instr0_predicttarge_out
-);
+    output wire                      idu2iru_instr0_predicttaken,
+    output wire [31:0]               idu2iru_instr0_predicttarget
+);t
 
     //----------------------------------
     // Internal signals: decoder -> pipereg_autostall
@@ -159,7 +159,7 @@ module idu_top(
         .opload_read_data_wb        (),
 
         .predicttaken               (dec_predicttaken_out),
-        .predicttarge               (dec_predicttarge_out),
+        .predicttarget               (dec_predicttarge_out),
 
         // Outputs to next pipeline stage
         .instr_valid_to_lower       (idu2iru_instr_valid),
@@ -195,10 +195,9 @@ module idu_top(
         .lower_bju_result             (),
         .lower_muldiv_result          (),
         .lower_opload_read_data_wb    (),
-        
-        .lower_predicttaken           (idu2iru_instr0_predicttaken_out),
-        .lower_predicttarge           (idu2iru_instr0_predicttarge_out),
 
+        .lower_predicttaken           (idu2iru_instr0_predicttaken),
+        .lower_predicttarget           (idu2iru_instr0_predicttarget),
         // Flush signal
         .flush_valid                (flush_valid)
     );

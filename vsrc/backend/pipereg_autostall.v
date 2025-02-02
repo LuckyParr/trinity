@@ -37,8 +37,8 @@ module pipereg_autostall (
     input wire [`RESULT_RANGE] muldiv_result,
     input wire [`RESULT_RANGE] opload_read_data_wb,
 
-    input  wire                predicttaken_out,
-    input  wire [31:0]         predicttarget_out,
+    input  wire                predicttaken,
+    input  wire [31:0]         predicttarget,
  
 
     // outputs
@@ -76,8 +76,8 @@ module pipereg_autostall (
     output reg [`RESULT_RANGE] lower_muldiv_result,
     output reg [`RESULT_RANGE] lower_opload_read_data_wb,
     
-    output  wire                lower_predicttaken_out,
-    output  wire [31:0]         lower_predicttarget_out,
+    output  wire                lower_predicttaken,
+    output  wire [31:0]         lower_predicttarget,
     //flush
     input flush_valid
 
@@ -118,8 +118,8 @@ module pipereg_autostall (
             lower_prd                 <= 'b0;
             lower_old_prd             <= 'b0;
 
-            predicttaken_out          <= 'b0;
-            predicttarget_out         <= 'b0;
+            lower_predicttaken          <= 'b0;
+            lower_predicttarget         <= 'b0;
         end else if (in_fire) begin
             instr_valid_to_lower      <= instr_valid_from_upper;
             lower_lrs1                <= lrs1;
@@ -150,8 +150,8 @@ module pipereg_autostall (
             lower_prd                 <= prd;
             lower_old_prd             <= old_prd;
             
-            lower_predicttaken_out    <= predicttaken;
-            lower_predicttarget_out   <= predicttarge;
+            lower_predicttaken    <= predicttaken;
+            lower_predicttarget   <= predicttarget;
         end else if(lower_fire)begin
             instr_valid_to_lower         <= 'b0;
             //not need to assign other output signals, so they are automatically stalled(latched)
