@@ -81,11 +81,11 @@ module busy_table (
             end
 
             if (walking_valid0 && ~walking_complete0)begin
-                busy_vector[walking_prd0] = 1'b1;
+                busy_vector[walking_prd0] <= 1'b1;
             end
 
             if (walking_valid1 && ~walking_complete1)begin
-                busy_vector[walking_prd1] = 1'b1;
+                busy_vector[walking_prd1] <= 1'b1;
             end
             
         end

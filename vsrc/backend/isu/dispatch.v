@@ -147,7 +147,7 @@ assign disp2rob_instr0_need_to_wb = instr0_need_to_wb;
 //                             instr0_old_prd      ,//[6:1]
 //                             instr0_need_to_wb    //[0]
 //                             };
-assign disp2rob_instr1_eenq_valid = iru2isu_instr1_valid;
+assign disp2rob_instr1_enq_valid = iru2isu_instr1_valid;
 assign disp2rob_instr1_pc         = instr1_pc;        
 assign disp2rob_instr1            = instr1_instr;           
 assign disp2rob_instr1_lrs1       = instr1_lrs1;      

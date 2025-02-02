@@ -24,7 +24,7 @@ module pipereg_intwb (
     input  wire [128:0]                   bjusb_btb_din,
     output reg                          intwb_instr_valid,
     output reg                          intwb_need_to_wb,
-    output reg [`PREG_RANGE]       intwb_prd,
+    output reg [`PREG_RANGE]            intwb_prd,
     output reg [63:0]                   intwb_result,
     output reg                          intwb_redirect_valid,// rename to flush_valid
     output reg [63:0]                   intwb_redirect_target,// rename to flush_target

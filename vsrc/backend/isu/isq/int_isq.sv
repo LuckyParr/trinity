@@ -55,8 +55,8 @@ module int_isq (
 
     assign update_condition_valid = writeback0_valid && writeback0_need_to_wb && (writeback0_prd_match_prs1 || writeback0_prd_match_prs2);
 
-    wire writeback0_prd_match_prs1;
-    wire writeback0_prd_match_prs2;
+    reg writeback0_prd_match_prs1;
+    reg writeback0_prd_match_prs2;
 
     always @(*) begin
         integer i;

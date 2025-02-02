@@ -72,7 +72,7 @@ module rob
     output wire               rob_walk1_complete
 
 ); 
-    wire [6:0] rob_counter;
+    reg [6:0] rob_counter;
     assign rob_can_enq = (rob_counter < `ROB_SIZE);
     //assign rob2disp_instr_cnt = rob_counter;
     assign rob2disp_instr_robid = instr_robid;

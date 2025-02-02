@@ -12,12 +12,12 @@ module pipereg_memwb (
     input wire [         `PC_RANGE ]  memblock_out_pc, //for debug
    
     //output
-    output wire                           memwb_instr_valid,
-    output wire [`INSTR_ID_WIDTH-1:0]     memwb_robid,
-    output wire [`PREG_RANGE]             memwb_prd,
-    output wire                           memwb_need_to_wb,
-    output wire                           memwb_mmio_valid,
-    output wire [`RESULT_RANGE]           memwb_opload_rddata 
+    output reg                           memwb_instr_valid,
+    output reg [`INSTR_ID_WIDTH-1:0]     memwb_robid,
+    output reg [`PREG_RANGE]             memwb_prd,
+    output reg                           memwb_need_to_wb,
+    output reg                           memwb_mmio_valid,
+    output reg [`RESULT_RANGE]           memwb_opload_rddata 
 );
 
     `MACRO_DFF_NONEN(memwb_instr_valid  , memblock_out_instr_valid, 1)
