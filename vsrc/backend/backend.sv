@@ -1,7 +1,4 @@
-//TODO: add predict info to deq_data
-//complete backend
 //complete core_top
-//add flush signal in intwb
 //compile and debug
 //remove redundant parameter and define
 module backend #(

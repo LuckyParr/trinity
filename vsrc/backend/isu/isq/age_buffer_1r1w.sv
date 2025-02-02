@@ -1,27 +1,22 @@
-module age_buffer_1r1w #(
-    parameter DATA_WIDTH      = 248,
-    parameter CONDITION_WIDTH = 2,
-    parameter INDEX_WIDTH     = 4,
-    parameter DEPTH     = 8
-)(
+module age_buffer_1r1w (
     input  logic                         clock,
     input  logic                         reset_n,
 
     //-----------------------------------------------------
     // Enqueue interface
     //-----------------------------------------------------
-    input  logic [DATA_WIDTH-1:0]       enq_data,
-    input  logic [CONDITION_WIDTH-1:0]  enq_condition,
-    //input  logic [INDEX_WIDTH-1:0]      enq_index,
+    input  logic [`ISQ_DATA_WIDTH-1:0]       enq_data,
+    input  logic [`ISQ_CONDITION_WIDTH-1:0]  enq_condition,
+    //input  logic [`ISQ_INDEX_WIDTH-1:0]      enq_index,
     input  logic                         enq_valid,  // Request to enqueue
     output logic                         enq_ready,  // Indicate we can accept data
 
     //-----------------------------------------------------
     // Dequeue interface
     //-----------------------------------------------------
-    output logic [DATA_WIDTH-1:0]       deq_data,
-    output logic [CONDITION_WIDTH-1:0]  deq_condition,
-    output logic [INDEX_WIDTH-1:0]      deq_index,
+    output logic [`ISQ_DATA_WIDTH-1:0]       deq_data,
+    output logic [`ISQ_CONDITION_WIDTH-1:0]  deq_condition,
+    output logic [`ISQ_INDEX_WIDTH-1:0]      deq_index,
     output logic                         deq_valid,  // We have a valid oldest ready
     input  logic                         deq_ready,  // Consumer is ready to take it
 
@@ -30,37 +25,37 @@ module age_buffer_1r1w #(
     //-----------------------------------------------------
     input  logic                        update_condition_valid,
     input  logic [`ROB_SIZE_LOG:0]      update_condition_robid,
-    input  logic [CONDITION_WIDTH-1:0]  update_condition_mask,
-    input  logic [CONDITION_WIDTH-1:0]  update_condition_in,
+    input  logic [`ISQ_CONDITION_WIDTH-1:0]  update_condition_mask,
+    input  logic [`ISQ_CONDITION_WIDTH-1:0]  update_condition_in,
     // Flush interface
     input  logic                      flush_valid,
     input  logic [`ROB_SIZE_LOG:0]    flush_robid,
     //output array
-    output logic [DEPTH-1:0][DATA_WIDTH-1:0]      data_out_array,
-    output logic [DEPTH-1:0][CONDITION_WIDTH-1:0] condition_out_array,
-    output logic [DEPTH-1:0][INDEX_WIDTH-1:0]     index_out_array,
-    output logic [DEPTH-1:0]                      valid_out_array
+    output logic [`ISQ_DEPTH-1:0][`ISQ_DATA_WIDTH-1:0]      data_out_array,
+    output logic [`ISQ_DEPTH-1:0][`ISQ_CONDITION_WIDTH-1:0] condition_out_array,
+    output logic [`ISQ_DEPTH-1:0][`ISQ_INDEX_WIDTH-1:0]     index_out_array,
+    output logic [`ISQ_DEPTH-1:0]                      valid_out_array
 );
 
     // ----------------------------------------------------------
     // Sub-entry outputs and control signals
     // ----------------------------------------------------------
-    logic [DEPTH-1:0]                      wr_en;
-    logic [DEPTH-1:0]                      clear_entry;
-    logic [DEPTH-1:0]                      rdy2dq_out_array;
+    logic [`ISQ_DEPTH-1:0]                      wr_en;
+    logic [`ISQ_DEPTH-1:0]                      clear_entry;
+    logic [`ISQ_DEPTH-1:0]                      rdy2dq_out_array;
 
 
 
     // age_matrix[i][j] = 1 => "entry i" is older than "entry j"
-    logic [DEPTH-1:0][DEPTH-1:0] age_matrix;
-    logic [DEPTH-1:0] needflush_array;
+    logic [`ISQ_DEPTH-1:0][`ISQ_DEPTH-1:0] age_matrix;
+    logic [`ISQ_DEPTH-1:0] needflush_array;
 
 /* ----------------- writeback to update condition bit logic ---------------- */
     //lets assume robid lie in [247:241] for now
     // Decode update_condition_robid -> one-hot
     integer j;
     always_comb begin
-        for (j = 0; j < DEPTH; j++) begin
+        for (j = 0; j < `ISQ_DEPTH; j++) begin
             update_condition_valid_array[j] = (update_condition_robid == data_out[j][247:241]) && update_condition_valid;
         end
     end
@@ -72,12 +67,8 @@ module age_buffer_1r1w #(
     // ----------------------------------------------------------
     genvar g;
     generate
-        for (g = 0; g < DEPTH; g++) begin : GEN_ENTRIES
-            abentry #(
-                .DATA_WIDTH     (DATA_WIDTH),
-                .CONDITION_WIDTH(CONDITION_WIDTH),
-                .INDEX_WIDTH    (INDEX_WIDTH)
-            ) abentry_g (
+        for (g = 0; g < `ISQ_DEPTH; g++) begin : GEN_ENTRIES
+            age_buffer_entry  u_age_buffer_entry_g (
                 .clock                  (clock),
                 .reset_n                (reset_n),
 
@@ -112,7 +103,7 @@ module age_buffer_1r1w #(
     integer free_idx_for_enq;
     always_comb begin
         free_idx_for_enq = -1;
-        for (int i = 0; i < DEPTH; i++) begin
+        for (int i = 0; i < `ISQ_DEPTH; i++) begin
             if (valid_out_array[i] == 1'b0) begin
                 free_idx_for_enq = i;
                 break;
@@ -129,11 +120,11 @@ module age_buffer_1r1w #(
         oldest_idx_for_deq = -1;
         oldest_found       = 1'b0;
 
-        for (int i = 0; i < DEPTH; i++) begin
+        for (int i = 0; i < `ISQ_DEPTH; i++) begin
             if (rdy2dq_out_array[i]) begin
                 // Check if there's any j that is older than i
                 logic any_j_older = 1'b0;
-                for (int j = 0; j < DEPTH; j++) begin
+                for (int j = 0; j < `ISQ_DEPTH; j++) begin
                     if (j != i && valid_out_array[j] && age_matrix[j][i]) begin
                         any_j_older = 1'b1;
                         break;
@@ -168,10 +159,10 @@ module age_buffer_1r1w #(
     always_ff @(posedge clock or negedge reset_n) begin
         if (!reset_n) begin
             // Reset everything
-            for (int i = 0; i < DEPTH; i++) begin
+            for (int i = 0; i < `ISQ_DEPTH; i++) begin
                 wr_en[i]       <= 1'b0;
                 clear_entry[i] <= 1'b0;
-                for (int j = 0; j < DEPTH; j++) begin
+                for (int j = 0; j < `ISQ_DEPTH; j++) begin
                     age_matrix[i][j] <= 1'b0;
                 end
             end
@@ -188,7 +179,7 @@ module age_buffer_1r1w #(
 
                 // Update age_matrix for the new entry free_idx_for_enq
                 // The new entry is "younger" than all existing valid entries
-                for (int j = 0; j < DEPTH; j++) begin
+                for (int j = 0; j < `ISQ_DEPTH; j++) begin
                     if (j != free_idx_for_enq) begin
                         if (valid_out_array[j]) begin
                             // j is older than free_idx_for_enq
@@ -210,7 +201,7 @@ module age_buffer_1r1w #(
                 clear_entry[oldest_idx_for_deq] <= 1'b1;
 
                 // Clear row & column in the age_matrix
-                for (int j = 0; j < DEPTH; j++) begin
+                for (int j = 0; j < `ISQ_DEPTH; j++) begin
                     age_matrix[oldest_idx_for_deq][j] <= 1'b0;
                     age_matrix[j][oldest_idx_for_deq] <= 1'b0;
                 end
@@ -225,7 +216,7 @@ module age_buffer_1r1w #(
     always @(*) begin
         integer i;
         needflush_array = 'b0;
-        for (i = 0; i < DEPTH; i = i + 1) begin
+        for (i = 0; i < `ISQ_DEPTH; i = i + 1) begin
             if (rob_state == `ROB_STATE_ROLLILNGBACK) begin
                     needflush_array[i] = flush_robid[`ROB_SIZE_LOG] ^ data_out[i][247] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < data_out[i][246:241]);
                 end

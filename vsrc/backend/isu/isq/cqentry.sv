@@ -1,8 +1,4 @@
-module cqentry #(
-    parameter DATA_WIDTH      = 248,
-    parameter CONDITION_WIDTH = 2,
-    parameter INDEX_WIDTH     = 4
-)(
+module cqentry (
     input  logic                      clock,
     input  logic                      reset_n,
 
@@ -13,20 +9,20 @@ module cqentry #(
     input  logic                      clear_entry,
 
     // Inputs to store (for enqueue)
-    input  logic [DATA_WIDTH-1:0]      data_in,
-    input  logic [CONDITION_WIDTH-1:0] condition_in,
-    input  logic [INDEX_WIDTH-1:0]     index_in,
+    input  logic [`ISQ_DATA_WIDTH-1:0]      data_in,
+    input  logic [`ISQ_CONDITION_WIDTH-1:0] condition_in,
+    input  logic [`ISQ_INDEX_WIDTH-1:0]     index_in,
     input  logic                       valid_in,
 
     // Update condition port (no conflict on same entry in same cycle)
     input  logic                       update_condition_valid,
-    input  logic [CONDITION_WIDTH-1:0] update_condition_mask, 
-    input  logic [CONDITION_WIDTH-1:0] update_condition_in,
+    input  logic [`ISQ_CONDITION_WIDTH-1:0] update_condition_mask, 
+    input  logic [`ISQ_CONDITION_WIDTH-1:0] update_condition_in,
     
     // Outputs
-    output logic [DATA_WIDTH-1:0]      data_out,
-    output logic [CONDITION_WIDTH-1:0] condition_out,
-    output logic [INDEX_WIDTH-1:0]     index_out,
+    output logic [`ISQ_DATA_WIDTH-1:0]      data_out,
+    output logic [`ISQ_CONDITION_WIDTH-1:0] condition_out,
+    output logic [`ISQ_INDEX_WIDTH-1:0]     index_out,
     output logic                       valid_out,
 
     // ready_to_dequeue = valid_out && (&condition_out)
