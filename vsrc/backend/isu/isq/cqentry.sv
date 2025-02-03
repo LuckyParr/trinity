@@ -4,7 +4,7 @@ module cqentry (
 
     // Clear signal (highest priority)
     input logic                            clear_entry,
-    
+
     // Write-enable to load new values (data, condition, index, valid)
     input logic                            wr_en,
     input logic [     `ISQ_DATA_WIDTH-1:0] data_in,
@@ -13,9 +13,9 @@ module cqentry (
     input logic                            valid_in,
 
     // Update condition port (no conflict on same entry in same cycle)
-    input logic                            update_condition_valid,
-    input logic [`ISQ_CONDITION_WIDTH-1:0] update_condition_mask,
-    input logic [`ISQ_CONDITION_WIDTH-1:0] update_condition_in,
+    input logic                            update_valid,
+    input logic [`ISQ_CONDITION_WIDTH-1:0] update_mask,
+    input logic [`ISQ_CONDITION_WIDTH-1:0] update_in,
 
     // Outputs
     output logic [     `ISQ_DATA_WIDTH-1:0] data_out,
@@ -38,8 +38,8 @@ module cqentry (
                 condition_out <= condition_in;
             end
             //update condition bit
-            if (update_condition_valid) begin
-                condition_out <= (update_condition_in & update_condition_mask) | (condition_out & ~update_condition_mask);
+            if (update_valid) begin
+                condition_out <= (update_in & update_mask) | (condition_out & ~update_mask);
             end
         end
     end

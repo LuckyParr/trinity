@@ -1,7 +1,6 @@
 module age_buffer_entry (
     input  logic                      clock,
     input  logic                      reset_n,
-
     // Write-enable to load new values (data, condition, index, valid)
     input  logic                      wr_en,
 
@@ -11,13 +10,12 @@ module age_buffer_entry (
     // Inputs to store (for enqueue)
     input  logic [`ISQ_DATA_WIDTH-1:0]      data_in,
     input  logic [`ISQ_CONDITION_WIDTH-1:0] condition_in,
-    input  logic [`ISQ_INDEX_WIDTH-1:0]     index_in,
     input  logic                            valid_in,
 
     // Update condition port (no conflict on same entry in same cycle)
-    input  logic                            update_condition_valid,
-    input  logic [`ISQ_CONDITION_WIDTH-1:0] update_condition_mask, 
-    input  logic [`ISQ_CONDITION_WIDTH-1:0] update_condition_in,
+    input  logic                            update_valid,
+    input  logic [`ISQ_CONDITION_WIDTH-1:0] update_mask, 
+    input  logic [`ISQ_CONDITION_WIDTH-1:0] update_in,
     
     // Outputs
     output logic [`ISQ_DATA_WIDTH-1:0]      data_out,
@@ -48,13 +46,12 @@ module age_buffer_entry (
             else if (wr_en) begin
                 data_out      <= data_in;
                 condition_out <= condition_in;
-                index_out     <= index_in;
                 valid_out     <= valid_in;
             end
             //update condition bit
-            if (update_condition_valid) begin
-                condition_out <= (update_condition_in & update_condition_mask) | 
-                                (condition_out & ~update_condition_mask);
+            if (update_valid) begin
+                condition_out <= (update_in & update_mask) | 
+                                (condition_out & ~update_mask);
             end
         end
     end

@@ -1,5 +1,6 @@
 module circular_queue_1r1w #(
     parameter DEPTH           = 8,
+    parameter DEPTH_LOG       = 3,
     parameter DATA_WIDTH      = 248,
     parameter CONDITION_WIDTH = 2
 ) (
@@ -13,25 +14,25 @@ module circular_queue_1r1w #(
     input  logic [CONDITION_WIDTH-1:0] enqueue_condition,
 
     // Dequeue interface
-    output logic                         dequeue_valid,
-    input  logic                         dequeue_ready,
-    output logic [       DATA_WIDTH-1:0] dequeue_data,
-    output logic [  CONDITION_WIDTH-1:0] dequeue_condition,
-    output logic [($clog2(DEPTH)+1)-1:0] dequeue_selfid,
+    output logic                       dequeue_valid,
+    input  logic                       dequeue_ready,
+    output logic [     DATA_WIDTH-1:0] dequeue_data,
+    output logic [CONDITION_WIDTH-1:0] dequeue_condition,
+    output logic [  (DEPTH_LOG+1)-1:0] dequeue_selfid,
 
     // Flush interface
-    input logic                         flush_valid,
-    input logic [($clog2(DEPTH)+1)-1:0] flush_robid,
+    input logic                     flush_valid,
+    input logic [(DEPTH_LOG+1)-1:0] flush_robid,
 
     // Update condition interface (pointer-based)
-    input logic                       update_condition_valid,
-    input logic [CONDITION_WIDTH-1:0] update_condition_mask,
-    input logic [    `ROB_SIZE_LOG:0] update_condition_robid,
-    input logic [CONDITION_WIDTH-1:0] update_condition_data
+    input logic                       update_valid,
+    input logic [CONDITION_WIDTH-1:0] update_mask,
+    input logic [    `ROB_SIZE_LOG:0] update_robid,
+    input logic [CONDITION_WIDTH-1:0] update_data
 );
 
 
-    localparam SELFID_WIDTH = $clog2(DEPTH) + 1;
+    localparam SELFID_WIDTH = DEPTH_LOG + 1;
     // 'entry_id_dispatcher' increments on enqueue only
     logic   [   SELFID_WIDTH-1:0] entry_id_dispatcher;
     logic   [     DATA_WIDTH-1:0] data_out_dec               [0:DEPTH-1];
@@ -44,7 +45,7 @@ module circular_queue_1r1w #(
     logic   [          0:DEPTH-1] wr_en_dec;
     logic   [          0:DEPTH-1] clear_dec;
     logic   [          0:DEPTH-1] needflush_dec;
-    logic   [          0:DEPTH-1] update_condition_valid_dec;
+    logic   [          0:DEPTH-1] update_valid_dec;
 
     // Next input signals used when wr_en=1
     logic   [     DATA_WIDTH-1:0] data_in_next;
@@ -54,11 +55,11 @@ module circular_queue_1r1w #(
 
     /* ----------------- writeback to update condition bit logic ---------------- */
     //lets assume robid lie in [247:241] for now
-    // Decode update_condition_robid -> one-hot
+    // Decode update_robid -> one-hot
     integer                       j;
     always_comb begin
         for (j = 0; j < DEPTH; j++) begin
-            update_condition_valid_dec[j] = (update_condition_robid == data_out[j][247:241]) && update_condition_valid;
+            update_valid_dec[j] = (update_robid == data_out[j][247:241]) && update_valid;
         end
     end
 
@@ -83,9 +84,9 @@ module circular_queue_1r1w #(
                 .valid_in    (valid_in_next),
 
                 // Update condition signals
-                .update_condition_valid(update_condition_valid_dec[i]),
-                .update_condition_mask (update_condition_mask),
-                .update_condition_in   (update_condition_data),
+                .update_valid(update_valid_dec[i]),
+                .update_mask (update_mask),
+                .update_in   (update_data),
 
                 // Outputs
                 .data_out            (data_out_dec[i]),
@@ -100,12 +101,12 @@ module circular_queue_1r1w #(
     // ----------------------------------------------------
     // 3) Pointers, Count
     // ----------------------------------------------------
-    logic [$clog2(DEPTH)-1:0] enqueue_ptr;
-    logic [$clog2(DEPTH)-1:0] dequeue_ptr;
-    logic [  $clog2(DEPTH):0] count;  // 0..DEPTH
+    logic [DEPTH_LOG-1:0] enqueue_ptr;
+    logic [DEPTH_LOG-1:0] dequeue_ptr;
+    logic [  DEPTH_LOG:0] count;  // 0..DEPTH
 
-    wire                      full = (count == DEPTH);
-    wire                      empty = (count == 0);
+    wire                  full = (count == DEPTH);
+    wire                  empty = (count == 0);
 
     // Enqueue logic
     assign enqueue_ready = !full;
@@ -118,7 +119,7 @@ module circular_queue_1r1w #(
         end else begin
             // Highest priority: flush
             if (flush_valid) begin
-                enqueue_ptr         <= flush_robid[$clog2(DEPTH)-1:0];
+                enqueue_ptr         <= flush_robid[DEPTH_LOG-1:0];
                 entry_id_dispatcher <= flush_robid + 1;
             end  // Next: normal enqueue
             else if (enqueue_valid && enqueue_ready) begin

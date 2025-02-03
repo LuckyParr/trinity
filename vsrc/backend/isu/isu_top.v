@@ -229,9 +229,6 @@ module isu_top (
     wire [`ISQ_CONDITION_WIDTH-1:0] disp2intisq_instr0_enq_condition;
 
     wire [     `ISQ_DATA_WIDTH-1:0] intisq_deq_data;
-    wire [`ISQ_CONDITION_WIDTH-1:0] intisq_deq_condition;
-    wire [    `ISQ_INDEX_WIDTH-1:0] intisq_deq_index;
-
     dispatch u_dispatch (
         .clock                           (clock),
         .reset_n                         (reset_n),
@@ -414,8 +411,6 @@ module isu_top (
         .deq_valid            (intisq_deq_valid),
         .deq_ready            (intisq_deq_ready),
         .deq_data             (intisq_deq_data),
-        .deq_condition        (intisq_deq_condition),
-        .deq_index            (intisq_deq_index),
         //writeback from intwb0
         .writeback0_valid     (intwb0_instr_valid),
         .writeback0_need_to_wb(intwb0_need_to_wb),
