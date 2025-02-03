@@ -1,7 +1,10 @@
 `define LREG_RANGE 4:0
 `define PREG_RANGE 5:0
+`define PREG_LENGTH 6
+`define PREG_SIZE 64
+
 `define SRC_RANGE 63:0
-`define SRC_WIDTH 64
+`define SRC_LENGTH 64
 
 `define RESULT_RANGE 63:0
 `define RESULT_WIDTH 64
@@ -10,10 +13,6 @@
 `define IBUFFER_FIFO_WIDTH 32+48
 `define INST_CACHE_WIDTH 512
 
-`define ISQ_DATA_WIDTH 281
-`define ISQ_CONDITION_WIDTH 2
-`define ISQ_INDEX_WIDTH 4
-`define ISQ_DEPTH 8
 /*
     0 = ADD
     1 = SET LESS THAN
@@ -27,9 +26,9 @@
     9 = LUI
     10 = AUIPC
 */
-`define ALU_TYPE_WIDTH 11
-`define PC_RANGE 47:0
-`define PC_WIDTH 48
+`define ALU_TYPE_LENGTH 11
+`define PC_RANGE 63:0
+`define PC_LENGTH 64
 `define INSTR_RANGE 31:0
 `define CX_TYPE_RANGE 5:0
 /*
@@ -130,7 +129,24 @@
 
 `define ADDR_RANGE 63:0
 `define CACHELINE512_RANGE 511:0
+
 `define ICACHE_FETCHWIDTH128_RANGE 127:0
+
+`define ROB_SIZE_LOG 6
+`define ROB_SIZE 64
+
+`define ISSUE_QUEUE_DEPTH 8
+`define ISSUE_QUEUE_LOG 3
+
+`define ROB_STATE_IDLE 2'b00
+`define ROB_STATE_OVERWRITE_RAT 2'b01
+`define ROB_STATE_WALKING 2'b10
+
+`define WALK_SIZE 2
+`define COMMIT_SIZE 2
+
+`define STOREQUEUE_DEPTH 4
+`define STOREQUEUE_LOG 2
 
 `define MACRO_DFF_NONEN(dff_data_q, dff_data_in, dff_data_width) \
 always @(posedge clock or negedge reset_n) begin \
@@ -140,12 +156,32 @@ always @(posedge clock or negedge reset_n) begin \
         dff_data_q <= dff_data_in; \
 end
 
-`define BHTBTB_INDEX_WIDTH 9
-`define INSTR_ID_WIDTH 7
-`define ROB_SIZE_LOG 6
-`define ROB_SIZE 64
+`define MACRO_LATCH_NONEN(dff_data_q, dff_data_in, dff_enable, dff_data_width) \
+always @(posedge clock or negedge reset_n) begin \
+    if(reset_n == 1'b0) \
+        dff_data_q <= {dff_data_width{1'b0}}; \
+    else if(dff_enable)\
+        dff_data_q <= dff_data_in; \
+end
 
-`define ROB_STATE_IDLE 2'b00
-`define ROB_STATE_ROLLIBACK 2'b01
-`define ROB_STATE_WALK 2'b10
+`define MACRO_ENQ_DEC(enq_ptr_oh, enq_dec_reg, enq_entity,length) \
+    always @(*) begin\
+        integer i;\
+        for (i = 0; i < length; i = i + 1) begin\
+            enq_dec_reg[i] = 'b0;\
+            if (enq_ptr_oh[i]) begin\
+                enq_dec_reg[i] = enq_entity;\
+            end\
+        end\
+    end
 
+`define MACRO_DEQ_DEC(deq_ptr_oh, deq_entity,  deq_dec_reg, length) \
+    always @(*) begin\
+        integer i;\
+        deq_entity = 'b0;\
+        for (i = 0; i < length; i = i + 1) begin\
+            if (deq_ptr_oh[i]) begin\
+                deq_entity = deq_dec_reg[i];\
+            end\
+        end\
+    end

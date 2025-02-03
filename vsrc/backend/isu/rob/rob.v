@@ -1,8 +1,7 @@
-module rob 
-(
+module rob (
     input wire               clock,
     input wire               reset_n,
-     /* ----------------------------- rob write logic ---------------------------- */
+    /* ----------------------------- rob write logic ---------------------------- */
     input wire               instr0_enq_valid,
     input wire [  `PC_RANGE] instr0_pc,
     input wire [       31:0] instr0_instr,
@@ -11,50 +10,50 @@ module rob
     input wire [`PREG_RANGE] instr0_old_prd,
     input wire               instr0_need_to_wb,
 
-    input wire               instr1_enq_valid,
-    input wire [  `PC_RANGE] instr1_pc,
-    input wire [       31:0] instr1_instr,
-    input wire [`LREG_RANGE] instr1_lrd,
-    input wire [`PREG_RANGE] instr1_prd,
-    input wire [`PREG_RANGE] instr1_old_prd,
-    input wire               instr1_need_to_wb,
+    input  wire                   instr1_enq_valid,
+    input  wire [      `PC_RANGE] instr1_pc,
+    input  wire [           31:0] instr1_instr,
+    input  wire [    `LREG_RANGE] instr1_lrd,
+    input  wire [    `PREG_RANGE] instr1_prd,
+    input  wire [    `PREG_RANGE] instr1_old_prd,
+    input  wire                   instr1_need_to_wb,
     //output reg [`ROB_SIZE_LOG:0] rob2disp_instr_cnt,
-    output reg [`ROB_SIZE_LOG:0] rob2disp_instr_robid,
-    output reg rob_can_enq,
-/* ---------------------------- write back logic from wb pipe---------------------------- */
+    output reg  [`ROB_SIZE_LOG:0] rob2disp_instr_robid,
+    output reg                    rob_can_enq,
+    /* ---------------------------- write back logic from wb pipe---------------------------- */
     //write back port
-    input wire                     intwb0_instr_valid,
-    input wire [`ROB_SIZE_LOG:0]   intwb0_robid,
-    input wire                     memwb_instr_valid,
-    input wire [`ROB_SIZE_LOG:0]   memwb_robid,
-    input wire                     memwb_mmio_valid,
+    input  wire                   intwb0_instr_valid,
+    input  wire [`ROB_SIZE_LOG:0] intwb0_robid,
+    input  wire                   memwb_instr_valid,
+    input  wire [`ROB_SIZE_LOG:0] memwb_robid,
+    input  wire                   memwb_mmio_valid,
 
     /* --------------------------- output commit port --------------------------- */
-    output wire                     commit0_valid,
-    output wire [        `PC_RANGE] commit0_pc,
-    output wire [             31:0] commit0_instr,
-    output wire [      `LREG_RANGE] commit0_lrd,
-    output wire [      `PREG_RANGE] commit0_prd,
-    output wire [      `PREG_RANGE] commit0_old_prd,
-    output wire                     commit0_need_to_wb,   //used to write arch rat
-    output wire [`ROB_SIZE_LOG:0]   commit0_robid,       //used to wakeup storequeue
+    output wire                   commit0_valid,
+    output wire [      `PC_RANGE] commit0_pc,
+    output wire [           31:0] commit0_instr,
+    output wire [    `LREG_RANGE] commit0_lrd,
+    output wire [    `PREG_RANGE] commit0_prd,
+    output wire [    `PREG_RANGE] commit0_old_prd,
+    output wire                   commit0_need_to_wb,  //used to write arch rat
+    output wire [`ROB_SIZE_LOG:0] commit0_robid,       //used to wakeup storequeue
     // debug
-    output wire                     commit0_skip,
+    output wire                   commit0_skip,
 
-    output wire                     commit1_valid,
-    output wire [        `PC_RANGE] commit1_pc,
-    output wire [             31:0] commit1_instr,
-    output wire [      `LREG_RANGE] commit1_lrd,
-    output wire [      `PREG_RANGE] commit1_prd,
-    output wire [      `PREG_RANGE] commit1_old_prd,
-    output wire [`ROB_SIZE_LOG:0  ] commit1_robid,
-    output wire                     commit1_need_to_wb,
+    output wire                   commit1_valid,
+    output wire [      `PC_RANGE] commit1_pc,
+    output wire [           31:0] commit1_instr,
+    output wire [    `LREG_RANGE] commit1_lrd,
+    output wire [    `PREG_RANGE] commit1_prd,
+    output wire [    `PREG_RANGE] commit1_old_prd,
+    output wire [`ROB_SIZE_LOG:0] commit1_robid,
+    output wire                   commit1_need_to_wb,
     // debug
-    output wire                     commit1_skip,
+    output wire                   commit1_skip,
 
     /* ------------------------------- flush and walk logic ------------------------------ */
-    input wire                     flush_valid,
-    input wire [`ROB_SIZE_LOG:0  ] flush_robid,
+    input wire                   flush_valid,
+    input wire [`ROB_SIZE_LOG:0] flush_robid,
 
     output reg  [        1:0] rob_state,
     output wire               rob_walk0_valid,
@@ -66,51 +65,51 @@ module rob
     output wire [`PREG_RANGE] rob_walk1_prd,
     output wire               rob_walk1_complete
 
-); 
+);
     reg [6:0] rob_counter;
-    assign rob_can_enq = (rob_counter < `ROB_SIZE);
+    assign rob_can_enq          = (rob_counter < `ROB_SIZE);
     //assign rob2disp_instr_cnt = rob_counter;
     assign rob2disp_instr_robid = instr_robid;
 
-/* ----------------------------- internal signal ---------------------------- */
+    /* ----------------------------- internal signal ---------------------------- */
     //robentry input
-    reg  [    `ROB_SIZE-1:0] enq_valid_dec;//act as wren signal in robentry
-    reg  [        `PC_RANGE] enq_pc_dec                   [0:`ROB_SIZE-1];
-    reg  [             31:0] enq_instr_dec                [0:`ROB_SIZE-1];
-    reg  [      `LREG_RANGE] enq_lrd_dec                  [0:`ROB_SIZE-1];
-    reg  [      `PREG_RANGE] enq_prd_dec                  [0:`ROB_SIZE-1];
-    reg  [      `PREG_RANGE] enq_old_prd_dec              [0:`ROB_SIZE-1];
-    reg  [    `ROB_SIZE-1:0] enq_need_to_wb_dec;
-    reg  [`ROB_SIZE-1:0    ] wb_set_complete_dec;
-    reg  [`ROB_SIZE-1:0    ] wb_set_skip_dec;
+    reg  [  `ROB_SIZE-1:0] enq_valid_dec;  //act as wren signal in robentry
+    reg  [      `PC_RANGE] enq_pc_dec                                      [0:`ROB_SIZE-1];
+    reg  [           31:0] enq_instr_dec                                   [0:`ROB_SIZE-1];
+    reg  [    `LREG_RANGE] enq_lrd_dec                                     [0:`ROB_SIZE-1];
+    reg  [    `PREG_RANGE] enq_prd_dec                                     [0:`ROB_SIZE-1];
+    reg  [    `PREG_RANGE] enq_old_prd_dec                                 [0:`ROB_SIZE-1];
+    reg  [  `ROB_SIZE-1:0] enq_need_to_wb_dec;
+    reg  [  `ROB_SIZE-1:0] wb_set_complete_dec;
+    reg  [  `ROB_SIZE-1:0] wb_set_skip_dec;
     //robentry output
-    wire [    `ROB_SIZE-1:0] entry_ready_to_commit_dec;
-    wire [    `ROB_SIZE-1:0] entry_valid_dec;
-    wire [    `ROB_SIZE-1:0] entry_complete_dec;
-    wire [        `PC_RANGE] entry_pc_dec                   [0:`ROB_SIZE-1];
-    wire [             31:0] entry_instr_dec                [0:`ROB_SIZE-1];
-    wire [      `LREG_RANGE] entry_lrd_dec                  [0:`ROB_SIZE-1];
-    wire [      `PREG_RANGE] entry_prd_dec                  [0:`ROB_SIZE-1];
-    wire [      `PREG_RANGE] entry_old_prd_dec              [0:`ROB_SIZE-1];
-    wire [    `ROB_SIZE-1:0] entry_need_to_wb_dec;
-    wire [    `ROB_SIZE-1:0] entry_skip_dec;
-    reg  [    `ROB_SIZE-1:0] commit_vld_dec;
-    reg  [    `ROB_SIZE-1:0] needflush_dec;
+    wire [  `ROB_SIZE-1:0] entry_ready_to_commit_dec;
+    wire [  `ROB_SIZE-1:0] entry_valid_dec;
+    wire [  `ROB_SIZE-1:0] entry_complete_dec;
+    wire [      `PC_RANGE] entry_pc_dec                                    [0:`ROB_SIZE-1];
+    wire [           31:0] entry_instr_dec                                 [0:`ROB_SIZE-1];
+    wire [    `LREG_RANGE] entry_lrd_dec                                   [0:`ROB_SIZE-1];
+    wire [    `PREG_RANGE] entry_prd_dec                                   [0:`ROB_SIZE-1];
+    wire [    `PREG_RANGE] entry_old_prd_dec                               [0:`ROB_SIZE-1];
+    wire [  `ROB_SIZE-1:0] entry_need_to_wb_dec;
+    wire [  `ROB_SIZE-1:0] entry_skip_dec;
+    reg  [  `ROB_SIZE-1:0] commit_vld_dec;
+    reg  [  `ROB_SIZE-1:0] needflush_dec;
 
-    wire                     instr0_actually_enq;
-    wire                     instr1_actually_enq;
+    wire                   instr0_actually_enq;
+    wire                   instr1_actually_enq;
 
-    reg [`ROB_SIZE_LOG:0] enqueue_ptr; // 7bit:contain flag
-    reg [`ROB_SIZE_LOG:0] dequeue_ptr; // 7bit:contain flag
-    reg [`ROB_SIZE_LOG:0] walking_ptr; // 7bit:contain flag
+    reg  [`ROB_SIZE_LOG:0] enqueue_ptr;  // 7bit:contain flag
+    reg  [`ROB_SIZE_LOG:0] dequeue_ptr;  // 7bit:contain flag
+    reg  [`ROB_SIZE_LOG:0] walking_ptr;  // 7bit:contain flag
 
-    reg  [  `ROB_SIZE_LOG:0] enq_num;
-    reg  [  `ROB_SIZE_LOG:0] deq_num;
+    reg  [`ROB_SIZE_LOG:0] enq_num;
+    reg  [`ROB_SIZE_LOG:0] deq_num;
 
-    wire instr_robid = enqueue_ptr;
+    wire                   instr_robid = enqueue_ptr;
 
 
-/* ------------------------ update enqueue_ptr logic ------------------------ */
+    /* ------------------------ update enqueue_ptr logic ------------------------ */
     //when instr0/1 comes from disp, calculate enq_num 
     //enq_valid_dec[i] also act as wren for robentry
     always @(*) begin
@@ -137,12 +136,12 @@ module rob
     end
     //use enq_num to update enqeue_ptr
     always @(posedge clock or negedge reset_n) begin
-        if(~reset_n)begin
-            enqueue_ptr <=0;
-        end else if(is_rollback) begin
+        if (~reset_n) begin
+            enqueue_ptr <= 0;
+        end else if (is_rollback) begin
             enqueue_ptr <= flush_robid + 1;
         end else begin
-            enqueue_ptr <= enqueue_ptr + enq_num;         
+            enqueue_ptr <= enqueue_ptr + enq_num;
         end
     end
 
@@ -226,7 +225,7 @@ module rob
     end
 
 
-/* ---------------------------- write back logic ---------------------------- */
+    /* ---------------------------- write back logic ---------------------------- */
 
 
     always @(*) begin
@@ -257,7 +256,7 @@ module rob
     end
 
 
-/* ------------------------------ dequeue logic ----------------------------- */
+    /* ------------------------------ dequeue logic ----------------------------- */
     always @(*) begin
         integer i;
         for (i = 0; i < `ROB_SIZE; i = i + 1) begin
@@ -280,28 +279,28 @@ module rob
 
 
     always @(posedge clock or negedge reset_n) begin
-        if(~reset_n)begin
-            dequeue_ptr <=0;
+        if (~reset_n) begin
+            dequeue_ptr <= 0;
         end else begin
-            dequeue_ptr <= dequeue_ptr + deq_num;         
+            dequeue_ptr <= dequeue_ptr + deq_num;
         end
     end
 
-/* -------------------------- output commit signal -------------------------- */
-    assign commit0_valid       = commit_vld_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
-    assign commit0_pc          = entry_pc_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
-    assign commit0_instr       = entry_instr_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
-    assign commit0_lrd         = entry_lrd_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
-    assign commit0_prd         = entry_prd_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
-    assign commit0_old_prd     = entry_old_prd_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
-    assign commit0_robid       = dequeue_ptr;
-    assign commit0_need_to_wb  = entry_need_to_wb_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
+    /* -------------------------- output commit signal -------------------------- */
+    assign commit0_valid      = commit_vld_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
+    assign commit0_pc         = entry_pc_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
+    assign commit0_instr      = entry_instr_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
+    assign commit0_lrd        = entry_lrd_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
+    assign commit0_prd        = entry_prd_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
+    assign commit0_old_prd    = entry_old_prd_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
+    assign commit0_robid      = dequeue_ptr;
+    assign commit0_need_to_wb = entry_need_to_wb_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
     //debug
-    assign commit0_skip        = entry_skip_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
+    assign commit0_skip       = entry_skip_dec[dequeue_ptr[`ROB_SIZE_LOG-1:0]];
 
 
 
-//
+    //
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             rob_counter <= 'b0;
@@ -310,7 +309,7 @@ module rob
         end
     end
 
-/* ------------------------------- flush logic ------------------------------ */
+    /* ------------------------------- flush logic ------------------------------ */
     localparam IDLE = 2'b00;
     localparam ROLLBACK = 2'b01;
     localparam WALK = 2'b10;
@@ -319,16 +318,16 @@ module rob
     wire is_rollback;
     wire is_walk;
 
-    assign is_idle = (current_state == IDLE);
+    assign is_idle     = (current_state == IDLE);
     assign is_rollback = (current_state == ROLLBACK);
-    assign is_walk = (current_state == WALK);
+    assign is_walk     = (current_state == WALK);
 
     reg [1:0] current_state;
     reg [1:0] next_state;
     assign rob_state = current_state;
 
     always @(posedge clock or negedge reset_n) begin
-        if(~reset_n)begin
+        if (~reset_n) begin
             current_state <= 0;
         end else begin
             current_state <= next_state;
@@ -337,31 +336,31 @@ module rob
 
     always @(*) begin
         case (current_state)
-            IDLE:begin
-                if(flush_valid)begin
-                    next_state = ROLLBACK;        
+            IDLE: begin
+                if (flush_valid) begin
+                    next_state = ROLLBACK;
                 end else begin
                     next_state = IDLE;
                 end
             end
-            ROLLBACK:begin
-                if(flush_valid)begin
-                    next_state = ROLLBACK;                    
+            ROLLBACK: begin
+                if (flush_valid) begin
+                    next_state = ROLLBACK;
                 end else begin
-                    next_state = WALK;                    
+                    next_state = WALK;
                 end
             end
-            WALK:begin
-                if(flush_valid)begin
-                    next_state = ROLLBACK;                    
-                end else if(entry_valid_dec[walking_ptr+1] == 0)begin
+            WALK: begin
+                if (flush_valid) begin
+                    next_state = ROLLBACK;
+                end else if (entry_valid_dec[walking_ptr+1] == 0) begin
                     next_state = IDLE;
                 end else begin
                     next_state = WALK;
                 end
             end
             default: begin
-                
+
             end
         endcase
     end
@@ -382,12 +381,12 @@ module rob
         needflush_dec = 'b0;
         for (i = 0; i < `ROB_SIZE; i = i + 1) begin
             if (is_rollback) begin
-                    needflush_dec[i] = flush_robid[`ROB_SIZE_LOG] ^ enqueue_ptr[`ROB_SIZE_LOG] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < enqueue_ptr[`ROB_SIZE_LOG-1:0]);
-                end
+                needflush_dec[i] = flush_robid[`ROB_SIZE_LOG] ^ enqueue_ptr[`ROB_SIZE_LOG] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < enqueue_ptr[`ROB_SIZE_LOG-1:0]);
             end
         end
+    end
 
-/* ------------------------------- walk logic ------------------------------- */
+    /* ------------------------------- walk logic ------------------------------- */
 
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
@@ -399,54 +398,54 @@ module rob
         end
     end
 
-    assign rob_walk0_valid    = entry_valid_dec[walking_ptr[`ROB_SIZE_LOG-1:0]] & entry_need_to_wb_dec[walking_ptr[`ROB_SIZE_LOG-1:0]] & is_walk;
-    assign rob_walk0_lrd      = entry_lrd_dec[walking_ptr[`ROB_SIZE_LOG-1:0]];
-    assign rob_walk0_prd      = entry_prd_dec[walking_ptr[`ROB_SIZE_LOG-1:0]];
-    assign rob_walk0_complete = entry_complete_dec[walking_ptr[`ROB_SIZE_LOG-1:0]];
+    assign rob_walk0_valid     = entry_valid_dec[walking_ptr[`ROB_SIZE_LOG-1:0]] & entry_need_to_wb_dec[walking_ptr[`ROB_SIZE_LOG-1:0]] & is_walk;
+    assign rob_walk0_lrd       = entry_lrd_dec[walking_ptr[`ROB_SIZE_LOG-1:0]];
+    assign rob_walk0_prd       = entry_prd_dec[walking_ptr[`ROB_SIZE_LOG-1:0]];
+    assign rob_walk0_complete  = entry_complete_dec[walking_ptr[`ROB_SIZE_LOG-1:0]];
 
-    assign rob_walk1_valid    = entry_valid_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1] & entry_need_to_wb_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1] & is_walk;
-    assign rob_walk1_lrd      = entry_lrd_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1];
-    assign rob_walk1_prd      = entry_prd_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1];
-    assign rob_walk1_complete = entry_complete_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1];
-
-
-/* ----------------------------- internal signal ---------------------------- */
+    assign rob_walk1_valid     = entry_valid_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1] & entry_need_to_wb_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1] & is_walk;
+    assign rob_walk1_lrd       = entry_lrd_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1];
+    assign rob_walk1_prd       = entry_prd_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1];
+    assign rob_walk1_complete  = entry_complete_dec[walking_ptr[`ROB_SIZE_LOG-1:0]+'b1];
 
 
-//    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0;
-//    assign instr1_actually_enq = instr1_enq_valid & iq_can_alloc1;    
-    assign instr0_actually_enq = instr0_enq_valid ;
-    assign instr1_actually_enq = instr1_enq_valid ;    
+    /* ----------------------------- internal signal ---------------------------- */
+
+
+    //    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0;
+    //    assign instr1_actually_enq = instr1_enq_valid & iq_can_alloc1;    
+    assign instr0_actually_enq = instr0_enq_valid;
+    assign instr1_actually_enq = instr1_enq_valid;
 
     genvar i;
     generate
-        for                       (i = 0; i < `ROB_SIZE; i = i + 1) begin : rob_entity
-            robentry u_robentry   (
-                .clock            (clock                  ),//i
-                .reset_n          (reset_n                ),//i
-                .enq_valid        (enq_valid_dec[i]       ),//i//wren signal to write in entry data
-                .enq_pc           (enq_pc_dec[i]          ),//i
-                .enq_instr        (enq_instr_dec[i]       ),//i
-                .enq_lrd          (enq_lrd_dec[i]         ),//i
-                .enq_prd          (enq_prd_dec[i]         ),//i
-                .enq_old_prd      (enq_old_prd_dec[i]     ),//i
-                .enq_need_to_wb   (enq_need_to_wb_dec[i]  ),//i
+        for (i = 0; i < `ROB_SIZE; i = i + 1) begin : rob_entity
+            robentry u_robentry (
+                .clock                (clock),                         //i
+                .reset_n              (reset_n),                       //i
+                .enq_valid            (enq_valid_dec[i]),              //i//wren signal to write in entry data
+                .enq_pc               (enq_pc_dec[i]),                 //i
+                .enq_instr            (enq_instr_dec[i]),              //i
+                .enq_lrd              (enq_lrd_dec[i]),                //i
+                .enq_prd              (enq_prd_dec[i]),                //i
+                .enq_old_prd          (enq_old_prd_dec[i]),            //i
+                .enq_need_to_wb       (enq_need_to_wb_dec[i]),         //i
                 // .enq_skip         ('b0                    ),//i
-                .wb_set_complete  (wb_set_complete_dec[i] ),//i
-                .wb_set_skip      (wb_set_skip_dec[i]     ),//i
-                .entry_ready_to_commit  (entry_ready_to_commit_dec[i] ),//output//indicate entry ready to be commit, next cycle,commit_vld_dec=1,then invalid this entry
-                .entry_valid      (entry_valid_dec[i]     ),//output
-                .entry_complete   (entry_complete_dec[i]  ),//output
-                .entry_pc         (entry_pc_dec[i]        ),//output
-                .entry_instr      (entry_instr_dec[i]     ),//output
-                .entry_lrd        (entry_lrd_dec[i]       ),//output
-                .entry_prd        (entry_prd_dec[i]       ),//output
-                .entry_old_prd    (entry_old_prd_dec[i]   ),//output
-                .entry_need_to_wb (entry_need_to_wb_dec[i]),//output
-                .entry_skip       (entry_skip_dec[i]      ),//output
-                .commit_vld       (commit_vld_dec[i]      ),//i
-                .flush_vld        (needflush_dec[i]       ) //i
-                                                          );
+                .wb_set_complete      (wb_set_complete_dec[i]),        //i
+                .wb_set_skip          (wb_set_skip_dec[i]),            //i
+                .entry_ready_to_commit(entry_ready_to_commit_dec[i]),  //output//indicate entry ready to be commit, next cycle,commit_vld_dec=1,then invalid this entry
+                .entry_valid          (entry_valid_dec[i]),            //output
+                .entry_complete       (entry_complete_dec[i]),         //output
+                .entry_pc             (entry_pc_dec[i]),               //output
+                .entry_instr          (entry_instr_dec[i]),            //output
+                .entry_lrd            (entry_lrd_dec[i]),              //output
+                .entry_prd            (entry_prd_dec[i]),              //output
+                .entry_old_prd        (entry_old_prd_dec[i]),          //output
+                .entry_need_to_wb     (entry_need_to_wb_dec[i]),       //output
+                .entry_skip           (entry_skip_dec[i]),             //output
+                .commit_vld           (commit_vld_dec[i]),             //i
+                .flush_vld            (needflush_dec[i])               //i
+            );
         end
     endgenerate
 
