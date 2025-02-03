@@ -1,4 +1,4 @@
-`inlcude "defines.sv"
+`include "defines.sv"
 module age_deq_policy (
     input wire clock,
     input wire reset_n,

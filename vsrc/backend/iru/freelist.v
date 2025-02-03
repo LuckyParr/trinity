@@ -27,11 +27,11 @@ module freelist #(
 );
 
     wire is_idle;
-    wire is_ovwr;
+    wire is_rollback;
     wire is_walking;
     assign is_idle    = (rob_state == `ROB_STATE_IDLE);
-    assign is_ovwr    = (rob_state == `ROB_STATE_OVERWRITE_RAT);
-    assign is_walking = (rob_state == `ROB_STATE_WALKING);
+    assign is_rollback    = (rob_state == `ROB_STATE_ROLLBACK);
+    assign is_walking = (rob_state == `ROB_STATE_WALK);
 
     integer                      i;
 
@@ -102,7 +102,7 @@ module freelist #(
         if (!reset_n) begin
             deq_idx <= 'h0;  // Reset deq on reset
             //when ovwr,taken deq_idx = enq_idx,then increase
-        end else if (is_ovwr) begin
+        end else if (is_rollback) begin
             deq_idx <= enq_idx;
         end else if (is_walking) begin
             deq_idx <= deq_idx + walk_count;

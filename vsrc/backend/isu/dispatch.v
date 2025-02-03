@@ -112,37 +112,42 @@ module dispatch (
     output wire                       disp2intisq_instr0_is_store,
     output wire [                3:0] disp2intisq_instr0_ls_size,
     output wire [`INSTR_ID_WIDTH-1:0] disp2intisq_instr0_robid,        //7 bit, robid send to isq
-
     output wire        disp2intisq_instr0_predicttaken,
     output wire [31:0] disp2intisq_instr0_predicttarget,
+    output wire disp2intisq_instr0_src1_state,
+    output wire disp2intisq_instr0_src2_state,
 
 
 
     /* -------------------------- port with busy_table -------------------------- */
     // Read Port 0
-    output wire [5:0] disp2bt_instr0rs1_rdaddr,  // Address for disp2bt_instr0rs1_busy
-    input  wire       bt2disp_instr0rs1_busy,    // Data output for disp2bt_instr0rs1_busy
+    output wire [5:0] disp2bt_instr0_rs1,  // Address for disp2bt_instr0rs1_busy
+    input  wire       bt2disp_instr0_rs1_busy,    // Data output for disp2bt_instr0rs1_busy
     // Read Port 1
-    output wire [5:0] disp2bt_instr0rs2_rdaddr,  // Address for disp2bt_instr0rs2_busy
-    input  wire       bt2disp_instr0rs2_busy,    // Data output for disp2bt_instr0rs2_busy
+    output wire [5:0] disp2bt_instr0_rs2,  // Address for disp2bt_instr0rs2_busy
+    input  wire       bt2disp_instr0_rs2_busy,    // Data output for disp2bt_instr0rs2_busy
     // Read Port 2
-    output wire [5:0] disp2bt_instr1rs1_rdaddr,  // Address for disp2bt_instr1rs1_busy
-    input  wire       bt2disp_instr1rs1_busy,    // Data output for disp2bt_instr1rs1_busy
+    output wire [5:0] disp2bt_instr1_rs1,  // Address for disp2bt_instr1rs1_busy
+    input  wire       bt2disp_instr1_rs1_busy,    // Data output for disp2bt_instr1rs1_busy
     // Read Port 3
-    output wire [5:0] disp2bt_instr1rs2_rdaddr,  // Address for disp2bt_instr1rs2_busy
-    input  wire       bt2disp_instr1rs2_busy,    // Data output for disp2bt_instr1rs2_busy
+    output wire [5:0] disp2bt_instr1_rs2,  // Address for disp2bt_instr1rs2_busy
+    input  wire       bt2disp_instr1_rs2_busy,    // Data output for disp2bt_instr1rs2_busy
 
     // write busy bit to 1 in busy_table
-    output wire       disp2bt_alloc_instr0rd_en,    // Enable for alloc_instr0rd_addr0
-    output wire [5:0] disp2bt_alloc_instr0rd_addr,  // Address for alloc_instr0rd_addr0
-    output wire       disp2bt_alloc_instr1rd_en,    // Enable for alloc_instr1rd_addr1
-    output wire [5:0] disp2bt_alloc_instr1rd_addr,  // Address for alloc_instr1rd_addr1
+    output wire       disp2bt_alloc_instr0_rd_en,    // Enable for alloc_instr0rd0
+    output wire [5:0] disp2bt_alloc_instr0_rd,  // Address for alloc_instr0rd0
+    output wire       disp2bt_alloc_instr1_rd_en,    // Enable for alloc_instr1rd1
+    output wire [5:0] disp2bt_alloc_instr1_rd,  // Address for alloc_instr1rd1
 
     /* ---------------------------- flush logic ---------------------------- */
     //flush signals
     input wire flush_valid
 
 );
+
+    assign disp2intisq_instr0_src1_state = bt2disp_instr0_rs1_busy;
+    assign disp2intisq_instr0_src2_state = bt2disp_instr0_rs2_busy;
+    
     //disp2pipe ready
     assign isu2iru_instr0_ready             = rob_can_enq && intisq_can_enq && ~flush_valid && (rob_state == `ROB_STATE_IDLE);
     assign isu2iru_instr1_ready             = 1'b0;
@@ -171,16 +176,16 @@ module dispatch (
     //assign disp2rob_instr1_entrydata      = {instr1_pc,instr1_instr,instr1_lrs1,instr1_lrs2,instr1_lrd,instr1_prd,instr1_old_prd,instr1_need_to_wb};
 
     /* ------------ write prd0 and prd1 busy bit to 1 in busy_vector ------------ */
-    assign disp2bt_alloc_instr0rd_en        = instr0_need_to_wb;
-    assign disp2bt_alloc_instr0rd_addr      = instr0_prd;
-    assign disp2bt_alloc_instr1rd_en        = instr1_need_to_wb;
-    assign disp2bt_alloc_instr1rd_addr      = instr1_prd;
+    assign disp2bt_alloc_instr0_rd_en        = instr0_need_to_wb;
+    assign disp2bt_alloc_instr0_rd      = instr0_prd;
+    assign disp2bt_alloc_instr1_rd_en        = instr1_need_to_wb;
+    assign disp2bt_alloc_instr1_rd      = instr1_prd;
 
     /* ------- read instr0 and instr1 rs1 rs2 busy status from busy_vector ------ */
-    assign disp2bt_instr0rs1_rdaddr         = instr0_prs1;  //use to set sleep bit in issue queue
-    assign disp2bt_instr0rs2_rdaddr         = instr0_prs2;  //use to set sleep bit in issue queue
-    assign disp2bt_instr1rs1_rdaddr         = instr1_prs1;  //use to set sleep bit in issue queue
-    assign disp2bt_instr1rs2_rdaddr         = instr1_prs2;  //use to set sleep bit in issue queue
+    assign disp2bt_instr0_rs1         = instr0_prs1;  //use to set sleep bit in issue queue
+    assign disp2bt_instr0_rs2         = instr0_prs2;  //use to set sleep bit in issue queue
+    assign disp2bt_instr1_rs1         = instr1_prs1;  //use to set sleep bit in issue queue
+    assign disp2bt_instr1_rs2         = instr1_prs2;  //use to set sleep bit in issue queue
 
 
 

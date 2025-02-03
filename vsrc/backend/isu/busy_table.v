@@ -44,20 +44,18 @@ module busy_table (
     input wire [                1:0] rob_state,
     input wire                       rob_walk0_valid,
     input wire                       rob_walk0_complete,
-    input wire [        `LREG_RANGE] rob_walk0_lrd,
     input wire [        `PREG_RANGE] rob_walk0_prd,
     input wire                       rob_walk1_valid,
-    input wire [        `LREG_RANGE] rob_walk1_lrd,
     input wire [        `PREG_RANGE] rob_walk1_prd,
     input wire                       rob_walk1_complete
 
 );
     wire is_idle;
-    wire is_ovwr;
+    wire is_rollback;
     wire is_walking;
     assign is_idle    = (rob_state == `ROB_STATE_IDLE);
-    assign is_ovwr    = (rob_state == `ROB_STATE_OVERWRITE_RAT);
-    assign is_walking = (rob_state == `ROB_STATE_WALKING);
+    assign is_rollback    = (rob_state == `ROB_STATE_ROLLBACK);
+    assign is_walking = (rob_state == `ROB_STATE_WALK);
 
     reg  [`PREG_SIZE-1:0] busy_table;
     //debug
@@ -130,7 +128,7 @@ module busy_table (
     //when overwrite ,clear all the busy
     always @(negedge reset_n or posedge clock) begin
         integer i;
-        if (!reset_n | is_ovwr) begin
+        if (!reset_n | is_rollback) begin
             for (i = 0; i < `PREG_SIZE; i = i + 1) begin
                 busy_table[i] <= 1'b0;  //means all ready
             end

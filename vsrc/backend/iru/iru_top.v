@@ -69,10 +69,10 @@ module iru_top (
 
     input wire       rob_walk0_valid,
     input wire       rob_walk1_valid,
-    input wire [5:0] walking_prd0,
-    input wire [5:0] walking_prd1,
-    input wire [4:0] walking_lrd0,
-    input wire [4:0] walking_lrd1,
+    input wire [5:0] rob_walk0_prd   ,
+    input wire [5:0] rob_walk1_prd   ,
+    input wire [4:0] rob_walk0_lrd   ,
+    input wire [4:0] rob_walk1_lrd   ,             
 
 
     // Flush
@@ -475,10 +475,11 @@ module iru_top (
         .rob_state                   (rob_state),
         .walking_valid0              (walking_valid0),
         .walking_valid1              (walking_valid1),
-        .walking_prd0                (walking_prd0),
-        .walking_prd1                (walking_prd1),
-        .walking_lrd0                (walking_lrd0),
-        .walking_lrd1                (walking_lrd1),
+        .rob_walk0_prd                (rob_walk0_prd               ),
+        .rob_walk1_prd                (rob_walk1_prd               ),
+        .rob_walk0_lrd                (rob_walk0_lrd               ),
+        .rob_walk1_lrd                (rob_walk1_lrd               ),
+
         //physical reg number of 32 architecture reg, send to isu pregfile to do difftest
         //(debug_preg0: physical reg number of arch reg 0)
         .debug_preg0                 (debug_preg0),

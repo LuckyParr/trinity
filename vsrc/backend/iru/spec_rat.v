@@ -50,10 +50,10 @@ module spec_rat #(
     input wire [1:0] rob_state,
     input wire walking_valid0,
     input wire walking_valid1,
-    input wire [5:0] walking_prd0,
-    input wire [5:0] walking_prd1,
-    input wire [4:0] walking_lrd0,
-    input wire [4:0] walking_lrd1,
+    input wire [5:0] rob_walk0_prd,
+    input wire [5:0] rob_walk1_prd,
+    input wire [4:0] rob_walk0_lrd,
+    input wire [4:0] rob_walk1_lrd,
 
 /* --------------------- arch_rat : 32 arch regfile content -------------------- */
     output wire [`PREG_RANGE] debug_preg0,
@@ -94,14 +94,14 @@ module spec_rat #(
     wire is_walk;
 
     assign is_idle = (rob_state == `ROB_STATE_IDLE);
-    assign is_rollback = (rob_state == `ROB_STATE_ROLLIBACK);
+    assign is_rollback = (rob_state == `ROB_STATE_ROLLBACK);
     assign is_walk = (rob_state == `ROB_STATE_WALK);
 
     //hit situation
     wire rename_lrd_hit;
     wire walk_lrd_hit;
     assign rename_lrd_hit = rn2specrat_instr0_lrd_wren && rn2specrat_instr1_lrd_wren && (rn2specrat_instr0_lrd_wraddr == rn2specrat_instr1_lrd_wraddr);
-    assign walk_lrd_hit = walking_valid0 && walking_valid1 && (walking_lrd0 == walking_lrd1);
+    assign walk_lrd_hit = walking_valid0 && walking_valid1 && (rob_walk0_lrd == rob_walk1_lrd);
 
     // Parameters
     localparam LOGICAL_REG_WIDTH    = 5;
@@ -125,10 +125,10 @@ module spec_rat #(
                     spec_rat <= arch_rat_content;
             end else if (is_walk)begin
                 if(walking_valid0 && ~walk_lrd_hit)begin
-                    spec_rat[walking_lrd0] <= walking_prd0;//prd is new physical reg number fetched from freelist, use it to upate arch_rat 
+                    spec_rat[rob_walk0_lrd] <= rob_walk0_prd;//prd is new physical reg number fetched from freelist, use it to upate arch_rat 
                 end
                 if(walking_valid1)begin
-                    spec_rat[walking_lrd1] <= walking_prd1;
+                    spec_rat[rob_walk1_lrd] <= rob_walk1_prd;
                 end
             end else begin // (is_idle)
             // Write Port 0

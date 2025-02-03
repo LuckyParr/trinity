@@ -32,11 +32,8 @@ module int_isq (
     input wire [`PREG_RANGE] enq_instr0_prd,
     input wire [`PREG_RANGE] enq_instr0_old_prd,
 
-    input wire                     enq_instr0_robidx_flag,
-    input wire [`ROB_SIZE_LOG-1:0] enq_instr0_robidx,
-
-    input wire                       enq_instr0_sqidx_flag,
-    input wire [`STOREQUEUE_LOG-1:0] enq_instr0_sqidx,
+    input wire [`ROB_SIZE_LOG:0] enq_instr0_robid,
+    input wire [`STOREQUEUE_LOG:0] enq_instr0_sqid,
     /* -------------------------------- src state ------------------------------- */
     input wire                       enq_instr0_src1_state,
     input wire                       enq_instr0_src2_state,
@@ -64,10 +61,8 @@ module int_isq (
     output reg                       issue0_is_store,
     output reg  [               3:0] issue0_ls_size,
 
-    output reg                       issue0_robidx_flag,
-    output reg [  `ROB_SIZE_LOG-1:0] issue0_robidx,
-    output reg                       issue0_sqidx_flag,
-    output reg [`STOREQUEUE_LOG-1:0] issue0_sqidx,
+    output reg [  `ROB_SIZE_LOG:0] issue0_robid,
+    output reg [`STOREQUEUE_LOG:0] issue0_sqid,
 
     //-----------------------------------------------------
     // writeback to set condition to 1
@@ -116,10 +111,9 @@ module int_isq (
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_is_load_oh;
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_is_store_oh;
     reg  [                      3:0] iq_entries_enq_ls_size_oh     [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_robidx_flag_oh;
-    reg  [        `ROB_SIZE_LOG-1:0] iq_entries_enq_robidx_oh      [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_sqidx_flag_oh;
-    reg  [      `STOREQUEUE_LOG-1:0] iq_entries_enq_sqidx_oh       [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [`ROB_SIZE_LOG:0] iq_entries_enq_robid_oh [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [`STOREQUEUE_LOG:0] iq_entries_enq_sqid_oh [`ISSUE_QUEUE_DEPTH-1:0];
+
     /* -------------------------------------------------------------------------- */
     /*                                   deq dec                                  */
     /* -------------------------------------------------------------------------- */
@@ -142,10 +136,8 @@ module int_isq (
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_is_load;
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_is_store;
     wire [                      3:0] iq_entries_deq_ls_size        [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_robidx_flag;
-    wire [        `ROB_SIZE_LOG-1:0] iq_entries_deq_robidx         [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_sqidx_flag;
-    wire [      `STOREQUEUE_LOG-1:0] iq_entries_deq_sqidx          [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [        `ROB_SIZE_LOG-1:0] iq_entries_deq_robid         [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [      `STOREQUEUE_LOG-1:0] iq_entries_deq_sqid          [`ISSUE_QUEUE_DEPTH-1:0];
 
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_ready_to_go;
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_valid;
@@ -174,6 +166,7 @@ module int_isq (
     /* -------------------------------------------------------------------------- */
     /*                                 enq decode region                          */
     /* -------------------------------------------------------------------------- */
+    wire [`ISSUE_QUEUE_DEPTH-1:0] iq_entries_wren ;
     always @(*) begin
         integer i;
         iq_entries_wren = 'b0;
@@ -183,31 +176,29 @@ module int_isq (
             end
         end
     end
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_pc_oh, enq_instr0_pc, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_prs1_oh, enq_instr0_prs1, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_prs2_oh, enq_instr0_prs2, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_src1_is_reg_oh, enq_instr0_src1_is_reg, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_src2_is_reg_oh, enq_instr0_src2_is_reg, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_src1_state_oh, enq_instr0_src1_state, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_src2_state_oh, enq_instr0_src2_state, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_prd_oh, enq_instr0_prd, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_old_prd_oh, enq_instr0_old_prd, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_instr_oh, enq_instr0, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_imm_oh, enq_instr0_imm, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_need_to_wb_oh, enq_instr0_need_to_wb, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_cx_type_oh, enq_instr0_cx_type, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_is_unsigned_oh, enq_instr0_is_unsigned, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_alu_type_oh, enq_instr0_alu_type, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_muldiv_type_oh, enq_instr0_muldiv_type, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_is_word_oh, enq_instr0_is_word, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_is_imm_oh, enq_instr0_is_imm, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_is_load_oh, enq_instr0_is_load, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_is_store_oh, enq_instr0_is_store, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_ls_size_oh, enq_instr0_ls_size, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_robidx_flag_oh, enq_instr0_robidx_flag, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_robidx_oh, enq_instr0_robidx, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_sqidx_flag_oh, enq_instr0_sqidx_flag, `ISSUE_QUEUE_DEPTH)
-    `MACRO_ENQ(enq_ptr_oh, iq_entries_enq_sqidx_oh, enq_instr0_sqidx, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_pc_oh, enq_instr0_pc, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_prs1_oh, enq_instr0_prs1, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_prs2_oh, enq_instr0_prs2, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_src1_is_reg_oh, enq_instr0_src1_is_reg, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_src2_is_reg_oh, enq_instr0_src2_is_reg, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_src1_state_oh, enq_instr0_src1_state, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_src2_state_oh, enq_instr0_src2_state, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_prd_oh, enq_instr0_prd, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_old_prd_oh, enq_instr0_old_prd, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_instr_oh, enq_instr0, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_imm_oh, enq_instr0_imm, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_need_to_wb_oh, enq_instr0_need_to_wb, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_cx_type_oh, enq_instr0_cx_type, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_is_unsigned_oh, enq_instr0_is_unsigned, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_alu_type_oh, enq_instr0_alu_type, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_muldiv_type_oh, enq_instr0_muldiv_type, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_is_word_oh, enq_instr0_is_word, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_is_imm_oh, enq_instr0_is_imm, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_is_load_oh, enq_instr0_is_load, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_is_store_oh, enq_instr0_is_store, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_ls_size_oh, enq_instr0_ls_size, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_robid_oh, enq_instr0_robid, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_sqid_oh, enq_instr0_sqid, `ISSUE_QUEUE_DEPTH)
 
 
 
@@ -245,12 +236,12 @@ module int_isq (
     /*                                flush region                                */
     /* -------------------------------------------------------------------------- */
     reg [`ISSUE_QUEUE_DEPTH-1:0] flush_dec;
-    always @(flush_valid or flush_robidx or flush_robidx_flag) begin
+    always @(flush_valid or flush_robid ) begin
         integer i;
-        flush = 'b0;
+        flush_dec = 'b0;
         for (i = 0; i < `ISSUE_QUEUE_DEPTH; i = i + 1) begin
             if (flush_valid) begin
-                if (flush_valid & iq_entries_valid[i] & ((flush_robidx_flag ^ iq_entries_deq_robidx_flag[i]) ^ (flush_robidx < iq_entries_deq_robidx[i]))) begin
+                if (flush_valid & iq_entries_valid[i] & ((flush_robid[`ROB_SIZE_LOG] ^ iq_entries_deq_robid[i][`ROB_SIZE_LOG]) ^ (flush_robid[`ROB_SIZE_LOG-1:0] < iq_entries_deq_robid[i][`ROB_SIZE_LOG-1:0]))) begin
                     flush_dec[i] = 1'b1;
                 end
             end
@@ -261,7 +252,6 @@ module int_isq (
     /*                                 deq region                                 */
     /* -------------------------------------------------------------------------- */
 
-    wire                          issue0_valid;
     wire                          deq_fire;
     wire                          oldest_found;
     wire [`ISSUE_QUEUE_DEPTH-1:0] oldest_idx_oh;
@@ -342,10 +332,8 @@ module int_isq (
                 .enq_prs2             (iq_entries_enq_prs2_oh[i]),
                 .enq_prd              (iq_entries_enq_prd_oh[i]),
                 .enq_old_prd          (iq_entries_enq_old_prd_oh[i]),
-                .enq_robidx_flag      (iq_entries_enq_robidx_flag_oh[i]),
-                .enq_robidx           (iq_entries_enq_robidx_oh[i]),
-                .enq_sqidx_flag       (iq_entries_enq_sqidx_flag_oh[i]),
-                .enq_sqidx            (iq_entries_enq_sqidx_oh[i]),
+                .enq_robid           (iq_entries_enq_robid_oh[i]),
+                .enq_sqid            (iq_entries_enq_sqid_oh[i]),
                 .enq_src1_state       (iq_entries_enq_src1_state_oh[i]),
                 .enq_src2_state       (iq_entries_enq_src2_state_oh[i]),
                 .ready_to_go          (iq_entries_ready_to_go[i]),
@@ -373,59 +361,16 @@ module int_isq (
                 .deq_prs2             (iq_entries_deq_prs2[i]),
                 .deq_prd              (iq_entries_deq_prd[i]),
                 .deq_old_prd          (iq_entries_deq_old_prd[i]),
-                .deq_robidx_flag      (iq_entries_deq_robidx_flag[i]),
-                .deq_robidx           (iq_entries_deq_robidx[i]),
-                .deq_sqidx_flag       (iq_entries_deq_sqidx_flag[i]),
-                .deq_sqidx            (iq_entries_deq_sqidx[i])
+                .deq_robid           (iq_entries_deq_robid[i]),
+                .deq_sqid            (iq_entries_deq_sqid[i])
             );
         end
     endgenerate
 
 
     //check if age buffer have available entry
-    assign intisq_can_enq = enq_ready;
+    assign intisq_can_enq = enq_has_avail_entry;
 
 
-
-
-    /* -------------------------------------------------------------------------- */
-    /*                                 deq age policy                             */
-    /* -------------------------------------------------------------------------- */
-    // --------------------------------------------------------------------
-    // Instantiate the age_buffer module
-    // --------------------------------------------------------------------
-    age_buffer_1r1w u_age_buffer (
-        .clock  (clock),
-        .reset_n(reset_n),
-
-        // Enqueue
-        .enq_data     (enq_data),
-        .enq_condition(enq_condition),
-        //.enq_index                (enq_index),
-        .enq_valid    (enq_valid),
-        .enq_ready    (enq_ready),
-
-        // Dequeue
-        .deq_data (deq_data),
-        .deq_valid(deq_valid),
-        .deq_ready(deq_ready),
-
-        // Condition updates
-        .update_valid(update_valid),
-        .update_robid(update_robid),
-        .update_mask (update_mask),
-        .update_in   (update_in),
-
-        // Flush interface
-        .rob_state  (rob_state),
-        .flush_valid(flush_valid),
-        .flush_robid(flush_robid),
-
-        //output dec
-        .data_out     (data_out),
-        .condition_out(condition_out),
-        .index_out    (index_out),
-        .valid_out    (valid_out)
-    );
 
 endmodule

@@ -260,10 +260,10 @@ module isu_top (
     wire                       disp2intisq_instr0_is_store;
     wire [                3:0] disp2intisq_instr0_ls_size;
     wire [`INSTR_ID_WIDTH-1:0] disp2intisq_instr0_robid;
-
-
     wire                       disp2intisq_instr0_predicttaken;
     wire [               31:0] disp2intisq_instr0_predicttarget;
+    wire                       disp2intisq_instr0_src1_state;
+    wire                       disp2intisq_instr0_src2_state;
 
 
 
@@ -346,7 +346,6 @@ module isu_top (
         .disp2rob_instr1_need_to_wb      (),
         .rob2disp_instr_robid            (rob2disp_instr_robid),
         /* ------------------------------- issue queue ------------------------------ */
-        .intisq_can_enq                  (intisq_can_enq),
         .disp2intisq_instr0_enq_valid    (disp2intisq_instr0_enq_valid),
         .disp2intisq_instr0_pc           (disp2intisq_instr0_pc),
         .disp2intisq_instr0_instr        (disp2intisq_instr0_instr),
@@ -373,22 +372,24 @@ module isu_top (
         .disp2intisq_instr0_robid        (disp2intisq_instr0_robid),
         .disp2intisq_instr0_predicttaken (disp2intisq_instr0_predicttaken),
         .disp2intisq_instr0_predicttarget(disp2intisq_instr0_predicttarget),
+        .disp2intisq_instr0_src1_state (disp2intisq_instr0_src1_state),
+        .disp2intisq_instr0_src2_state (disp2intisq_instr0_src2_state),
 
         /* ------------------------------- busy_table ------------------------------- */
         //disp read from busy_table
-        .disp2bt_instr0rs1_rdaddr   (disp2bt_instr0rs1_rdaddr),
-        .bt2disp_instr0rs1_busy     (bt2disp_instr0rs1_busy),
-        .disp2bt_instr0rs2_rdaddr   (disp2bt_instr0rs2_rdaddr),
-        .bt2disp_instr0rs2_busy     (bt2disp_instr0rs2_busy),
-        .disp2bt_instr1rs1_rdaddr   (),
-        .bt2disp_instr1rs1_busy     (),
-        .disp2bt_instr1rs2_rdaddr   (),
-        .bt2disp_instr1rs2_busy     (),
+        .disp2bt_instr0_rs1          (disp2bt_instr0_rs1     ),
+        .bt2disp_instr0_rs1_busy     (bt2disp_instr0_rs1_busy),
+        .disp2bt_instr0_rs2          (disp2bt_instr0_rs2     ),
+        .bt2disp_instr0_rs2_busy     (bt2disp_instr0_rs2_busy),
+        .disp2bt_instr1_rs1          (                       ),
+        .bt2disp_instr1_rs1_busy     (                       ),
+        .disp2bt_instr1_rs2          (                       ),
+        .bt2disp_instr1_rs2_busy     (                       ),
         //disp write rd as busy in busy_table
-        .disp2bt_alloc_instr0rd_en  (disp2bt_alloc_instr0rd_en),
-        .disp2bt_alloc_instr0rd_addr(disp2bt_alloc_instr0rd_addr),
-        .disp2bt_alloc_instr1rd_en  (),
-        .disp2bt_alloc_instr1rd_addr(),
+        .disp2bt_alloc_instr0_rd_en  (disp2bt_alloc_instr0_rd_en),
+        .disp2bt_alloc_instr0_rd     (disp2bt_alloc_instr0_rd   ),
+        .disp2bt_alloc_instr1_rd_en  (                          ),
+        .disp2bt_alloc_instr1_rd     (                          ),
         //flush signal
         .flush_valid                (flush_valid)
     );
@@ -493,7 +494,7 @@ module isu_top (
         .clock                 (clock),
         .reset_n               (reset_n),
         .iq_can_alloc0         (iq_can_alloc0),
-        .sq_can_alloc          (sq_can_alloc),
+        .sq_can_alloc          (sq_can_alloc),//input
         .all_iq_ready          (all_iq_ready),
         .enq_instr0_valid      (disp2intisq_instr0_enq_valid),
         .enq_instr0_lrs1       (disp2intisq_instr0_lrs1),
@@ -519,8 +520,7 @@ module isu_top (
         .enq_instr0_prd        (disp2intisq_instr0_prd),
         .enq_instr0_old_prd    (disp2intisq_instr0_old_prd),
         .enq_instr0_robid      (disp2intisq_instr0_robid),
-        .enq_instr0_sqidx_flag (),
-        .enq_instr0_sqidx      (),
+        .enq_instr0_sqid      (),
         .enq_instr0_src1_state (disp2intisq_instr0_src1_state),
         .enq_instr0_src2_state (disp2intisq_instr0_src2_state),
         .issue0_valid          (issue0_valid),
@@ -543,10 +543,8 @@ module isu_top (
         .issue0_is_load        (issue0_is_load),
         .issue0_is_store       (issue0_is_store),
         .issue0_ls_size        (issue0_ls_size),
-        .issue0_robidx_flag    (issue0_robidx_flag),
-        .issue0_robidx         (issue0_robidx),
-        .issue0_sqidx_flag     (issue0_sqidx_flag),
-        .issue0_sqidx          (issue0_sqidx),
+        .issue0_robid         (issue0_robid),
+        .issue0_sqid          (issue0_sqid),
         .writeback0_valid      (writeback0_valid),
         .writeback0_need_to_wb (writeback0_need_to_wb),
         .writeback0_prd        (writeback0_prd),
@@ -599,16 +597,16 @@ module isu_top (
         .memwb2bt_free_instr0_rd_en (memwb2bt_free_instr0_rd_en),
         .memwb2bt_free_instr0_rd    (memwb2bt_free_instr0_rd),
         //walking logic
-        .flush_valid                (flush_valid),
-        .flush_robid                (flush_robid),
-        .rob_state                  (rob_state),
-        .walking_valid0             (rob_walk0_valid),
-        .walking_valid1             (rob_walk1_valid),
-        .walking_prd0               (rob_walk0_prd),
-        .walking_prd1               (rob_walk1_prd),
-        .walking_complete0          (rob_walk0_complete),
-        .walking_complete1          (rob_walk1_complete)
-    );
+        .flush_valid                (flush_valid       ),
+        .flush_robid                (flush_robid       ),
+        .rob_state                  (rob_state         ),
+        .rob_walk0_valid             (rob_walk0_valid   ),
+        .rob_walk1_valid             (rob_walk1_valid   ),
+        .rob_walk0_prd               (rob_walk0_prd     ),
+        .rob_walk1_prd               (rob_walk1_prd     ),
+        .rob_walk0_complete          (rob_walk0_complete),
+        .rob_walk1_complete          (rob_walk1_complete)
+);
 
 
 

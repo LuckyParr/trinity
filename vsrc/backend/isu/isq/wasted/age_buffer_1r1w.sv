@@ -208,7 +208,7 @@ module age_buffer_1r1w (
         integer i;
         needflush_dec = 'b0;
         for (i = 0; i < `ISQ_DEPTH; i = i + 1) begin
-            if (rob_state == `ROB_STATE_ROLLIBACK) begin
+            if (rob_state == `ROB_STATE_ROLLBACK) begin
                 needflush_dec[i] = flush_robid[`ROB_SIZE_LOG] ^ data_out_dec[i][247] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < data_out_dec[i][246:241]);
             end
         end

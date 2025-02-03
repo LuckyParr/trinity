@@ -23,10 +23,8 @@ module iq_entry (
     input wire [`PREG_RANGE] enq_prd,
     input wire [`PREG_RANGE] enq_old_prd,
 
-    input wire                       enq_robidx_flag,
-    input wire [  `ROB_SIZE_LOG-1:0] enq_robidx,
-    input wire                       enq_sqidx_flag,
-    input wire [`STOREQUEUE_LOG-1:0] enq_sqidx,
+    input wire [  `ROB_SIZE_LOG:0] enq_robid,
+    input wire [`STOREQUEUE_LOG:0] enq_sqid,
 
     /* -------------------------------- src state ------------------------------- */
     input wire enq_src1_state,
@@ -68,10 +66,8 @@ module iq_entry (
     output wire [`PREG_RANGE] deq_prd,
     output wire [`PREG_RANGE] deq_old_prd,
 
-    output wire                       deq_robidx_flag,
-    output wire [  `ROB_SIZE_LOG-1:0] deq_robidx,
-    output wire                       deq_sqidx_flag,
-    output wire [`STOREQUEUE_LOG-1:0] deq_sqidx
+    output wire [  `ROB_SIZE_LOG:0] deq_robid,
+    output wire [`STOREQUEUE_LOG:0] deq_sqid
 );
     // Internal queue storage
     reg                       queue_valid;
@@ -96,10 +92,8 @@ module iq_entry (
     reg                       queue_is_load;
     reg                       queue_is_store;
     reg [                3:0] queue_ls_size;
-    reg                       queue_robidx_flag;
-    reg [  `ROB_SIZE_LOG-1:0] queue_robidx;
-    reg                       queue_sqidx_flag;
-    reg [`STOREQUEUE_LOG-1:0] queue_sqidx;
+    reg [  `ROB_SIZE_LOG:0] queue_robid;
+    reg [`STOREQUEUE_LOG:0] queue_sqid;
 
     always @(posedge clock or negedge reset_n) begin
         if (!reset_n | flush) begin
@@ -151,10 +145,8 @@ module iq_entry (
     `MACRO_LATCH_NONEN(queue_is_load, enq_is_load, enq_valid, 1)
     `MACRO_LATCH_NONEN(queue_is_store, enq_is_store, enq_valid, 1)
     `MACRO_LATCH_NONEN(queue_ls_size, enq_ls_size, enq_valid, 4)
-    `MACRO_LATCH_NONEN(queue_robidx_flag, enq_robidx_flag, enq_valid, 1)
-    `MACRO_LATCH_NONEN(queue_robidx, enq_robidx, enq_valid, `ROB_SIZE_LOG)
-    `MACRO_LATCH_NONEN(queue_sqidx_flag, enq_sqidx_flag, enq_valid, 1)
-    `MACRO_LATCH_NONEN(queue_sqidx, enq_sqidx, enq_valid, `STOREQUEUE_LOG)
+    `MACRO_LATCH_NONEN(queue_robid, enq_robid, enq_valid, `ROB_SIZE_LOG+1)
+    `MACRO_LATCH_NONEN(queue_sqid, enq_sqid, enq_valid, `STOREQUEUE_LOG+1)
 
     assign valid           = queue_valid;
     assign deq_pc          = queue_pc;
@@ -176,10 +168,8 @@ module iq_entry (
     assign deq_is_load     = queue_is_load;
     assign deq_is_store    = queue_is_store;
     assign deq_ls_size     = queue_ls_size;
-    assign deq_robidx_flag = queue_robidx_flag;
-    assign deq_robidx      = queue_robidx;
-    assign deq_sqidx_flag  = queue_sqidx_flag;
-    assign deq_sqidx       = queue_sqidx;
+    assign deq_robid      = queue_robid;
+    assign deq_sqid       = queue_sqid;
     assign ready_to_go     = (~queue_src1_state) & (~queue_src2_state) & queue_valid;
 
 
