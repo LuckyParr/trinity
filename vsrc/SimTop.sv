@@ -31,16 +31,6 @@ module SimTop (
     wire [ 511:0] ddr_read_data;  // 64-bit data output for lw channel read
     wire         ddr_operation_done;
     wire         ddr_ready;  // Indicates if DDR is ready for new operation
-    wire         flop_commit_valid;
-    reg  [ 63:0] commit_valid_cnt;
-
-    always @(posedge clock or negedge reset) begin
-        if (reset) begin
-            commit_valid_cnt <= 0;
-        end else if (flop_commit_valid) begin
-            commit_valid_cnt <= commit_valid_cnt + 1;
-        end
-    end
 
     core_top u_core_top (
         .clock                 (clock),
@@ -52,8 +42,7 @@ module SimTop (
         .ddr_write_data(ddr_write_data),
         .ddr_read_data  (ddr_read_data),
         .ddr_operation_done    (ddr_operation_done),
-        .ddr_ready             (ddr_ready),
-        .flop_commit_valid     (flop_commit_valid)
+        .ddr_ready             (ddr_ready)
     );
 
 
@@ -73,65 +62,7 @@ module SimTop (
     );
 
 
-    reg [63:0] cycle_cnt;
-    always @(posedge clock) begin
-        if (reset) begin
-            cycle_cnt <= 'b0;
-        end else begin
-            cycle_cnt <= cycle_cnt + 1'b1;
-        end
-
-    end
-    DifftestTrapEvent u_DifftestTrapEvent (
-        .clock      (clock),
-        .enable     (1'b1),
-        .io_hasTrap (1'b0),
-        .io_cycleCnt(cycle_cnt),
-        .io_instrCnt(commit_valid_cnt),
-        .io_hasWFI  ('b0),
-        .io_code    ('b0),
-        .io_pc      ('b0),
-        .io_coreid  ('b0)
-    );
-
-
-    DifftestArchEvent u_DifftestArchEvent (
-        .clock                            (clock),
-        .enable                           (1'b0),
-        .io_valid                         ('b0),
-        .io_interrupt                     ('b0),
-        .io_exception                     ('b0),
-        .io_exceptionPC                   ('b0),
-        .io_exceptionInst                 ('b0),
-        .io_hasNMI                        ('b0),
-        .io_virtualInterruptIsHvictlInject('b0),
-        .io_coreid                        (1'b0)
-    );
-
-    DifftestCSRState u_DifftestCSRState (
-        .clock           (clock),
-        .enable          (1'b1),
-        .io_privilegeMode('b0),
-        .io_mstatus      ('b0),
-        .io_sstatus      ('b0),
-        .io_mepc         ('b0),
-        .io_sepc         ('b0),
-        .io_mtval        ('b0),
-        .io_stval        ('b0),
-        .io_mtvec        ('b0),
-        .io_stvec        ('b0),
-        .io_mcause       ('b0),
-        .io_scause       ('b0),
-        .io_satp         ('b0),
-        .io_mip          ('b0),
-        .io_mie          ('b0),
-        .io_mscratch     ('b0),
-        .io_sscratch     ('b0),
-        .io_mideleg      ('b0),
-        .io_medeleg      ('b0),
-        .io_coreid       ('b0)
-    );
-
+ 
 
 
 endmodule

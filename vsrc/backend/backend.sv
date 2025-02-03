@@ -43,23 +43,23 @@ module backend #(
     wire [`INSTR_ID_WIDTH-1:0] flush_robid;
     // commit signals
     wire                       commit0_valid;
-    wire [               31:0] commit0_pc;
+    wire [          `PC_RANGE] commit0_pc;
     wire [               31:0] commit0_instr;
-    wire [                4:0] commit0_lrd;
-    wire [                5:0] commit0_prd;
-    wire [                5:0] commit0_old_prd;
+    wire [        `LREG_RANGE] commit0_lrd;
+    wire [        `PREG_RANGE] commit0_prd;
+    wire [        `PREG_RANGE] commit0_old_prd;
     wire                       commit0_need_to_wb;
-    wire [                5:0] commit0_robid;
+    wire [    `ROB_SIZE_LOG:0] commit0_robid;
     wire                       commit0_skip;
 
     wire                       commit1_valid;
-    wire [               31:0] commit1_pc;
+    wire [          `PC_RANGE] commit1_pc;
     wire [               31:0] commit1_instr;
-    wire [                4:0] commit1_lrd;
-    wire [                5:0] commit1_prd;
-    wire [                5:0] commit1_old_prd;
+    wire [        `LREG_RANGE] commit1_lrd;
+    wire [        `PREG_RANGE] commit1_prd;
+    wire [        `PREG_RANGE] commit1_old_prd;
     wire                       commit1_need_to_wb;
-    wire [                5:0] commit1_robid;
+    wire [    `ROB_SIZE_LOG:0] commit1_robid;
     wire                       commit1_skip;
 
     /* --------------------- arch_rat : 32 arch regfile content -------------------- */
@@ -133,7 +133,7 @@ module backend #(
     wire [        `LREG_RANGE] iru2isu_instr0_lrs1;
     wire [        `LREG_RANGE] iru2isu_instr0_lrs2;
     wire [        `LREG_RANGE] iru2isu_instr0_lrd;
-    wire [               31:0] iru2isu_instr0_imm;
+    wire [         `SRC_RANGE] iru2isu_instr0_imm;
     wire                       iru2isu_instr0_src1_is_reg;
     wire                       iru2isu_instr0_src2_is_reg;
     wire                       iru2isu_instr0_need_to_wb;
@@ -160,18 +160,18 @@ module backend #(
     wire [        `LREG_RANGE] isu2exu_instr0_lrs1;
     wire [        `LREG_RANGE] isu2exu_instr0_lrs2;
     wire [        `LREG_RANGE] isu2exu_instr0_lrd;
-    wire [                5:0] isu2exu_instr0_prd;
-    wire [                5:0] isu2exu_instr0_old_prd;
+    wire [        `PREG_RANGE] isu2exu_instr0_prd;
+    wire [        `PREG_RANGE] isu2exu_instr0_old_prd;
     wire                       isu2exu_instr0_need_to_wb;
-    wire [                5:0] isu2exu_instr0_prs1;
-    wire [                5:0] isu2exu_instr0_prs2;
+    wire [        `PREG_RANGE] isu2exu_instr0_prs1;
+    wire [        `PREG_RANGE] isu2exu_instr0_prs2;
     wire                       isu2exu_instr0_src1_is_reg;
     wire                       isu2exu_instr0_src2_is_reg;
-    wire [               31:0] isu2exu_instr0_imm;
-    wire [                2:0] isu2exu_instr0_cx_type;
+    wire [         `SRC_RANGE] isu2exu_instr0_imm;
+    wire [     `CX_TYPE_RANGE] isu2exu_instr0_cx_type;
     wire                       isu2exu_instr0_is_unsigned;
-    wire [                3:0] isu2exu_instr0_alu_type;
-    wire [                2:0] isu2exu_instr0_muldiv_type;
+    wire [    `ALU_TYPE_RANGE] isu2exu_instr0_alu_type;
+    wire [ `MULDIV_TYPE_RANGE] isu2exu_instr0_muldiv_type;
     wire                       isu2exu_instr0_is_word;
     wire                       isu2exu_instr0_is_imm;
     wire                       isu2exu_instr0_is_load;
@@ -184,14 +184,14 @@ module backend #(
 
     //writeback signal
     wire                       intwb0_instr_valid;
-    wire [                5:0] intwb0_robid;
-    wire [                5:0] intwb0_prd;
+    wire [    `ROB_SIZE_LOG:0] intwb0_robid;
+    wire [        `PREG_RANGE] intwb0_prd;
     wire                       intwb0_need_to_wb;
     wire [      `RESULT_RANGE] intwb0_result;
 
     wire                       memwb_instr_valid;
-    wire [                5:0] memwb_robid;
-    wire [                5:0] memwb_prd;
+    wire [    `ROB_SIZE_LOG:0] memwb_robid;
+    wire [        `PREG_RANGE] memwb_prd;
     wire                       memwb_need_to_wb;
     wire                       memwb_mmio_valid;
     wire [      `RESULT_RANGE] memwb_result;
@@ -200,14 +200,14 @@ module backend #(
     wire                       deq_ready;
 
     // rob walk signal
-    wire [                2:0] rob_state;
+    wire [                1:0] rob_state;
     wire                       rob_walk0_valid;
     wire                       rob_walk0_complete;
-    wire [                4:0] rob_walk0_lrd;
-    wire [                5:0] rob_walk0_prd;
+    wire [        `LREG_RANGE] rob_walk0_lrd;
+    wire [        `PREG_RANGE] rob_walk0_prd;
     wire                       rob_walk1_valid;
-    wire [                4:0] rob_walk1_lrd;
-    wire [                5:0] rob_walk1_prd;
+    wire [        `LREG_RANGE] rob_walk1_lrd;
+    wire [        `PREG_RANGE] rob_walk1_prd;
     wire                       rob_walk1_complete;
 
     wire                       int_instr_ready;
