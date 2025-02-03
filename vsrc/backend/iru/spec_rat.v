@@ -48,8 +48,8 @@ module spec_rat #(
 
 /* ------------------------------- walk_logic ------------------------------- */
     input wire [1:0] rob_state,
-    input wire walking_valid0,
-    input wire walking_valid1,
+    input wire rob_walk0_valid,
+    input wire rob_walk1_valid,
     input wire [5:0] rob_walk0_prd,
     input wire [5:0] rob_walk1_prd,
     input wire [4:0] rob_walk0_lrd,
@@ -101,7 +101,7 @@ module spec_rat #(
     wire rename_lrd_hit;
     wire walk_lrd_hit;
     assign rename_lrd_hit = rn2specrat_instr0_lrd_wren && rn2specrat_instr1_lrd_wren && (rn2specrat_instr0_lrd_wraddr == rn2specrat_instr1_lrd_wraddr);
-    assign walk_lrd_hit = walking_valid0 && walking_valid1 && (rob_walk0_lrd == rob_walk1_lrd);
+    assign walk_lrd_hit = rob_walk0_valid && rob_walk1_valid && (rob_walk0_lrd == rob_walk1_lrd);
 
     // Parameters
     localparam LOGICAL_REG_WIDTH    = 5;
@@ -124,10 +124,10 @@ module spec_rat #(
             if(is_rollback)begin
                     spec_rat <= arch_rat_content;
             end else if (is_walk)begin
-                if(walking_valid0 && ~walk_lrd_hit)begin
+                if(rob_walk0_valid && ~walk_lrd_hit)begin
                     spec_rat[rob_walk0_lrd] <= rob_walk0_prd;//prd is new physical reg number fetched from freelist, use it to upate arch_rat 
                 end
-                if(walking_valid1)begin
+                if(rob_walk1_valid)begin
                     spec_rat[rob_walk1_lrd] <= rob_walk1_prd;
                 end
             end else begin // (is_idle)

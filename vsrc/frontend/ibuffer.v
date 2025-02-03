@@ -13,7 +13,7 @@ module ibuffer (
     output wire        ibuffer_predicttaken_out,
     output wire [31:0] ibuffer_predicttarget_out,
     output wire [31:0] ibuffer_inst_out,
-    output wire [47:0] ibuffer_pc_out,
+    output wire [`PC_RANGE] ibuffer_pc_out,
     output reg         fetch_inst,           // Output pulse when FIFO count decreases from 4 to 3
     output wire        fifo_empty,           // Signal indicating if the FIFO is empty
 
@@ -25,7 +25,7 @@ module ibuffer (
     assign ibuffer_predicttaken_out = fifo_data_out[ (1+32+64+32-1) : (32+64+32)];
     assign ibuffer_predicttarget_out = fifo_data_out[ (32+64+32-1) : (32+64)];
     assign ibuffer_inst_out = fifo_data_out[(32+64-1):64];
-    assign ibuffer_pc_out   = fifo_data_out[47:0];
+    assign ibuffer_pc_out   = fifo_data_out[`PC_RANGE];
 
     // Internal buffers for splitting instructions
     reg [31:0] inst_cut[0:3];

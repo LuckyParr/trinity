@@ -32,15 +32,14 @@ module int_isq (
     input wire [`PREG_RANGE] enq_instr0_prd,
     input wire [`PREG_RANGE] enq_instr0_old_prd,
 
-    input wire [`ROB_SIZE_LOG:0] enq_instr0_robid,
+    input wire [  `ROB_SIZE_LOG:0] enq_instr0_robid,
     input wire [`STOREQUEUE_LOG:0] enq_instr0_sqid,
     /* -------------------------------- src state ------------------------------- */
-    input wire                       enq_instr0_src1_state,
-    input wire                       enq_instr0_src2_state,
+    input wire                     enq_instr0_src1_state,
+    input wire                     enq_instr0_src2_state,
 
     /* ------------------------------- output to execute block ------------------------------- */
     output wire                      issue0_valid,
-    //temp sig
     input  wire                      issue0_ready,
     output reg  [       `PREG_RANGE] issue0_prs1,
     output reg  [       `PREG_RANGE] issue0_prs2,
@@ -60,9 +59,8 @@ module int_isq (
     output reg                       issue0_is_load,
     output reg                       issue0_is_store,
     output reg  [               3:0] issue0_ls_size,
-
-    output reg [  `ROB_SIZE_LOG:0] issue0_robid,
-    output reg [`STOREQUEUE_LOG:0] issue0_sqid,
+    output reg  [   `ROB_SIZE_LOG:0] issue0_robid,
+    output reg  [ `STOREQUEUE_LOG:0] issue0_sqid,
 
     //-----------------------------------------------------
     // writeback to set condition to 1
@@ -71,17 +69,15 @@ module int_isq (
     input wire               writeback0_need_to_wb,
     input wire [`PREG_RANGE] writeback0_prd,
 
-    input wire                      writeback1_valid,
-    input wire                      writeback1_need_to_wb,
-    input wire  [      `PREG_RANGE] writeback1_prd,
+    input wire                    writeback1_valid,
+    input wire                    writeback1_need_to_wb,
+    input wire  [    `PREG_RANGE] writeback1_prd,
     //-----------------------------------------------------
     // Flush interface
     //-----------------------------------------------------
-    input logic [              1:0] rob_state,
-    input logic                     flush_valid,
-    input logic [`INSTR_ID_WIDTH:0] flush_robid,
-
-    output logic intisq_can_enq
+    input logic [            1:0] rob_state,
+    input logic                   flush_valid,
+    input logic [`ROB_SIZE_LOG:0] flush_robid
 );
 
 
@@ -111,8 +107,8 @@ module int_isq (
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_is_load_oh;
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_is_store_oh;
     reg  [                      3:0] iq_entries_enq_ls_size_oh     [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [`ROB_SIZE_LOG:0] iq_entries_enq_robid_oh [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [`STOREQUEUE_LOG:0] iq_entries_enq_sqid_oh [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [          `ROB_SIZE_LOG:0] iq_entries_enq_robid_oh       [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [        `STOREQUEUE_LOG:0] iq_entries_enq_sqid_oh        [`ISSUE_QUEUE_DEPTH-1:0];
 
     /* -------------------------------------------------------------------------- */
     /*                                   deq dec                                  */
@@ -136,8 +132,8 @@ module int_isq (
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_is_load;
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_is_store;
     wire [                      3:0] iq_entries_deq_ls_size        [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [        `ROB_SIZE_LOG-1:0] iq_entries_deq_robid         [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [      `STOREQUEUE_LOG-1:0] iq_entries_deq_sqid          [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [          `ROB_SIZE_LOG:0] iq_entries_deq_robid          [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [        `STOREQUEUE_LOG:0] iq_entries_deq_sqid           [`ISSUE_QUEUE_DEPTH-1:0];
 
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_ready_to_go;
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_valid;
@@ -166,13 +162,12 @@ module int_isq (
     /* -------------------------------------------------------------------------- */
     /*                                 enq decode region                          */
     /* -------------------------------------------------------------------------- */
-    wire [`ISSUE_QUEUE_DEPTH-1:0] iq_entries_wren ;
     always @(*) begin
         integer i;
-        iq_entries_wren = 'b0;
+        iq_entries_wren_oh = 'b0;
         if (enq_fire) begin
             for (i = 0; i < `ISSUE_QUEUE_DEPTH; i = i + 1) begin
-                iq_entries_wren[i] = enq_ptr_oh[i];
+                iq_entries_wren_oh[i] = enq_ptr_oh[i];
             end
         end
     end
@@ -236,7 +231,7 @@ module int_isq (
     /*                                flush region                                */
     /* -------------------------------------------------------------------------- */
     reg [`ISSUE_QUEUE_DEPTH-1:0] flush_dec;
-    always @(flush_valid or flush_robid ) begin
+    always @(flush_valid or flush_robid) begin
         integer i;
         flush_dec = 'b0;
         for (i = 0; i < `ISSUE_QUEUE_DEPTH; i = i + 1) begin
@@ -252,9 +247,8 @@ module int_isq (
     /*                                 deq region                                 */
     /* -------------------------------------------------------------------------- */
 
-    wire                          deq_fire;
-    wire                          oldest_found;
-    wire [`ISSUE_QUEUE_DEPTH-1:0] oldest_idx_oh;
+    wire deq_fire;
+    wire oldest_found;
 
     assign issue0_valid = ((|deq_ptr_oh) & oldest_found);
     assign deq_fire     = issue0_valid & issue0_ready;
@@ -267,7 +261,6 @@ module int_isq (
         .enq_ptr               (enq_ptr),
         .iq_entries_ready_to_go(iq_entries_ready_to_go),
         .iq_entries_valid      (iq_entries_valid),
-        .deq_fire              (deq_fire),
         .iq_entries_clear_entry(iq_entries_clear_entry),
         .deq_ptr               (deq_ptr),
         .oldest_found          (oldest_found),
@@ -275,9 +268,12 @@ module int_isq (
     );
 
 
+    //check if age buffer have available entry
+    assign iq_can_alloc0 = enq_has_avail_entry;
 
 
     always @(*) begin
+        integer i;
         deq_ptr = 'b0;
         for (i = 0; i < `ISSUE_QUEUE_LOG; i = i + 1) begin
             if (deq_fire) begin
@@ -287,9 +283,6 @@ module int_isq (
             end
         end
     end
-
-
-
 
 
 
@@ -303,6 +296,34 @@ module int_isq (
             end
         end
     end
+
+
+
+    /* -------------------------------------------------------------------------- */
+    /*                               deq dec region                               */
+    /* -------------------------------------------------------------------------- */
+
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_pc, iq_entries_deq_pc, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_prs1, iq_entries_deq_prs1, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_prs2, iq_entries_deq_prs2, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_src1_is_reg, iq_entries_deq_src1_is_reg, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_src2_is_reg, iq_entries_deq_src2_is_reg, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_prd, iq_entries_deq_prd, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_old_prd, iq_entries_deq_old_prd, `ISSUE_QUEUE_DEPTH)
+    // `MACRO_DEQ_DEC(deq_ptr_oh, issue0, iq_entries_deq_instr, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_imm, iq_entries_deq_imm, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_need_to_wb, iq_entries_deq_need_to_wb, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_cx_type, iq_entries_deq_cx_type, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_is_unsigned, iq_entries_deq_is_unsigned, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_alu_type, iq_entries_deq_alu_type, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_muldiv_type, iq_entries_deq_muldiv_type, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_is_word, iq_entries_deq_is_word, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_is_imm, iq_entries_deq_is_imm, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_is_load, iq_entries_deq_is_load, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_is_store, iq_entries_deq_is_store, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_ls_size, iq_entries_deq_ls_size, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_robid, iq_entries_deq_robid, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_sqid, iq_entries_deq_sqid, `ISSUE_QUEUE_DEPTH)
 
 
 
@@ -332,8 +353,8 @@ module int_isq (
                 .enq_prs2             (iq_entries_enq_prs2_oh[i]),
                 .enq_prd              (iq_entries_enq_prd_oh[i]),
                 .enq_old_prd          (iq_entries_enq_old_prd_oh[i]),
-                .enq_robid           (iq_entries_enq_robid_oh[i]),
-                .enq_sqid            (iq_entries_enq_sqid_oh[i]),
+                .enq_robid            (iq_entries_enq_robid_oh[i]),
+                .enq_sqid             (iq_entries_enq_sqid_oh[i]),
                 .enq_src1_state       (iq_entries_enq_src1_state_oh[i]),
                 .enq_src2_state       (iq_entries_enq_src2_state_oh[i]),
                 .ready_to_go          (iq_entries_ready_to_go[i]),
@@ -361,15 +382,11 @@ module int_isq (
                 .deq_prs2             (iq_entries_deq_prs2[i]),
                 .deq_prd              (iq_entries_deq_prd[i]),
                 .deq_old_prd          (iq_entries_deq_old_prd[i]),
-                .deq_robid           (iq_entries_deq_robid[i]),
-                .deq_sqid            (iq_entries_deq_sqid[i])
+                .deq_robid            (iq_entries_deq_robid[i]),
+                .deq_sqid             (iq_entries_deq_sqid[i])
             );
         end
     endgenerate
-
-
-    //check if age buffer have available entry
-    assign intisq_can_enq = enq_has_avail_entry;
 
 
 

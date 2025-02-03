@@ -7,11 +7,11 @@ module decoder (
     input wire        ibuffer_predicttaken_out,
     input wire [31:0] ibuffer_predicttarget_out,
     input wire [31:0] ibuffer_inst_out,
-    input wire [47:0] ibuffer_pc_out,
-  
+    input wire [`PC_RANGE] ibuffer_pc_out,
+
     //to regfile read 
-    output reg  [ 4:0              ] rs1,
-    output reg  [ 4:0              ] rs2,
+    output reg  [               4:0] rs1,
+    output reg  [               4:0] rs2,
     output reg  [               4:0] rd,
     output reg  [              63:0] imm,
     output reg                       src1_is_reg,
@@ -27,17 +27,17 @@ module decoder (
     output reg  [               3:0] ls_size,
     output reg  [`MULDIV_TYPE_RANGE] muldiv_type,
     //feedthrough
-    output wire [              47:0] decoder_instr_valid,
-    output wire [              47:0] decoder_pc_out,
+    output wire                      decoder_instr_valid,
+    output wire [              `PC_RANGE] decoder_pc_out,
     output wire [              31:0] decoder_instr_out,
     output wire                      decoder_predicttaken_out,
-    output wire [31:0]               decoder_predicttarget_out
+    output wire [              31:0] decoder_predicttarget_out
 
 );
-    assign decoder_pc_out   = ibuffer_pc_out;
-    assign decoder_instr_out = ibuffer_inst_out;
-    assign decoder_instr_valid = ibuffer_instr_valid;
-    assign decoder_predicttaken_out = ibuffer_predicttaken_out;
+    assign decoder_pc_out            = ibuffer_pc_out;
+    assign decoder_instr_out         = ibuffer_inst_out;
+    assign decoder_instr_valid       = ibuffer_instr_valid;
+    assign decoder_predicttaken_out  = ibuffer_predicttaken_out;
     assign decoder_predicttarget_out = ibuffer_predicttarget_out;
 
     reg [6:0] opcode;
@@ -77,7 +77,7 @@ module decoder (
     reg        lrd_is_not_zero;
     always @(*) begin
         if (ibuffer_instr_valid) begin
-            imm = 'b0;
+            imm              = 'b0;
             imm_itype        = ibuffer_inst_out[31:20];
             imm_stype        = {ibuffer_inst_out[31:25], ibuffer_inst_out[11:7]};
 
@@ -104,7 +104,7 @@ module decoder (
             imm_jtype_64     = {{43{imm_jtype[20]}}, imm_jtype};
 
 
-            rs1              = ibuffer_inst_out[19:15]; 
+            rs1              = ibuffer_inst_out[19:15];
             rs2              = ibuffer_inst_out[24:20];
             rd               = ibuffer_inst_out[11:7];
             src1_is_reg      = 1'b0;
@@ -112,13 +112,13 @@ module decoder (
             need_to_wb       = 1'b0;
             cx_type          = 6'b0;
             is_unsigned      = 1'b0;
-            alu_type         = 10'b0;
+            alu_type         = 11'b0;
             is_word          = 1'b0;
             is_imm           = 1'b0;
             is_load          = 1'b0;
             is_store         = 1'b0;
             ls_size          = 4'b0;
-            muldiv_type      = 12'b0;
+            muldiv_type      = 13'b0;
 
             opcode           = ibuffer_inst_out[6:0];
             funct3           = ibuffer_inst_out[14:12];
@@ -181,47 +181,47 @@ module decoder (
                     endcase
                 end
                 OPCODE_LOAD: begin
-                    is_load    = 1'b1;
-                    need_to_wb =  lrd_is_not_zero;
+                    is_load     = 1'b1;
+                    need_to_wb  = lrd_is_not_zero;
                     src1_is_reg = 1'b1;
                     case (funct3)
                         3'b000: begin
-                            imm     = imm_itype_64_s;
-                            ls_size[`IS_B] =1'b1 ;
+                            imm            = imm_itype_64_s;
+                            ls_size[`IS_B] = 1'b1;
                         end
                         3'b001: begin
-                            imm     = imm_itype_64_s;
-                            ls_size[`IS_H] =1'b1 ;
+                            imm            = imm_itype_64_s;
+                            ls_size[`IS_H] = 1'b1;
                         end
                         3'b010: begin
-                            imm     = imm_itype_64_s;
-                            ls_size[`IS_W] =1'b1 ;
+                            imm            = imm_itype_64_s;
+                            ls_size[`IS_W] = 1'b1;
                         end
                         3'b011: begin  // RV64I extension
-                            imm     = imm_itype_64_s;
-                            ls_size[`IS_D] =1'b1 ;
+                            imm            = imm_itype_64_s;
+                            ls_size[`IS_D] = 1'b1;
                         end
                         3'b100: begin
-                            imm         = imm_itype_64_s;
-                            ls_size[`IS_B]     =1'b1 ;
-                            is_unsigned = 1'b1;
+                            imm            = imm_itype_64_s;
+                            ls_size[`IS_B] = 1'b1;
+                            is_unsigned    = 1'b1;
                         end
                         3'b101: begin
-                            imm         = imm_itype_64_s;
-                            ls_size[`IS_H]     =1'b1 ;
-                            is_unsigned = 1'b1;
+                            imm            = imm_itype_64_s;
+                            ls_size[`IS_H] = 1'b1;
+                            is_unsigned    = 1'b1;
                         end
                         3'b110: begin  // RV64I extension
-                            imm         = imm_itype_64_s;
-                            is_unsigned = 1'b1;
-                            ls_size[`IS_W]     =1'b1 ;
+                            imm            = imm_itype_64_s;
+                            is_unsigned    = 1'b1;
+                            ls_size[`IS_W] = 1'b1;
                         end
                         default: ;
                     endcase
                 end
                 OPCODE_STORE: begin
-                    is_store = 1'b1;
-                    imm      = imm_stype_64;
+                    is_store    = 1'b1;
+                    imm         = imm_stype_64;
                     src1_is_reg = 1'b1;
                     src2_is_reg = 1'b1;
                     case (funct3)
@@ -241,8 +241,8 @@ module decoder (
                     endcase
                 end
                 OPCODE_ALU_ITYPE: begin
-                    imm        = imm_itype_64_s;
-                    need_to_wb = lrd_is_not_zero;
+                    imm         = imm_itype_64_s;
+                    need_to_wb  = lrd_is_not_zero;
                     src1_is_reg = 1'b1;
                     casez ({
                         funct7, funct3
@@ -288,7 +288,7 @@ module decoder (
                     endcase
                 end
                 OPCODE_ALU_RTYPE: begin
-                    need_to_wb = lrd_is_not_zero;
+                    need_to_wb  = lrd_is_not_zero;
                     src1_is_reg = 1'b1;
                     src2_is_reg = 1'b1;
                     case ({
@@ -359,10 +359,10 @@ module decoder (
                     // Add your implementation here
                 end
                 OPCODE_ALU_ITYPE_WORD: begin
-                    imm        = imm_itype_64_s;
-                    is_word    = 1'b1;
-                    need_to_wb = lrd_is_not_zero;
-                    src1_is_reg = 1'b1;                    
+                    imm         = imm_itype_64_s;
+                    is_word     = 1'b1;
+                    need_to_wb  = lrd_is_not_zero;
+                    src1_is_reg = 1'b1;
                     casez ({
                         funct7, funct3
                     })
@@ -386,10 +386,10 @@ module decoder (
                     endcase
                 end
                 OPCODE_ALU_RTYPE_WORD: begin
-                    is_word    = 1'b1;
-                    need_to_wb = lrd_is_not_zero;
+                    is_word     = 1'b1;
+                    need_to_wb  = lrd_is_not_zero;
                     src1_is_reg = 1'b1;
-                    src2_is_reg = 1'b1;                    
+                    src2_is_reg = 1'b1;
                     case ({
                         funct7, funct3
                     })
@@ -414,13 +414,13 @@ module decoder (
                         10'b0000001100: begin
                             muldiv_type[`IS_DIVW] = 1'b1;
                         end
-                        10'b0000001101:begin
-                            muldiv_type[`IS_DIVUW] =  1'b1;
-                        end 
+                        10'b0000001101: begin
+                            muldiv_type[`IS_DIVUW] = 1'b1;
+                        end
                         10'b0000001110: muldiv_type[`IS_REMW] = 1'b1;
-                        10'b0000001111:begin
+                        10'b0000001111: begin
                             muldiv_type[`IS_REMUW] = 1'b1;
-                        end 
+                        end
                         default: ;
                     endcase
                 end

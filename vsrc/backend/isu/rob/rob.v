@@ -10,23 +10,20 @@ module rob (
     input wire [`PREG_RANGE] instr0_old_prd,
     input wire               instr0_need_to_wb,
 
-    input  wire                   instr1_enq_valid,
-    input  wire [      `PC_RANGE] instr1_pc,
-    input  wire [           31:0] instr1_instr,
-    input  wire [    `LREG_RANGE] instr1_lrd,
-    input  wire [    `PREG_RANGE] instr1_prd,
-    input  wire [    `PREG_RANGE] instr1_old_prd,
-    input  wire                   instr1_need_to_wb,
-    //output reg [`ROB_SIZE_LOG:0] rob2disp_instr_cnt,
-    output reg  [`ROB_SIZE_LOG:0] rob2disp_instr_robid,
-    output reg                    rob_can_enq,
+    input wire                   instr1_enq_valid,
+    input wire [      `PC_RANGE] instr1_pc,
+    input wire [           31:0] instr1_instr,
+    input wire [    `LREG_RANGE] instr1_lrd,
+    input wire [    `PREG_RANGE] instr1_prd,
+    input wire [    `PREG_RANGE] instr1_old_prd,
+    input wire                   instr1_need_to_wb,
     /* ---------------------------- write back logic from wb pipe---------------------------- */
     //write back port
-    input  wire                   intwb0_instr_valid,
-    input  wire [`ROB_SIZE_LOG:0] intwb0_robid,
-    input  wire                   memwb_instr_valid,
-    input  wire [`ROB_SIZE_LOG:0] memwb_robid,
-    input  wire                   memwb_mmio_valid,
+    input wire                   intwb0_instr_valid,
+    input wire [`ROB_SIZE_LOG:0] intwb0_robid,
+    input wire                   memwb_instr_valid,
+    input wire [`ROB_SIZE_LOG:0] memwb_robid,
+    input wire                   memwb_mmio_valid,
 
     /* --------------------------- output commit port --------------------------- */
     output wire                   commit0_valid,
@@ -63,13 +60,18 @@ module rob (
     output wire               rob_walk1_valid,
     output wire [`LREG_RANGE] rob_walk1_lrd,
     output wire [`PREG_RANGE] rob_walk1_prd,
-    output wire               rob_walk1_complete
+    output wire               rob_walk1_complete,
+
+
+    /* ------------------------------ enq relevant ------------------------------ */
+    input  wire                   iq_can_alloc0,
+    output reg  [`ROB_SIZE_LOG:0] rob2disp_instr_robid,
+    output reg                    rob_can_enq
 
 );
     reg [6:0] rob_counter;
     assign rob_can_enq          = (rob_counter < `ROB_SIZE);
-    //assign rob2disp_instr_cnt = rob_counter;
-    assign rob2disp_instr_robid = instr_robid;
+    assign rob2disp_instr_robid = enqueue_ptr;
 
     /* ----------------------------- internal signal ---------------------------- */
     //robentry input
@@ -106,7 +108,6 @@ module rob (
     reg  [`ROB_SIZE_LOG:0] enq_num;
     reg  [`ROB_SIZE_LOG:0] deq_num;
 
-    wire                   instr_robid = enqueue_ptr;
 
 
     /* ------------------------ update enqueue_ptr logic ------------------------ */
@@ -414,7 +415,7 @@ module rob (
 
     //    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0;
     //    assign instr1_actually_enq = instr1_enq_valid & iq_can_alloc1;    
-    assign instr0_actually_enq = instr0_enq_valid;
+    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0;
     assign instr1_actually_enq = instr1_enq_valid;
 
     genvar i;

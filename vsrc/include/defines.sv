@@ -10,7 +10,7 @@
 `define RESULT_WIDTH 64
 `define ALU_TYPE_RANGE 10:0
 
-`define IBUFFER_FIFO_WIDTH 32+48
+`define IBUFFER_FIFO_WIDTH 32+64
 `define INST_CACHE_WIDTH 512
 
 /*
@@ -27,6 +27,7 @@
     10 = AUIPC
 */
 `define ALU_TYPE_LENGTH 11
+`define ALU_TYPE_RANGE 10:0
 `define PC_RANGE 63:0
 `define PC_LENGTH 64
 `define INSTR_RANGE 31:0

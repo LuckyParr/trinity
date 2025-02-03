@@ -27,17 +27,17 @@ module backend #(
     output        mem2dcache_flush,
 
     //bht btb port
-    output        intwb0_bht_write_enable,
-    output [ 9:0] intwb0_bht_write_index,
-    output        intwb0_bht_write_counter_select,
-    output        intwb0_bht_write_inc,
-    output        intwb0_bht_write_dec,
-    output        intwb0_bht_valid_in,
-    output        intwb0_btb_ce,
-    output        intwb0_btb_we,
-    output [ 3:0] intwb0_btb_wmask,
-    output [ 9:0] intwb0_btb_write_index,
-    output [47:0] intwb0_btb_din
+    output             intwb0_bht_write_enable,
+    output [      9:0] intwb0_bht_write_index,
+    output             intwb0_bht_write_counter_select,
+    output             intwb0_bht_write_inc,
+    output             intwb0_bht_write_dec,
+    output             intwb0_bht_valid_in,
+    output             intwb0_btb_ce,
+    output             intwb0_btb_we,
+    output [      3:0] intwb0_btb_wmask,
+    output [      9:0] intwb0_btb_write_index,
+    output [`PC_RANGE] intwb0_btb_din
 );
     //---------------- internal signals ----------------//
     wire [`INSTR_ID_WIDTH-1:0] flush_robid;
@@ -100,27 +100,27 @@ module backend #(
     wire                       iru2idu_instr0_ready;
     wire                       idu2iru_instr0_valid;
     wire [               31:0] idu2iru_instr0_instr;
-    wire [               31:0] idu2iru_instr0_pc;
-    wire [                4:0] idu2iru_instr0_lrs1;
-    wire [                4:0] idu2iru_instr0_lrs2;
-    wire [                4:0] idu2iru_instr0_lrd;
-    wire [               31:0] idu2iru_instr0_imm;
+    wire [          `PC_RANGE] idu2iru_instr0_pc;
+    wire [        `LREG_RANGE] idu2iru_instr0_lrs1;
+    wire [        `LREG_RANGE] idu2iru_instr0_lrs2;
+    wire [        `LREG_RANGE] idu2iru_instr0_lrd;
+    wire [         `SRC_RANGE] idu2iru_instr0_imm;
     wire                       idu2iru_instr0_src1_is_reg;
     wire                       idu2iru_instr0_src2_is_reg;
     wire                       idu2iru_instr0_need_to_wb;
-    wire [                2:0] idu2iru_instr0_cx_type;
+    wire [     `CX_TYPE_RANGE] idu2iru_instr0_cx_type;
     wire                       idu2iru_instr0_is_unsigned;
-    wire [                3:0] idu2iru_instr0_alu_type;
+    wire [    `ALU_TYPE_RANGE] idu2iru_instr0_alu_type;
     wire                       idu2iru_instr0_is_word;
     wire                       idu2iru_instr0_is_load;
     wire                       idu2iru_instr0_is_imm;
     wire                       idu2iru_instr0_is_store;
-    wire [                1:0] idu2iru_instr0_ls_size;
-    wire [                2:0] idu2iru_instr0_muldiv_type;
-    wire [                5:0] idu2iru_instr0_prs1;
-    wire [                5:0] idu2iru_instr0_prs2;
-    wire [                5:0] idu2iru_instr0_prd;
-    wire [                5:0] idu2iru_instr0_old_prd;
+    wire [     `LS_SIZE_RANGE] idu2iru_instr0_ls_size;
+    wire [ `MULDIV_TYPE_RANGE] idu2iru_instr0_muldiv_type;
+    wire [        `PREG_RANGE] idu2iru_instr0_prs1;
+    wire [        `PREG_RANGE] idu2iru_instr0_prs2;
+    wire [        `PREG_RANGE] idu2iru_instr0_prd;
+    wire [        `PREG_RANGE] idu2iru_instr0_old_prd;
     wire                       idu2iru_instr0_predicttaken;
     wire [               31:0] idu2iru_instr0_predicttarget;
 
@@ -129,37 +129,37 @@ module backend #(
     wire                       iru2isu_instr0_valid;
     wire                       isu2iru_instr0_ready;
     wire [               31:0] iru2isu_instr0_instr;
-    wire [               31:0] iru2isu_instr0_pc;
-    wire [                4:0] iru2isu_instr0_lrs1;
-    wire [                4:0] iru2isu_instr0_lrs2;
-    wire [                4:0] iru2isu_instr0_lrd;
+    wire [          `PC_RANGE] iru2isu_instr0_pc;
+    wire [        `LREG_RANGE] iru2isu_instr0_lrs1;
+    wire [        `LREG_RANGE] iru2isu_instr0_lrs2;
+    wire [        `LREG_RANGE] iru2isu_instr0_lrd;
     wire [               31:0] iru2isu_instr0_imm;
     wire                       iru2isu_instr0_src1_is_reg;
     wire                       iru2isu_instr0_src2_is_reg;
     wire                       iru2isu_instr0_need_to_wb;
-    wire [                2:0] iru2isu_instr0_cx_type;
+    wire [     `CX_TYPE_RANGE] iru2isu_instr0_cx_type;
     wire                       iru2isu_instr0_is_unsigned;
-    wire [                3:0] iru2isu_instr0_alu_type;
-    wire [                2:0] iru2isu_instr0_muldiv_type;
+    wire [    `ALU_TYPE_RANGE] iru2isu_instr0_alu_type;
+    wire [ `MULDIV_TYPE_RANGE] iru2isu_instr0_muldiv_type;
     wire                       iru2isu_instr0_is_word;
     wire                       iru2isu_instr0_is_imm;
     wire                       iru2isu_instr0_is_load;
     wire                       iru2isu_instr0_is_store;
-    wire [                1:0] iru2isu_instr0_ls_size;
-    wire [                5:0] iru2isu_instr0_prs1;
-    wire [                5:0] iru2isu_instr0_prs2;
-    wire [                5:0] iru2isu_instr0_prd;
-    wire [                5:0] iru2isu_instr0_old_prd;
+    wire [     `LS_SIZE_RANGE] iru2isu_instr0_ls_size;
+    wire [        `PREG_RANGE] iru2isu_instr0_prs1;
+    wire [        `PREG_RANGE] iru2isu_instr0_prs2;
+    wire [        `PREG_RANGE] iru2isu_instr0_prd;
+    wire [        `PREG_RANGE] iru2isu_instr0_old_prd;
     wire                       iru2isu_instr0_predicttaken;
     wire [               31:0] iru2isu_instr0_predicttarget;
 
     // ISU <-> EXU
-    wire [                5:0] isu2exu_instr0_robid;
-    wire [               31:0] isu2exu_instr0_pc;
+    wire [      `ROB_SIZE_LOG] isu2exu_instr0_robid;
+    wire [          `PC_RANGE] isu2exu_instr0_pc;
     wire [               31:0] isu2exu_instr0_instr;
-    wire [                4:0] isu2exu_instr0_lrs1;
-    wire [                4:0] isu2exu_instr0_lrs2;
-    wire [                4:0] isu2exu_instr0_lrd;
+    wire [        `LREG_RANGE] isu2exu_instr0_lrs1;
+    wire [        `LREG_RANGE] isu2exu_instr0_lrs2;
+    wire [        `LREG_RANGE] isu2exu_instr0_lrd;
     wire [                5:0] isu2exu_instr0_prd;
     wire [                5:0] isu2exu_instr0_old_prd;
     wire                       isu2exu_instr0_need_to_wb;
@@ -176,7 +176,7 @@ module backend #(
     wire                       isu2exu_instr0_is_imm;
     wire                       isu2exu_instr0_is_load;
     wire                       isu2exu_instr0_is_store;
-    wire [                1:0] isu2exu_instr0_ls_size;
+    wire [     `LS_SIZE_RANGE] isu2exu_instr0_ls_size;
     wire                       isu2exu_instr0_predicttaken;
     wire [               31:0] isu2exu_instr0_predicttarget;
     wire [      `RESULT_RANGE] isu2exu_instr0_src1;
@@ -196,7 +196,7 @@ module backend #(
     wire                       memwb_mmio_valid;
     wire [      `RESULT_RANGE] memwb_result;
 
-    wire                       isu2exu_instr0_valid;
+    wire                       issue0_valid;
     wire                       deq_ready;
 
     // rob walk signal
@@ -255,129 +255,129 @@ module backend #(
 
     //TODO add idu2iru/ iru2isu prefix
     iru_top u_iru_top (
-        .clock                       (clock                       ),
-        .reset_n                     (reset_n                     ),
-        .commit0_valid               (commit0_valid               ),
-        .commit0_need_to_wb          (commit0_need_to_wb          ),
-        .commit0_lrd                 (commit0_lrd                 ),
-        .commit0_prd                 (commit0_prd                 ),
-        .commit0_old_prd             (commit0_old_prd             ),
-        .commit1_valid               (commit1_valid               ),
-        .commit1_need_to_wb          (commit1_need_to_wb          ),
-        .commit1_lrd                 (commit1_lrd                 ),
-        .commit1_prd                 (commit1_prd                 ),
-        .commit1_old_prd             (commit1_old_prd             ),
-        .idu2iru_instr0_valid        (idu2iru_instr0_valid        ),
-        .iru2idu_instr0_ready        (iru2idu_instr0_ready        ),
-        .idu2iru_instr0_instr        (idu2iru_instr0_instr        ),          //input
-        .idu2iru_instr0_lrs1         (idu2iru_instr0_lrs1         ),
-        .idu2iru_instr0_lrs2         (idu2iru_instr0_lrs2         ),
-        .idu2iru_instr0_lrd          (idu2iru_instr0_lrd          ),
-        .idu2iru_instr0_pc           (idu2iru_instr0_pc           ),
-        .idu2iru_instr0_imm          (idu2iru_instr0_imm          ),
-        .idu2iru_instr0_src1_is_reg  (idu2iru_instr0_src1_is_reg  ),
-        .idu2iru_instr0_src2_is_reg  (idu2iru_instr0_src2_is_reg  ),
-        .idu2iru_instr0_need_to_wb   (idu2iru_instr0_need_to_wb   ),
-        .idu2iru_instr0_cx_type      (idu2iru_instr0_cx_type      ),
-        .idu2iru_instr0_is_unsigned  (idu2iru_instr0_is_unsigned  ),
-        .idu2iru_instr0_alu_type     (idu2iru_instr0_alu_type     ),
-        .idu2iru_instr0_muldiv_type  (idu2iru_instr0_muldiv_type  ),
-        .idu2iru_instr0_is_word      (idu2iru_instr0_is_word      ),
-        .idu2iru_instr0_is_imm       (idu2iru_instr0_is_imm       ),
-        .idu2iru_instr0_is_load      (idu2iru_instr0_is_load      ),
-        .idu2iru_instr0_is_store     (idu2iru_instr0_is_store     ),
-        .idu2iru_instr0_ls_size      (idu2iru_instr0_ls_size      ),
-        .idu2iru_instr0_predicttaken (idu2iru_instr0_predicttaken ),
+        .clock                       (clock),
+        .reset_n                     (reset_n),
+        .commit0_valid               (commit0_valid),
+        .commit0_need_to_wb          (commit0_need_to_wb),
+        .commit0_lrd                 (commit0_lrd),
+        .commit0_prd                 (commit0_prd),
+        .commit0_old_prd             (commit0_old_prd),
+        .commit1_valid               (commit1_valid),
+        .commit1_need_to_wb          (commit1_need_to_wb),
+        .commit1_lrd                 (commit1_lrd),
+        .commit1_prd                 (commit1_prd),
+        .commit1_old_prd             (commit1_old_prd),
+        .idu2iru_instr0_valid        (idu2iru_instr0_valid),
+        .iru2idu_instr0_ready        (iru2idu_instr0_ready),
+        .idu2iru_instr0_instr        (idu2iru_instr0_instr),          //input
+        .idu2iru_instr0_lrs1         (idu2iru_instr0_lrs1),
+        .idu2iru_instr0_lrs2         (idu2iru_instr0_lrs2),
+        .idu2iru_instr0_lrd          (idu2iru_instr0_lrd),
+        .idu2iru_instr0_pc           (idu2iru_instr0_pc),
+        .idu2iru_instr0_imm          (idu2iru_instr0_imm),
+        .idu2iru_instr0_src1_is_reg  (idu2iru_instr0_src1_is_reg),
+        .idu2iru_instr0_src2_is_reg  (idu2iru_instr0_src2_is_reg),
+        .idu2iru_instr0_need_to_wb   (idu2iru_instr0_need_to_wb),
+        .idu2iru_instr0_cx_type      (idu2iru_instr0_cx_type),
+        .idu2iru_instr0_is_unsigned  (idu2iru_instr0_is_unsigned),
+        .idu2iru_instr0_alu_type     (idu2iru_instr0_alu_type),
+        .idu2iru_instr0_muldiv_type  (idu2iru_instr0_muldiv_type),
+        .idu2iru_instr0_is_word      (idu2iru_instr0_is_word),
+        .idu2iru_instr0_is_imm       (idu2iru_instr0_is_imm),
+        .idu2iru_instr0_is_load      (idu2iru_instr0_is_load),
+        .idu2iru_instr0_is_store     (idu2iru_instr0_is_store),
+        .idu2iru_instr0_ls_size      (idu2iru_instr0_ls_size),
+        .idu2iru_instr0_predicttaken (idu2iru_instr0_predicttaken),
         .idu2iru_instr0_predicttarget(idu2iru_instr0_predicttarget),
-        .idu2iru_instr1_valid        (                            ),
-        .iru2idu_instr1_ready        (                            ),
-        .idu2iru_instr1_instr        (                            ),
-        .idu2iru_instr1_lrs1         (                            ),
-        .idu2iru_instr1_lrs2         (                            ),
-        .idu2iru_instr1_lrd          (                            ),
-        .idu2iru_instr1_pc           (                            ),
-        .idu2iru_instr1_imm          (                            ),
-        .idu2iru_instr1_src1_is_reg  (                            ),
-        .idu2iru_instr1_src2_is_reg  (                            ),
-        .idu2iru_instr1_need_to_wb   (                            ),
-        .idu2iru_instr1_cx_type      (                            ),
-        .idu2iru_instr1_is_unsigned  (                            ),
-        .idu2iru_instr1_alu_type     (                            ),
-        .idu2iru_instr1_muldiv_type  (                            ),
-        .idu2iru_instr1_is_word      (                            ),
-        .idu2iru_instr1_is_imm       (                            ),
-        .idu2iru_instr1_is_load      (                            ),
-        .idu2iru_instr1_is_store     (                            ),
-        .idu2iru_instr1_ls_size      (                            ),
-        .idu2iru_instr1_predicttaken (                            ),
-        .idu2iru_instr1_predicttarget(                            ),
-        .rob_state                   (rob_state                   ),
-        .rob_walk0_valid              (rob_walk0_valid             ),
-        .rob_walk1_valid              (rob_walk1_valid             ),
-        .rob_walk0_prd                (rob_walk0_prd               ),
-        .rob_walk1_prd                (rob_walk1_prd               ),
-        .rob_walk0_lrd                (rob_walk0_lrd               ),
-        .rob_walk1_lrd                (rob_walk1_lrd               ),
-        .flush_valid                 (flush_valid                 ),
-        .iru2isu_instr0_valid        (iru2isu_instr0_valid        ),
-        .isu2iru_instr0_ready        (isu2iru_instr0_ready        ),
-        .iru2isu_instr0_instr        (iru2isu_instr0_instr        ),          //output
-        .iru2isu_instr0_pc           (iru2isu_instr0_pc           ),
-        .iru2isu_instr0_lrs1         (iru2isu_instr0_lrs1         ),
-        .iru2isu_instr0_lrs2         (iru2isu_instr0_lrs2         ),
-        .iru2isu_instr0_lrd          (iru2isu_instr0_lrd          ),
-        .iru2isu_instr0_imm          (iru2isu_instr0_imm          ),
-        .iru2isu_instr0_src1_is_reg  (iru2isu_instr0_src1_is_reg  ),
-        .iru2isu_instr0_src2_is_reg  (iru2isu_instr0_src2_is_reg  ),
-        .iru2isu_instr0_need_to_wb   (iru2isu_instr0_need_to_wb   ),
-        .iru2isu_instr0_cx_type      (iru2isu_instr0_cx_type      ),
-        .iru2isu_instr0_is_unsigned  (iru2isu_instr0_is_unsigned  ),
-        .iru2isu_instr0_alu_type     (iru2isu_instr0_alu_type     ),
-        .iru2isu_instr0_muldiv_type  (iru2isu_instr0_muldiv_type  ),
-        .iru2isu_instr0_is_word      (iru2isu_instr0_is_word      ),
-        .iru2isu_instr0_is_imm       (iru2isu_instr0_is_imm       ),
-        .iru2isu_instr0_is_load      (iru2isu_instr0_is_load      ),
-        .iru2isu_instr0_is_store     (iru2isu_instr0_is_store     ),
-        .iru2isu_instr0_ls_size      (iru2isu_instr0_ls_size      ),
-        .iru2isu_instr0_prs1         (iru2isu_instr0_prs1         ),
-        .iru2isu_instr0_prs2         (iru2isu_instr0_prs2         ),
-        .iru2isu_instr0_prd          (iru2isu_instr0_prd          ),
-        .iru2isu_instr0_old_prd      (iru2isu_instr0_old_prd      ),
-        .iru2isu_instr0_predicttaken (iru2isu_instr0_predicttaken ),
+        .idu2iru_instr1_valid        (),
+        .iru2idu_instr1_ready        (),
+        .idu2iru_instr1_instr        (),
+        .idu2iru_instr1_lrs1         (),
+        .idu2iru_instr1_lrs2         (),
+        .idu2iru_instr1_lrd          (),
+        .idu2iru_instr1_pc           (),
+        .idu2iru_instr1_imm          (),
+        .idu2iru_instr1_src1_is_reg  (),
+        .idu2iru_instr1_src2_is_reg  (),
+        .idu2iru_instr1_need_to_wb   (),
+        .idu2iru_instr1_cx_type      (),
+        .idu2iru_instr1_is_unsigned  (),
+        .idu2iru_instr1_alu_type     (),
+        .idu2iru_instr1_muldiv_type  (),
+        .idu2iru_instr1_is_word      (),
+        .idu2iru_instr1_is_imm       (),
+        .idu2iru_instr1_is_load      (),
+        .idu2iru_instr1_is_store     (),
+        .idu2iru_instr1_ls_size      (),
+        .idu2iru_instr1_predicttaken (),
+        .idu2iru_instr1_predicttarget(),
+        .rob_state                   (rob_state),
+        .rob_walk0_valid             (rob_walk0_valid),
+        .rob_walk1_valid             (rob_walk1_valid),
+        .rob_walk0_prd               (rob_walk0_prd),
+        .rob_walk1_prd               (rob_walk1_prd),
+        .rob_walk0_lrd               (rob_walk0_lrd),
+        .rob_walk1_lrd               (rob_walk1_lrd),
+        .flush_valid                 (flush_valid),
+        .iru2isu_instr0_valid        (iru2isu_instr0_valid),
+        .isu2iru_instr0_ready        (isu2iru_instr0_ready),
+        .iru2isu_instr0_instr        (iru2isu_instr0_instr),          //output
+        .iru2isu_instr0_pc           (iru2isu_instr0_pc),
+        .iru2isu_instr0_lrs1         (iru2isu_instr0_lrs1),
+        .iru2isu_instr0_lrs2         (iru2isu_instr0_lrs2),
+        .iru2isu_instr0_lrd          (iru2isu_instr0_lrd),
+        .iru2isu_instr0_imm          (iru2isu_instr0_imm),
+        .iru2isu_instr0_src1_is_reg  (iru2isu_instr0_src1_is_reg),
+        .iru2isu_instr0_src2_is_reg  (iru2isu_instr0_src2_is_reg),
+        .iru2isu_instr0_need_to_wb   (iru2isu_instr0_need_to_wb),
+        .iru2isu_instr0_cx_type      (iru2isu_instr0_cx_type),
+        .iru2isu_instr0_is_unsigned  (iru2isu_instr0_is_unsigned),
+        .iru2isu_instr0_alu_type     (iru2isu_instr0_alu_type),
+        .iru2isu_instr0_muldiv_type  (iru2isu_instr0_muldiv_type),
+        .iru2isu_instr0_is_word      (iru2isu_instr0_is_word),
+        .iru2isu_instr0_is_imm       (iru2isu_instr0_is_imm),
+        .iru2isu_instr0_is_load      (iru2isu_instr0_is_load),
+        .iru2isu_instr0_is_store     (iru2isu_instr0_is_store),
+        .iru2isu_instr0_ls_size      (iru2isu_instr0_ls_size),
+        .iru2isu_instr0_prs1         (iru2isu_instr0_prs1),
+        .iru2isu_instr0_prs2         (iru2isu_instr0_prs2),
+        .iru2isu_instr0_prd          (iru2isu_instr0_prd),
+        .iru2isu_instr0_old_prd      (iru2isu_instr0_old_prd),
+        .iru2isu_instr0_predicttaken (iru2isu_instr0_predicttaken),
         .iru2isu_instr0_predicttarget(iru2isu_instr0_predicttarget),
-        .debug_preg0                 (debug_preg0                 ),
-        .debug_preg1                 (debug_preg1                 ),
-        .debug_preg2                 (debug_preg2                 ),
-        .debug_preg3                 (debug_preg3                 ),
-        .debug_preg4                 (debug_preg4                 ),
-        .debug_preg5                 (debug_preg5                 ),
-        .debug_preg6                 (debug_preg6                 ),
-        .debug_preg7                 (debug_preg7                 ),
-        .debug_preg8                 (debug_preg8                 ),
-        .debug_preg9                 (debug_preg9                 ),
-        .debug_preg10                (debug_preg10                ),
-        .debug_preg11                (debug_preg11                ),
-        .debug_preg12                (debug_preg12                ),
-        .debug_preg13                (debug_preg13                ),
-        .debug_preg14                (debug_preg14                ),
-        .debug_preg15                (debug_preg15                ),
-        .debug_preg16                (debug_preg16                ),
-        .debug_preg17                (debug_preg17                ),
-        .debug_preg18                (debug_preg18                ),
-        .debug_preg19                (debug_preg19                ),
-        .debug_preg20                (debug_preg20                ),
-        .debug_preg21                (debug_preg21                ),
-        .debug_preg22                (debug_preg22                ),
-        .debug_preg23                (debug_preg23                ),
-        .debug_preg24                (debug_preg24                ),
-        .debug_preg25                (debug_preg25                ),
-        .debug_preg26                (debug_preg26                ),
-        .debug_preg27                (debug_preg27                ),
-        .debug_preg28                (debug_preg28                ),
-        .debug_preg29                (debug_preg29                ),
-        .debug_preg30                (debug_preg30                ),
-        .debug_preg31                (debug_preg31                )
-                                                                  );
+        .debug_preg0                 (debug_preg0),
+        .debug_preg1                 (debug_preg1),
+        .debug_preg2                 (debug_preg2),
+        .debug_preg3                 (debug_preg3),
+        .debug_preg4                 (debug_preg4),
+        .debug_preg5                 (debug_preg5),
+        .debug_preg6                 (debug_preg6),
+        .debug_preg7                 (debug_preg7),
+        .debug_preg8                 (debug_preg8),
+        .debug_preg9                 (debug_preg9),
+        .debug_preg10                (debug_preg10),
+        .debug_preg11                (debug_preg11),
+        .debug_preg12                (debug_preg12),
+        .debug_preg13                (debug_preg13),
+        .debug_preg14                (debug_preg14),
+        .debug_preg15                (debug_preg15),
+        .debug_preg16                (debug_preg16),
+        .debug_preg17                (debug_preg17),
+        .debug_preg18                (debug_preg18),
+        .debug_preg19                (debug_preg19),
+        .debug_preg20                (debug_preg20),
+        .debug_preg21                (debug_preg21),
+        .debug_preg22                (debug_preg22),
+        .debug_preg23                (debug_preg23),
+        .debug_preg24                (debug_preg24),
+        .debug_preg25                (debug_preg25),
+        .debug_preg26                (debug_preg26),
+        .debug_preg27                (debug_preg27),
+        .debug_preg28                (debug_preg28),
+        .debug_preg29                (debug_preg29),
+        .debug_preg30                (debug_preg30),
+        .debug_preg31                (debug_preg31)
+    );
 
 
     isu_top u_isu_top (
@@ -466,35 +466,36 @@ module backend #(
         .commit1_robid               (),
         .commit1_need_to_wb          (),
         .commit1_skip                (),
-        .isu2exu_instr0_robid        (isu2exu_instr0_robid),
-        .isu2exu_instr0_pc           (isu2exu_instr0_pc),
-        .isu2exu_instr0_instr        (isu2exu_instr0_instr),
-        .isu2exu_instr0_lrs1         (isu2exu_instr0_lrs1),
-        .isu2exu_instr0_lrs2         (isu2exu_instr0_lrs2),
-        .isu2exu_instr0_lrd          (isu2exu_instr0_lrd),
-        .isu2exu_instr0_prd          (isu2exu_instr0_prd),
-        .isu2exu_instr0_old_prd      (isu2exu_instr0_old_prd),
-        .isu2exu_instr0_need_to_wb   (isu2exu_instr0_need_to_wb),
-        .isu2exu_instr0_prs1         (isu2exu_instr0_prs1),
-        .isu2exu_instr0_prs2         (isu2exu_instr0_prs2),
-        .isu2exu_instr0_src1_is_reg  (isu2exu_instr0_src1_is_reg),
-        .isu2exu_instr0_src2_is_reg  (isu2exu_instr0_src2_is_reg),
-        .isu2exu_instr0_imm          (isu2exu_instr0_imm),
-        .isu2exu_instr0_cx_type      (isu2exu_instr0_cx_type),
-        .isu2exu_instr0_is_unsigned  (isu2exu_instr0_is_unsigned),
-        .isu2exu_instr0_alu_type     (isu2exu_instr0_alu_type),
-        .isu2exu_instr0_muldiv_type  (isu2exu_instr0_muldiv_type),
-        .isu2exu_instr0_is_word      (isu2exu_instr0_is_word),
-        .isu2exu_instr0_is_imm       (isu2exu_instr0_is_imm),
-        .isu2exu_instr0_is_load      (isu2exu_instr0_is_load),
-        .isu2exu_instr0_is_store     (isu2exu_instr0_is_store),
-        .isu2exu_instr0_ls_size      (isu2exu_instr0_ls_size),
-        .isu2exu_instr0_predicttaken (isu2exu_instr0_predicttaken),
-        .isu2exu_instr0_predicttarget(isu2exu_instr0_predicttarget),
-        .isu2exu_instr0_src1         (isu2exu_instr0_src1),
-        .isu2exu_instr0_src2         (isu2exu_instr0_src2),
-        .intisq_deq_valid            (isu2exu_instr0_valid),
-        .intisq_deq_ready            (exu2isu_instr0_ready),
+        /* ---------------------------------- issue --------------------------------- */
+        .issue0_valid                (issue0_valid),
+        .issue0_ready                (issue0_ready),
+        .issue0_robid                (isu2exu_instr0_robid),
+        .issue0_pc                   (isu2exu_instr0_pc),
+        .issue0_instr                (isu2exu_instr0_instr),
+        .issue0_lrs1                 (isu2exu_instr0_lrs1),
+        .issue0_lrs2                 (isu2exu_instr0_lrs2),
+        .issue0_lrd                  (isu2exu_instr0_lrd),
+        .issue0_prd                  (isu2exu_instr0_prd),
+        .issue0_old_prd              (isu2exu_instr0_old_prd),
+        .issue0_need_to_wb           (isu2exu_instr0_need_to_wb),
+        .issue0_prs1                 (isu2exu_instr0_prs1),
+        .issue0_prs2                 (isu2exu_instr0_prs2),
+        .issue0_src1_is_reg          (isu2exu_instr0_src1_is_reg),
+        .issue0_src2_is_reg          (isu2exu_instr0_src2_is_reg),
+        .issue0_imm                  (isu2exu_instr0_imm),
+        .issue0_cx_type              (isu2exu_instr0_cx_type),
+        .issue0_is_unsigned          (isu2exu_instr0_is_unsigned),
+        .issue0_alu_type             (isu2exu_instr0_alu_type),
+        .issue0_muldiv_type          (isu2exu_instr0_muldiv_type),
+        .issue0_is_word              (isu2exu_instr0_is_word),
+        .issue0_is_imm               (isu2exu_instr0_is_imm),
+        .issue0_is_load              (isu2exu_instr0_is_load),
+        .issue0_is_store             (isu2exu_instr0_is_store),
+        .issue0_ls_size              (isu2exu_instr0_ls_size),
+        .issue0_predicttaken         (isu2exu_instr0_predicttaken),
+        .issue0_predicttarget        (isu2exu_instr0_predicttarget),
+        .issue0_src1                 (isu2exu_instr0_src1),
+        .issue0_src2                 (isu2exu_instr0_src2),
         .rob_state                   (rob_state),                     //OUTPUT
         .rob_walk0_valid             (rob_walk0_valid),               //OUTPUT
         .rob_walk0_complete          (rob_walk0_complete),            //OUTPUT
@@ -540,11 +541,10 @@ module backend #(
 
     // intblock always can accept, mem can accept only when no operation in process
     wire exu_available = int_instr_ready && mem_instr_ready;
-    wire exu2isu_instr0_ready = exu_available;
-    wire exu2isu_instr1_ready = 'b0;
+    wire issue0_ready = exu_available;
     wire instr_goto_memblock = isu2exu_instr0_is_store || isu2exu_instr0_is_load;
-    wire int_instr_valid = isu2exu_instr0_valid && ~instr_goto_memblock;
-    wire mem_instr_valid = isu2exu_instr0_valid && instr_goto_memblock;
+    wire int_instr_valid = issue0_valid && ~instr_goto_memblock;
+    wire mem_instr_valid = issue0_valid && instr_goto_memblock;
 
     exu_top u_exu_top (
         .clock                          (clock),

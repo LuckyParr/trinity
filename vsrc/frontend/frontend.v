@@ -4,7 +4,7 @@ module frontend (
 
     // PC control inputs
     input  wire        redirect_valid,
-    input  wire [47:0] redirect_target,
+    input  wire [`PC_RANGE] redirect_target,
 
     output wire        pc_index_valid,
     input  wire        pc_index_ready,
@@ -46,9 +46,9 @@ module frontend (
     ifu_top u_ifu_top                  (
         .clock                    (clock                    ),
         .reset_n                  (reset_n                  ),
-        .boot_addr                (48'h80000000            ),
+        .boot_addr                (64'h80000000            ),
         .interrupt_valid          (1'd0                    ),
-        .interrupt_addr           (48'd0                   ),
+        .interrupt_addr           (64'd0                   ),
         .redirect_valid           (redirect_valid           ),
         .redirect_target          (redirect_target          ),
         .pc_index_valid           (pc_index_valid           ),

@@ -29,9 +29,9 @@ module freelist #(
     wire is_idle;
     wire is_rollback;
     wire is_walking;
-    assign is_idle    = (rob_state == `ROB_STATE_IDLE);
-    assign is_rollback    = (rob_state == `ROB_STATE_ROLLBACK);
-    assign is_walking = (rob_state == `ROB_STATE_WALK);
+    assign is_idle     = (rob_state == `ROB_STATE_IDLE);
+    assign is_rollback = (rob_state == `ROB_STATE_ROLLBACK);
+    assign is_walking  = (rob_state == `ROB_STATE_WALK);
 
     integer                      i;
 
@@ -43,8 +43,8 @@ module freelist #(
     // Counter for available registers
     reg  [  LOG_NUM_REGS:0] available_count;  // Number of available registers (range from 0 to NUM_REGS)
 
-    reg  [  LOG_NUM_REGS:0] enq_count;  // Number of available registers (range from 0 to NUM_REGS)
-    reg  [  LOG_NUM_REGS:0] deq_count;  // Number of available registers (range from 0 to NUM_REGS)
+    reg  [LOG_NUM_REGS-1:0] enq_count;  // Number of available registers (range from 0 to NUM_REGS)
+    reg  [LOG_NUM_REGS-1:0] deq_count;  // Number of available registers (range from 0 to NUM_REGS)
     reg  [LOG_NUM_REGS-1:0] walk_count;  // Number of walk 
 
     wire [     ENQ_NUM-1:0] enq_vec;
@@ -129,12 +129,12 @@ module freelist #(
         req0_data = {PREG_IDX_WIDTH{1'b0}};  // Default to invalid value
         req1_data = {PREG_IDX_WIDTH{1'b0}};  // Default to invalid value
 
-        if (req0_valid ) begin
+        if (req0_valid) begin
             // Allocate a register for req0 from the deq of the queue
             req0_data = freelist_queue[deq_idx[LOG_NUM_REGS-1 : 0]];
         end
 
-        if (req1_valid ) begin
+        if (req1_valid) begin
             // Allocate a register for req1 from the deq of the queue
             req1_data = freelist_queue[deq_idx[LOG_NUM_REGS-1 : 0]+1];
         end

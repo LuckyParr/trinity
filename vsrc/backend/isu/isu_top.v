@@ -60,7 +60,7 @@ module isu_top (
     input  wire [              31:0] iru2isu_instr1_predicttarget,
 
 
-    // Writeback inputs
+    /* ------------------------------ write region ------------------------------ */
     input wire                   intwb0_instr_valid,
     input wire [`ROB_SIZE_LOG:0] intwb0_robid,
     input wire [    `PREG_RANGE] intwb0_prd,
@@ -100,38 +100,39 @@ module isu_top (
     output wire                   commit1_need_to_wb,
     output wire                   commit1_skip,
 
-    // ISQ outputs instr0
-    output wire              intisq_deq_valid,
-    input  wire              intisq_deq_ready,
-    output wire [       6:0] isu2exu_instr0_robid,
-    output wire [      63:0] isu2exu_instr0_pc,
-    output wire [      31:0] isu2exu_instr0_instr,
-    output wire [       4:0] isu2exu_instr0_lrs1,
-    output wire [       4:0] isu2exu_instr0_lrs2,
-    output wire [       4:0] isu2exu_instr0_lrd,
-    output wire [       5:0] isu2exu_instr0_prd,
-    output wire [       5:0] isu2exu_instr0_old_prd,
-    output wire              isu2exu_instr0_need_to_wb,
-    output wire [       5:0] isu2exu_instr0_prs1,
-    output wire [       5:0] isu2exu_instr0_prs2,
-    output wire              isu2exu_instr0_src1_is_reg,
-    output wire              isu2exu_instr0_src2_is_reg,
-    output wire [      63:0] isu2exu_instr0_imm,
-    output wire [       5:0] isu2exu_instr0_cx_type,
-    output wire              isu2exu_instr0_is_unsigned,
-    output wire [      10:0] isu2exu_instr0_alu_type,
-    output wire [      12:0] isu2exu_instr0_muldiv_type,
-    output wire              isu2exu_instr0_is_word,
-    output wire              isu2exu_instr0_is_imm,
-    output wire              isu2exu_instr0_is_load,
-    output wire              isu2exu_instr0_is_store,
-    output wire [       3:0] isu2exu_instr0_ls_size,
-    output wire              isu2exu_instr0_predicttaken,
-    output wire [      31:0] isu2exu_instr0_predicttarget,
-    output wire [`SRC_RANGE] isu2exu_instr0_src1,
-    output wire [`SRC_RANGE] isu2exu_instr0_src2,
+    /* ---------------------------------- issue --------------------------------- */
+    output wire              issue0_valid,
+    input  wire              issue0_ready,
+    output wire [       6:0] issue0_robid,
+    output wire [      63:0] issue0_pc,
+    output wire [      31:0] issue0_instr,
+    output wire [       4:0] issue0_lrs1,
+    output wire [       4:0] issue0_lrs2,
+    output wire [       4:0] issue0_lrd,
+    output wire [       5:0] issue0_prd,
+    output wire [       5:0] issue0_old_prd,
+    output wire              issue0_need_to_wb,
+    output wire [       5:0] issue0_prs1,
+    output wire [       5:0] issue0_prs2,
+    output wire              issue0_src1_is_reg,
+    output wire              issue0_src2_is_reg,
+    output wire [      63:0] issue0_imm,
+    output wire [       5:0] issue0_cx_type,
+    output wire              issue0_is_unsigned,
+    output wire [      10:0] issue0_alu_type,
+    output wire [      12:0] issue0_muldiv_type,
+    output wire              issue0_is_word,
+    output wire              issue0_is_imm,
+    output wire              issue0_is_load,
+    output wire              issue0_is_store,
+    output wire [       3:0] issue0_ls_size,
+    output wire              issue0_predicttaken,
+    output wire [      31:0] issue0_predicttarget,
+    output wire [`SRC_RANGE] issue0_src1,
+    output wire [`SRC_RANGE] issue0_src2,
 
-    // Debug outputs
+
+    /* ---------------------------------- walk ---------------------------------- */
     output wire [        1:0] rob_state,
     output wire               rob_walk0_valid,
     output wire               rob_walk0_complete,
@@ -141,42 +142,41 @@ module isu_top (
     output wire [`LREG_RANGE] rob_walk1_lrd,
     output wire [`PREG_RANGE] rob_walk1_prd,
     output wire               rob_walk1_complete,
-    // //intisq indicate instr0 is load or store 
-    // output wire isu2exu_instr0_is_load,
-    // output wire isu2exu_instr0_is_store,
+
+
     //preg content from arch_rat
-    input  wire [`PREG_RANGE] debug_preg0,
-    input  wire [`PREG_RANGE] debug_preg1,
-    input  wire [`PREG_RANGE] debug_preg2,
-    input  wire [`PREG_RANGE] debug_preg3,
-    input  wire [`PREG_RANGE] debug_preg4,
-    input  wire [`PREG_RANGE] debug_preg5,
-    input  wire [`PREG_RANGE] debug_preg6,
-    input  wire [`PREG_RANGE] debug_preg7,
-    input  wire [`PREG_RANGE] debug_preg8,
-    input  wire [`PREG_RANGE] debug_preg9,
-    input  wire [`PREG_RANGE] debug_preg10,
-    input  wire [`PREG_RANGE] debug_preg11,
-    input  wire [`PREG_RANGE] debug_preg12,
-    input  wire [`PREG_RANGE] debug_preg13,
-    input  wire [`PREG_RANGE] debug_preg14,
-    input  wire [`PREG_RANGE] debug_preg15,
-    input  wire [`PREG_RANGE] debug_preg16,
-    input  wire [`PREG_RANGE] debug_preg17,
-    input  wire [`PREG_RANGE] debug_preg18,
-    input  wire [`PREG_RANGE] debug_preg19,
-    input  wire [`PREG_RANGE] debug_preg20,
-    input  wire [`PREG_RANGE] debug_preg21,
-    input  wire [`PREG_RANGE] debug_preg22,
-    input  wire [`PREG_RANGE] debug_preg23,
-    input  wire [`PREG_RANGE] debug_preg24,
-    input  wire [`PREG_RANGE] debug_preg25,
-    input  wire [`PREG_RANGE] debug_preg26,
-    input  wire [`PREG_RANGE] debug_preg27,
-    input  wire [`PREG_RANGE] debug_preg28,
-    input  wire [`PREG_RANGE] debug_preg29,
-    input  wire [`PREG_RANGE] debug_preg30,
-    input  wire [`PREG_RANGE] debug_preg31
+    input wire [`PREG_RANGE] debug_preg0,
+    input wire [`PREG_RANGE] debug_preg1,
+    input wire [`PREG_RANGE] debug_preg2,
+    input wire [`PREG_RANGE] debug_preg3,
+    input wire [`PREG_RANGE] debug_preg4,
+    input wire [`PREG_RANGE] debug_preg5,
+    input wire [`PREG_RANGE] debug_preg6,
+    input wire [`PREG_RANGE] debug_preg7,
+    input wire [`PREG_RANGE] debug_preg8,
+    input wire [`PREG_RANGE] debug_preg9,
+    input wire [`PREG_RANGE] debug_preg10,
+    input wire [`PREG_RANGE] debug_preg11,
+    input wire [`PREG_RANGE] debug_preg12,
+    input wire [`PREG_RANGE] debug_preg13,
+    input wire [`PREG_RANGE] debug_preg14,
+    input wire [`PREG_RANGE] debug_preg15,
+    input wire [`PREG_RANGE] debug_preg16,
+    input wire [`PREG_RANGE] debug_preg17,
+    input wire [`PREG_RANGE] debug_preg18,
+    input wire [`PREG_RANGE] debug_preg19,
+    input wire [`PREG_RANGE] debug_preg20,
+    input wire [`PREG_RANGE] debug_preg21,
+    input wire [`PREG_RANGE] debug_preg22,
+    input wire [`PREG_RANGE] debug_preg23,
+    input wire [`PREG_RANGE] debug_preg24,
+    input wire [`PREG_RANGE] debug_preg25,
+    input wire [`PREG_RANGE] debug_preg26,
+    input wire [`PREG_RANGE] debug_preg27,
+    input wire [`PREG_RANGE] debug_preg28,
+    input wire [`PREG_RANGE] debug_preg29,
+    input wire [`PREG_RANGE] debug_preg30,
+    input wire [`PREG_RANGE] debug_preg31
 );
     //wb free busy_table
     wire       intwb02bt_free_instr0rd_en;
@@ -193,7 +193,6 @@ module isu_top (
     /*                               dispatch to rob                              */
     /* -------------------------------------------------------------------------- */
     wire [    `ROB_SIZE_LOG:0] rob2disp_instr_robid;
-    wire                       rob_can_enq;
     wire                       disp2rob_instr0_enq_valid;
     wire [          `PC_RANGE] disp2rob_instr0_pc;
     wire [               31:0] disp2rob_instr0_instr;
@@ -214,21 +213,25 @@ module isu_top (
     /* -------------------------------------------------------------------------- */
     /*                            dispatch to busytable                           */
     /* -------------------------------------------------------------------------- */
-    wire [                5:0] disp2bt_instr0_rs1;
-    wire                       bt2disp_instr0_rs1_busy;
-    wire [                5:0] disp2bt_instr0_rs2;
-    wire                       bt2disp_instr0_rs2_busy;
-    wire [                5:0] disp2bt_instr1_rs1;
-    wire                       bt2disp_instr1_rs1_busy;
-    wire [                5:0] disp2bt_instr1_rs2;
-    wire                       bt2disp_instr1_rs2_busy;
+    wire [        `PREG_RANGE] disp2bt_instr0_rs1;
+    wire                       disp2bt_instr0_src1_is_reg;
+    wire                       bt2disp_instr0_src1_busy;
+    wire [        `PREG_RANGE] disp2bt_instr0_rs2;
+    wire                       disp2bt_instr0_src2_is_reg;
+    wire                       bt2disp_instr0_src2_busy;
+
+    wire [        `PREG_RANGE] disp2bt_instr1_rs1;
+    wire                       disp2bt_instr1_src1_is_reg;
+    wire                       bt2disp_instr1_src1_busy;
+    wire [        `PREG_RANGE] disp2bt_instr1_rs2;
+    wire                       disp2bt_instr1_src2_is_reg;
+    wire                       bt2disp_instr1_src2_busy;
 
     wire                       disp2bt_alloc_instr0_rd_en;
-    wire [                5:0] disp2bt_alloc_instr0_rd;
+    wire [        `PREG_RANGE] disp2bt_alloc_instr0_rd;
     wire                       disp2bt_alloc_instr1_rd_en;
-    wire [                5:0] disp2bt_alloc_instr1_rd;
+    wire [        `PREG_RANGE] disp2bt_alloc_instr1_rd;
 
-    wire                       intisq_can_enq;
     wire                       disp2intisq_enq_valid;
     wire                       intisq2disp_enq_ready;
 
@@ -266,14 +269,16 @@ module isu_top (
     wire                       disp2intisq_instr0_src2_state;
 
 
-
+    wire                       rob_can_enq;
+    wire                       iq_can_alloc0;
     dispatch u_dispatch (
         .clock                           (clock),
         .reset_n                         (reset_n),
         //decide if dispatch can read instr or not (ROB and ISQ available and (rob_state == `ROB_STATE_IDLE))
         .rob_can_enq                     (rob_can_enq),
-        .intisq_can_enq                  (intisq_can_enq),
+        .iq_can_alloc0                   (iq_can_alloc0),
         .rob_state                       (rob_state),
+        .rob2disp_instr_robid            (rob2disp_instr_robid),
         /* ----------------------------------- iru ---------------------------------- */
         //iru input 
         .iru2isu_instr0_valid            (iru2isu_instr0_valid),
@@ -344,7 +349,6 @@ module isu_top (
         .disp2rob_instr1_prd             (),
         .disp2rob_instr1_old_prd         (),
         .disp2rob_instr1_need_to_wb      (),
-        .rob2disp_instr_robid            (rob2disp_instr_robid),
         /* ------------------------------- issue queue ------------------------------ */
         .disp2intisq_instr0_enq_valid    (disp2intisq_instr0_enq_valid),
         .disp2intisq_instr0_pc           (disp2intisq_instr0_pc),
@@ -372,50 +376,47 @@ module isu_top (
         .disp2intisq_instr0_robid        (disp2intisq_instr0_robid),
         .disp2intisq_instr0_predicttaken (disp2intisq_instr0_predicttaken),
         .disp2intisq_instr0_predicttarget(disp2intisq_instr0_predicttarget),
-        .disp2intisq_instr0_src1_state (disp2intisq_instr0_src1_state),
-        .disp2intisq_instr0_src2_state (disp2intisq_instr0_src2_state),
+        .disp2intisq_instr0_src1_state   (disp2intisq_instr0_src1_state),
+        .disp2intisq_instr0_src2_state   (disp2intisq_instr0_src2_state),
 
         /* ------------------------------- busy_table ------------------------------- */
         //disp read from busy_table
-        .disp2bt_instr0_rs1          (disp2bt_instr0_rs1     ),
-        .bt2disp_instr0_rs1_busy     (bt2disp_instr0_rs1_busy),
-        .disp2bt_instr0_rs2          (disp2bt_instr0_rs2     ),
-        .bt2disp_instr0_rs2_busy     (bt2disp_instr0_rs2_busy),
-        .disp2bt_instr1_rs1          (                       ),
-        .bt2disp_instr1_rs1_busy     (                       ),
-        .disp2bt_instr1_rs2          (                       ),
-        .bt2disp_instr1_rs2_busy     (                       ),
+        .disp2bt_instr0_rs1        (disp2bt_instr0_rs1),
+        .bt2disp_instr0_src1_busy  (bt2disp_instr0_src1_busy),
+        .disp2bt_instr0_rs2        (disp2bt_instr0_rs2),
+        .bt2disp_instr0_src2_busy  (bt2disp_instr0_src2_busy),
+        .disp2bt_instr1_rs1        (),
+        .bt2disp_instr1_src1_busy  (),
+        .disp2bt_instr1_rs2        (),
+        .bt2disp_instr1_src2_busy  (),
         //disp write rd as busy in busy_table
-        .disp2bt_alloc_instr0_rd_en  (disp2bt_alloc_instr0_rd_en),
-        .disp2bt_alloc_instr0_rd     (disp2bt_alloc_instr0_rd   ),
-        .disp2bt_alloc_instr1_rd_en  (                          ),
-        .disp2bt_alloc_instr1_rd     (                          ),
+        .disp2bt_alloc_instr0_rd_en(disp2bt_alloc_instr0_rd_en),
+        .disp2bt_alloc_instr0_rd   (disp2bt_alloc_instr0_rd),
+        .disp2bt_alloc_instr1_rd_en(),
+        .disp2bt_alloc_instr1_rd   (),
         //flush signal
-        .flush_valid                (flush_valid)
+        .flush_valid               (flush_valid)
     );
 
     // Instantiate modules
     rob rob_inst (
-        .clock               (clock),
-        .reset_n             (reset_n),
-        //rob output to disp
-        .rob2disp_instr_robid(rob2disp_instr_robid),
-        .rob_can_enq         (rob_can_enq),
+        .clock            (clock),
+        .reset_n          (reset_n),
         //disp input instr
-        .instr0_enq_valid    (disp2rob_instr0_enq_valid),
-        .instr0_pc           (disp2rob_instr0_pc),
-        .instr0_instr        (disp2rob_instr0_instr),
-        .instr0_lrd          (disp2rob_instr0_lrd),
-        .instr0_prd          (disp2rob_instr0_prd),
-        .instr0_old_prd      (disp2rob_instr0_old_prd),
-        .instr0_need_to_wb   (disp2rob_instr0_need_to_wb),
-        .instr1_enq_valid    (),
-        .instr1_pc           (),
-        .instr1_instr        (),
-        .instr1_lrd          (),
-        .instr1_prd          (),
-        .instr1_old_prd      (),
-        .instr1_need_to_wb   (),
+        .instr0_enq_valid (disp2rob_instr0_enq_valid),
+        .instr0_pc        (disp2rob_instr0_pc),
+        .instr0_instr     (disp2rob_instr0_instr),
+        .instr0_lrd       (disp2rob_instr0_lrd),
+        .instr0_prd       (disp2rob_instr0_prd),
+        .instr0_old_prd   (disp2rob_instr0_old_prd),
+        .instr0_need_to_wb(disp2rob_instr0_need_to_wb),
+        .instr1_enq_valid (),
+        .instr1_pc        (),
+        .instr1_instr     (),
+        .instr1_lrd       (),
+        .instr1_prd       (),
+        .instr1_old_prd   (),
+        .instr1_need_to_wb(),
 
         //write back signals
         .intwb0_instr_valid(intwb0_instr_valid),
@@ -454,48 +455,24 @@ module isu_top (
         .rob_walk1_valid   (rob_walk1_valid),
         .rob_walk1_lrd     (rob_walk1_lrd),
         .rob_walk1_prd     (rob_walk1_prd),
-        .rob_walk1_complete(rob_walk1_complete)
+        .rob_walk1_complete(rob_walk1_complete),
+
+        .rob2disp_instr_robid(rob2disp_instr_robid),
+        .rob_can_enq         (rob_can_enq),
+        .iq_can_alloc0       (iq_can_alloc0)
 
     );
 
     /* -------------------------------------------------------------------------- */
     /*                                 issuequeue                                 */
     /* -------------------------------------------------------------------------- */
-    // int_isq u_int_isq (
-    //     .clock                (clock),
-    //     .reset_n              (reset_n),
-    //     //tell disp isq is available
-    //     .intisq_can_enq       (intisq_can_enq),
-    //     //enq port
-    //     .enq_valid            (disp2intisq_enq_valid),
-    //     .enq_ready            (intisq2disp_enq_ready),
-    //     .enq_data             (disp2intisq_instr0_enq_data),
-    //     .enq_condition        (disp2intisq_instr0_enq_condition),
-    //     //deq port
-    //     .deq_valid            (intisq_deq_valid),
-    //     .deq_ready            (intisq_deq_ready),
-    //     .deq_data             (intisq_deq_data),
-    //     //writeback from intwb0
-    //     .writeback0_valid     (intwb0_instr_valid),
-    //     .writeback0_need_to_wb(intwb0_need_to_wb),
-    //     .writeback0_prd       (intwb0_prd),
-    //     //flush kill young instr in isq    
-    //     .rob_state            (rob_state),
-    //     .flush_valid          (flush_valid),
-    //     .flush_robid          (flush_robid),
-    //     //writeback from memwb
-    //     .writeback1_valid     (memwb_instr_valid),
-    //     .writeback1_need_to_wb(memwb_need_to_wb),
-    //     .writeback1_prd       (memwb_prd)
-
-    // );
 
     int_isq u_int_isq (
         .clock                 (clock),
         .reset_n               (reset_n),
         .iq_can_alloc0         (iq_can_alloc0),
-        .sq_can_alloc          (sq_can_alloc),//input
-        .all_iq_ready          (all_iq_ready),
+        .sq_can_alloc          (1'b1),                            //input
+        .all_iq_ready          (1'b1),
         .enq_instr0_valid      (disp2intisq_instr0_enq_valid),
         .enq_instr0_lrs1       (disp2intisq_instr0_lrs1),
         .enq_instr0_lrs2       (disp2intisq_instr0_lrs2),
@@ -520,7 +497,7 @@ module isu_top (
         .enq_instr0_prd        (disp2intisq_instr0_prd),
         .enq_instr0_old_prd    (disp2intisq_instr0_old_prd),
         .enq_instr0_robid      (disp2intisq_instr0_robid),
-        .enq_instr0_sqid      (),
+        .enq_instr0_sqid       (),
         .enq_instr0_src1_state (disp2intisq_instr0_src1_state),
         .enq_instr0_src2_state (disp2intisq_instr0_src2_state),
         .issue0_valid          (issue0_valid),
@@ -543,18 +520,17 @@ module isu_top (
         .issue0_is_load        (issue0_is_load),
         .issue0_is_store       (issue0_is_store),
         .issue0_ls_size        (issue0_ls_size),
-        .issue0_robid         (issue0_robid),
-        .issue0_sqid          (issue0_sqid),
-        .writeback0_valid      (writeback0_valid),
-        .writeback0_need_to_wb (writeback0_need_to_wb),
-        .writeback0_prd        (writeback0_prd),
-        .writeback1_valid      (writeback1_valid),
-        .writeback1_need_to_wb (writeback1_need_to_wb),
-        .writeback1_prd        (writeback1_prd),
+        .issue0_robid          (issue0_robid),
+        .issue0_sqid           (),
+        .writeback0_valid      (intwb0_instr_valid),
+        .writeback0_need_to_wb (intwb0_need_to_wb),
+        .writeback0_prd        (intwb0_prd),
+        .writeback1_valid      (memwb_instr_valid),
+        .writeback1_need_to_wb (memwb_need_to_wb),
+        .writeback1_prd        (memwb_prd),
         .rob_state             (rob_state),
         .flush_valid           (flush_valid),
-        .flush_robid           (flush_robid),
-        .intisq_can_enq        (intisq_can_enq)
+        .flush_robid           (flush_robid)
     );
 
 
@@ -564,10 +540,15 @@ module isu_top (
     /* -------------------------------------------------------------------------- */
     /*     intisq read from pregfile , pregfile send result directly to exu     */
     /* -------------------------------------------------------------------------- */
-    wire intisq2prf_instr0_src1_is_reg = intisq_deq_valid && isu2exu_instr0_src1_is_reg;
-    wire intisq2prf_inst0_prs1 = {6{intisq_deq_valid}} & isu2exu_instr0_prs1;
-    wire intisq2prf_instr0_src2_is_reg = intisq_deq_valid && isu2exu_instr0_src2_is_reg;
-    wire intisq2prf_inst0_prs2 = {6{intisq_deq_valid}} & isu2exu_instr0_prs2;
+
+    wire               intisq2prf_instr0_src1_is_reg;
+    wire [`PREG_RANGE] intisq2prf_inst0_prs1;
+    wire               intisq2prf_instr0_src2_is_reg;
+    wire [`PREG_RANGE] intisq2prf_inst0_prs2;
+    assign intisq2prf_instr0_src1_is_reg = issue0_valid && issue0_src1_is_reg;
+    assign intisq2prf_inst0_prs1         = {`PREG_LENGTH{issue0_valid}} & issue0_prs1;
+    assign intisq2prf_instr0_src2_is_reg = issue0_valid && issue0_src2_is_reg;
+    assign intisq2prf_inst0_prs2         = {`PREG_LENGTH{issue0_valid}} & issue0_prs2;
 
     busy_table u_busy_table (
         .clock                     (clock),
@@ -575,38 +556,38 @@ module isu_top (
         //disp read rs1/rs2 port
         .disp2bt_instr0_rs1        (disp2bt_instr0_rs1),
         .disp2bt_instr0_src1_is_reg(disp2bt_instr0_src1_is_reg),
-        .bt2disp_instr0_rs1_busy   (bt2disp_instr0_rs1_busy),
+        .bt2disp_instr0_src1_busy  (bt2disp_instr0_src1_busy),
         .disp2bt_instr0_rs2        (disp2bt_instr0_rs2),
         .disp2bt_instr0_src2_is_reg(disp2bt_instr0_src2_is_reg),
-        .bt2disp_instr0_rs2_busy   (bt2disp_instr0_rs2_busy),
+        .bt2disp_instr0_src2_busy  (bt2disp_instr0_src2_busy),
 
         //disp write rd ad busy port
         .disp2bt_alloc_instr0_rd_en (disp2bt_alloc_instr0_rd_en),
         .disp2bt_alloc_instr0_rd    (disp2bt_alloc_instr0_rd),
         .disp2bt_instr1_rs1         (),
         .disp2bt_instr1_src1_is_reg (),
-        .bt2disp_instr1_rs1_busy    (),
+        .bt2disp_instr1_src1_busy   (),
         .disp2bt_instr1_rs2         (),
         .disp2bt_instr1_src2_is_reg (),
-        .bt2disp_instr1_rs2_busy    (),
+        .bt2disp_instr1_src2_busy   (),
         .disp2bt_alloc_instr1_rd_en (),
         .disp2bt_alloc_instr1_rd    (),
         //writeback free busy_table
-        .intwb02bt_free_instr0_rd_en(intwb02bt_free_instr0_rd_en),
-        .intwb02bt_free_instr0_rd   (intwb02bt_free_instr0_rd),
-        .memwb2bt_free_instr0_rd_en (memwb2bt_free_instr0_rd_en),
-        .memwb2bt_free_instr0_rd    (memwb2bt_free_instr0_rd),
+        .intwb02bt_free_instr0_rd_en(intwb0_instr_valid & intwb0_need_to_wb),
+        .intwb02bt_free_instr0_rd   (intwb0_prd),
+        .memwb2bt_free_instr0_rd_en (memwb_instr_valid & memwb_need_to_wb),
+        .memwb2bt_free_instr0_rd    (memwb_prd),
         //walking logic
-        .flush_valid                (flush_valid       ),
-        .flush_robid                (flush_robid       ),
-        .rob_state                  (rob_state         ),
-        .rob_walk0_valid             (rob_walk0_valid   ),
-        .rob_walk1_valid             (rob_walk1_valid   ),
-        .rob_walk0_prd               (rob_walk0_prd     ),
-        .rob_walk1_prd               (rob_walk1_prd     ),
-        .rob_walk0_complete          (rob_walk0_complete),
-        .rob_walk1_complete          (rob_walk1_complete)
-);
+        .flush_valid                (flush_valid),
+        .flush_robid                (flush_robid),
+        .rob_state                  (rob_state),
+        .rob_walk0_valid            (rob_walk0_valid),
+        .rob_walk1_valid            (rob_walk1_valid),
+        .rob_walk0_prd              (rob_walk0_prd),
+        .rob_walk1_prd              (rob_walk1_prd),
+        .rob_walk0_complete         (rob_walk0_complete),
+        .rob_walk1_complete         (rob_walk1_complete)
+    );
 
 
 
@@ -624,10 +605,10 @@ module isu_top (
         //intisq read then send result to exu
         .rden0       (intisq2prf_instr0_src1_is_reg),
         .raddr0      (intisq2prf_inst0_prs1),
-        .rdata0      (isu2exu_instr0_src1),
+        .rdata0      (issue0_src1),
         .rden1       (intisq2prf_instr0_src2_is_reg),
         .raddr1      (intisq2prf_inst0_prs2),
-        .rdata1      (isu2exu_instr0_src2),
+        .rdata1      (issue0_src2),
         .rden2       (),
         .raddr2      (),
         .rdata2      (),
@@ -667,6 +648,98 @@ module isu_top (
         .debug_preg29(debug_preg29),
         .debug_preg30(debug_preg30),
         .debug_preg31(debug_preg31)
+    );
+
+
+
+
+
+
+
+    /* -------------------------------------------------------------------------- */
+    /*                               difftest region                              */
+    /* -------------------------------------------------------------------------- */
+    reg                   flop_commit0_valid;
+    reg                   flop_commit0_skip;
+    reg                   flop_commit0_need_to_wb;
+    reg [    `LREG_RANGE] flop_commit0_lrd;
+    reg [    `PREG_RANGE] flop_commit0_prd;
+    reg [      `PC_RANGE] flop_commit0_pc;
+    reg [   `INSTR_RANGE] flop_commit0_instr;
+    reg [`ROB_SIZE_LOG:0] flop_commit0_robid;
+
+    `MACRO_DFF_NONEN(flop_commit0_valid, commit0_valid, 1)
+    `MACRO_DFF_NONEN(flop_commit0_skip, commit0_skip, 1)
+    `MACRO_DFF_NONEN(flop_commit0_need_to_wb, commit0_need_to_wb, 1)
+    `MACRO_DFF_NONEN(flop_commit0_lrd, commit0_lrd, 5)
+    `MACRO_DFF_NONEN(flop_commit0_prd, commit0_prd, `PREG_LENGTH)
+    `MACRO_DFF_NONEN(flop_commit0_pc, commit0_pc, `PC_LENGTH)
+    `MACRO_DFF_NONEN(flop_commit0_instr, commit0_instr, 32)
+    `MACRO_DFF_NONEN(flop_commit0_robid, commit0_robid, `ROB_SIZE_LOG + 1)
+
+
+    DifftestInstrCommit u_DifftestInstrCommit (
+        .clock     (clock),
+        .enable    (flop_commit0_valid),
+        .io_valid  ('b0),                      //unuse!!!!
+        .io_skip   (flop_commit0_skip),
+        .io_isRVC  (1'b0),
+        .io_rfwen  (flop_commit0_need_to_wb),
+        .io_fpwen  (1'b0),
+        .io_vecwen (1'b0),
+        .io_wpdest (),
+        .io_wdest  (flop_commit0_lrd),
+        .io_pc     (flop_commit0_pc),
+        .io_instr  (flop_commit0_instr),
+        .io_robIdx (flop_commit0_robid),
+        .io_lqIdx  (flop_commit0_prd),
+        .io_sqIdx  ('b0),
+        .io_isLoad (1'b1),                     //load queue idx
+        .io_isStore('b0),                      //store queue idx
+        .io_nFused ('b0),
+        .io_special('b0),
+        .io_coreid ('b0),
+        .io_index  ('b0)
+    );
+
+
+    // DifftestIntWriteback u_DifftestIntWriteback(
+    //     .clock      (clock      ),
+    //     .enable     (flop_commit0_valid     ),
+    //     .io_valid   (   ), //usese!
+    //     .io_address (io_address ),
+    //     .io_data    (io_data    ),
+    //     .io_coreid  (io_coreid  )
+    // );
+
+
+    reg [63:0] commit_cnt;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            commit_cnt <= 0;
+        end else if (commit0_valid) begin
+            commit_cnt <= commit_cnt + 1;
+        end
+    end
+    reg [63:0] cycle_cnt;
+    always @(posedge clock) begin
+        if (~reset_n) begin
+            cycle_cnt <= 'b0;
+        end else begin
+            cycle_cnt <= cycle_cnt + 1'b1;
+        end
+
+    end
+    DifftestTrapEvent u_DifftestTrapEvent (
+        .clock      (clock),
+        .enable     (1'b1),
+        .io_hasTrap (1'b0),
+        .io_cycleCnt(cycle_cnt),
+        .io_instrCnt(commit_cnt),
+        .io_hasWFI  ('b0),
+        .io_code    ('b0),
+        .io_pc      (flop_commit0_pc),
+        .io_coreid  ('b0)
     );
 
 

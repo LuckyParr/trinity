@@ -1,42 +1,43 @@
+`include "defines.sv"
 module busy_table (
     input wire clock,   // Clock signal
     input wire reset_n, // Active-low reset signal
 
     // Read Port 0
-    input  wire [5:0] disp2bt_instr0_rs1,   // Address for disp2bt_instr0_rs1_rddata
-    input  wire       disp2bt_instr0_src1_is_reg,
-    output wire       bt2disp_instr0_rs1_busy,     // Data output for disp2bt_instr0_rs1_rddata
+    input  wire [`PREG_RANGE] disp2bt_instr0_rs1,          // Address for disp2bt_instr0_rs1_rddata
+    input  wire               disp2bt_instr0_src1_is_reg,
+    output reg                bt2disp_instr0_src1_busy,    // Data output for disp2bt_instr0_rs1_rddata
 
     // Read Port 1
-    input  wire [5:0] disp2bt_instr0_rs2,   // Address for disp2bt_instr0_rs2_rddata
-    input  wire       disp2bt_instr0_src2_is_reg,
-    output wire       bt2disp_instr0_rs2_busy,     // Data output for disp2bt_instr0_rs2_rddata
+    input  wire [`PREG_RANGE] disp2bt_instr0_rs2,          // Address for disp2bt_instr0_rs2_rddata
+    input  wire               disp2bt_instr0_src2_is_reg,
+    output reg                bt2disp_instr0_src2_busy,    // Data output for disp2bt_instr0_rs2_rddata
 
     // Read Port 2
-    input  wire [5:0] disp2bt_instr1_rs1,   // Address for disp2bt_instr1_rs1_rddata
-    input  wire       disp2bt_instr1_src1_is_reg,
-    output wire       bt2disp_instr1_rs1_busy,     // Data output for disp2bt_instr1_rs1_rddata
+    input  wire [`PREG_RANGE] disp2bt_instr1_rs1,          // Address for disp2bt_instr1_rs1_rddata
+    input  wire               disp2bt_instr1_src1_is_reg,
+    output reg                bt2disp_instr1_src1_busy,    // Data output for disp2bt_instr1_rs1_rddata
 
     // Read Port 3
-    input  wire [5:0] disp2bt_instr1_rs2,   // Address for disp2bt_instr1_rs2_rddata
-    input  wire       disp2bt_instr1_src2_is_reg,
-    output wire       bt2disp_instr1_rs2_busy,     // Data output for disp2bt_instr1_rs2_rddata
+    input  wire [`PREG_RANGE] disp2bt_instr1_rs2,          // Address for disp2bt_instr1_rs2_rddata
+    input  wire               disp2bt_instr1_src2_is_reg,
+    output reg                bt2disp_instr1_src2_busy,    // Data output for disp2bt_instr1_rs2_rddata
 
     // Write Port 0 - Allocate Instruction 0
-    input wire       disp2bt_alloc_instr0_rd_en,   // Enable for disp2bt_alloc_instr0_rd
-    input wire [5:0] disp2bt_alloc_instr0_rd, // Address for disp2bt_alloc_instr0_rd
+    input wire               disp2bt_alloc_instr0_rd_en,  // Enable for disp2bt_alloc_instr0_rd
+    input wire [`PREG_RANGE] disp2bt_alloc_instr0_rd,     // Address for disp2bt_alloc_instr0_rd
 
     // Write Port 1 - Allocate Instruction 1
-    input wire       disp2bt_alloc_instr1_rd_en,   // Enable for disp2bt_alloc_instr1_rd
-    input wire [5:0] disp2bt_alloc_instr1_rd, // Address for disp2bt_alloc_instr1_rd
+    input wire               disp2bt_alloc_instr1_rd_en,  // Enable for disp2bt_alloc_instr1_rd
+    input wire [`PREG_RANGE] disp2bt_alloc_instr1_rd,     // Address for disp2bt_alloc_instr1_rd
 
     // Write Port 2 - Free Instruction 0
-    input wire       intwb02bt_free_instr0_rd_en,   // Enable for intwb02bt_free_instr0_rd
-    input wire [5:0] intwb02bt_free_instr0_rd, // Address for intwb02bt_free_instr0_rd
+    input wire               intwb02bt_free_instr0_rd_en,  // Enable for intwb02bt_free_instr0_rd
+    input wire [`PREG_RANGE] intwb02bt_free_instr0_rd,     // Address for intwb02bt_free_instr0_rd
 
     // Write Port 3 - Free Instruction 1
-    input wire       memwb2bt_free_instr0_rd_en,   // Enable for memwb2bt_free_instr0_rd
-    input wire [5:0] memwb2bt_free_instr0_rd, // Address for memwb2bt_free_instr0_rd
+    input wire               memwb2bt_free_instr0_rd_en,  // Enable for memwb2bt_free_instr0_rd
+    input wire [`PREG_RANGE] memwb2bt_free_instr0_rd,     // Address for memwb2bt_free_instr0_rd
 
     /* ------------------------------- walk logic ------------------------------- */
     input                            flush_valid,
@@ -53,9 +54,9 @@ module busy_table (
     wire is_idle;
     wire is_rollback;
     wire is_walking;
-    assign is_idle    = (rob_state == `ROB_STATE_IDLE);
-    assign is_rollback    = (rob_state == `ROB_STATE_ROLLBACK);
-    assign is_walking = (rob_state == `ROB_STATE_WALK);
+    assign is_idle     = (rob_state == `ROB_STATE_IDLE);
+    assign is_rollback = (rob_state == `ROB_STATE_ROLLBACK);
+    assign is_walking  = (rob_state == `ROB_STATE_WALK);
 
     reg  [`PREG_SIZE-1:0] busy_table;
     //debug
@@ -162,38 +163,38 @@ module busy_table (
 
     always @(*) begin
         if (intwb02bt_free_instr0_rd_en & (intwb02bt_free_instr0_rd == disp2bt_instr0_rs1)) begin
-            bt2disp_instr0_rs1_busy = 'b0;  //bypass logic
+            bt2disp_instr0_src1_busy = 'b0;  //bypass logic
         end else if (memwb2bt_free_instr0_rd_en & (memwb2bt_free_instr0_rd == disp2bt_instr0_rs1)) begin
-            bt2disp_instr0_rs1_busy = 'b0;  //bypass logic
+            bt2disp_instr0_src1_busy = 'b0;  //bypass logic
         end else begin
-            bt2disp_instr0_rs1_busy = busy_table[disp2bt_instr0_rs1] & disp2bt_instr0_src1_is_reg;
+            bt2disp_instr0_src1_busy = busy_table[disp2bt_instr0_rs1] & disp2bt_instr0_src1_is_reg;
         end
     end
     always @(*) begin
         if (intwb02bt_free_instr0_rd_en & (intwb02bt_free_instr0_rd == disp2bt_instr0_rs2)) begin
-            bt2disp_instr0_rs2_busy = 'b0;  //bypass logic
+            bt2disp_instr0_src2_busy = 'b0;  //bypass logic
         end else if (memwb2bt_free_instr0_rd_en & (memwb2bt_free_instr0_rd == disp2bt_instr0_rs2)) begin
-            bt2disp_instr0_rs2_busy = 'b0;  //bypass logic
+            bt2disp_instr0_src2_busy = 'b0;  //bypass logic
         end else begin
-            bt2disp_instr0_rs2_busy = busy_table[disp2bt_instr0_rs2] & disp2bt_instr0_src2_is_reg;
+            bt2disp_instr0_src2_busy = busy_table[disp2bt_instr0_rs2] & disp2bt_instr0_src2_is_reg;
         end
     end
     always @(*) begin
         if (intwb02bt_free_instr0_rd_en & (intwb02bt_free_instr0_rd == disp2bt_instr1_rs1)) begin
-            bt2disp_instr1_rs1_busy = 'b0;  //bypass logic
+            bt2disp_instr1_src1_busy = 'b0;  //bypass logic
         end else if (memwb2bt_free_instr0_rd_en & (memwb2bt_free_instr0_rd == disp2bt_instr1_rs1)) begin
-            bt2disp_instr1_rs1_busy = 'b0;  //bypass logic
+            bt2disp_instr1_src1_busy = 'b0;  //bypass logic
         end else begin
-            bt2disp_instr1_rs1_busy = busy_table[disp2bt_instr1_rs1] & disp2bt_instr1_src1_is_reg;
+            bt2disp_instr1_src1_busy = busy_table[disp2bt_instr1_rs1] & disp2bt_instr1_src1_is_reg;
         end
     end
     always @(*) begin
         if (intwb02bt_free_instr0_rd_en & (intwb02bt_free_instr0_rd == disp2bt_instr1_rs2)) begin
-            bt2disp_instr1_rs2_busy = 'b0;  //bypass logic
+            bt2disp_instr1_src2_busy = 'b0;  //bypass logic
         end else if (memwb2bt_free_instr0_rd_en & (memwb2bt_free_instr0_rd == disp2bt_instr1_rs2)) begin
-            bt2disp_instr1_rs2_busy = 'b0;  //bypass logic
+            bt2disp_instr1_src2_busy = 'b0;  //bypass logic
         end else begin
-            bt2disp_instr1_rs2_busy = busy_table[disp2bt_instr1_rs2] & disp2bt_instr1_src2_is_reg;
+            bt2disp_instr1_src2_busy = busy_table[disp2bt_instr1_rs2] & disp2bt_instr1_src2_is_reg;
         end
     end
 
