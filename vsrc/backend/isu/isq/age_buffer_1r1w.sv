@@ -120,14 +120,17 @@ module age_buffer_1r1w (
     // ----------------------------------------------------------
     integer oldest_idx_for_deq;
     logic   oldest_found;
+    logic any_j_older;
     always_comb begin
         oldest_idx_for_deq = -1;
         oldest_found       = 1'b0;
+        // Check if there's any j that is older than i
+        any_j_older = 1'b0;
 
         for (int i = 0; i < `ISQ_DEPTH; i++) begin
             if (rdy2dq_out_dec[i]) begin
-                // Check if there's any j that is older than i
-                logic any_j_older = 1'b0;
+                // // Check if there's any j that is older than i
+                // logic any_j_older = 1'b0;
                 for (int j = 0; j < `ISQ_DEPTH; j++) begin
                     if (j != i && valid_out_dec[j] && age_matrix[j][i]) begin
                         any_j_older = 1'b1;

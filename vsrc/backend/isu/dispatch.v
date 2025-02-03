@@ -72,7 +72,7 @@ module dispatch
     //write port
     output wire disp2rob_instr0_enq_valid,
     output wire [  `PC_RANGE] disp2rob_instr0_pc,
-    output wire [       31:0] disp2rob_instr0,
+    output wire [       31:0] disp2rob_instr0_instr,
     output wire [`LREG_RANGE] disp2rob_instr0_lrd,
     output wire [`PREG_RANGE] disp2rob_instr0_prd,
     output wire [`PREG_RANGE] disp2rob_instr0_old_prd,
@@ -80,7 +80,7 @@ module dispatch
     //output wire [124-1:0] disp2rob_instr0_entrydata,
     output wire disp2rob_instr1_enq_valid,
     output wire [  `PC_RANGE] disp2rob_instr1_pc,
-    output wire [       31:0] disp2rob_instr1,
+    output wire [       31:0] disp2rob_instr1_instr,
     output wire [`LREG_RANGE] disp2rob_instr1_lrd,
     output wire [`PREG_RANGE] disp2rob_instr1_prd,
     output wire [`PREG_RANGE] disp2rob_instr1_old_prd,
@@ -128,35 +128,27 @@ assign disp2intisq_enq_valid = iru2isu_instr0_valid && ~flush_valid;
 assign disp2intisq_instr0_enq_condition = 2'b0;
 
 /* --------------------- write instr0 and instr1 to rob --------------------- */
-assign disp2rob_instr0_enq_valid = iru2isu_instr0_valid;
+assign disp2rob_instr0_enq_valid  = iru2isu_instr0_valid;
 assign disp2rob_instr0_pc         = instr0_pc;        
-assign disp2rob_instr0            = instr0_instr;           
-assign disp2rob_instr0_lrs1       = instr0_lrs1;      
-assign disp2rob_instr0_lrs2       = instr0_lrs2;      
+assign disp2rob_instr0_instr            = instr0_instr;           
+//assign disp2rob_instr0_lrs1       = instr0_lrs1;      
+//assign disp2rob_instr0_lrs2       = instr0_lrs2;      
 assign disp2rob_instr0_lrd        = instr0_lrd;       
 assign disp2rob_instr0_prd        = instr0_prd;       
 assign disp2rob_instr0_old_prd    = instr0_old_prd;   
 assign disp2rob_instr0_need_to_wb = instr0_need_to_wb;
-// assign disp2rob_instr0_entrydata = { 
-//                             instr0_pc           ,//[123:60]
-//                             instr0_instr              ,//[59:28]
-//                             instr0_lrs1         ,//[27:23]
-//                             instr0_lrs2         ,//[22:18]
-//                             instr0_lrd          ,//[17:13]
-//                             instr0_prd          ,//[12:7]
-//                             instr0_old_prd      ,//[6:1]
-//                             instr0_need_to_wb    //[0]
-//                             };
-assign disp2rob_instr1_enq_valid = iru2isu_instr1_valid;
-assign disp2rob_instr1_pc         = instr1_pc;        
-assign disp2rob_instr1            = instr1_instr;           
-assign disp2rob_instr1_lrs1       = instr1_lrs1;      
-assign disp2rob_instr1_lrs2       = instr1_lrs2;      
-assign disp2rob_instr1_lrd        = instr1_lrd;       
-assign disp2rob_instr1_prd        = instr1_prd;       
-assign disp2rob_instr1_old_prd    = instr1_old_prd;   
-assign disp2rob_instr1_need_to_wb = instr1_need_to_wb;
-//assign disp2rob_instr1_entrydata = {instr1_pc,instr1_instr,instr1_lrs1,instr1_lrs2,instr1_lrd,instr1_prd,instr1_old_prd,instr1_need_to_wb};
+
+
+assign disp2rob_instr1_enq_valid        = iru2isu_instr1_valid;
+assign disp2rob_instr1_pc               = instr1_pc;        
+assign disp2rob_instr1_instr            = instr1_instr;           
+//assign disp2rob_instr1_lrs1           = instr1_lrs1;      
+//assign disp2rob_instr1_lrs2           = instr1_lrs2;      
+assign disp2rob_instr1_lrd              = instr1_lrd;       
+assign disp2rob_instr1_prd              = instr1_prd;       
+assign disp2rob_instr1_old_prd          = instr1_old_prd;   
+assign disp2rob_instr1_need_to_wb       = instr1_need_to_wb;
+//assign disp2rob_instr1_entrydata      = {instr1_pc,instr1_instr,instr1_lrs1,instr1_lrs2,instr1_lrd,instr1_prd,instr1_old_prd,instr1_need_to_wb};
 
 /* ------------ write prd0 and prd1 busy bit to 1 in busy_vector ------------ */
 assign disp2bt_alloc_instr0rd_en = instr0_need_to_wb;
@@ -172,7 +164,7 @@ assign disp2bt_instr1rs2_rdaddr = instr1_prs2; //use to set sleep bit in issue q
 
 
 /* ------------- send instr0 instr1 and sleep bit to issue queue ------------ */
-assign disp2isq_instr0_wren = iru2isu_instr0_valid;
+//assign disp2intisq_instr0_wren = iru2isu_instr0_valid;
 assign disp2intisq_instr0_enq_data = 
                         {
                         iru2isu_instr0_predicttaken,  //1  [280:280]

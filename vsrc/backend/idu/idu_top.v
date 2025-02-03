@@ -155,7 +155,7 @@ module idu_top(
         .opload_read_data_wb        (),
 
         .predicttaken               (dec_predicttaken_out),
-        .predicttarget              (dec_predicttarge_out),
+        .predicttarget              (dec_predicttarget_out),
 
         /* ----------------------------- Outputs to IRU ----------------------------- */
         .instr_valid_to_lower       (idu2iru_instr_valid),

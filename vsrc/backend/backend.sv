@@ -97,8 +97,8 @@ module backend #(
     wire [`PREG_RANGE] debug_preg31;
 
 // IDU <-> IRU
-wire              iru2idu_instr0_instr_ready;
-wire              idu2iru_instr0_instr_valid;
+wire              iru2idu_instr0_ready;
+wire              idu2iru_instr0_valid;
 wire       [31:0] idu2iru_instr0_instr;
 wire       [31:0] idu2iru_instr0_pc;
 wire        [4:0] idu2iru_instr0_lrs1;
@@ -127,6 +127,7 @@ wire [31:0]       idu2iru_instr0_predicttarget;
 
 // IRU <-> ISU
 wire              iru2isu_instr0_valid;
+wire              isu2iru_instr0_ready;
 wire       [31:0] iru2isu_instr0_instr;
 wire       [31:0] iru2isu_instr0_pc;
 wire        [4:0] iru2isu_instr0_lrs1;
@@ -178,6 +179,8 @@ wire              isu2exu_instr0_is_store;
 wire        [1:0] isu2exu_instr0_ls_size;
 wire                isu2exu_instr0_predicttaken;
 wire [31:0]         isu2exu_instr0_predicttarget;
+wire [`RESULT_RANGE] isu2exu_instr0_src1;
+wire [`RESULT_RANGE] isu2exu_instr0_src2;
 
 //writeback signal
 wire              intwb_instr_valid;
@@ -193,7 +196,7 @@ wire              memwb_need_to_wb ;
 wire              memwb_mmio_valid ;
 wire [`RESULT_RANGE]     memwb_result;
 
-wire              deq_valid;
+wire              isu2exu_instr0_valid;
 wire              deq_ready;
 
 // rob walk signal
@@ -222,30 +225,30 @@ idu_top u_idu_top(
     .ibuffer_pc_out            (ibuffer_pc_out            ),
     .ibuffer_instr_ready           (ibuffer_instr_ready           ),
     .flush_valid               (flush_valid               ),
-    .iru2idu_instr_ready       (iru2idu_instr_ready       ),
-    .idu2iru_instr_valid       (idu2iru_instr_valid       ),
-    .idu2iru_instr                 (idu2iru_instr                 ),
-    .idu2iru_pc                    (idu2iru_pc                    ),
-    .idu2iru_lrs1                  (idu2iru_lrs1                  ),
-    .idu2iru_lrs2                  (idu2iru_lrs2                  ),
-    .idu2iru_lrd                   (idu2iru_lrd                   ),
-    .idu2iru_imm                   (idu2iru_imm                   ),
-    .idu2iru_src1_is_reg           (idu2iru_src1_is_reg           ),
-    .idu2iru_src2_is_reg           (idu2iru_src2_is_reg           ),
-    .idu2iru_need_to_wb            (idu2iru_need_to_wb            ),
-    .idu2iru_cx_type               (idu2iru_cx_type               ),
-    .idu2iru_is_unsigned           (idu2iru_is_unsigned           ),
-    .idu2iru_alu_type              (idu2iru_alu_type              ),
-    .idu2iru_is_word               (idu2iru_is_word               ),
-    .idu2iru_is_load               (idu2iru_is_load               ),
-    .idu2iru_is_imm                (idu2iru_is_imm                ),
-    .idu2iru_is_store              (idu2iru_is_store              ),
-    .idu2iru_ls_size               (idu2iru_ls_size               ),
-    .idu2iru_muldiv_type           (idu2iru_muldiv_type           ),
-    .idu2iru_prs1                  (idu2iru_prs1                  ),
-    .idu2iru_prs2                  (idu2iru_prs2                  ),
-    .idu2iru_prd                   (idu2iru_prd                   ),
-    .idu2iru_old_prd               (idu2iru_old_prd               ),
+    .iru2idu_instr_ready       (iru2idu_instr0_ready       ),
+    .idu2iru_instr_valid       (idu2iru_instr0_valid       ),
+    .idu2iru_instr                 (idu2iru_instr0_instr                 ),
+    .idu2iru_pc                    (idu2iru_instr0_pc                    ),
+    .idu2iru_lrs1                  (idu2iru_instr0_lrs1                  ),
+    .idu2iru_lrs2                  (idu2iru_instr0_lrs2                  ),
+    .idu2iru_lrd                   (idu2iru_instr0_lrd                   ),
+    .idu2iru_imm                   (idu2iru_instr0_imm                   ),
+    .idu2iru_src1_is_reg           (idu2iru_instr0_src1_is_reg           ),
+    .idu2iru_src2_is_reg           (idu2iru_instr0_src2_is_reg           ),
+    .idu2iru_need_to_wb            (idu2iru_instr0_need_to_wb            ),
+    .idu2iru_cx_type               (idu2iru_instr0_cx_type               ),
+    .idu2iru_is_unsigned           (idu2iru_instr0_is_unsigned           ),
+    .idu2iru_alu_type              (idu2iru_instr0_alu_type              ),
+    .idu2iru_is_word               (idu2iru_instr0_is_word               ),
+    .idu2iru_is_load               (idu2iru_instr0_is_load               ),
+    .idu2iru_is_imm                (idu2iru_instr0_is_imm                ),
+    .idu2iru_is_store              (idu2iru_instr0_is_store              ),
+    .idu2iru_ls_size               (idu2iru_instr0_ls_size               ),
+    .idu2iru_muldiv_type           (idu2iru_instr0_muldiv_type           ),
+    .idu2iru_prs1                  (idu2iru_instr0_prs1                  ),
+    .idu2iru_prs2                  (idu2iru_instr0_prs2                  ),
+    .idu2iru_prd                   (idu2iru_instr0_prd                   ),
+    .idu2iru_old_prd               (idu2iru_instr0_old_prd               ),
     .idu2iru_instr0_predicttaken      (idu2iru_instr0_predicttaken),
     .idu2iru_instr0_predicttarget      (idu2iru_instr0_predicttarget)
 );
@@ -257,12 +260,12 @@ iru_top u_iru_top                   (
     .commit0_valid                  (commit0_valid                          ),
     .commit0_need_to_wb             (commit0_need_to_wb                     ),
     .commit0_lrd                    (commit0_lrd                            ),
-    .commit0_new_prd                (commit0_new_prd                        ),
+    .commit0_prd                (commit0_prd                        ),
     .commit0_old_prd                (commit0_old_prd                        ),
     .commit1_valid                  (commit1_valid                          ),
     .commit1_need_to_wb             (commit1_need_to_wb                     ),
     .commit1_lrd                    (commit1_lrd                            ),
-    .commit1_new_prd                (commit1_new_prd                        ),
+    .commit1_prd                (commit1_prd                        ),
     .commit1_old_prd                (commit1_old_prd                        ),
     .idu2iru_instr0_valid           (idu2iru_instr0_valid                   ),
     .iru2idu_instr0_ready           (iru2idu_instr0_ready                   ),
@@ -309,12 +312,12 @@ iru_top u_iru_top                   (
     .idu2iru_instr1_predicttaken    (                                       ),
     .idu2iru_instr1_predicttarget    (                                       ),
     .rob_state                      (rob_state                              ),
-    .walking_valid0                 (walking_valid0                         ),
-    .walking_valid1                 (walking_valid1                         ),
-    .walking_prd0                   (walking_prd0                           ),
-    .walking_prd1                   (walking_prd1                           ),
-    .walking_lrd0                   (walking_lrd0                           ),
-    .walking_lrd1                   (walking_lrd1                           ),
+    .walking_valid0                 (rob_walk0_valid                         ),
+    .walking_valid1                 (rob_walk1_valid                         ),
+    .walking_prd0                   (rob_walk0_prd                           ),
+    .walking_prd1                   (rob_walk1_prd                           ),
+    .walking_lrd0                   (rob_walk0_lrd                           ),
+    .walking_lrd1                   (rob_walk1_lrd                           ),
     .flush_valid                    (flush_valid                            ),
     .iru2isu_instr0_valid           (iru2isu_instr0_valid                   ),
     .isu2iru_instr0_ready           (isu2iru_instr0_ready                   ),
@@ -490,8 +493,8 @@ isu_top u_isu_top                             (
     .isu2exu_instr0_predicttarget             (isu2exu_instr0_predicttarget             ),
     .isu2exu_instr0_src1                      (isu2exu_instr0_src1                      ),
     .isu2exu_instr0_src2                      (isu2exu_instr0_src2                      ),
-    .deq_valid                                (deq_valid                                ),
-    .deq_ready                                (deq_ready                                ),
+    .intisq_deq_valid                         (isu2exu_instr0_valid                     ),
+    .intisq_deq_ready                         (exu2isu_instr0_ready                     ),
     .rob_state                                (rob_state                                ),//OUTPUT
     .rob_walk0_valid                          (rob_walk0_valid                          ),//OUTPUT
     .rob_walk0_complete                       (rob_walk0_complete                       ),//OUTPUT
@@ -535,13 +538,13 @@ isu_top u_isu_top                             (
     .debug_preg31                             (debug_preg31                             )
                                                                                         );
 
-// //intblock always can accept, mem can accept only when no operation in process
+// intblock always can accept, mem can accept only when no operation in process
 wire exu_available = int_instr_ready && mem_instr_ready;
-wire isu2iru_instr0_ready = exu_available;
-wire isu2iru_instr1_ready = 'b0;
+wire exu2isu_instr0_ready = exu_available;
+wire exu2isu_instr1_ready = 'b0;
 wire instr_goto_memblock = isu2exu_instr0_is_store || isu2exu_instr0_is_load;
-wire int_instr_valid = deq_valid && ~instr_goto_memblock;
-wire mem_instr_valid = deq_valid && instr_goto_memblock;
+wire int_instr_valid = isu2exu_instr0_valid && ~instr_goto_memblock;
+wire mem_instr_valid = isu2exu_instr0_valid && instr_goto_memblock;
 
 exu_top u_exu_top                         (
     .clock                                (clock                                           ),

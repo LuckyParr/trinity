@@ -57,19 +57,20 @@ module intblock #(
 
 /* --------------------------- btbbht update port -------------------------- */
     //BHT Write Interface
-    output wire bjusb_bht_write_enable,                         // Write enable signal
+    output wire                          bjusb_bht_write_enable,                         // Write enable signal
     output wire [BHTBTB_INDEX_WIDTH-1:0] bjusb_bht_write_index,        // Set index for write operation
-    output wire [1:0] bjusb_bht_write_counter_select,           // Counter select (0 to 3) within the set
-    output wire bjusb_bht_write_inc,                            // Increment signal for the counter
-    output wire bjusb_bht_write_dec,                            // Decrement signal for the counter
-    output wire bjusb_bht_valid_in,                             // Valid signal for the write operation
+    output wire [1:0]                    bjusb_bht_write_counter_select,           // Counter select (0 to 3) within the set
+    output wire                          bjusb_bht_write_inc,                            // Increment signal for the counter
+    output wire                          bjusb_bht_write_dec,                            // Decrement signal for the counter
+    output wire                          bjusb_bht_valid_in,                             // Valid signal for the write operation
 
     //BTB Write Interface
-    output wire bjusb_btb_ce,                    // Chip enable
-    output wire bjusb_btb_we,                    // Write enable
+    output wire         bjusb_btb_ce,                    // Chip enable
+    output wire         bjusb_btb_we,                    // Write enable
     output wire [128:0] bjusb_btb_wmask,
     output wire [8:0]   bjusb_btb_write_index,           // Write address (9 bits for 512 sets)
     output wire [128:0] bjusb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
+
 );
     wire redirect_valid_internal;
     wire [`RESULT_RANGE] alu_result;
@@ -79,7 +80,7 @@ module intblock #(
     assign instr_ready = 1'b1;
     //when redirect instr from wb pipereg is older than current instr in exu, flush instr in exu
     wire need_flush;
-    assign need_flush = flush_valid && ((flush_robid[7]^intblock_out_robid[7])^(flush_robid[6:0] < intblock_out_robid[6:0]));
+    assign need_flush = flush_valid && ((flush_robid[6]^intblock_out_robid[6])^(flush_robid[5:0] < intblock_out_robid[5:0]));
 
     assign intblock_out_instr_valid =  need_flush? 0 :  instr_valid;
     assign intblock_out_pc          =  pc;    //for debug

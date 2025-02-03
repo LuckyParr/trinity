@@ -27,11 +27,11 @@ module rename (
     //instr 1 from decoder after pipereg
     input wire                instr1_valid,
     output wire               instr1_ready,
-    input wire [       31:0] instr1_instr,
-    input wire [`LREG_RANGE] instr1_lrs1,
-    input wire [`LREG_RANGE] instr1_lrs2,
-    input wire [`LREG_RANGE] instr1_lrd,
-    input wire [  `PC_RANGE] instr1_pc,
+    input wire [       31:0]  instr1_instr,
+    input wire [`LREG_RANGE]  instr1_lrs1,
+    input wire [`LREG_RANGE]  instr1_lrs2,
+    input wire [`LREG_RANGE]  instr1_lrd,
+    input wire [  `PC_RANGE]  instr1_pc,
 
     input wire [              63:0] instr1_imm,
     input wire                      instr1_src1_is_reg,
@@ -42,14 +42,13 @@ module rename (
     input wire [   `ALU_TYPE_RANGE] instr1_alu_type,
     input wire [`MULDIV_TYPE_RANGE] instr1_muldiv_type,
 
-    input wire       instr1_is_word,
-    input wire       instr1_is_imm,
-    input wire       instr1_is_load,
-    input wire       instr1_is_store,
-    input wire [3:0] instr1_ls_size,
+    input wire                      instr1_is_word,
+    input wire                      instr1_is_imm,
+    input wire                      instr1_is_load,
+    input wire                      instr1_is_store,
+    input wire [3:0]                instr1_ls_size,
     input wire                      instr1_predicttaken,
     input wire [31:0]               instr1_predicttarget,
-
 
 /* --------------------------- port with spec_rat --------------------------- */
     //instr0
@@ -170,6 +169,10 @@ module rename (
 
 
 /* --------------------------- hazardchecker logic -------------------------- */
+
+wire raw_hazard_rs1 ;  
+wire raw_hazard_rs2 ;  
+wire waw_hazard     ;  
 
 hazardchecker u_hazardchecker(
     .instr0_lrs1       (instr0_lrs1       ),

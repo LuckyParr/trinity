@@ -59,7 +59,7 @@ module memblock (
 
     //when redirect instr from wb pipereg is older than current instr in exu, flush instr in exu
     wire need_flush;
-    assign need_flush = flush_valid && ((flush_robid[7]^memblock_out_robid[7])^(flush_robid[6:0] < memblock_out_robid[6:0]));
+    assign need_flush = flush_valid && ((flush_robid[6]^memblock_out_robid[6])^(flush_robid[5:0] < memblock_out_robid[5:0]));
     assign mem2dcache_flush = need_flush;
 
     reg                     need_to_wb_latch;

@@ -1,6 +1,4 @@
-module exu_top #(
-    parameter BHTBTB_INDEX_WIDTH = 9
-)(
+module exu_top (
     input wire                          clock,
     input wire                          reset_n,
 
@@ -73,7 +71,7 @@ module exu_top #(
 
     // BHT/BTB Update
     output wire                          intwb_bht_write_enable,
-    output wire [BHTBTB_INDEX_WIDTH-1:0] intwb_bht_write_index,
+    output wire [`BHTBTB_INDEX_WIDTH-1:0] intwb_bht_write_index,
     output wire [1:0]                    intwb_bht_write_counter_select,
     output wire                          intwb_bht_write_inc,
     output wire                          intwb_bht_write_dec,
@@ -111,10 +109,22 @@ module exu_top #(
     wire [      `INSTR_RANGE ]  memblock_out_instr;
     wire [         `PC_RANGE ]  memblock_out_pc;
 
+
+   wire                          bjusb_bht_write_enable        ; 
+   wire [`BHTBTB_INDEX_WIDTH-1:0] bjusb_bht_write_index         ; 
+   wire [1:0]                    bjusb_bht_write_counter_select; 
+   wire                          bjusb_bht_write_inc           ; 
+   wire                          bjusb_bht_write_dec           ; 
+   wire                          bjusb_bht_valid_in            ; 
+   wire         bjusb_btb_ce                                   ; 
+   wire         bjusb_btb_we                                   ; 
+   wire [128:0] bjusb_btb_wmask                                ;
+   wire [8:0]   bjusb_btb_write_index                          ; 
+   wire [128:0] bjusb_btb_din                                  ; 
+
+
     // Instantiate intblock
-    intblock #                         (
-        .BHTBTB_INDEX_WIDTH            (BHTBTB_INDEX_WIDTH            )
-                                                                      ) intblock_inst                    (
+    intblock intblock_inst (
         .clock                         (clock                         ),
         .reset_n                       (reset_n                       ),
         .instr_valid                   (int_instr_valid               ),
@@ -157,7 +167,7 @@ module exu_top #(
         .bjusb_btb_wmask               (bjusb_btb_wmask               ),
         .bjusb_btb_write_index         (bjusb_btb_write_index         ),
         .bjusb_btb_din                 (bjusb_btb_din                 )
-                                                                      );
+);
 
     // Instantiate pipereg_intwb
     pipereg_intwb pipereg_intwb_inst            (

@@ -6,13 +6,13 @@ module iru_top (
     input wire commit0_valid,
     input wire commit0_need_to_wb,
     input wire [4:0] commit0_lrd,
-    input wire [5:0] commit0_new_prd,
+    input wire [5:0] commit0_prd,
     input wire [5:0] commit0_old_prd,
 
     input wire commit1_valid,
     input wire commit1_need_to_wb,
     input wire [4:0] commit1_lrd,
-    input wire [5:0] commit1_new_prd,
+    input wire [5:0] commit1_prd,
     input wire [5:0] commit1_old_prd,
 
     // Instruction 0 Inputs
@@ -229,7 +229,7 @@ module iru_top (
     wire [`PREG_RANGE] rn2pipe_instr0_prd;
     wire [`PREG_RANGE] rn2pipe_instr0_old_prd;
     wire rn2pipe_instr0_predicttaken;
-    wire [31:0] rn2pipe_instr0_predictarget;
+    wire [31:0] rn2pipe_instr0_predicttarget;
 
     wire rn2pipe_instr1_valid;
     wire pipe2rn_instr1_ready;
@@ -256,7 +256,7 @@ module iru_top (
     wire [`PREG_RANGE] rn2pipe_instr1_prd;
     wire [`PREG_RANGE] rn2pipe_instr1_old_prd;
     wire rn2pipe_instr1_predicttaken;
-    wire [31:0] rn2pipe_instr1_predictarget;
+    wire [31:0] rn2pipe_instr1_predicttarget;
 
 
     // ======================
@@ -470,7 +470,7 @@ module iru_top (
         .commit0_valid               (commit0_valid               ),
         .commit0_need_to_wb          (commit0_need_to_wb          ),
         .commit0_lrd                 (commit0_lrd                 ),
-        .commit0_prd                 (commit0_new_prd             ),
+        .commit0_prd                 (commit0_prd             ),
         .commit1_valid               (),
         .commit1_need_to_wb          (),
         .commit1_lrd                 (),

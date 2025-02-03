@@ -101,8 +101,8 @@ module isu_top (
     output wire                     commit1_skip,
 
     // ISQ outputs instr0
-    output wire               deq_valid                   ,
-    input  wire               deq_ready                   ,
+    output wire               intisq_deq_valid                   ,
+    input  wire               intisq_deq_ready                   ,
     output wire [6:0]         isu2exu_instr0_robid        ,
     output wire [63:0]        isu2exu_instr0_pc           ,
     output wire [31:0]        isu2exu_instr0_instr              ,
@@ -189,7 +189,7 @@ module isu_top (
     wire rob_can_enq;
     wire disp2rob_instr0_enq_valid;
     wire [`PC_RANGE] disp2rob_instr0_pc;
-    wire [31:0] disp2rob_instr0;
+    wire [31:0] disp2rob_instr0_instr;
     wire [`LREG_RANGE] disp2rob_instr0_lrd;
     wire [`PREG_RANGE] disp2rob_instr0_prd;
     wire [`PREG_RANGE] disp2rob_instr0_old_prd;
@@ -197,7 +197,7 @@ module isu_top (
 
     wire disp2rob_instr1_enq_valid;
     wire [`PC_RANGE] disp2rob_instr1_pc;
-    wire [31:0] disp2rob_instr1;
+    wire [31:0] disp2rob_instr1_instr;
     wire [`LREG_RANGE] disp2rob_instr1_lrd;
     wire [`PREG_RANGE] disp2rob_instr1_prd;
     wire [`PREG_RANGE] disp2rob_instr1_old_prd;
@@ -219,12 +219,13 @@ module isu_top (
 
     wire intisq_can_enq;
     wire disp2intisq_enq_valid;
+    wire intisq2disp_enq_ready;
     wire [`ISQ_DATA_WIDTH-1:0] disp2intisq_instr0_enq_data;
     wire [`ISQ_CONDITION_WIDTH-1:0] disp2intisq_instr0_enq_condition;
 
-    wire [`ISQ_DATA_WIDTH-1:0]      deq_data;
-    wire [`ISQ_CONDITION_WIDTH-1:0] deq_condition;
-    wire [`ISQ_INDEX_WIDTH-1:0]     deq_index;
+    wire [`ISQ_DATA_WIDTH-1:0]      intisq_deq_data;
+    wire [`ISQ_CONDITION_WIDTH-1:0] intisq_deq_condition;
+    wire [`ISQ_INDEX_WIDTH-1:0]     intisq_deq_index;
 
     dispatch u_dispatch(
         .clock                            (clock                                          ),
@@ -291,14 +292,14 @@ module isu_top (
         //disp send instr0 to rob
         .disp2rob_instr0_enq_valid        (disp2rob_instr0_enq_valid                      ),
         .disp2rob_instr0_pc               (disp2rob_instr0_pc                             ),
-        .disp2rob_instr0                  (disp2rob_instr0                                ),
+        .disp2rob_instr0_instr            (disp2rob_instr0_instr                                ),
         .disp2rob_instr0_lrd              (disp2rob_instr0_lrd                            ),
         .disp2rob_instr0_prd              (disp2rob_instr0_prd                            ),
         .disp2rob_instr0_old_prd          (disp2rob_instr0_old_prd                        ),
         .disp2rob_instr0_need_to_wb       (disp2rob_instr0_need_to_wb                     ),
         .disp2rob_instr1_enq_valid        (                                               ),
         .disp2rob_instr1_pc               (                                               ),
-        .disp2rob_instr1                  (                                               ),
+        .disp2rob_instr1_instr                  (                                               ),
         .disp2rob_instr1_lrd              (                                               ),
         .disp2rob_instr1_prd              (                                               ),
         .disp2rob_instr1_old_prd          (                                               ),
@@ -341,7 +342,7 @@ module isu_top (
         //disp input instr
         .instr0_enq_valid    (disp2rob_instr0_enq_valid ),
         .instr0_pc           (disp2rob_instr0_pc        ),
-        .instr0_instr        (disp2rob_instr0           ),
+        .instr0_instr        (disp2rob_instr0_instr           ),
         .instr0_lrd          (disp2rob_instr0_lrd       ),
         .instr0_prd          (disp2rob_instr0_prd       ),
         .instr0_old_prd      (disp2rob_instr0_old_prd   ),
@@ -403,16 +404,16 @@ int_isq u_int_isq
     //tell disp isq is available
     .intisq_can_enq                (intisq_can_enq               ),
     //enq port
-    .enq_valid                     (enq_valid                    ),
-    .enq_ready                     (enq_ready                    ),
-    .enq_data                      (enq_data                     ),
-    .enq_condition                 (enq_condition                ),
+    .enq_valid                     (disp2intisq_enq_valid                           ),
+    .enq_ready                     (intisq2disp_enq_ready                           ),
+    .enq_data                      (disp2intisq_instr0_enq_data                     ),
+    .enq_condition                 (disp2intisq_instr0_enq_condition                ),
     //deq port
-    .deq_valid                     (deq_valid                    ),
-    .deq_ready                     (deq_ready                    ),
-    .deq_data                      (deq_data                     ),
-    .deq_condition                 (deq_condition                ),
-    .deq_index                     (deq_index                    ),
+    .deq_valid                     (intisq_deq_valid                    ),
+    .deq_ready                     (intisq_deq_ready                    ),
+    .deq_data                      (intisq_deq_data                     ),
+    .deq_condition                 (intisq_deq_condition                ),
+    .deq_index                     (intisq_deq_index                    ),
     //writeback from intwb
     .writeback0_valid              (intwb_instr_valid             ),
     .writeback0_need_to_wb         (intwb_need_to_wb              ),
@@ -428,43 +429,41 @@ int_isq u_int_isq
 
 );
 
-    // Decode each field of deq_data:
-    assign isu2exu_instr0_predicttaken  = deq_data[280:280];
-    assign isu2exu_instr0_predicttarget = deq_data[279:248];
-    assign isu2exu_instr0_robid         = deq_data[247:241];
-    assign isu2exu_instr0_pc            = deq_data[240:177];
-    assign isu2exu_instr0_instr               = deq_data[176:145];
-    assign isu2exu_instr0_lrs1          = deq_data[144:140];
-    assign isu2exu_instr0_lrs2          = deq_data[139:135];
-    assign isu2exu_instr0_lrd           = deq_data[134:130];
-    assign isu2exu_instr0_prd           = deq_data[129:124];
-    assign isu2exu_instr0_old_prd       = deq_data[123:118];
-    assign isu2exu_instr0_need_to_wb    = deq_data[117];
-    assign isu2exu_instr0_prs1          = deq_data[116:111];
-    assign isu2exu_instr0_prs2          = deq_data[110:105];
-    assign isu2exu_instr0_src1_is_reg   = deq_data[104];
-    assign isu2exu_instr0_src2_is_reg   = deq_data[103];
-    assign isu2exu_instr0_imm           = deq_data[102:39];
-    assign isu2exu_instr0_cx_type       = deq_data[38:33];
-    assign isu2exu_instr0_is_unsigned   = deq_data[32];
-    assign isu2exu_instr0_alu_type      = deq_data[31:21];
-    assign isu2exu_instr0_muldiv_type   = deq_data[20:8];
-    assign isu2exu_instr0_is_word       = deq_data[7];
-    assign isu2exu_instr0_is_imm        = deq_data[6];
-    assign isu2exu_instr0_is_load       = deq_data[5];
-    assign isu2exu_instr0_is_store      = deq_data[4];
-    assign isu2exu_instr0_ls_size       = deq_data[3:0];
+    // Decode each field of intisq_deq_data:
+    assign isu2exu_instr0_predicttaken  = intisq_deq_data[280:280];
+    assign isu2exu_instr0_predicttarget = intisq_deq_data[279:248];
+    assign isu2exu_instr0_robid         = intisq_deq_data[247:241];
+    assign isu2exu_instr0_pc            = intisq_deq_data[240:177];
+    assign isu2exu_instr0_instr         = intisq_deq_data[176:145];
+    assign isu2exu_instr0_lrs1          = intisq_deq_data[144:140];
+    assign isu2exu_instr0_lrs2          = intisq_deq_data[139:135];
+    assign isu2exu_instr0_lrd           = intisq_deq_data[134:130];
+    assign isu2exu_instr0_prd           = intisq_deq_data[129:124];
+    assign isu2exu_instr0_old_prd       = intisq_deq_data[123:118];
+    assign isu2exu_instr0_need_to_wb    = intisq_deq_data[117];
+    assign isu2exu_instr0_prs1          = intisq_deq_data[116:111];
+    assign isu2exu_instr0_prs2          = intisq_deq_data[110:105];
+    assign isu2exu_instr0_src1_is_reg   = intisq_deq_data[104];
+    assign isu2exu_instr0_src2_is_reg   = intisq_deq_data[103];
+    assign isu2exu_instr0_imm           = intisq_deq_data[102:39];
+    assign isu2exu_instr0_cx_type       = intisq_deq_data[38:33];
+    assign isu2exu_instr0_is_unsigned   = intisq_deq_data[32];
+    assign isu2exu_instr0_alu_type      = intisq_deq_data[31:21];
+    assign isu2exu_instr0_muldiv_type   = intisq_deq_data[20:8];
+    assign isu2exu_instr0_is_word       = intisq_deq_data[7];
+    assign isu2exu_instr0_is_imm        = intisq_deq_data[6];
+    assign isu2exu_instr0_is_load       = intisq_deq_data[5];
+    assign isu2exu_instr0_is_store      = intisq_deq_data[4];
+    assign isu2exu_instr0_ls_size       = intisq_deq_data[3:0];
 
-   // assign isu2exu_instr0_is_load = deq_valid && isu2exu_instr0_is_load;
-   // assign isu2exu_instr0_is_store = deq_valid && isu2exu_instr0_is_store;
     
 /* -------------------------------------------------------------------------- */
 /*     intisq read from pregfile , pregfile send result directly to exu     */
 /* -------------------------------------------------------------------------- */
-    wire intisq2prf_instr0_src1_is_reg = deq_valid && isu2exu_instr0_src1_is_reg;
-    wire intisq2prf_inst0_prs1         = {6{deq_valid}} & isu2exu_instr0_prs1;
-    wire intisq2prf_instr0_src2_is_reg = deq_valid && isu2exu_instr0_src2_is_reg;
-    wire intisq2prf_inst0_prs2         = {6{deq_valid}} & isu2exu_instr0_prs2; 
+    wire intisq2prf_instr0_src1_is_reg = intisq_deq_valid && isu2exu_instr0_src1_is_reg;
+    wire intisq2prf_inst0_prs1         = {6{intisq_deq_valid}} & isu2exu_instr0_prs1;
+    wire intisq2prf_instr0_src2_is_reg = intisq_deq_valid && isu2exu_instr0_src2_is_reg;
+    wire intisq2prf_inst0_prs2         = {6{intisq_deq_valid}} & isu2exu_instr0_prs2; 
 
 busy_table u_busy_table(
     .clock                       (clock                       ),
@@ -492,12 +491,12 @@ busy_table u_busy_table(
     .flush_valid                 (flush_valid                 ),
     .flush_robid                 (flush_robid                 ),
     .rob_state                   (rob_state                   ),
-    .walking_valid0              (walking_valid0              ),
-    .walking_valid1              (walking_valid1              ),
-    .walking_prd0                (walking_prd0                ),
-    .walking_prd1                (walking_prd1                ),
-    .walking_complete0           (walking_complete0           ),
-    .walking_complete1           (walking_complete1           )
+    .walking_valid0              (rob_walk0_valid              ),
+    .walking_valid1              (rob_walk1_valid              ),
+    .walking_prd0                (rob_walk0_prd                ),
+    .walking_prd1                (rob_walk1_prd                ),
+    .walking_complete0           (rob_walk0_complete           ),
+    .walking_complete1           (rob_walk1_complete           )
 );
 
 
@@ -517,7 +516,7 @@ pregfile_64x64_4r2w u_pregfile_64x64_4r2w(
     .rden0        (intisq2prf_instr0_src1_is_reg        ),
     .raddr0       (intisq2prf_inst0_prs1                ),
     .rdata0       (isu2exu_instr0_src1                         ),
-    .rden1        (intisq2prf_instr0_src2_is_re         ),
+    .rden1        (intisq2prf_instr0_src2_is_reg         ),
     .raddr1       (intisq2prf_inst0_prs2                ),
     .rdata1       (isu2exu_instr0_src2                         ),
     .rden2        (),
