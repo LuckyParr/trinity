@@ -154,7 +154,7 @@ module backend #(
     wire [               31:0] iru2isu_instr0_predicttarget;
 
     // ISU <-> EXU
-    wire [      `ROB_SIZE_LOG] isu2exu_instr0_robid;
+    wire [    `ROB_SIZE_LOG:0] isu2exu_instr0_robid;
     wire [          `PC_RANGE] isu2exu_instr0_pc;
     wire [               31:0] isu2exu_instr0_instr;
     wire [        `LREG_RANGE] isu2exu_instr0_lrs1;
