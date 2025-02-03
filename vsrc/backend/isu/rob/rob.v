@@ -23,16 +23,11 @@ module rob
     output reg rob_can_enq,
 /* ---------------------------- write back logic from wb pipe---------------------------- */
     //write back port
-    input wire                     intwb_instr_valid,
-    input wire [`ROB_SIZE_LOG:0]   intwb_robid,
-    // input wire                     writeback0_need_to_wb,
+    input wire                     intwb0_instr_valid,
+    input wire [`ROB_SIZE_LOG:0]   intwb0_robid,
     input wire                     memwb_instr_valid,
     input wire [`ROB_SIZE_LOG:0]   memwb_robid,
-    // input wire                     writeback1_need_to_wb,
     input wire                     memwb_mmio_valid,
-    // input wire                     intb_writeback1_valid,
-    // input wire [`ROB_SIZE_LOG:0]   intb_writeback1_robid,
-    // input wire                     writeback2_need_to_wb,
 
     /* --------------------------- output commit port --------------------------- */
     output wire                     commit0_valid,
@@ -238,7 +233,7 @@ module rob
         integer i;
         for (i = 0; i < `ROB_SIZE; i = i + 1) begin
             wb_set_complete_dec[i] = 'b0;
-            if (intwb_instr_valid & (intwb_robid[`ROB_SIZE_LOG-1:0] == i[`ROB_SIZE_LOG-1:0])) begin
+            if (intwb0_instr_valid & (intwb0_robid[`ROB_SIZE_LOG-1:0] == i[`ROB_SIZE_LOG-1:0])) begin
                 wb_set_complete_dec[i] = 1'b1;
             end
             if (memwb_instr_valid & (memwb_robid[`ROB_SIZE_LOG-1:0] == i[`ROB_SIZE_LOG-1:0])) begin

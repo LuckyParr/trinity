@@ -11,11 +11,6 @@ module intblock #(
     input wire   [`INSTR_ID_WIDTH-1:0 ]  robid,
 
 /* -------------------------- calculation meterial -------------------------- */
-    //input wire [       `LREG_RANGE] rs1,
-    //input wire [       `LREG_RANGE] rs2,
-    //input wire [       `LREG_RANGE] rd,
-    //input wire                      src1_is_reg,
-    //input wire                      src2_is_reg,
     input wire [        `SRC_RANGE] src1,
     input wire [        `SRC_RANGE] src2,
     input wire [       `PREG_RANGE] prd,
@@ -27,9 +22,6 @@ module intblock #(
     input wire [`MULDIV_TYPE_RANGE] muldiv_type,
     input wire                      is_imm,
     input wire                      is_word,
-    //input wire                      is_load,
-    //input wire                      is_store,
-    //input wire [               3:0] ls_size,
 /* ------------------------------ bhtbtb input info ------------------------------ */
     input  wire                      predict_taken,
     input  wire [31:0              ] predict_target,
@@ -45,11 +37,6 @@ module intblock #(
     output wire [`INSTR_ID_WIDTH-1:0]  intblock_out_robid,
     output wire [      `INSTR_RANGE ]  intblock_out_instr,//for debug
     output wire [         `PC_RANGE ]  intblock_out_pc, //for debug
-    //bypass exu result to end of dec module
-    //output wire [  `LREG_RANGE] ex_byp_rd,
-    //output wire                 ex_byp_need_to_wb,
-    //output wire [`RESULT_RANGE] ex_byp_result,
-
 /* ---------------------- flush signal from wb pipereg ---------------------- */
     input wire                         flush_valid,
     input wire  [`INSTR_ID_WIDTH-1:0]  flush_robid,
@@ -147,26 +134,4 @@ module intblock #(
         .result     (muldiv_result)
     );
 
-    //forwarding logic
-    //assign ex_byp_rd         = rd;
-    //assign ex_byp_need_to_wb = need_to_wb & instr_valid & (alu_valid | muldiv_valid | bju_valid);
-    //assign ex_byp_result     = alu_valid ? alu_result : muldiv_valid ? muldiv_result : bju_valid ? bju_result : 64'hDEADBEEF;
-
-    //mem load to use bypass logic
-    //wire              src1_need_forward;
-    //wire              src2_need_forward;
-    //assign src1_need_forward = (rs1 == mem_byp_rd) & mem_byp_need_to_wb;
-    //assign src2_need_forward = (rs2 == mem_byp_rd) & mem_byp_need_to_wb;
-//
-    //wire [`RESULT_RANGE] src1_forward_result;
-    //wire [`RESULT_RANGE] src2_forward_result;
-//
-    //assign src1_forward_result = (rs1 == mem_byp_rd) & mem_byp_need_to_wb ? mem_byp_result : 64'hDEADBEEF;
-    //assign src2_forward_result = (rs2 == mem_byp_rd) & mem_byp_need_to_wb ? mem_byp_result : 64'hDEADBEEF;
-//
-    //assign src1 = src1_need_forward ? src1_forward_result : src1;
-    //assign src2 = src2_need_forward ? src2_forward_result : src2;
-//
-    //assign final_src1 = src1;
-    //assign final_src2 = src2;
 endmodule

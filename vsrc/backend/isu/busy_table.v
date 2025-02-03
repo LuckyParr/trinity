@@ -27,8 +27,8 @@ module busy_table (
     input wire [5:0] disp2bt_alloc_instr1rd_addr,     // Address for disp2bt_alloc_instr1rd_addr
 
     // Write Port 2 - Free Instruction 0
-    input wire intwb2bt_free_instr0rd_en,              // Enable for intwb2bt_free_instr0rd_addr
-    input wire [5:0] intwb2bt_free_instr0rd_addr,      // Address for intwb2bt_free_instr0rd_addr
+    input wire intwb02bt_free_instr0rd_en,              // Enable for intwb02bt_free_instr0rd_addr
+    input wire [5:0] intwb02bt_free_instr0rd_addr,      // Address for intwb02bt_free_instr0rd_addr
 
     // Write Port 3 - Free Instruction 1
     input wire memwb2bt_free_instr0rd_en,              // Enable for memwb2bt_free_instr0rd_addr
@@ -72,8 +72,8 @@ module busy_table (
             end
 
             // Free Ports - Set Bit to 0
-            if (intwb2bt_free_instr0rd_en)begin
-                busy_vector[intwb2bt_free_instr0rd_addr] <= 1'b0;                
+            if (intwb02bt_free_instr0rd_en)begin
+                busy_vector[intwb02bt_free_instr0rd_addr] <= 1'b0;                
             end
 
             if (memwb2bt_free_instr0rd_en)begin
@@ -96,7 +96,7 @@ module busy_table (
     assign bypass_instr0rs1 = 
            (disp2bt_alloc_instr0rd_en && (disp2bt_alloc_instr0rd_addr == disp2bt_instr0rs1_rdaddr)) ? 1'b1 :
            (disp2bt_alloc_instr1rd_en && (disp2bt_alloc_instr1rd_addr == disp2bt_instr0rs1_rdaddr)) ? 1'b1 :
-           (intwb2bt_free_instr0rd_en && (intwb2bt_free_instr0rd_addr == disp2bt_instr0rs1_rdaddr)) ? 1'b0 :
+           (intwb02bt_free_instr0rd_en && (intwb02bt_free_instr0rd_addr == disp2bt_instr0rs1_rdaddr)) ? 1'b0 :
            (memwb2bt_free_instr0rd_en && (memwb2bt_free_instr0rd_addr == disp2bt_instr0rs1_rdaddr)) ? 1'b0 :
            busy_vector[disp2bt_instr0rs1_rdaddr];
 
@@ -105,7 +105,7 @@ module busy_table (
     assign bypass_instr0rs2 = 
            (disp2bt_alloc_instr0rd_en && (disp2bt_alloc_instr0rd_addr == disp2bt_instr0rs2_rdaddr)) ? 1'b1 :
            (disp2bt_alloc_instr1rd_en && (disp2bt_alloc_instr1rd_addr == disp2bt_instr0rs2_rdaddr)) ? 1'b1 :
-           (intwb2bt_free_instr0rd_en && (intwb2bt_free_instr0rd_addr == disp2bt_instr0rs2_rdaddr)) ? 1'b0 :
+           (intwb02bt_free_instr0rd_en && (intwb02bt_free_instr0rd_addr == disp2bt_instr0rs2_rdaddr)) ? 1'b0 :
            (memwb2bt_free_instr0rd_en && (memwb2bt_free_instr0rd_addr == disp2bt_instr0rs2_rdaddr)) ? 1'b0 :
            busy_vector[disp2bt_instr0rs2_rdaddr];
 
@@ -114,7 +114,7 @@ module busy_table (
     assign bypass_instr1rs1 = 
            (disp2bt_alloc_instr0rd_en && (disp2bt_alloc_instr0rd_addr == disp2bt_instr1rs1_rdaddr)) ? 1'b1 :
            (disp2bt_alloc_instr1rd_en && (disp2bt_alloc_instr1rd_addr == disp2bt_instr1rs1_rdaddr)) ? 1'b1 :
-           (intwb2bt_free_instr0rd_en && (intwb2bt_free_instr0rd_addr == disp2bt_instr1rs1_rdaddr)) ? 1'b0 :
+           (intwb02bt_free_instr0rd_en && (intwb02bt_free_instr0rd_addr == disp2bt_instr1rs1_rdaddr)) ? 1'b0 :
            (memwb2bt_free_instr0rd_en && (memwb2bt_free_instr0rd_addr == disp2bt_instr1rs1_rdaddr)) ? 1'b0 :
            busy_vector[disp2bt_instr1rs1_rdaddr];
 
@@ -123,7 +123,7 @@ module busy_table (
     assign bypass_instr1rs2 = 
            (disp2bt_alloc_instr0rd_en && (disp2bt_alloc_instr0rd_addr == disp2bt_instr1rs2_rdaddr)) ? 1'b1 :
            (disp2bt_alloc_instr1rd_en && (disp2bt_alloc_instr1rd_addr == disp2bt_instr1rs2_rdaddr)) ? 1'b1 :
-           (intwb2bt_free_instr0rd_en && (intwb2bt_free_instr0rd_addr == disp2bt_instr1rs2_rdaddr)) ? 1'b0 :
+           (intwb02bt_free_instr0rd_en && (intwb02bt_free_instr0rd_addr == disp2bt_instr1rs2_rdaddr)) ? 1'b0 :
            (memwb2bt_free_instr0rd_en && (memwb2bt_free_instr0rd_addr == disp2bt_instr1rs2_rdaddr)) ? 1'b0 :
            busy_vector[disp2bt_instr1rs2_rdaddr];
 
