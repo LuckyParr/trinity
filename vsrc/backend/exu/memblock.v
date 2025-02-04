@@ -50,25 +50,42 @@ module memblock (
     output wire                     mem2dcache_flush // use to flush dcache process
 
 );
+
+    reg size_1b_latch;    
+    reg size_1h_latch;    
+    reg size_1w_latch;    
+    reg size_2w_latch;    
+    reg is_unsigned_latch;
+    reg [`RESULT_RANGE] ls_address_latch;
+    reg is_load_latch;
+
+    reg [         63:0] write_1b_mask_latch;
+    reg [         63:0] write_1h_mask_latch;
+    reg [         63:0] write_1w_mask_latch;
+    reg [         63:0] write_2w_mask_latch;
+    reg [         63:0] src2_latch;   
+    reg                 is_store_latch;
+    reg instr_valid_latch;   
+
     assign memblock_out_pc          =  pc;    
     assign memblock_out_instr       =  instr; //for debug
 
     wire op_processing;
     //assign instr_ready = ~mem_stall;
     assign instr_ready = ~op_processing;//use this to stop issue queue from issuing, AND with exu ready then connect to isq 
-
+    wire req_fire = instr_ready  && instr_valid;
     //when redirect instr from wb pipereg is older than current instr in exu, flush instr in exu
     wire need_flush;
     assign need_flush = flush_valid && ((flush_robid[6]^memblock_out_robid[6])^(flush_robid[5:0] < memblock_out_robid[5:0]));
     assign mem2dcache_flush = need_flush;
 
     reg                     need_to_wb_latch;
-    reg [`INSTR_ID_WIDTH-1:0]               id_latch;
+    reg [`INSTR_ID_WIDTH-1:0]               robid_latch;
     reg [      `PREG_RANGE] prd_latch;
     assign memblock_out_instr_valid = is_outstanding & (tbus_operation_done) & ~need_flush | memblock_out_mmio_valid;;
     // assign out_instr       = instr;
     // assign out_pc          = pc;
-    assign memblock_out_robid          = id_latch;
+    assign memblock_out_robid       = robid_latch;
     assign memblock_out_prd         = prd_latch;
     assign memblock_out_need_to_wb  = need_to_wb_latch;
 
@@ -151,42 +168,94 @@ module memblock (
     wire [         63:0] write_1w_mask = {32'b0, {32{1'b1}}};
     wire [         63:0] write_2w_mask = {64{1'b1}};
 
-    wire [          2:0] shift_size = ls_address[2:0];
+    wire [          2:0] shift_size = ls_address_latch[2:0];
 
-    wire [         63:0] opstore_write_mask_qual = size_1b ? write_1b_mask << (shift_size * 8) : size_1h ? write_1h_mask << (shift_size * 8) : size_1w ? write_1w_mask << (shift_size * 8) : write_2w_mask;
+    wire [         63:0] opstore_write_mask_qual = size_1b_latch ? write_1b_mask_latch << (shift_size * 8) : 
+                                                   size_1h_latch ? write_1h_mask_latch << (shift_size * 8) : 
+                                                   size_1w_latch ? write_1w_mask_latch << (shift_size * 8) : 
+                                                   write_2w_mask_latch;
 
-    wire [`RESULT_RANGE] opstore_write_data_qual = src2 << (shift_size * 8);
+    wire [`RESULT_RANGE] opstore_write_data_qual = src2_latch << (shift_size * 8);
     reg  [`RESULT_RANGE] opload_read_data_wb_raw;
+    
+    always @(posedge clock or negedge reset_n) begin
+        if(~reset_n)begin
+            instr_valid_latch   <= 'b0;     
+        end else begin
+            instr_valid_latch   <= instr_valid;     
+        end
+    end
+
+    // latch opstore related signal when tbus fire or pending
+    always @(posedge clock or negedge reset_n) begin
+        if(~reset_n)begin
+            write_1b_mask_latch <= 'b0;   
+            write_1h_mask_latch <= 'b0;   
+            write_1w_mask_latch <= 'b0;   
+            write_2w_mask_latch <= 'b0;   
+            src2_latch          <= 'b0;
+            is_store_latch      <= 'b0;
+        end else if (req_fire)begin
+            write_1b_mask_latch <= write_1b_mask;   
+            write_1h_mask_latch <= write_1h_mask;   
+            write_1w_mask_latch <= write_1w_mask;   
+            write_2w_mask_latch <= write_2w_mask;   
+            src2_latch          <= src2;
+            is_store_latch      <= is_store;
+        end
+    end
+
+
+    // latch opload related signal when tbus fire or pending
+    always @(posedge clock or negedge reset_n) begin
+        if(~reset_n)begin
+            size_1b_latch     <= 'b0;
+            size_1h_latch     <= 'b0;
+            size_1w_latch     <= 'b0;
+            size_2w_latch     <= 'b0;
+            is_unsigned_latch <= 'b0;
+            ls_address_latch  <= 'b0;
+            is_load_latch     <= 'b0;
+        end else if( req_fire) begin
+            size_1b_latch     <= size_1b;
+            size_1h_latch     <= size_1h;
+            size_1w_latch     <= size_1w;
+            size_2w_latch     <= size_2w;
+            is_unsigned_latch <= is_unsigned;
+            ls_address_latch  <= ls_address;
+            is_load_latch     <= is_load;
+        end
+    end
 
     always @(*) begin
         if (opload_operation_done) begin
             case ({
-                size_1b, size_1h, size_1w, size_2w, is_unsigned
+                size_1b_latch, size_1h_latch, size_1w_latch, size_2w_latch, is_unsigned_latch
             })
 
                 5'b10001: begin
-                    opload_read_data_wb_raw = (tbus_read_data >> ((ls_address[2:0]) * 8));
+                    opload_read_data_wb_raw = (tbus_read_data >> ((ls_address_latch[2:0]) * 8));
                     memblock_out_opload_rddata     = {56'h0, opload_read_data_wb_raw[7:0]};
                 end
                 5'b01001: begin
-                    opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2:1]) * 16);
+                    opload_read_data_wb_raw = tbus_read_data >> ((ls_address_latch[2:1]) * 16);
                     memblock_out_opload_rddata     = {48'h0, opload_read_data_wb_raw[15:0]};
                 end
                 5'b00101: begin
-                    opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2]) * 32);
+                    opload_read_data_wb_raw = tbus_read_data >> ((ls_address_latch[2]) * 32);
                     memblock_out_opload_rddata     = {32'h0, opload_read_data_wb_raw[31:0]};
                 end
                 5'b00010: memblock_out_opload_rddata = tbus_read_data;
                 5'b10000: begin
-                    opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2:0]) * 8);
+                    opload_read_data_wb_raw = tbus_read_data >> ((ls_address_latch[2:0]) * 8);
                     memblock_out_opload_rddata     = {{56{opload_read_data_wb_raw[7]}}, opload_read_data_wb_raw[7:0]};
                 end
                 5'b01000: begin
-                    opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2:1]) * 16);
+                    opload_read_data_wb_raw = tbus_read_data >> ((ls_address_latch[2:1]) * 16);
                     memblock_out_opload_rddata     = {{48{opload_read_data_wb_raw[15]}}, opload_read_data_wb_raw[15:0]};
                 end
                 5'b00100: begin
-                    opload_read_data_wb_raw = tbus_read_data >> ((ls_address[2]) * 32);
+                    opload_read_data_wb_raw = tbus_read_data >> ((ls_address_latch[2]) * 32);
                     memblock_out_opload_rddata     = {{32{opload_read_data_wb_raw[31]}}, opload_read_data_wb_raw[31:0]};
                 end
                 default:  ;
@@ -202,13 +271,13 @@ module memblock (
         tbus_write_mask     = 'b0;
         tbus_operation_type = 'b0;
 
-        if (is_load & instr_valid) begin
+        if (is_load_latch & instr_valid_latch) begin
             if ((~is_outstanding) & ~mmio_valid) begin
                 tbus_index_valid    = 1'b1;
                 tbus_index          = ls_address[`RESULT_WIDTH-1:0];
                 tbus_operation_type = `TBUS_READ;
             end
-        end else if (is_store & instr_valid) begin
+        end else if (is_store_latch & instr_valid_latch) begin
             if (~is_outstanding & ~mmio_valid) begin
                 tbus_index_valid    = 1'b1;
                 tbus_index          = ls_address[`RESULT_WIDTH-1:0];
@@ -262,14 +331,14 @@ module memblock (
     /* -------------------------------------------------------------------------- */
     /* latch input signal when entry is issued from isq, because isq entry valid bit is 0 after selection, so it would not hold itself                               */
     /* -------------------------------------------------------------------------- */
-    wire req_fire;
-    assign req_fire = write_fire || read_fire;
+    wire tbus_fire;
+    assign tbus_fire = write_fire || read_fire;
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             need_to_wb_latch <= 'b0;
         end else if (req_fire | mmio_valid) begin
             need_to_wb_latch <= instr_valid & is_load;
-        end else if (tbus_operation_done | is_idle) begin
+        end else if (tbus_operation_done ) begin
             need_to_wb_latch <= 'b0;
         end
     end
@@ -277,20 +346,22 @@ module memblock (
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             prd_latch <= 'b0;
+//        end else if (tbus_fire | mmio_valid) begin
         end else if (req_fire | mmio_valid) begin
             prd_latch <= prd;
-        end else if (tbus_operation_done | is_idle) begin
+        end else if (tbus_operation_done ) begin
             prd_latch <= 'b0;
         end
     end
 
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
-            id_latch <= 'b0;
+            robid_latch <= 'b0;
+//        end else if (tbus_fire | mmio_valid) begin
         end else if (req_fire | mmio_valid) begin
-            id_latch <= robid;
-        end else if (tbus_operation_done | is_idle) begin
-            id_latch <= 'b0;
+            robid_latch <= robid;
+        end else if (tbus_operation_done ) begin
+            robid_latch <= 'b0;
         end
     end
 
