@@ -109,7 +109,7 @@ module spec_rat #(
     localparam NUM_PHYSICAL_REGS = 64;
 
     // Speculative RAT Register Array: Maps Logical Registers to Physical Registers
-    reg     [PHYSICAL_REG_WIDTH-1:0] spec_rat[0:NUM_LOGICAL_REGS-1];  // [5:0] reg [31:0]
+    reg     [PHYSICAL_REG_WIDTH-1:0] spec_rat[NUM_LOGICAL_REGS-1:0];  // [5:0] reg [31:0]
 
     // Initialize Speculative RAT
     integer                          i;
@@ -262,10 +262,9 @@ module spec_rat #(
         .debug_preg31      (debug_preg31)
     );
 
-
     wire [`PREG_RANGE] arch_rat_content[31:0];
     assign arch_rat_content = {
-        debug_preg31,
+        debug_preg31,//31
         debug_preg30,
         debug_preg29,
         debug_preg28,
@@ -296,7 +295,7 @@ module spec_rat #(
         debug_preg3,
         debug_preg2,
         debug_preg1,
-        debug_preg0
+        debug_preg0 //0
     };
 
 endmodule

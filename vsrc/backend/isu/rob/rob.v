@@ -262,7 +262,10 @@ module rob (
         integer i;
         for (i = 0; i < `ROB_SIZE; i = i + 1) begin
             commit_vld_dec[i] = 'b0;
-            if (entry_ready_to_commit_dec[i] & (dequeue_ptr[`ROB_SIZE_LOG-1:0] == i[`ROB_SIZE_LOG-1:0])) begin
+            if(~is_idle || flush_valid)begin
+                commit_vld_dec = 'b0;
+            end
+            else if (entry_ready_to_commit_dec[i] & (dequeue_ptr[`ROB_SIZE_LOG-1:0] == i[`ROB_SIZE_LOG-1:0])) begin
                 commit_vld_dec[i] = 1'b1;
             end
         end
