@@ -23,6 +23,8 @@ module pipereg_intwb (
     input  wire [                    8:0] bjusb_btb_write_index,
     input  wire [                  128:0] bjusb_btb_din,
     output reg                            intwb_instr_valid,
+    output reg  [           `INSTR_RANGE] intwb_instr,
+    output reg  [              `PC_RANGE] intwb_pc,
     output reg                            intwb_need_to_wb,
     output reg  [            `PREG_RANGE] intwb_prd,
     output reg  [                   63:0] intwb_result,
@@ -43,6 +45,8 @@ module pipereg_intwb (
 );
 
     `MACRO_DFF_NONEN(intwb_instr_valid, intblock_out_instr_valid, 1)
+    `MACRO_DFF_NONEN(intwb_instr, intblock_out_instr, 32)
+    `MACRO_DFF_NONEN(intwb_pc, intblock_out_pc, 64)
     `MACRO_DFF_NONEN(intwb_need_to_wb, intblock_out_need_to_wb, 1)
     `MACRO_DFF_NONEN(intwb_prd, intblock_out_prd, 6)
     `MACRO_DFF_NONEN(intwb_result, intblock_out_result, 64)
