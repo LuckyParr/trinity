@@ -543,8 +543,17 @@ module backend #(
     wire exu_available = int_instr_ready && mem_instr_ready;
     wire issue0_ready = exu_available;
     wire instr_goto_memblock = isu2exu_instr0_is_store || isu2exu_instr0_is_load;
-    wire int_instr_valid = issue0_valid && ~instr_goto_memblock;
-    wire mem_instr_valid = issue0_valid && instr_goto_memblock;
+    wire int_instr_valid = issue0_valid && ~instr_goto_memblock && exu_available;
+    wire mem_instr_valid = issue0_valid && instr_goto_memblock  && exu_available;
+
+    // wire xbar_valid;
+    // xbar u_xbar(
+    //     .valid_in   (issue0_valid   ),
+    //     .ready_out0 (int_instr_ready ),
+    //     .ready_out1 (mem_instr_ready ),
+    //     .valid_out  (xbar_valid  )
+    // );
+    
 
     exu_top u_exu_top (
         .clock                          (clock),
