@@ -509,6 +509,7 @@ module isu_top (
         .issue0_prd            (issue0_prd),
         .issue0_old_prd        (issue0_old_prd),
         .issue0_pc             (issue0_pc),
+        .issue0_instr          (issue0_instr),
         .issue0_imm            (issue0_imm),
         .issue0_need_to_wb     (issue0_need_to_wb),
         .issue0_cx_type        (issue0_cx_type),

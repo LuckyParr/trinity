@@ -48,6 +48,7 @@ module int_isq (
     output reg  [       `PREG_RANGE] issue0_prd,
     output reg  [       `PREG_RANGE] issue0_old_prd,
     output reg  [        `SRC_RANGE] issue0_pc,
+    output reg  [31:0]               issue0_instr,
     output reg  [        `SRC_RANGE] issue0_imm,
     output reg                       issue0_need_to_wb,
     output reg  [    `CX_TYPE_RANGE] issue0_cx_type,
@@ -310,7 +311,7 @@ module int_isq (
     `MACRO_DEQ_DEC(deq_ptr_oh, issue0_src2_is_reg, iq_entries_deq_src2_is_reg, `ISSUE_QUEUE_DEPTH)
     `MACRO_DEQ_DEC(deq_ptr_oh, issue0_prd, iq_entries_deq_prd, `ISSUE_QUEUE_DEPTH)
     `MACRO_DEQ_DEC(deq_ptr_oh, issue0_old_prd, iq_entries_deq_old_prd, `ISSUE_QUEUE_DEPTH)
-    // `MACRO_DEQ_DEC(deq_ptr_oh, issue0, iq_entries_deq_instr, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_instr, iq_entries_deq_instr, `ISSUE_QUEUE_DEPTH)
     `MACRO_DEQ_DEC(deq_ptr_oh, issue0_imm, iq_entries_deq_imm, `ISSUE_QUEUE_DEPTH)
     `MACRO_DEQ_DEC(deq_ptr_oh, issue0_need_to_wb, iq_entries_deq_need_to_wb, `ISSUE_QUEUE_DEPTH)
     `MACRO_DEQ_DEC(deq_ptr_oh, issue0_cx_type, iq_entries_deq_cx_type, `ISSUE_QUEUE_DEPTH)
