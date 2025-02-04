@@ -27,32 +27,40 @@ module age_deq_policy (
     // Combinational logic: find the oldest ready entry (for dequeue)
     // ----------------------------------------------------------
 
-    reg                                                  any_j_older;
+    reg   [`ISSUE_QUEUE_DEPTH-1:0] any_j_older;
     always @(*) begin
         integer i;
         integer j;
         oldest_idx_oh = 'b0;
         oldest_found  = 1'b0;
         // Check if there's any j that is older than i
-        any_j_older   = 1'b0;
-        for (i = 0; i < `ISSUE_QUEUE_DEPTH; i++) begin
+        any_j_older   = 'b0;
+        for (i = 0; i < `ISSUE_QUEUE_DEPTH; i++) begin// 列
             if (iq_entries_ready_to_go[i]) begin
                 // // Check if there's any j that is older than i
                 // logic any_j_older = 1'b0;
-                for (j = 0; j < `ISSUE_QUEUE_DEPTH; j++) begin
+                for (j = 0; j < `ISSUE_QUEUE_DEPTH; j++) begin// 行
                     if (j != i && age_matrix[j][i] && iq_entries_valid[j]) begin
-                        any_j_older = 1'b1;  //have any other older
+                       // any_j_older = 1'b1;  //have any other older
+                        any_j_older[i] = 1'b1;  //have any other older
                         break;
                     end
                 end
 
                 // If no j is older and we haven't chosen an oldest yet
-                if (!any_j_older && !oldest_found) begin
+                //if (!any_j_older && !oldest_found) begin
+                // if ( ~ (&(any_j_older | ~iq_entries_valid)) && !oldest_found) begin
+                //     oldest_idx_oh[i] = 1'b1;
+                //     oldest_found     = 1'b1;
+                // end
+            end
+        end
+            for (i = 0; i < `ISSUE_QUEUE_DEPTH; i++) begin// 列
+                if ( any_j_older[i] == 0 && iq_entries_valid[i] == 1) begin
                     oldest_idx_oh[i] = 1'b1;
                     oldest_found     = 1'b1;
                 end
             end
-        end
     end
 
 
