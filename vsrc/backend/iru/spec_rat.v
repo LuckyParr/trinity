@@ -148,69 +148,63 @@ module spec_rat #(
 
     // Instruction 0 Source 1 (prs1)
     wire [5:0] bypass_instr0_prs1;
-    wire       bypass_instr0_prs1_sel_wr1;
-    wire       bypass_instr0_prs1_sel_wr0;
-
-    assign bypass_instr0_prs1_sel_wr1 = rn2specrat_instr1_lrd_wren && (rn2specrat_instr0_lrs1 == rn2specrat_instr1_lrd_wraddr);
-
-    assign bypass_instr0_prs1_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr0_lrs1 == rn2specrat_instr0_lrd_wraddr) && !bypass_instr0_prs1_sel_wr1;
-
-    assign bypass_instr0_prs1         = bypass_instr0_prs1_sel_wr1 ? rn2specrat_instr1_lrd_wrdata : (bypass_instr0_prs1_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr0_lrs1]);
+    //wire       bypass_instr0_prs1_sel_wr1;
+    //wire       bypass_instr0_prs1_sel_wr0;
+    //assign bypass_instr0_prs1_sel_wr1 = rn2specrat_instr1_lrd_wren && (rn2specrat_instr0_lrs1 == rn2specrat_instr1_lrd_wraddr);
+    //assign bypass_instr0_prs1_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr0_lrs1 == rn2specrat_instr0_lrd_wraddr) && !bypass_instr0_prs1_sel_wr1;
+    //assign bypass_instr0_prs1         = bypass_instr0_prs1_sel_wr1 ? rn2specrat_instr1_lrd_wrdata : (bypass_instr0_prs1_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr0_lrs1]);
+    assign bypass_instr0_prs1         = spec_rat[rn2specrat_instr0_lrs1];
 
     // Instruction 0 Source 2 (prs2)
     wire [5:0] bypass_instr0_prs2;
-    wire       bypass_instr0_prs2_sel_wr1;
-    wire       bypass_instr0_prs2_sel_wr0;
-
-    assign bypass_instr0_prs2_sel_wr1 = rn2specrat_instr1_lrd_wren && (rn2specrat_instr0_lrs2 == rn2specrat_instr1_lrd_wraddr);
-
-    assign bypass_instr0_prs2_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr0_lrs2 == rn2specrat_instr0_lrd_wraddr) && !bypass_instr0_prs2_sel_wr1;
-
-    assign bypass_instr0_prs2         = bypass_instr0_prs2_sel_wr1 ? rn2specrat_instr1_lrd_wrdata : (bypass_instr0_prs2_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr0_lrs2]);
+    //wire       bypass_instr0_prs2_sel_wr1;
+    //wire       bypass_instr0_prs2_sel_wr0;
+    //assign bypass_instr0_prs2_sel_wr1 = rn2specrat_instr1_lrd_wren && (rn2specrat_instr0_lrs2 == rn2specrat_instr1_lrd_wraddr);
+    //assign bypass_instr0_prs2_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr0_lrs2 == rn2specrat_instr0_lrd_wraddr) && !bypass_instr0_prs2_sel_wr1;
+    //assign bypass_instr0_prs2         = bypass_instr0_prs2_sel_wr1 ? rn2specrat_instr1_lrd_wrdata : (bypass_instr0_prs2_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr0_lrs2]);
+    assign bypass_instr0_prs2         = spec_rat[rn2specrat_instr0_lrs2];
 
     // Instruction 0 Destination (prd)
     wire [5:0] bypass_instr0_prd;
-    wire       bypass_instr0_prd_sel_wr1;
-    wire       bypass_instr0_prd_sel_wr0;
-
-    assign bypass_instr0_prd_sel_wr1 = rn2specrat_instr1_lrd_wren && (rn2specrat_instr0_lrd == rn2specrat_instr1_lrd_wraddr);
-
-    assign bypass_instr0_prd_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr0_lrd == rn2specrat_instr0_lrd_wraddr) && !bypass_instr0_prd_sel_wr1;
-
-    assign bypass_instr0_prd         = bypass_instr0_prd_sel_wr1 ? rn2specrat_instr1_lrd_wrdata : (bypass_instr0_prd_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr0_lrd]);
+    //wire       bypass_instr0_prd_sel_wr1;
+    //wire       bypass_instr0_prd_sel_wr0;
+    //assign bypass_instr0_prd_sel_wr1 = rn2specrat_instr1_lrd_wren && (rn2specrat_instr0_lrd == rn2specrat_instr1_lrd_wraddr);
+    //assign bypass_instr0_prd_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr0_lrd == rn2specrat_instr0_lrd_wraddr) && !bypass_instr0_prd_sel_wr1;
+    //assign bypass_instr0_prd         = bypass_instr0_prd_sel_wr1 ? rn2specrat_instr1_lrd_wrdata : (bypass_instr0_prd_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr0_lrd]);
+    assign bypass_instr0_prd         = spec_rat[rn2specrat_instr0_lrd];
 
     // Instruction 1 Source 1 (prs1)
     wire [5:0] bypass_instr1_prs1;
-    wire       bypass_instr1_prs1_sel_wr1;
+    //wire       bypass_instr1_prs1_sel_wr1;
     wire       bypass_instr1_prs1_sel_wr0;
-
-    assign bypass_instr1_prs1_sel_wr1 = rn2specrat_instr1_lrd_wren && (rn2specrat_instr1_lrs1 == rn2specrat_instr1_lrd_wraddr);
-
-    assign bypass_instr1_prs1_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr1_lrs1 == rn2specrat_instr0_lrd_wraddr) && !bypass_instr1_prs1_sel_wr1;
-
-    assign bypass_instr1_prs1         = bypass_instr1_prs1_sel_wr1 ? rn2specrat_instr1_lrd_wrdata : (bypass_instr1_prs1_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr1_lrs1]);
+    //assign bypass_instr1_prs1_sel_wr1 = rn2specrat_instr1_lrd_wren && (rn2specrat_instr1_lrs1 == rn2specrat_instr1_lrd_wraddr);
+    //assign bypass_instr1_prs1_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr1_lrs1 == rn2specrat_instr0_lrd_wraddr) && !bypass_instr1_prs1_sel_wr1;
+    assign bypass_instr1_prs1_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr1_lrs1 == rn2specrat_instr0_lrd_wraddr);
+    assign bypass_instr1_prs1         = (bypass_instr1_prs1_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr1_lrs1]);
 
     // Instruction 1 Source 2 (prs2)
     wire [5:0] bypass_instr1_prs2;
-    wire       bypass_instr1_prs2_sel_wr1;
+    //wire       bypass_instr1_prs2_sel_wr1;
     wire       bypass_instr1_prs2_sel_wr0;
 
-    assign bypass_instr1_prs2_sel_wr1 = rn2specrat_instr1_lrd_wren && (rn2specrat_instr1_lrs2 == rn2specrat_instr1_lrd_wraddr);
+    //assign bypass_instr1_prs2_sel_wr1 = rn2specrat_instr1_lrd_wren && (rn2specrat_instr1_lrs2 == rn2specrat_instr1_lrd_wraddr);
+    //assign bypass_instr1_prs2_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr1_lrs2 == rn2specrat_instr0_lrd_wraddr) && !bypass_instr1_prs2_sel_wr1;
+    assign bypass_instr1_prs2_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr1_lrs2 == rn2specrat_instr0_lrd_wraddr) ;
 
-    assign bypass_instr1_prs2_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr1_lrs2 == rn2specrat_instr0_lrd_wraddr) && !bypass_instr1_prs2_sel_wr1;
-
-    assign bypass_instr1_prs2         = bypass_instr1_prs2_sel_wr1 ? rn2specrat_instr1_lrd_wrdata : (bypass_instr1_prs2_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr1_lrs2]);
+    //assign bypass_instr1_prs2         = bypass_instr1_prs2_sel_wr1 ? rn2specrat_instr1_lrd_wrdata : (bypass_instr1_prs2_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr1_lrs2]);
+    assign bypass_instr1_prs2         = (bypass_instr1_prs2_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr1_lrs2]);
 
     // Instruction 1 Destination (prd)
     wire [5:0] bypass_instr1_prd;
-    wire       bypass_instr1_prd_sel_wr1;
+    //wire       bypass_instr1_prd_sel_wr1;
     wire       bypass_instr1_prd_sel_wr0;
 
-    assign bypass_instr1_prd_sel_wr1 = rn2specrat_instr1_lrd_wren && (rn2specrat_instr1_lrd == rn2specrat_instr1_lrd_wraddr);
+    //assign bypass_instr1_prd_sel_wr1 = rn2specrat_instr1_lrd_wren && (rn2specrat_instr1_lrd == rn2specrat_instr1_lrd_wraddr);
 
-    assign bypass_instr1_prd_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr1_lrd == rn2specrat_instr0_lrd_wraddr) && !bypass_instr1_prd_sel_wr1;
+    //assign bypass_instr1_prd_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr1_lrd == rn2specrat_instr0_lrd_wraddr) && !bypass_instr1_prd_sel_wr1;
+    assign bypass_instr1_prd_sel_wr0 = rn2specrat_instr0_lrd_wren && (rn2specrat_instr1_lrd == rn2specrat_instr0_lrd_wraddr) ;
 
-    assign bypass_instr1_prd         = bypass_instr1_prd_sel_wr1 ? rn2specrat_instr1_lrd_wrdata : (bypass_instr1_prd_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr1_lrd]);
+    assign bypass_instr1_prd         =  bypass_instr1_prd_sel_wr0 ? rn2specrat_instr0_lrd_wrdata : spec_rat[rn2specrat_instr1_lrd];
 
     // Read Result
     assign specrat2rn_instr0prs1     = rn2specrat_instr0_lrs1_rden ? bypass_instr0_prs1 : 6'd0;
