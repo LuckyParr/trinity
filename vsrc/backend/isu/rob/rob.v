@@ -140,7 +140,7 @@ module rob (
         if (~reset_n) begin
             enqueue_ptr <= 0;
         end else if (is_rollback) begin
-            enqueue_ptr <= flush_robid + 1;
+            enqueue_ptr <= flush_robid_latch + 1;
         end else begin
             enqueue_ptr <= enqueue_ptr + enq_num;
         end
@@ -366,23 +366,27 @@ module rob (
         endcase
     end
 
-    //dont need flush_robid latch
-    // reg [`ROB_SIZE_LOG:0] flush_robid_latch; // 7bit:contain flag
+    reg [`ROB_SIZE_LOG:0] flush_robid_latch; // 7bit:contain flag
 
-    // always @(posedge clock or negedge reset_n) begin
-    //     if (~reset_n) begin
-    //         flush_robid_latch <= 'b0;
-    //     end else if (flush_valid) begin
-    //         flush_robid_latch <= flush_robid;
-    //     end
-    // end
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            flush_robid_latch <= 'b0;
+        end else if (flush_valid) begin
+            flush_robid_latch <= flush_robid;
+        end
+    end
 
-    always @(*) begin
+
+        always @(*) begin
         integer i;
         needflush_dec = 'b0;
         for (i = 0; i < `ROB_SIZE; i = i + 1) begin
             if (is_rollback) begin
-                needflush_dec[i] = flush_robid[`ROB_SIZE_LOG] ^ enqueue_ptr[`ROB_SIZE_LOG] ^ (flush_robid[`ROB_SIZE_LOG-1:0] < enqueue_ptr[`ROB_SIZE_LOG-1:0]);
+                if (enqueue_ptr[`ROB_SIZE_LOG-1:0] > flush_robid_latch[`ROB_SIZE_LOG-1:0]) begin
+                    needflush_dec[i] = (i[`ROB_SIZE_LOG-1:0] > flush_robid_latch[`ROB_SIZE_LOG-1:0]) & (i[`ROB_SIZE_LOG-1:0] < enqueue_ptr[`ROB_SIZE_LOG-1:0]);
+                end else begin
+                    needflush_dec[i] = (i[`ROB_SIZE_LOG-1:0] > flush_robid_latch[`ROB_SIZE_LOG-1:0]) | (i[`ROB_SIZE_LOG-1:0] < enqueue_ptr[`ROB_SIZE_LOG-1:0]);
+                end
             end
         end
     end

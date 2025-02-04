@@ -199,13 +199,13 @@ module rename (
     assign rn2specrat_instr0_lrs1       = instr0_lrs1;
     assign rn2specrat_instr0_lrs2_rden  = instr0_lrs2_valid;
     assign rn2specrat_instr0_lrs2       = instr0_lrs2;
-    assign rn2specrat_instr1_lrd_rden   = instr0_lrd_valid;
+    assign rn2specrat_instr0_lrd_rden   = instr0_lrd_valid;
     assign rn2specrat_instr0_lrd        = instr0_lrd;
     assign rn2specrat_instr1_lrs1_rden  = instr1_lrs1_valid;
     assign rn2specrat_instr1_lrs1       = instr1_lrs1;
     assign rn2specrat_instr1_lrs2_rden  = instr1_lrs2_valid;
     assign rn2specrat_instr1_lrs2       = instr1_lrs2;
-    assign rn2specrat_instr0_lrd_rden   = instr1_lrd_valid;
+    assign rn2specrat_instr1_lrd_rden   = instr1_lrd_valid;
     assign rn2specrat_instr1_lrd        = instr1_lrd;
 
 

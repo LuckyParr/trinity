@@ -209,10 +209,10 @@ module spec_rat #(
     // Read Result
     assign specrat2rn_instr0prs1     = rn2specrat_instr0_lrs1_rden ? bypass_instr0_prs1 : 6'd0;
     assign specrat2rn_instr0prs2     = rn2specrat_instr0_lrs2_rden ? bypass_instr0_prs2 : 6'd0;
-    assign specrat2rn_instr0prd      = rn2specrat_instr1_lrd_rden ? bypass_instr0_prd : 6'd0;
+    assign specrat2rn_instr0prd      = rn2specrat_instr0_lrd_rden ? bypass_instr0_prd : 6'd0;
     assign specrat2rn_instr1prs1     = rn2specrat_instr1_lrs1_rden ? bypass_instr1_prs1 : 6'd0;
     assign specrat2rn_instr1prs2     = rn2specrat_instr1_lrs2_rden ? bypass_instr1_prs2 : 6'd0;
-    assign specrat2rn_instr1prd      = rn2specrat_instr0_lrd_rden ? bypass_instr1_prd : 6'd0;
+    assign specrat2rn_instr1prd      = rn2specrat_instr1_lrd_rden ? bypass_instr1_prd : 6'd0;
 
 
     /* -------------------------------- arch_rat -------------------------------- */
