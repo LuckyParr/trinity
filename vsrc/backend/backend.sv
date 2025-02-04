@@ -1,43 +1,42 @@
-//compile and debug
-//remove redundant parameter and define
+`include "defines.sv"
 module backend #(
 ) (
     input clock,
     input reset_n,
 
-    input         ibuffer_instr_valid,
-    output        ibuffer_instr_ready,        //backend control ibuffer read stall(backend_stall) and fifo_read_en
-    input         ibuffer_predicttaken_out,
-    input  [31:0] ibuffer_predicttarget_out,
-    input  [31:0] ibuffer_inst_out,
-    input  [31:0] ibuffer_pc_out,
+    input              ibuffer_instr_valid,
+    output             ibuffer_instr_ready,        //backend control ibuffer read stall(backend_stall) and fifo_read_en
+    input              ibuffer_predicttaken_out,
+    input  [     31:0] ibuffer_predicttarget_out,
+    input  [     31:0] ibuffer_inst_out,
+    input  [`PC_RANGE] ibuffer_pc_out,
 
     output        flush_valid,
     output [63:0] flush_target,
 
     // TBUS 
-    output        tbus_index_valid,
-    input         tbus_index_ready,
-    output [31:0] tbus_index,
-    output [31:0] tbus_write_data,
-    output [ 3:0] tbus_write_mask,
-    input  [31:0] tbus_read_data,
-    input         tbus_operation_done,
-    output        tbus_operation_type,
-    output        mem2dcache_flush,
+    output              tbus_index_valid,
+    input               tbus_index_ready,
+    output [`SRC_RANGE] tbus_index,
+    output [`SRC_RANGE] tbus_write_data,
+    output [`SRC_RANGE] tbus_write_mask,
+    input  [`SRC_RANGE] tbus_read_data,
+    input               tbus_operation_done,
+    output              tbus_operation_type,
+    output              mem2dcache_flush,
 
     //bht btb port
-    output             intwb0_bht_write_enable,
-    output [      9:0] intwb0_bht_write_index,
-    output             intwb0_bht_write_counter_select,
-    output             intwb0_bht_write_inc,
-    output             intwb0_bht_write_dec,
-    output             intwb0_bht_valid_in,
-    output             intwb0_btb_ce,
-    output             intwb0_btb_we,
-    output [      3:0] intwb0_btb_wmask,
-    output [      9:0] intwb0_btb_write_index,
-    output [`PC_RANGE] intwb0_btb_din
+    output         intwb0_bht_write_enable,
+    output [  8:0] intwb0_bht_write_index,
+    output [  1:0] intwb0_bht_write_counter_select,
+    output         intwb0_bht_write_inc,
+    output         intwb0_bht_write_dec,
+    output         intwb0_bht_valid_in,
+    output         intwb0_btb_ce,
+    output         intwb0_btb_we,
+    output [128:0] intwb0_btb_wmask,
+    output [  8:0] intwb0_btb_write_index,
+    output [128:0] intwb0_btb_din
 );
     //---------------- internal signals ----------------//
     wire [`INSTR_ID_WIDTH-1:0] flush_robid;
@@ -544,7 +543,7 @@ module backend #(
     wire issue0_ready = exu_available;
     wire instr_goto_memblock = isu2exu_instr0_is_store || isu2exu_instr0_is_load;
     wire int_instr_valid = issue0_valid && ~instr_goto_memblock && exu_available;
-    wire mem_instr_valid = issue0_valid && instr_goto_memblock  && exu_available;
+    wire mem_instr_valid = issue0_valid && instr_goto_memblock && exu_available;
 
     // wire xbar_valid;
     // xbar u_xbar(
@@ -553,7 +552,7 @@ module backend #(
     //     .ready_out1 (mem_instr_ready ),
     //     .valid_out  (xbar_valid  )
     // );
-    
+
 
     exu_top u_exu_top (
         .clock                          (clock),
