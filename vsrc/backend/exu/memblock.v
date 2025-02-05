@@ -84,7 +84,7 @@ module memblock (
     end
 
 
-    wire req_fire = instr_ready && instr_valid;
+    wire req_fire = instr_ready && instr_valid & ~flush_this_beat;
     //when redirect instr from wb pipereg is older than current instr in exu, flush instr in exu
     wire need_flush;
     assign need_flush = flush_valid && ((flush_robid[`ROB_SIZE_LOG] ^ memblock_out_robid[`ROB_SIZE_LOG]) ^ (flush_robid[5:0] < memblock_out_robid[5:0]));
@@ -192,8 +192,10 @@ module memblock (
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             instr_valid_latch <= 'b0;
-        end else if(req_fire & ~flush_this_beat)begin
+        end else if(req_fire )begin
             instr_valid_latch <= instr_valid;
+        end else if(tbus_operation_done)begin
+            instr_valid_latch <= 'b0;
         end
     end
 
