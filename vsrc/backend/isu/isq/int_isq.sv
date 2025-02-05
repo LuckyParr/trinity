@@ -31,6 +31,8 @@ module int_isq (
     input wire [`PREG_RANGE] enq_instr0_prs2,
     input wire [`PREG_RANGE] enq_instr0_prd,
     input wire [`PREG_RANGE] enq_instr0_old_prd,
+    input wire               enq_instr0_predicttaken,
+    input wire [  `PC_RANGE] enq_instr0_predicttarget,
 
     input wire [  `ROB_SIZE_LOG:0] enq_instr0_robid,
     input wire [`STOREQUEUE_LOG:0] enq_instr0_sqid,
@@ -48,7 +50,7 @@ module int_isq (
     output reg  [       `PREG_RANGE] issue0_prd,
     output reg  [       `PREG_RANGE] issue0_old_prd,
     output reg  [        `SRC_RANGE] issue0_pc,
-    output reg  [31:0]               issue0_instr,
+    output reg  [              31:0] issue0_instr,
     output reg  [        `SRC_RANGE] issue0_imm,
     output reg                       issue0_need_to_wb,
     output reg  [    `CX_TYPE_RANGE] issue0_cx_type,
@@ -60,8 +62,11 @@ module int_isq (
     output reg                       issue0_is_load,
     output reg                       issue0_is_store,
     output reg  [               3:0] issue0_ls_size,
-    output reg  [   `ROB_SIZE_LOG:0] issue0_robid,
-    output reg  [ `STOREQUEUE_LOG:0] issue0_sqid,
+    output reg                       issue0_predicttaken,
+    output reg  [         `PC_RANGE] issue0_predicttarget,
+
+    output reg [  `ROB_SIZE_LOG:0] issue0_robid,
+    output reg [`STOREQUEUE_LOG:0] issue0_sqid,
 
     //-----------------------------------------------------
     // writeback to set condition to 1
@@ -87,54 +92,58 @@ module int_isq (
     /* -------------------------------------------------------------------------- */
 
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_wren_oh;
-    reg  [                `PC_RANGE] iq_entries_enq_pc_oh          [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [              `PREG_RANGE] iq_entries_enq_prs1_oh        [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [              `PREG_RANGE] iq_entries_enq_prs2_oh        [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [                `PC_RANGE] iq_entries_enq_pc_oh           [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [              `PREG_RANGE] iq_entries_enq_prs1_oh         [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [              `PREG_RANGE] iq_entries_enq_prs2_oh         [`ISSUE_QUEUE_DEPTH-1:0];
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_src1_is_reg_oh;
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_src2_is_reg_oh;
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_src1_state_oh;
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_src2_state_oh;
-    reg  [              `PREG_RANGE] iq_entries_enq_prd_oh         [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [              `PREG_RANGE] iq_entries_enq_old_prd_oh     [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [                     31:0] iq_entries_enq_instr_oh       [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [               `SRC_RANGE] iq_entries_enq_imm_oh         [`ISSUE_QUEUE_DEPTH-1:0];
-    reg                              iq_entries_enq_need_to_wb_oh  [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [           `CX_TYPE_RANGE] iq_entries_enq_cx_type_oh     [`ISSUE_QUEUE_DEPTH-1:0];
-    reg                              iq_entries_enq_is_unsigned_oh [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [          `ALU_TYPE_RANGE] iq_entries_enq_alu_type_oh    [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [       `MULDIV_TYPE_RANGE] iq_entries_enq_muldiv_type_oh [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [              `PREG_RANGE] iq_entries_enq_prd_oh          [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [              `PREG_RANGE] iq_entries_enq_old_prd_oh      [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [                     31:0] iq_entries_enq_instr_oh        [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [               `SRC_RANGE] iq_entries_enq_imm_oh          [`ISSUE_QUEUE_DEPTH-1:0];
+    reg                              iq_entries_enq_need_to_wb_oh   [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [           `CX_TYPE_RANGE] iq_entries_enq_cx_type_oh      [`ISSUE_QUEUE_DEPTH-1:0];
+    reg                              iq_entries_enq_is_unsigned_oh  [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [          `ALU_TYPE_RANGE] iq_entries_enq_alu_type_oh     [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [       `MULDIV_TYPE_RANGE] iq_entries_enq_muldiv_type_oh  [`ISSUE_QUEUE_DEPTH-1:0];
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_is_word_oh;
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_is_imm_oh;
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_is_load_oh;
     reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_is_store_oh;
-    reg  [                      3:0] iq_entries_enq_ls_size_oh     [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [          `ROB_SIZE_LOG:0] iq_entries_enq_robid_oh       [`ISSUE_QUEUE_DEPTH-1:0];
-    reg  [        `STOREQUEUE_LOG:0] iq_entries_enq_sqid_oh        [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [                      3:0] iq_entries_enq_ls_size_oh      [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_enq_predicttaken_oh;
+    reg  [                `PC_RANGE] iq_entries_enq_predicttarget_oh[`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [          `ROB_SIZE_LOG:0] iq_entries_enq_robid_oh        [`ISSUE_QUEUE_DEPTH-1:0];
+    reg  [        `STOREQUEUE_LOG:0] iq_entries_enq_sqid_oh         [`ISSUE_QUEUE_DEPTH-1:0];
 
     /* -------------------------------------------------------------------------- */
     /*                                   deq dec                                  */
     /* -------------------------------------------------------------------------- */
-    wire [              `PREG_RANGE] iq_entries_deq_prs1           [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [              `PREG_RANGE] iq_entries_deq_prs2           [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [              `PREG_RANGE] iq_entries_deq_prs1            [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [              `PREG_RANGE] iq_entries_deq_prs2            [`ISSUE_QUEUE_DEPTH-1:0];
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_src1_is_reg;
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_src2_is_reg;
-    wire [              `PREG_RANGE] iq_entries_deq_prd            [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [              `PREG_RANGE] iq_entries_deq_old_prd        [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [                `PC_RANGE] iq_entries_deq_pc             [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [                     31:0] iq_entries_deq_instr          [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [               `SRC_RANGE] iq_entries_deq_imm            [`ISSUE_QUEUE_DEPTH-1:0];
-    wire                             iq_entries_deq_need_to_wb     [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [           `CX_TYPE_RANGE] iq_entries_deq_cx_type        [`ISSUE_QUEUE_DEPTH-1:0];
-    wire                             iq_entries_deq_is_unsigned    [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [          `ALU_TYPE_RANGE] iq_entries_deq_alu_type       [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [       `MULDIV_TYPE_RANGE] iq_entries_deq_muldiv_type    [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [              `PREG_RANGE] iq_entries_deq_prd             [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [              `PREG_RANGE] iq_entries_deq_old_prd         [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [                `PC_RANGE] iq_entries_deq_pc              [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [                     31:0] iq_entries_deq_instr           [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [               `SRC_RANGE] iq_entries_deq_imm             [`ISSUE_QUEUE_DEPTH-1:0];
+    wire                             iq_entries_deq_need_to_wb      [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [           `CX_TYPE_RANGE] iq_entries_deq_cx_type         [`ISSUE_QUEUE_DEPTH-1:0];
+    wire                             iq_entries_deq_is_unsigned     [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [          `ALU_TYPE_RANGE] iq_entries_deq_alu_type        [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [       `MULDIV_TYPE_RANGE] iq_entries_deq_muldiv_type     [`ISSUE_QUEUE_DEPTH-1:0];
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_is_word;
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_is_imm;
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_is_load;
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_is_store;
-    wire [                      3:0] iq_entries_deq_ls_size        [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [          `ROB_SIZE_LOG:0] iq_entries_deq_robid          [`ISSUE_QUEUE_DEPTH-1:0];
-    wire [        `STOREQUEUE_LOG:0] iq_entries_deq_sqid           [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [                      3:0] iq_entries_deq_ls_size         [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_deq_predicttaken;
+    wire [                `PC_RANGE] iq_entries_deq_predicttarget   [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [          `ROB_SIZE_LOG:0] iq_entries_deq_robid           [`ISSUE_QUEUE_DEPTH-1:0];
+    wire [        `STOREQUEUE_LOG:0] iq_entries_deq_sqid            [`ISSUE_QUEUE_DEPTH-1:0];
 
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_ready_to_go;
     wire [   `ISSUE_QUEUE_DEPTH-1:0] iq_entries_valid;
@@ -193,8 +202,11 @@ module int_isq (
     `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_is_load_oh, enq_instr0_is_load, `ISSUE_QUEUE_DEPTH)
     `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_is_store_oh, enq_instr0_is_store, `ISSUE_QUEUE_DEPTH)
     `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_ls_size_oh, enq_instr0_ls_size, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_predicttaken_oh, enq_instr0_predicttaken, `ISSUE_QUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_predicttarget_oh, enq_instr0_predicttarget, `ISSUE_QUEUE_DEPTH)
     `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_robid_oh, enq_instr0_robid, `ISSUE_QUEUE_DEPTH)
     `MACRO_ENQ_DEC(enq_ptr_oh, iq_entries_enq_sqid_oh, enq_instr0_sqid, `ISSUE_QUEUE_DEPTH)
+
 
 
 
@@ -323,6 +335,8 @@ module int_isq (
     `MACRO_DEQ_DEC(deq_ptr_oh, issue0_is_load, iq_entries_deq_is_load, `ISSUE_QUEUE_DEPTH)
     `MACRO_DEQ_DEC(deq_ptr_oh, issue0_is_store, iq_entries_deq_is_store, `ISSUE_QUEUE_DEPTH)
     `MACRO_DEQ_DEC(deq_ptr_oh, issue0_ls_size, iq_entries_deq_ls_size, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_predicttaken, iq_entries_deq_predicttaken, `ISSUE_QUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, issue0_predicttarget, iq_entries_deq_predicttarget, `ISSUE_QUEUE_DEPTH)
     `MACRO_DEQ_DEC(deq_ptr_oh, issue0_robid, iq_entries_deq_robid, `ISSUE_QUEUE_DEPTH)
     `MACRO_DEQ_DEC(deq_ptr_oh, issue0_sqid, iq_entries_deq_sqid, `ISSUE_QUEUE_DEPTH)
 
@@ -354,6 +368,8 @@ module int_isq (
                 .enq_prs2             (iq_entries_enq_prs2_oh[i]),
                 .enq_prd              (iq_entries_enq_prd_oh[i]),
                 .enq_old_prd          (iq_entries_enq_old_prd_oh[i]),
+                .enq_predicttaken     (iq_entries_enq_predicttaken_oh[i]),
+                .enq_predicttarget    (iq_entries_enq_predicttarget_oh[i]),
                 .enq_robid            (iq_entries_enq_robid_oh[i]),
                 .enq_sqid             (iq_entries_enq_sqid_oh[i]),
                 .enq_src1_state       (iq_entries_enq_src1_state_oh[i]),
@@ -363,7 +379,7 @@ module int_isq (
                 .writeback_wakeup_src2(writeback_wakeup_src2[i]),
                 .issuing              (iq_entries_clear_entry[i]),
                 .flush                (flush_dec[i]),
-                .valid                (iq_entries_valid[i]),//output ,as deq_valid
+                .valid                (iq_entries_valid[i]),                 //output ,as deq_valid
                 .deq_pc               (iq_entries_deq_pc[i]),
                 .deq_instr            (iq_entries_deq_instr[i]),
                 .deq_imm              (iq_entries_deq_imm[i]),
@@ -383,6 +399,8 @@ module int_isq (
                 .deq_prs2             (iq_entries_deq_prs2[i]),
                 .deq_prd              (iq_entries_deq_prd[i]),
                 .deq_old_prd          (iq_entries_deq_old_prd[i]),
+                .deq_predicttaken     (iq_entries_deq_predicttaken[i]),
+                .deq_predicttarget    (iq_entries_deq_predicttarget[i]),
                 .deq_robid            (iq_entries_deq_robid[i]),
                 .deq_sqid             (iq_entries_deq_sqid[i])
             );

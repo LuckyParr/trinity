@@ -22,6 +22,8 @@ module iq_entry (
     input wire [`PREG_RANGE] enq_prs2,
     input wire [`PREG_RANGE] enq_prd,
     input wire [`PREG_RANGE] enq_old_prd,
+    input wire               enq_predicttaken,
+    input wire [  `PC_RANGE] enq_predicttarget,
 
     input wire [  `ROB_SIZE_LOG:0] enq_robid,
     input wire [`STOREQUEUE_LOG:0] enq_sqid,
@@ -65,35 +67,39 @@ module iq_entry (
     output wire [`PREG_RANGE] deq_prs2,
     output wire [`PREG_RANGE] deq_prd,
     output wire [`PREG_RANGE] deq_old_prd,
+    output wire               deq_predicttaken,
+    output wire [  `PC_RANGE] deq_predicttarget,
 
     output wire [  `ROB_SIZE_LOG:0] deq_robid,
     output wire [`STOREQUEUE_LOG:0] deq_sqid
 );
     // Internal queue storage
-    reg                       queue_valid;
-    reg [          `PC_RANGE] queue_pc;
-    reg [               31:0] queue_instr;
-    reg [        `PREG_RANGE] queue_prs1;
-    reg [        `PREG_RANGE] queue_prs2;
-    reg                       queue_src1_is_reg;
-    reg                       queue_src2_is_reg;
-    reg                       queue_src1_state;
-    reg                       queue_src2_state;
-    reg [        `PREG_RANGE] queue_prd;
-    reg [        `PREG_RANGE] queue_old_prd;
-    reg [         `SRC_RANGE] queue_imm;
-    reg                       queue_need_to_wb;
-    reg [     `CX_TYPE_RANGE] queue_cx_type;
-    reg                       queue_is_unsigned;
-    reg [    `ALU_TYPE_RANGE] queue_alu_type;
-    reg [ `MULDIV_TYPE_RANGE] queue_muldiv_type;
-    reg                       queue_is_word;
-    reg                       queue_is_imm;
-    reg                       queue_is_load;
-    reg                       queue_is_store;
-    reg [                3:0] queue_ls_size;
-    reg [  `ROB_SIZE_LOG:0] queue_robid;
-    reg [`STOREQUEUE_LOG:0] queue_sqid;
+    reg                      queue_valid;
+    reg [         `PC_RANGE] queue_pc;
+    reg [              31:0] queue_instr;
+    reg [       `PREG_RANGE] queue_prs1;
+    reg [       `PREG_RANGE] queue_prs2;
+    reg                      queue_src1_is_reg;
+    reg                      queue_src2_is_reg;
+    reg                      queue_src1_state;
+    reg                      queue_src2_state;
+    reg [       `PREG_RANGE] queue_prd;
+    reg [       `PREG_RANGE] queue_old_prd;
+    reg [        `SRC_RANGE] queue_imm;
+    reg                      queue_need_to_wb;
+    reg [    `CX_TYPE_RANGE] queue_cx_type;
+    reg                      queue_is_unsigned;
+    reg [   `ALU_TYPE_RANGE] queue_alu_type;
+    reg [`MULDIV_TYPE_RANGE] queue_muldiv_type;
+    reg                      queue_is_word;
+    reg                      queue_is_imm;
+    reg                      queue_is_load;
+    reg                      queue_is_store;
+    reg [               3:0] queue_ls_size;
+    reg                      queue_predicttaken;
+    reg [         `PC_RANGE] queue_predicttarget;
+    reg [   `ROB_SIZE_LOG:0] queue_robid;
+    reg [ `STOREQUEUE_LOG:0] queue_sqid;
 
     always @(posedge clock or negedge reset_n) begin
         if (!reset_n | flush) begin
@@ -145,32 +151,36 @@ module iq_entry (
     `MACRO_LATCH_NONEN(queue_is_load, enq_is_load, enq_valid, 1)
     `MACRO_LATCH_NONEN(queue_is_store, enq_is_store, enq_valid, 1)
     `MACRO_LATCH_NONEN(queue_ls_size, enq_ls_size, enq_valid, 4)
-    `MACRO_LATCH_NONEN(queue_robid, enq_robid, enq_valid, `ROB_SIZE_LOG+1)
-    `MACRO_LATCH_NONEN(queue_sqid, enq_sqid, enq_valid, `STOREQUEUE_LOG+1)
+    `MACRO_LATCH_NONEN(queue_predicttaken, enq_predicttaken, enq_valid, 1)
+    `MACRO_LATCH_NONEN(queue_predicttarget, enq_predicttarget, enq_valid, `PC_LENGTH)
+    `MACRO_LATCH_NONEN(queue_robid, enq_robid, enq_valid, `ROB_SIZE_LOG + 1)
+    `MACRO_LATCH_NONEN(queue_sqid, enq_sqid, enq_valid, `STOREQUEUE_LOG + 1)
 
-    assign valid           = queue_valid;
-    assign deq_pc          = queue_pc;
-    assign deq_instr       = queue_instr;
-    assign deq_prs1        = queue_prs1;
-    assign deq_prs2        = queue_prs2;
-    assign deq_src1_is_reg = queue_src1_is_reg;
-    assign deq_src2_is_reg = queue_src2_is_reg;
-    assign deq_prd         = queue_prd;
-    assign deq_old_prd     = queue_old_prd;
-    assign deq_imm         = queue_imm;
-    assign deq_need_to_wb  = queue_need_to_wb;
-    assign deq_cx_type     = queue_cx_type;
-    assign deq_is_unsigned = queue_is_unsigned;
-    assign deq_alu_type    = queue_alu_type;
-    assign deq_muldiv_type = queue_muldiv_type;
-    assign deq_is_word     = queue_is_word;
-    assign deq_is_imm      = queue_is_imm;
-    assign deq_is_load     = queue_is_load;
-    assign deq_is_store    = queue_is_store;
-    assign deq_ls_size     = queue_ls_size;
-    assign deq_robid      = queue_robid;
-    assign deq_sqid       = queue_sqid;
-    assign ready_to_go     = (~queue_src1_state) & (~queue_src2_state) & queue_valid;
+    assign valid             = queue_valid;
+    assign deq_pc            = queue_pc;
+    assign deq_instr         = queue_instr;
+    assign deq_prs1          = queue_prs1;
+    assign deq_prs2          = queue_prs2;
+    assign deq_src1_is_reg   = queue_src1_is_reg;
+    assign deq_src2_is_reg   = queue_src2_is_reg;
+    assign deq_prd           = queue_prd;
+    assign deq_old_prd       = queue_old_prd;
+    assign deq_imm           = queue_imm;
+    assign deq_need_to_wb    = queue_need_to_wb;
+    assign deq_cx_type       = queue_cx_type;
+    assign deq_is_unsigned   = queue_is_unsigned;
+    assign deq_alu_type      = queue_alu_type;
+    assign deq_muldiv_type   = queue_muldiv_type;
+    assign deq_is_word       = queue_is_word;
+    assign deq_is_imm        = queue_is_imm;
+    assign deq_is_load       = queue_is_load;
+    assign deq_is_store      = queue_is_store;
+    assign deq_ls_size       = queue_ls_size;
+    assign deq_predicttaken  = queue_predicttaken;
+    assign deq_predicttarget = queue_predicttarget;
+    assign deq_robid         = queue_robid;
+    assign deq_sqid          = queue_sqid;
+    assign ready_to_go       = (~queue_src1_state) & (~queue_src2_state) & queue_valid;
 
 
 
