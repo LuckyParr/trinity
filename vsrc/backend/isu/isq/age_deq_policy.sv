@@ -8,8 +8,8 @@ module age_deq_policy (
     input wire [ `ISSUE_QUEUE_DEPTH-1:0] iq_entries_wren_oh,
     input wire [`ISSUE_QUEUE_LOG -1 : 0] enq_ptr,
     /* ------------------------------ dequeue fire ------------------------------ */
-    input wire [`ISSUE_QUEUE_DEPTH-1:0] iq_entries_clear_entry,
-    input wire [  `ISSUE_QUEUE_LOG-1:0] deq_ptr,
+    input wire [ `ISSUE_QUEUE_DEPTH-1:0] iq_entries_clear_entry,
+    input wire [   `ISSUE_QUEUE_LOG-1:0] deq_ptr,
 
     output reg                          oldest_found,
     output reg [`ISSUE_QUEUE_DEPTH-1:0] oldest_idx_oh
@@ -27,7 +27,7 @@ module age_deq_policy (
     // Combinational logic: find the oldest ready entry (for dequeue)
     // ----------------------------------------------------------
 
-    reg   [`ISSUE_QUEUE_DEPTH-1:0] any_j_older;
+    reg [`ISSUE_QUEUE_DEPTH-1:0]                         any_j_older;
     always @(*) begin
         integer i;
         integer j;
@@ -35,13 +35,13 @@ module age_deq_policy (
         oldest_found  = 1'b0;
         // Check if there's any j that is older than i
         any_j_older   = 'b0;
-        for (i = 0; i < `ISSUE_QUEUE_DEPTH; i++) begin// 列
+        for (i = 0; i < `ISSUE_QUEUE_DEPTH; i++) begin  // 列
             if (iq_entries_ready_to_go[i]) begin
                 // // Check if there's any j that is older than i
                 // logic any_j_older = 1'b0;
-                for (j = 0; j < `ISSUE_QUEUE_DEPTH; j++) begin// 行
+                for (j = 0; j < `ISSUE_QUEUE_DEPTH; j++) begin  // 行
                     if (j != i && age_matrix[j][i] && iq_entries_valid[j]) begin
-                       // any_j_older = 1'b1;  //have any other older
+                        // any_j_older = 1'b1;  //have any other older
                         any_j_older[i] = 1'b1;  //have any other older
                         break;
                     end
@@ -55,12 +55,12 @@ module age_deq_policy (
                 // end
             end
         end
-            for (i = 0; i < `ISSUE_QUEUE_DEPTH; i++) begin// 列
-                if ( any_j_older[i] == 0 && iq_entries_valid[i] == 1) begin
-                    oldest_idx_oh[i] = 1'b1;
-                    oldest_found     = 1'b1;
-                end
+        for (i = 0; i < `ISSUE_QUEUE_DEPTH; i++) begin  // 列
+            if (any_j_older[i] == 0 && iq_entries_valid[i] == 1) begin
+                oldest_idx_oh[i] = 1'b1;
+                oldest_found     = 1'b1;
             end
+        end
     end
 
 
@@ -86,14 +86,14 @@ module age_deq_policy (
                 // Update age_matrix for the new entry enq_ptr
                 // The new entry is "younger" than all existing valid entries
                 for (j = 0; j < `ISSUE_QUEUE_DEPTH; j++) begin
-                    if (j != enq_ptr) begin//对角线永为0
+                    if (j != enq_ptr) begin  //对角线永为0
                         if (iq_entries_valid[j]) begin
                             // j is older than free_idx_for_enq
-                            age_matrix[j][enq_ptr] <= 1'b1;//有效行，写入列置1
-                            age_matrix[enq_ptr][j] <= 1'b0;//写入行，有效列为0
+                            age_matrix[j][enq_ptr] <= 1'b1;  //有效行，写入列置1
+                            age_matrix[enq_ptr][j] <= 1'b0;  //写入行，有效列为0
                         end else begin
-                            age_matrix[j][enq_ptr] <= 1'b0;//无效行，写入列置0
-                            age_matrix[enq_ptr][j] <= 1'b0;//写入行，无效列为0
+                            age_matrix[j][enq_ptr] <= 1'b0;  //无效行，写入列置0
+                            age_matrix[enq_ptr][j] <= 1'b0;  //写入行，无效列为0
                         end
                     end
                 end
