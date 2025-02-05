@@ -31,14 +31,11 @@ module age_deq_policy (
     always @(*) begin
         integer i;
         integer j;
-        oldest_idx_oh = 'b0;
-        oldest_found  = 1'b0;
         // Check if there's any j that is older than i
-        any_j_older   = 'b0;
+        any_j_older = 'b0;
         for (i = 0; i < `ISSUE_QUEUE_DEPTH; i++) begin  // 列
             if (iq_entries_ready_to_go[i]) begin
                 // // Check if there's any j that is older than i
-                // logic any_j_older = 1'b0;
                 for (j = 0; j < `ISSUE_QUEUE_DEPTH; j++) begin  // 行
                     if (j != i && age_matrix[j][i] && iq_entries_valid[j]) begin
                         // any_j_older = 1'b1;  //have any other older
@@ -46,15 +43,14 @@ module age_deq_policy (
                         break;
                     end
                 end
-
-                // If no j is older and we haven't chosen an oldest yet
-                //if (!any_j_older && !oldest_found) begin
-                // if ( ~ (&(any_j_older | ~iq_entries_valid)) && !oldest_found) begin
-                //     oldest_idx_oh[i] = 1'b1;
-                //     oldest_found     = 1'b1;
-                // end
             end
         end
+    end
+
+    always @(*) begin
+        integer i;
+        oldest_idx_oh = 'b0;
+        oldest_found  = 1'b0;
         for (i = 0; i < `ISSUE_QUEUE_DEPTH; i++) begin  // 列
             if (any_j_older[i] == 0 && iq_entries_valid[i] == 1) begin
                 oldest_idx_oh[i] = 1'b1;
@@ -62,7 +58,6 @@ module age_deq_policy (
             end
         end
     end
-
 
     // ----------------------------------------------------------
     // Main sequential block
@@ -114,14 +109,14 @@ module age_deq_policy (
     end
 
     //for debug
-    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_0 = age_matrix[0];
-    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_1 = age_matrix[1];
-    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_2 = age_matrix[2];
-    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_3 = age_matrix[3];
-    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_4 = age_matrix[4];
-    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_5 = age_matrix[5];
-    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_6 = age_matrix[6];
-    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_7 = age_matrix[7];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_row_0 = age_matrix[0];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_row_1 = age_matrix[1];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_row_2 = age_matrix[2];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_row_3 = age_matrix[3];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_row_4 = age_matrix[4];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_row_5 = age_matrix[5];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_row_6 = age_matrix[6];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_row_7 = age_matrix[7];
 
 
 
