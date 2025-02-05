@@ -70,7 +70,7 @@ module rob (
 
 );
     reg [6:0] rob_counter;
-    assign rob_can_enq          = (rob_counter < `ROB_SIZE);
+    assign rob_can_enq          = 1'b1;
     assign rob2disp_instr_robid = enqueue_ptr;
 
     /* ----------------------------- internal signal ---------------------------- */
