@@ -3,7 +3,7 @@ module memblock (
     input  wire                  clock,
     input  wire                  reset_n,
     input  wire                  instr_valid,
-    output wire                  instr_ready,
+    output reg                  instr_ready,
     input  wire [  `INSTR_RANGE] instr, // for debug
     input  wire [     `PC_RANGE] pc,//for debug
     input  wire [`INSTR_ID_WIDTH-1:0] robid,
@@ -72,7 +72,18 @@ module memblock (
 
     wire op_processing;
     //assign instr_ready = ~mem_stall;
-    assign instr_ready = ~op_processing;//use this to stop issue queue from issuing, AND with exu ready then connect to isq 
+    //assign instr_ready = ~op_processing;//use this to stop issue queue from issuing, AND with exu ready then connect to isq 
+    always @(posedge clock or negedge reset_n) begin
+        if(~reset_n)begin
+            instr_ready <= 'b1;
+        end else if(req_fire) begin
+            instr_ready <= 'b0;
+        end else if (opstore_operation_done || opload_operation_done)begin
+            instr_ready <= 1'b1;
+        end
+    end
+    
+    
     wire req_fire = instr_ready  && instr_valid;
     //when redirect instr from wb pipereg is older than current instr in exu, flush instr in exu
     wire need_flush;
@@ -325,7 +336,7 @@ module memblock (
 
     //assign mem_stall =  (~is_idle | tbus_index_valid) & //when tbus_index_valid = 1, means lsu have an req due to send, stall immediately
     //                    ~((is_outstanding) & (opload_operation_done | opstore_operation_done)); //when operation done, no need to stall anymore
-    assign op_processing = ~is_idle;                     
+    assign op_processing = tbus_fire | ~is_idle;                     
 
 
     /* -------------------------------------------------------------------------- */
