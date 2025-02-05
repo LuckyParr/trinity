@@ -207,7 +207,7 @@ module iru_top (
     wire [               5:0] specrat2rn_instr1prd;
 
     wire                      rn2pipe_instr0_valid;
-    wire                      pipe2rn_instr0_ready;
+    wire                      rn2pipe_instr0_ready;
     wire [       `LREG_RANGE] rn2pipe_instr0_lrs1;
     wire [       `LREG_RANGE] rn2pipe_instr0_lrs2;
     wire [       `LREG_RANGE] rn2pipe_instr0_lrd;
@@ -353,7 +353,7 @@ module iru_top (
         .rn2pipe_instr0_prs2         (rn2pipe_instr0_prs2),
         .rn2pipe_instr0_prd          (rn2pipe_instr0_prd),
         .rn2pipe_instr0_valid        (rn2pipe_instr0_valid),
-        .pipe2rn_instr0_ready        (pipe2rn_instr0_ready),
+        .rn2pipe_instr0_ready        (rn2pipe_instr0_ready),
         .rn2pipe_instr0_lrs1         (rn2pipe_instr0_lrs1),
         .rn2pipe_instr0_lrs2         (rn2pipe_instr0_lrs2),
         .rn2pipe_instr0_lrd          (rn2pipe_instr0_lrd),
@@ -524,7 +524,7 @@ module iru_top (
         .reset_n               (reset_n),
         // from rename
         .instr_valid_from_upper(rn2pipe_instr0_valid),
-        .instr_ready_to_upper  (pipe2rn_instr0_ready),
+        .instr_ready_to_upper  (rn2pipe_instr0_ready),
         .instr                 (rn2pipe_instr0_instr),
         .pc                    (rn2pipe_instr0_pc),
         .lrs1                  (rn2pipe_instr0_lrs1),

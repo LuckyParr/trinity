@@ -100,7 +100,7 @@ module rename (
     output wire [       `PREG_RANGE] rn2pipe_instr0_prd,
     //other info of instr0
     output wire                      rn2pipe_instr0_valid,
-    input  wire                      pipe2rn_instr0_ready,
+    input  wire                      rn2pipe_instr0_ready,
     output wire [       `LREG_RANGE] rn2pipe_instr0_lrs1,
     output wire [       `LREG_RANGE] rn2pipe_instr0_lrs2,
     output wire [       `LREG_RANGE] rn2pipe_instr0_lrd,
@@ -155,7 +155,7 @@ module rename (
 
 );
 
-    assign instr0_ready = pipe2rn_instr0_ready;
+    assign instr0_ready = rn2pipe_instr0_ready;
     //assign instr1_ready = pipe2rn_instr1_ready;
 
     /* --------------------------- determine if 6 reg is valid or not -------------------------- */
@@ -217,7 +217,7 @@ module rename (
     //read req:
     //handshake means rename need to fetch 2 free physical reg number from freelist
     //when flush, no need to fetch
-    assign rn2fl_instr0_lrd_valid       = instr0_lrd_valid && pipe2rn_instr0_ready && ~flush_valid;
+    assign rn2fl_instr0_lrd_valid       = instr0_lrd_valid && rn2pipe_instr0_ready && ~flush_valid;
     assign rn2fl_instr1_lrd_valid       = instr1_lrd_valid && ~flush_valid;  //&& pipe2rn_instr1_ready;//issue queue accept instr1 abililty due to implement future
 
 
@@ -243,7 +243,7 @@ module rename (
 
     /* ------------ write renamed physical number of 2 rd to spec_rat ----------- */
 
-    assign rn2specrat_instr0_lrd_wren   = waw_hazard ? 0 : instr0_lrd_valid;
+    assign rn2specrat_instr0_lrd_wren   = waw_hazard ? 0 : instr0_lrd_valid & rn2pipe_instr0_ready;
     assign rn2specrat_instr0_lrd_wraddr = instr0_lrd;
     assign rn2specrat_instr0_lrd_wrdata = fl2rn_instr0prd;
 
