@@ -40,7 +40,7 @@ module memblock (
     output wire [        `PREG_RANGE] memblock_out_prd,
     output wire                       memblock_out_need_to_wb,
     output wire                       memblock_out_mmio_valid,
-    output wire [      `RESULT_RANGE] memblock_out_opload_rddata,  // output rddata at same cycle as operation_done
+    output reg  [      `RESULT_RANGE] memblock_out_opload_rddata,  // output rddata at same cycle as operation_done
     output wire [       `INSTR_RANGE] memblock_out_instr,          //for debug
     output wire [          `PC_RANGE] memblock_out_pc,             //for debug
 
@@ -76,7 +76,7 @@ module memblock (
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             instr_ready <= 'b1;
-        end else if (req_fire) begin
+        end else if (req_fire & ~mmio_valid) begin
             instr_ready <= 'b0;
         end else if (opstore_operation_done || opload_operation_done) begin
             instr_ready <= 1'b1;
@@ -192,9 +192,9 @@ module memblock (
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             instr_valid_latch <= 'b0;
-        end else if(req_fire )begin
+        end else if (req_fire & ~mmio_valid) begin
             instr_valid_latch <= instr_valid;
-        end else if(tbus_operation_done)begin
+        end else if (tbus_operation_done) begin
             instr_valid_latch <= 'b0;
         end
     end
@@ -241,6 +241,7 @@ module memblock (
     end
 
     always @(*) begin
+        memblock_out_opload_rddata = 'b0;
         if (opload_operation_done) begin
             case ({
                 size_1b_latch, size_1h_latch, size_1w_latch, size_2w_latch, is_unsigned_latch
@@ -285,13 +286,13 @@ module memblock (
         tbus_operation_type = 'b0;
 
         if (is_load_latch & instr_valid_latch) begin
-            if ((~is_outstanding) & ~mmio_valid) begin
+            if ((~is_outstanding) & ~memblock_out_mmio_valid) begin
                 tbus_index_valid    = 1'b1;
                 tbus_index          = ls_address_latch[`RESULT_WIDTH-1:0];
                 tbus_operation_type = `TBUS_READ;
             end
         end else if (is_store_latch & instr_valid_latch) begin
-            if (~is_outstanding & ~mmio_valid) begin
+            if (~is_outstanding & ~memblock_out_mmio_valid) begin
                 tbus_index_valid    = 1'b1;
                 tbus_index          = ls_address_latch[`RESULT_WIDTH-1:0];
                 tbus_write_mask     = opstore_write_mask_qual;
@@ -301,7 +302,6 @@ module memblock (
         end else begin
 
         end
-
     end
 
     always @(posedge clock or negedge reset_n) begin
@@ -316,19 +316,16 @@ module memblock (
                         ls_state <= OUTSTANDING;
                     end
                 end
-
                 PENDING: begin
                     if (read_fire | write_fire) begin
                         ls_state <= OUTSTANDING;
                     end
                 end
-
                 OUTSTANDING: begin
                     if (opload_operation_done | opstore_operation_done) begin
                         ls_state <= IDLE;
                     end
                 end
-
                 default: ;
             endcase
 
@@ -336,8 +333,7 @@ module memblock (
 
     end
 
-    //assign mem_stall =  (~is_idle | tbus_index_valid) & //when tbus_index_valid = 1, means lsu have an req due to send, stall immediately
-    //                    ~((is_outstanding) & (opload_operation_done | opstore_operation_done)); //when operation done, no need to stall anymore
+
     assign op_processing = tbus_fire | ~is_idle;
 
 
@@ -359,7 +355,6 @@ module memblock (
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             prd_latch <= 'b0;
-            //        end else if (tbus_fire | mmio_valid) begin
         end else if (req_fire | mmio_valid) begin
             prd_latch <= prd;
         end else if (tbus_operation_done) begin
@@ -370,7 +365,6 @@ module memblock (
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
             robid_latch <= 'b0;
-            //        end else if (tbus_fire | mmio_valid) begin
         end else if (req_fire | mmio_valid) begin
             robid_latch <= robid;
         end else if (tbus_operation_done) begin
