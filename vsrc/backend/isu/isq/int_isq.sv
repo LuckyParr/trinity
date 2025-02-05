@@ -276,7 +276,7 @@ module int_isq (
     always @(*) begin
         integer i;
         deq_ptr = 'b0;
-        for (i = 0; i < `ISSUE_QUEUE_LOG; i = i + 1) begin
+        for (i = 0; i < `ISSUE_QUEUE_DEPTH; i = i + 1) begin
             if (deq_fire) begin
                 if (iq_entries_clear_entry[i]) begin
                     deq_ptr = i;

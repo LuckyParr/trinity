@@ -285,13 +285,13 @@ module memblock (
         if (is_load_latch & instr_valid_latch) begin
             if ((~is_outstanding) & ~mmio_valid) begin
                 tbus_index_valid    = 1'b1;
-                tbus_index          = ls_address[`RESULT_WIDTH-1:0];
+                tbus_index          = ls_address_latch[`RESULT_WIDTH-1:0];
                 tbus_operation_type = `TBUS_READ;
             end
         end else if (is_store_latch & instr_valid_latch) begin
             if (~is_outstanding & ~mmio_valid) begin
                 tbus_index_valid    = 1'b1;
-                tbus_index          = ls_address[`RESULT_WIDTH-1:0];
+                tbus_index          = ls_address_latch[`RESULT_WIDTH-1:0];
                 tbus_write_mask     = opstore_write_mask_qual;
                 tbus_write_data     = opstore_write_data_qual;
                 tbus_operation_type = `TBUS_WRITE;
