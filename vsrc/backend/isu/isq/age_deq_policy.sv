@@ -86,14 +86,14 @@ module age_deq_policy (
                 // Update age_matrix for the new entry enq_ptr
                 // The new entry is "younger" than all existing valid entries
                 for (j = 0; j < `ISSUE_QUEUE_DEPTH; j++) begin
-                    if (j != enq_ptr) begin
+                    if (j != enq_ptr) begin//对角线永为0
                         if (iq_entries_valid[j]) begin
                             // j is older than free_idx_for_enq
-                            age_matrix[j][enq_ptr] <= 1'b1;
-                            age_matrix[enq_ptr][j] <= 1'b0;
+                            age_matrix[j][enq_ptr] <= 1'b1;//有效行，写入列置1
+                            age_matrix[enq_ptr][j] <= 1'b0;//写入行，有效列为0
                         end else begin
-                            age_matrix[j][enq_ptr] <= 1'b0;
-                            age_matrix[enq_ptr][j] <= 1'b0;
+                            age_matrix[j][enq_ptr] <= 1'b0;//无效行，写入列置0
+                            age_matrix[enq_ptr][j] <= 1'b0;//写入行，无效列为0
                         end
                     end
                 end
@@ -112,5 +112,19 @@ module age_deq_policy (
             end
         end
     end
+
+    //for debug
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_0 = age_matrix[0];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_1 = age_matrix[1];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_2 = age_matrix[2];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_3 = age_matrix[3];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_4 = age_matrix[4];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_5 = age_matrix[5];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_6 = age_matrix[6];
+    wire [`ISSUE_QUEUE_DEPTH-1:0] age_matrix_column_7 = age_matrix[7];
+
+
+
+
 
 endmodule

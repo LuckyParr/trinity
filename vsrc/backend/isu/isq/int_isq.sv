@@ -363,7 +363,7 @@ module int_isq (
                 .writeback_wakeup_src2(writeback_wakeup_src2[i]),
                 .issuing              (iq_entries_clear_entry[i]),
                 .flush                (flush_dec[i]),
-                .valid                (iq_entries_valid[i]),
+                .valid                (iq_entries_valid[i]),//output ,as deq_valid
                 .deq_pc               (iq_entries_deq_pc[i]),
                 .deq_instr            (iq_entries_deq_instr[i]),
                 .deq_imm              (iq_entries_deq_imm[i]),
