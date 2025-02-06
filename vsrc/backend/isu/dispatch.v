@@ -215,9 +215,9 @@ module dispatch (
     assign disp2rob_instr1_need_to_wb = instr1_need_to_wb;
 
     /* ------------ write prd0 and prd1 busy bit to 1 in busy_vector ------------ */
-    assign disp2bt_alloc_instr0_rd_en = instr0_need_to_wb;
+    assign disp2bt_alloc_instr0_rd_en = instr0_need_to_wb && iru2isu_instr0_valid && ~flush_valid && sq_can_alloc && iq_can_alloc0 && iq_can_alloc1 & rob_can_enq;
     assign disp2bt_alloc_instr0_rd    = instr0_prd;
-    assign disp2bt_alloc_instr1_rd_en = instr1_need_to_wb;
+    assign disp2bt_alloc_instr1_rd_en = instr1_need_to_wb && iru2isu_instr0_valid && ~flush_valid && sq_can_alloc && iq_can_alloc0 && iq_can_alloc1 & rob_can_enq;
     assign disp2bt_alloc_instr1_rd    = instr1_prd;
 
     /* ------- read instr0 and instr1 rs1 rs2 busy status from busy_vector ------ */
