@@ -125,7 +125,7 @@ module memblock (
     wire [  `RESULT_RANGE] ldu_out_load_data;
 
     wire                   flush_this_beat;
-    assign flush_this_beat = instr_valid & flush_valid & ((flush_robid[`ROB_SIZE_LOG] ^ robid[`ROB_SIZE_LOG]) ^ (flush_robid[`ROB_SIZE_LOG-1:0] < robid[`ROB_SIZE_LOG-1:0]));
+    assign flush_this_beat = instr_valid & instr_ready & flush_valid & ((flush_robid[`ROB_SIZE_LOG] ^ robid[`ROB_SIZE_LOG]) ^ (flush_robid[`ROB_SIZE_LOG-1:0] < robid[`ROB_SIZE_LOG-1:0]));
 
 
     loadunit u_loadunit (
