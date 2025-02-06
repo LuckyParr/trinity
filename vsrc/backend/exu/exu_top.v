@@ -417,6 +417,7 @@ module exu_top (
         .load2arb_tbus_index_ready   (load2arb_tbus_index_ready),
         .load2arb_tbus_read_data     (load2arb_tbus_read_data),
         .load2arb_tbus_operation_done(load2arb_tbus_operation_done),
+        .load2arb_flush_valid        (mem2dcache_flush),
         .sq2arb_tbus_index_valid     (sq2arb_tbus_index_valid),
         .sq2arb_tbus_index_ready     (sq2arb_tbus_index_ready),
         .sq2arb_tbus_index           (sq2arb_tbus_index),

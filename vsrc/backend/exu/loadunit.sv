@@ -30,6 +30,7 @@ module loadunit (
     input  wire                   flush_valid,
     input  wire [`ROB_SIZE_LOG:0] flush_robid,
     /* --------------------------- memblock to dcache --------------------------- */
+    //In addition to flush dcache,it can be used to flush dcache arb.
     output wire                   mem2dcache_flush,
     /* --------------------------- output to writeback -------------------------- */
     output wire                   ldu_out_instr_valid,
@@ -99,7 +100,7 @@ module loadunit (
     assign req_fire = instr_valid & instr_ready;
 
     always @(posedge clock or negedge reset_n) begin
-        if (~reset_n| need_flush) begin
+        if (~reset_n | need_flush) begin
             instr_valid_latch <= 'b0;
         end else if (req_fire & ~flush_this_beat) begin
             instr_valid_latch <= 1'b1;

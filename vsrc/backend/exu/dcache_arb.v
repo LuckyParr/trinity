@@ -3,11 +3,12 @@ module dcache_arb (
     input wire reset_n, // Active-low reset_n signal
 
     // LSU Channel Inputs and Outputs : from lsu
-    input  wire        load2arb_tbus_index_valid,    // Valid signal for load2arb_tbus_index
-    input  wire [63:0] load2arb_tbus_index,          // 64-bit input for load2arb_tbus_index (Channel 1)
-    output reg         load2arb_tbus_index_ready,    // Ready signal for LSU channel
-    output reg  [63:0] load2arb_tbus_read_data,      // Output burst read data for LSU channel
+    input  wire        load2arb_tbus_index_valid,     // Valid signal for load2arb_tbus_index
+    input  wire [63:0] load2arb_tbus_index,           // 64-bit input for load2arb_tbus_index (Channel 1)
+    output reg         load2arb_tbus_index_ready,     // Ready signal for LSU channel
+    output reg  [63:0] load2arb_tbus_read_data,       // Output burst read data for LSU channel
     output reg         load2arb_tbus_operation_done,
+    input  wire        load2arb_flush_valid,
 
     //SQ bus channel : from SQ
     input  reg                       sq2arb_tbus_index_valid,
@@ -46,7 +47,7 @@ module dcache_arb (
 
     // Arbiter Logic
     always @(posedge clock or negedge reset_n) begin
-        if (~reset_n) current_state <= IDLE;
+        if (~reset_n | load2arb_flush_valid) current_state <= IDLE;
         else current_state <= next_state;
     end
     reg ddr_chip_enable_level;
@@ -59,9 +60,12 @@ module dcache_arb (
                 load2arb_tbus_operation_done = 0;
                 load2arb_tbus_index_ready    = 0;
                 sq2arb_tbus_index_ready      = 0;
-
-                if (sq2arb_tbus_index_valid && tbus_index_ready) next_state = SQ;
-                else if (load2arb_tbus_index_valid && tbus_index_ready) next_state = LSU;
+                //when SQ request to arb,it has retired.
+                if (sq2arb_tbus_index_valid && tbus_index_ready) begin
+                    next_state = SQ;
+                end else if (load2arb_tbus_index_valid && tbus_index_ready && ~load2arb_flush_valid) begin
+                    next_state = LSU;
+                end
             end
 
             SQ: begin
