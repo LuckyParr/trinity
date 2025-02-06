@@ -3,7 +3,7 @@ module cqentry (
     input logic reset_n,
 
     // Clear signal (highest priority)
-    input logic                            clear_entry,
+    input logic clear_entry,
 
     // Write-enable to load new values (data, condition, index, valid)
     input logic                            wr_en,

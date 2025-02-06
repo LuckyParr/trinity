@@ -32,99 +32,99 @@ module sq_entry (
 
 
 );
-  reg                   queue_valid;
-  reg [      `PC_RANGE] queue_pc;
-  reg [`ROB_SIZE_LOG:0] queue_robid;
-  reg                   queue_commited;
-  //sig below wait for wb update
-  reg                   queue_mmio;
-  reg [     `SRC_RANGE] queue_store_addr;
-  reg [     `SRC_RANGE] queue_store_data;
-  reg [     `SRC_RANGE] queue_store_mask;
-  reg [            3:0] queue_store_ls_size;
+    reg                   queue_valid;
+    reg [      `PC_RANGE] queue_pc;
+    reg [`ROB_SIZE_LOG:0] queue_robid;
+    reg                   queue_commited;
+    //sig below wait for wb update
+    reg                   queue_mmio;
+    reg [     `SRC_RANGE] queue_store_addr;
+    reg [     `SRC_RANGE] queue_store_data;
+    reg [     `SRC_RANGE] queue_store_mask;
+    reg [            3:0] queue_store_ls_size;
 
 
-  `MACRO_LATCH_NONEN(queue_pc, enq_pc, enq_valid, `PC_LENGTH)
-  `MACRO_LATCH_NONEN(queue_robid, enq_robid, enq_valid, `ROB_SIZE_LOG + 1)
+    `MACRO_LATCH_NONEN(queue_pc, enq_pc, enq_valid, `PC_LENGTH)
+    `MACRO_LATCH_NONEN(queue_robid, enq_robid, enq_valid, `ROB_SIZE_LOG + 1)
 
-  /* -------------------------------------------------------------------------- */
-  /*                      enq and writeback  wakeup region                      */
-  /* -------------------------------------------------------------------------- */
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n | flush) begin
-      queue_valid <= 'b0;
-    end else if (enq_valid) begin
-      queue_valid <= enq_valid;
-    end else if (issuing) begin
-      queue_valid <= 'b0;
+    /* -------------------------------------------------------------------------- */
+    /*                      enq and writeback  wakeup region                      */
+    /* -------------------------------------------------------------------------- */
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n | flush) begin
+            queue_valid <= 'b0;
+        end else if (enq_valid) begin
+            queue_valid <= enq_valid;
+        end else if (issuing) begin
+            queue_valid <= 'b0;
+        end
     end
-  end
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n | flush) begin
-      queue_mmio <= 'b0;
-    end else if (enq_valid) begin
-      queue_mmio <= 'b0;
-    end else if (writeback_valid & writeback_mmio) begin
-      queue_mmio <= 'b1;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n | flush) begin
+            queue_mmio <= 'b0;
+        end else if (enq_valid) begin
+            queue_mmio <= 'b0;
+        end else if (writeback_valid & writeback_mmio) begin
+            queue_mmio <= 'b1;
+        end
     end
-  end
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n | flush) begin
-      queue_pc <= 'b0;
-    end else if (enq_valid) begin
-      queue_pc <= enq_pc;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n | flush) begin
+            queue_pc <= 'b0;
+        end else if (enq_valid) begin
+            queue_pc <= enq_pc;
+        end
     end
-  end
 
 
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n | flush) begin
-      queue_commited <= 'b0;
-    end else if (enq_valid) begin
-      queue_commited <= 'b0;
-    end else if (commit) begin
-      queue_commited <= 1'b1;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n | flush) begin
+            queue_commited <= 'b0;
+        end else if (enq_valid) begin
+            queue_commited <= 'b0;
+        end else if (commit) begin
+            queue_commited <= 1'b1;
+        end
     end
-  end
 
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n | flush) begin
-      queue_store_addr <= 'b0;
-    end else if (writeback_valid & ~writeback_mmio) begin
-      queue_store_addr <= writeback_store_addr;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n | flush) begin
+            queue_store_addr <= 'b0;
+        end else if (writeback_valid & ~writeback_mmio) begin
+            queue_store_addr <= writeback_store_addr;
+        end
     end
-  end
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n | flush) begin
-      queue_store_data <= 'b0;
-    end else if (writeback_valid & ~writeback_mmio) begin
-      queue_store_data <= writeback_store_data;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n | flush) begin
+            queue_store_data <= 'b0;
+        end else if (writeback_valid & ~writeback_mmio) begin
+            queue_store_data <= writeback_store_data;
+        end
     end
-  end
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n | flush) begin
-      queue_store_mask <= 'b0;
-    end else if (writeback_valid & ~writeback_mmio) begin
-      queue_store_mask <= writeback_store_mask;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n | flush) begin
+            queue_store_mask <= 'b0;
+        end else if (writeback_valid & ~writeback_mmio) begin
+            queue_store_mask <= writeback_store_mask;
+        end
     end
-  end
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n | flush) begin
-      queue_store_ls_size <= 'b0;
-    end else if (writeback_valid & ~writeback_mmio) begin
-      queue_store_ls_size <= writeback_store_ls_size;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n | flush) begin
+            queue_store_ls_size <= 'b0;
+        end else if (writeback_valid & ~writeback_mmio) begin
+            queue_store_ls_size <= writeback_store_ls_size;
+        end
     end
-  end
 
-  assign valid             = queue_valid;
-  assign mmio              = queue_mmio;
+    assign valid             = queue_valid;
+    assign mmio              = queue_mmio;
 
-  assign robid             = queue_robid;
+    assign robid             = queue_robid;
 
-  assign deq_store_addr    = queue_store_addr;
-  assign deq_store_data    = queue_store_data;
-  assign deq_store_mask    = queue_store_mask;
-  assign deq_store_ls_size = queue_store_ls_size;
+    assign deq_store_addr    = queue_store_addr;
+    assign deq_store_data    = queue_store_data;
+    assign deq_store_mask    = queue_store_mask;
+    assign deq_store_ls_size = queue_store_ls_size;
 
-  assign ready_to_go       = queue_valid & queue_commited;
+    assign ready_to_go       = queue_valid & queue_commited;
 endmodule

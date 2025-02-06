@@ -22,7 +22,7 @@ module dcache_arb (
 
     // dcache Control Inputs and Outputs
     output reg                       tbus_index_valid,
-    input  wire                      tbus_index_ready,      // Indicates if dcache is ready for new operation
+    input  wire                      tbus_index_ready,     // Indicates if dcache is ready for new operation
     output reg  [              63:0] tbus_index,           // 64-bit selected index to be sent to dcache
     output reg  [              63:0] tbus_write_mask,      // Output write mask for opstore channel
     output reg  [              63:0] tbus_write_data,      // Output write data for opstore channel
@@ -54,11 +54,11 @@ module dcache_arb (
     always @(*) begin
         case (current_state)
             IDLE: begin
-                ddr_chip_enable_level       = 0;
-                sq2arb_tbus_operation_done  = 0;
+                ddr_chip_enable_level        = 0;
+                sq2arb_tbus_operation_done   = 0;
                 load2arb_tbus_operation_done = 0;
                 load2arb_tbus_index_ready    = 0;
-                sq2arb_tbus_index_ready     = 0;
+                sq2arb_tbus_index_ready      = 0;
 
                 if (sq2arb_tbus_index_valid && tbus_index_ready) next_state = SQ;
                 else if (load2arb_tbus_index_valid && tbus_index_ready) next_state = LSU;
@@ -85,32 +85,32 @@ module dcache_arb (
             end
 
             LSU: begin
-                ddr_chip_enable_level       = 1'b1;
-                tbus_index                  = load2arb_tbus_index;
-                tbus_operation_type         = 'b0;
+                ddr_chip_enable_level        = 1'b1;
+                tbus_index                   = load2arb_tbus_index;
+                tbus_operation_type          = 'b0;
                 load2arb_tbus_operation_done = tbus_operation_done;
                 load2arb_tbus_index_ready    = tbus_index_ready;
 
                 if (tbus_operation_done) begin
                     load2arb_tbus_read_data = tbus_read_data;
                     //load2arb_tbus_index_ready = 1'b0;
-                    next_state             = IDLE;
+                    next_state              = IDLE;
                 end
             end
             default: begin
                 // Default values
-                ddr_chip_enable_level    = 1'b0;
-                next_state               = current_state;
-                tbus_index               = 64'b0;
-                tbus_operation_type      = 'b0;
-                tbus_write_mask          = 512'b0;
-                tbus_write_data          = 512'b0;
+                ddr_chip_enable_level     = 1'b0;
+                next_state                = current_state;
+                tbus_index                = 64'b0;
+                tbus_operation_type       = 'b0;
+                tbus_write_mask           = 512'b0;
+                tbus_write_data           = 512'b0;
 
                 load2arb_tbus_index_ready = 1'b0;
                 load2arb_tbus_read_data   = 512'b0;
 
-                sq2arb_tbus_index_ready  = 1'b0;
-                sq2arb_tbus_read_data    = 512'b0;
+                sq2arb_tbus_index_ready   = 1'b0;
+                sq2arb_tbus_read_data     = 512'b0;
             end
         endcase
     end

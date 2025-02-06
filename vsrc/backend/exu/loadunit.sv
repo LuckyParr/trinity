@@ -48,253 +48,253 @@ module loadunit (
     input  wire [           `SRC_RANGE] ldu2sq_forward_resp_mask
 
 );
-  localparam IDLE = 2'b00;
-  localparam TAKEIN = 2'b01;
-  localparam PENDING = 2'b10;
-  localparam OUTSTANDING = 2'b11;
-  reg  [1:0] ls_state;
-  wire       is_idle;
-  wire       is_pending;
-  wire       is_outstanding;
-  wire       is_takenin;
+    localparam IDLE = 2'b00;
+    localparam TAKEIN = 2'b01;
+    localparam PENDING = 2'b10;
+    localparam OUTSTANDING = 2'b11;
+    reg  [1:0] ls_state;
+    wire       is_idle;
+    wire       is_pending;
+    wire       is_outstanding;
+    wire       is_takenin;
 
-  assign is_idle        = ls_state == IDLE;
-  assign is_takenin     = ls_state == TAKEIN;
-  assign is_pending     = ls_state == PENDING;
-  assign is_outstanding = ls_state == OUTSTANDING;
-  assign instr_ready    = is_idle;
+    assign is_idle        = ls_state == IDLE;
+    assign is_takenin     = ls_state == TAKEIN;
+    assign is_pending     = ls_state == PENDING;
+    assign is_outstanding = ls_state == OUTSTANDING;
+    assign instr_ready    = is_idle;
 
-  /* -------------------------------------------------------------------------- */
-  /*                            stage : info generate                           */
-  /* -------------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------------- */
+    /*                            stage : info generate                           */
+    /* -------------------------------------------------------------------------- */
 
-  wire [  `RESULT_RANGE] ls_address;
-  reg  [  `RESULT_RANGE] ls_address_latch;
+    wire [  `RESULT_RANGE] ls_address;
+    reg  [  `RESULT_RANGE] ls_address_latch;
 
 
-  reg                    instr_valid_latch;
-  reg                    need_to_wb_latch;
-  reg  [    `PREG_RANGE] prd_latch;
-  reg  [`ROB_SIZE_LOG:0] robid_latch;
+    reg                    instr_valid_latch;
+    reg                    need_to_wb_latch;
+    reg  [    `PREG_RANGE] prd_latch;
+    reg  [`ROB_SIZE_LOG:0] robid_latch;
 
-  agu u_agu (
-      .src1      (src1),
-      .imm       (imm),
-      .ls_address(ls_address)
-  );
+    agu u_agu (
+        .src1      (src1),
+        .imm       (imm),
+        .ls_address(ls_address)
+    );
 
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n) begin
-      ls_address_latch <= 'b0;
-    end else if (instr_valid & instr_ready) begin
-      ls_address_latch <= ls_address;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            ls_address_latch <= 'b0;
+        end else if (instr_valid & instr_ready) begin
+            ls_address_latch <= ls_address;
+        end
     end
-  end
 
 
-  wire req_fire;
-  assign req_fire = instr_valid & instr_ready;
+    wire req_fire;
+    assign req_fire = instr_valid & instr_ready;
 
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n) begin
-      instr_valid_latch <= 'b0;
-    end else if (req_fire & ~need_flush & ~flush_this_beat) begin
-      instr_valid_latch <= 1'b1;
-    end else if (load2arb_tbus_operation_done) begin
-      instr_valid_latch <= 1'b0;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            instr_valid_latch <= 'b0;
+        end else if (req_fire & ~need_flush & ~flush_this_beat) begin
+            instr_valid_latch <= 1'b1;
+        end else if (load2arb_tbus_operation_done) begin
+            instr_valid_latch <= 1'b0;
+        end
     end
-  end
 
 
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n) begin
-      need_to_wb_latch <= 'b0;
-    end else if (req_fire) begin
-      need_to_wb_latch <= instr_valid & is_load;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            need_to_wb_latch <= 'b0;
+        end else if (req_fire) begin
+            need_to_wb_latch <= instr_valid & is_load;
+        end
     end
-  end
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n) begin
-      prd_latch <= 'b0;
-    end else if (req_fire) begin
-      prd_latch <= prd;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            prd_latch <= 'b0;
+        end else if (req_fire) begin
+            prd_latch <= prd;
+        end
     end
-  end
 
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n) begin
-      robid_latch <= 'b0;
-    end else if (req_fire) begin
-      robid_latch <= robid;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            robid_latch <= 'b0;
+        end else if (req_fire) begin
+            robid_latch <= robid;
+        end
     end
-  end
 
-  /*
+    /*
     0 = B
     1 = HALF WORD
     2 = WORD
     3 = DOUBLE WORD
 */
-  reg size_1b_latch;
-  reg size_1h_latch;
-  reg size_1w_latch;
-  reg size_2w_latch;
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n) begin
-      size_1b_latch <= 'b0;
-      size_1h_latch <= 'b0;
-      size_1w_latch <= 'b0;
-      size_2w_latch <= 'b0;
-    end else if (req_fire) begin
-      size_1b_latch <= ls_size[0];
-      size_1h_latch <= ls_size[1];
-      size_1w_latch <= ls_size[2];
-      size_2w_latch <= ls_size[3];
-    end
-  end
-
-  reg is_unsigned_latch;
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n) begin
-      is_unsigned_latch <= 'b0;
-    end else if (req_fire) begin
-      is_unsigned_latch <= is_unsigned;
-    end
-  end
-
-  /* -------------------------------------------------------------------------- */
-  /*                         stage : SQ forwarding query                        */
-  /* -------------------------------------------------------------------------- */
-
-
-
-
-
-  /* -------------------------------------------------------------------------- */
-  /*                      stage: load tbus request generate                     */
-  /* -------------------------------------------------------------------------- */
-
-  wire tbus_fire;
-  wire tbus_pending;
-  assign tbus_fire    = load2arb_tbus_index_valid & load2arb_tbus_index_ready;
-  assign tbus_pending = load2arb_tbus_index_valid & ~load2arb_tbus_index_ready;
-
-
-  always @(*) begin
-    load2arb_tbus_index_valid    = 'b0;
-    load2arb_tbus_index          = 'b0;
-    load2arb_tbus_write_data     = 'b0;
-    load2arb_tbus_write_mask     = 'b0;
-    load2arb_tbus_operation_type = 'b0;
-    if (instr_valid_latch) begin
-      if ((~is_outstanding)) begin
-        load2arb_tbus_index_valid    = 1'b1;
-        load2arb_tbus_index          = ls_address_latch[`RESULT_WIDTH-1:0];
-        load2arb_tbus_operation_type = `TBUS_READ;
-      end
-    end else begin
-
-    end
-  end
-
-  /* -------------------------------------------------------------------------- */
-  /*                                     FSM                                    */
-  /* -------------------------------------------------------------------------- */
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n | need_flush) begin
-      ls_state <= IDLE;
-    end else begin
-      case (ls_state)
-        IDLE: begin
-          if (req_fire & ~flush_this_beat) begin
-            ls_state <= TAKEIN;
-          end
+    reg size_1b_latch;
+    reg size_1h_latch;
+    reg size_1w_latch;
+    reg size_2w_latch;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            size_1b_latch <= 'b0;
+            size_1h_latch <= 'b0;
+            size_1w_latch <= 'b0;
+            size_2w_latch <= 'b0;
+        end else if (req_fire) begin
+            size_1b_latch <= ls_size[0];
+            size_1h_latch <= ls_size[1];
+            size_1w_latch <= ls_size[2];
+            size_2w_latch <= ls_size[3];
         end
-        TAKEIN: begin
-          if (tbus_pending) begin
-            ls_state <= PENDING;
-          end else if (tbus_fire) begin
-            ls_state <= OUTSTANDING;
-          end
+    end
+
+    reg is_unsigned_latch;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            is_unsigned_latch <= 'b0;
+        end else if (req_fire) begin
+            is_unsigned_latch <= is_unsigned;
         end
-        PENDING: begin
-          if (tbus_fire) begin
-            ls_state <= OUTSTANDING;
-          end
+    end
+
+    /* -------------------------------------------------------------------------- */
+    /*                         stage : SQ forwarding query                        */
+    /* -------------------------------------------------------------------------- */
+
+
+
+
+
+    /* -------------------------------------------------------------------------- */
+    /*                      stage: load tbus request generate                     */
+    /* -------------------------------------------------------------------------- */
+
+    wire tbus_fire;
+    wire tbus_pending;
+    assign tbus_fire    = load2arb_tbus_index_valid & load2arb_tbus_index_ready;
+    assign tbus_pending = load2arb_tbus_index_valid & ~load2arb_tbus_index_ready;
+
+
+    always @(*) begin
+        load2arb_tbus_index_valid    = 'b0;
+        load2arb_tbus_index          = 'b0;
+        load2arb_tbus_write_data     = 'b0;
+        load2arb_tbus_write_mask     = 'b0;
+        load2arb_tbus_operation_type = 'b0;
+        if (instr_valid_latch) begin
+            if ((~is_outstanding)) begin
+                load2arb_tbus_index_valid    = 1'b1;
+                load2arb_tbus_index          = ls_address_latch[`RESULT_WIDTH-1:0];
+                load2arb_tbus_operation_type = `TBUS_READ;
+            end
+        end else begin
+
         end
-        OUTSTANDING: begin
-          if (load2arb_tbus_operation_done) begin
+    end
+
+    /* -------------------------------------------------------------------------- */
+    /*                                     FSM                                    */
+    /* -------------------------------------------------------------------------- */
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n | need_flush) begin
             ls_state <= IDLE;
-          end
-        end
+        end else begin
+            case (ls_state)
+                IDLE: begin
+                    if (req_fire & ~flush_this_beat) begin
+                        ls_state <= TAKEIN;
+                    end
+                end
+                TAKEIN: begin
+                    if (tbus_pending) begin
+                        ls_state <= PENDING;
+                    end else if (tbus_fire) begin
+                        ls_state <= OUTSTANDING;
+                    end
+                end
+                PENDING: begin
+                    if (tbus_fire) begin
+                        ls_state <= OUTSTANDING;
+                    end
+                end
+                OUTSTANDING: begin
+                    if (load2arb_tbus_operation_done) begin
+                        ls_state <= IDLE;
+                    end
+                end
 
-        default: ;
-      endcase
+                default: ;
+            endcase
+        end
     end
-  end
 
 
-  /* -------------------------------------------------------------------------- */
-  /*                                result check                                */
-  /* -------------------------------------------------------------------------- */
-  reg [`RESULT_RANGE] opload_read_data_wb_raw;
-  reg [`RESULT_RANGE] opload_read_data_wb;
+    /* -------------------------------------------------------------------------- */
+    /*                                result check                                */
+    /* -------------------------------------------------------------------------- */
+    reg [`RESULT_RANGE] opload_read_data_wb_raw;
+    reg [`RESULT_RANGE] opload_read_data_wb;
 
-  always @(*) begin
-    if (load2arb_tbus_operation_done) begin
-      case ({
-        size_1b_latch, size_1h_latch, size_1w_latch, size_2w_latch, is_unsigned_latch
-      })
+    always @(*) begin
+        if (load2arb_tbus_operation_done) begin
+            case ({
+                size_1b_latch, size_1h_latch, size_1w_latch, size_2w_latch, is_unsigned_latch
+            })
 
-        5'b10001: begin
-          opload_read_data_wb_raw = (load2arb_tbus_read_data >> ((ls_address_latch[2:0]) * 8));
-          opload_read_data_wb     = {56'h0, opload_read_data_wb_raw[7:0]};
+                5'b10001: begin
+                    opload_read_data_wb_raw = (load2arb_tbus_read_data >> ((ls_address_latch[2:0]) * 8));
+                    opload_read_data_wb     = {56'h0, opload_read_data_wb_raw[7:0]};
+                end
+                5'b01001: begin
+                    opload_read_data_wb_raw = load2arb_tbus_read_data >> ((ls_address_latch[2:1]) * 16);
+                    opload_read_data_wb     = {48'h0, opload_read_data_wb_raw[15:0]};
+                end
+                5'b00101: begin
+                    opload_read_data_wb_raw = load2arb_tbus_read_data >> ((ls_address_latch[2]) * 32);
+                    opload_read_data_wb     = {32'h0, opload_read_data_wb_raw[31:0]};
+                end
+                5'b00010: opload_read_data_wb = load2arb_tbus_read_data;
+                5'b10000: begin
+                    opload_read_data_wb_raw = load2arb_tbus_read_data >> ((ls_address_latch[2:0]) * 8);
+                    opload_read_data_wb     = {{56{opload_read_data_wb_raw[7]}}, opload_read_data_wb_raw[7:0]};
+                end
+                5'b01000: begin
+                    opload_read_data_wb_raw = load2arb_tbus_read_data >> ((ls_address_latch[2:1]) * 16);
+                    opload_read_data_wb     = {{48{opload_read_data_wb_raw[15]}}, opload_read_data_wb_raw[15:0]};
+                end
+                5'b00100: begin
+                    opload_read_data_wb_raw = load2arb_tbus_read_data >> ((ls_address_latch[2]) * 32);
+                    opload_read_data_wb     = {{32{opload_read_data_wb_raw[31]}}, opload_read_data_wb_raw[31:0]};
+                end
+                default:  ;
+            endcase
         end
-        5'b01001: begin
-          opload_read_data_wb_raw = load2arb_tbus_read_data >> ((ls_address_latch[2:1]) * 16);
-          opload_read_data_wb     = {48'h0, opload_read_data_wb_raw[15:0]};
-        end
-        5'b00101: begin
-          opload_read_data_wb_raw = load2arb_tbus_read_data >> ((ls_address_latch[2]) * 32);
-          opload_read_data_wb     = {32'h0, opload_read_data_wb_raw[31:0]};
-        end
-        5'b00010: opload_read_data_wb = load2arb_tbus_read_data;
-        5'b10000: begin
-          opload_read_data_wb_raw = load2arb_tbus_read_data >> ((ls_address_latch[2:0]) * 8);
-          opload_read_data_wb = {{56{opload_read_data_wb_raw[7]}}, opload_read_data_wb_raw[7:0]};
-        end
-        5'b01000: begin
-          opload_read_data_wb_raw = load2arb_tbus_read_data >> ((ls_address_latch[2:1]) * 16);
-          opload_read_data_wb = {{48{opload_read_data_wb_raw[15]}}, opload_read_data_wb_raw[15:0]};
-        end
-        5'b00100: begin
-          opload_read_data_wb_raw = load2arb_tbus_read_data >> ((ls_address_latch[2]) * 32);
-          opload_read_data_wb = {{32{opload_read_data_wb_raw[31]}}, opload_read_data_wb_raw[31:0]};
-        end
-        default:  ;
-      endcase
     end
-  end
 
 
-  /* -------------------------------------------------------------------------- */
-  /*                                output logic                                */
-  /* -------------------------------------------------------------------------- */
-  assign ldu_out_instr_valid = load2arb_tbus_operation_done & instr_valid_latch;
-  assign ldu_out_need_to_wb  = load2arb_tbus_operation_done & instr_valid_latch;
-  assign ldu_out_prd         = prd_latch;
-  assign ldu_out_robid       = robid_latch;
-  assign ldu_out_load_data   = opload_read_data_wb;
+    /* -------------------------------------------------------------------------- */
+    /*                                output logic                                */
+    /* -------------------------------------------------------------------------- */
+    assign ldu_out_instr_valid = load2arb_tbus_operation_done & instr_valid_latch;
+    assign ldu_out_need_to_wb  = load2arb_tbus_operation_done & instr_valid_latch;
+    assign ldu_out_prd         = prd_latch;
+    assign ldu_out_robid       = robid_latch;
+    assign ldu_out_load_data   = opload_read_data_wb;
 
-  /* -------------------------------------------------------------------------- */
-  /*                                 flush logic                                */
-  /* -------------------------------------------------------------------------- */
-  wire need_flush;
-  // wire flush_this_beat;
-  wire flush_outstanding;
-  assign flush_outstanding     = (~is_idle) & flush_valid & ((flush_robid[`ROB_SIZE_LOG] ^ ldu_out_robid[`ROB_SIZE_LOG]) ^ (flush_robid[`ROB_SIZE_LOG-1:0] < ldu_out_robid[`ROB_SIZE_LOG-1:0]));
-  assign need_flush = flush_outstanding;
+    /* -------------------------------------------------------------------------- */
+    /*                                 flush logic                                */
+    /* -------------------------------------------------------------------------- */
+    wire need_flush;
+    // wire flush_this_beat;
+    wire flush_outstanding;
+    assign flush_outstanding = (~is_idle) & flush_valid & ((flush_robid[`ROB_SIZE_LOG] ^ ldu_out_robid[`ROB_SIZE_LOG]) ^ (flush_robid[`ROB_SIZE_LOG-1:0] < ldu_out_robid[`ROB_SIZE_LOG-1:0]));
+    assign need_flush        = flush_outstanding;
 
-  assign mem2dcache_flush = need_flush;
+    assign mem2dcache_flush  = need_flush;
 
 endmodule

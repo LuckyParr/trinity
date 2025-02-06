@@ -35,11 +35,11 @@ module circular_queue_1r1w #(
     localparam SELFID_WIDTH = DEPTH_LOG + 1;
     // 'entry_id_dispatcher' increments on enqueue only
     logic   [   SELFID_WIDTH-1:0] entry_id_dispatcher;
-    logic   [     DATA_WIDTH-1:0] data_out_dec               [0:DEPTH-1];
-    logic   [CONDITION_WIDTH-1:0] condition_out_dec          [0:DEPTH-1];
-    logic   [   SELFID_WIDTH-1:0] index_out_dec              [0:DEPTH-1];
-    logic                         valid_out_dec              [0:DEPTH-1];
-    logic                         rdy2dq_out_dec             [0:DEPTH-1];
+    logic   [     DATA_WIDTH-1:0] data_out_dec        [0:DEPTH-1];
+    logic   [CONDITION_WIDTH-1:0] condition_out_dec   [0:DEPTH-1];
+    logic   [   SELFID_WIDTH-1:0] index_out_dec       [0:DEPTH-1];
+    logic                         valid_out_dec       [0:DEPTH-1];
+    logic                         rdy2dq_out_dec      [0:DEPTH-1];
 
     // Write/clear/update signals
     logic   [          0:DEPTH-1] wr_en_dec;
