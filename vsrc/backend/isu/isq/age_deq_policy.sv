@@ -52,7 +52,7 @@ module age_deq_policy (
         oldest_idx_oh = 'b0;
         oldest_found  = 1'b0;
         for (i = 0; i < `ISSUE_QUEUE_DEPTH; i++) begin  // 列
-            if (any_j_older[i] == 0 && iq_entries_valid[i] == 1) begin
+            if (any_j_older[i] == 0 && iq_entries_ready_to_go[i] == 1) begin
                 oldest_idx_oh[i] = 1'b1;
                 oldest_found     = 1'b1;
             end
