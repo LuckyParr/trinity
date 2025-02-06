@@ -97,7 +97,7 @@ module rob (
     wire [  `ROB_SIZE-1:0] entry_need_to_wb_dec;
     wire [  `ROB_SIZE-1:0] entry_skip_dec;
     reg  [  `ROB_SIZE-1:0] commit_vld_dec;
-    reg  [  `ROB_SIZE-1:0] needflush_dec;
+    reg  [  `ROB_SIZE-1:0] flush_dec;
 
     wire                   instr0_actually_enq;
     wire                   instr1_actually_enq;
@@ -382,13 +382,13 @@ module rob (
 
     always @(*) begin
         integer i;
-        needflush_dec = 'b0;
+        flush_dec = 'b0;
         for (i = 0; i < `ROB_SIZE; i = i + 1) begin
             if (is_rollback) begin
                 if (enqueue_ptr[`ROB_SIZE_LOG-1:0] > flush_robid_latch[`ROB_SIZE_LOG-1:0]) begin
-                    needflush_dec[i] = (i[`ROB_SIZE_LOG-1:0] > flush_robid_latch[`ROB_SIZE_LOG-1:0]) & (i[`ROB_SIZE_LOG-1:0] < enqueue_ptr[`ROB_SIZE_LOG-1:0]);
+                    flush_dec[i] = (i[`ROB_SIZE_LOG-1:0] > flush_robid_latch[`ROB_SIZE_LOG-1:0]) & (i[`ROB_SIZE_LOG-1:0] < enqueue_ptr[`ROB_SIZE_LOG-1:0]);
                 end else begin
-                    needflush_dec[i] = (i[`ROB_SIZE_LOG-1:0] > flush_robid_latch[`ROB_SIZE_LOG-1:0]) | (i[`ROB_SIZE_LOG-1:0] < enqueue_ptr[`ROB_SIZE_LOG-1:0]);
+                    flush_dec[i] = (i[`ROB_SIZE_LOG-1:0] > flush_robid_latch[`ROB_SIZE_LOG-1:0]) | (i[`ROB_SIZE_LOG-1:0] < enqueue_ptr[`ROB_SIZE_LOG-1:0]);
                 end
             end
         end
@@ -422,7 +422,7 @@ module rob (
 
     //    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0;
     //    assign instr1_actually_enq = instr1_enq_valid & iq_can_alloc1;    
-    assign instr0_actually_enq = instr0_enq_valid ;
+    assign instr0_actually_enq = instr0_enq_valid;
     assign instr1_actually_enq = instr1_enq_valid;
 
     genvar i;
@@ -452,7 +452,7 @@ module rob (
                 .entry_need_to_wb     (entry_need_to_wb_dec[i]),       //output
                 .entry_skip           (entry_skip_dec[i]),             //output
                 .commit_vld           (commit_vld_dec[i]),             //i
-                .flush_vld            (needflush_dec[i])               //i
+                .flush_vld            (flush_dec[i])                   //i
             );
         end
     endgenerate

@@ -1,10 +1,10 @@
 module find_first1 #(
     parameter WIDTH = 8,
     parameter WIDTH_LOG = 3
-    
+
 ) (
-    input  [WIDTH-1:0] data_in,
-    output [WIDTH-1:0] data_out,
+    input  [    WIDTH-1:0] data_in,
+    output [    WIDTH-1:0] data_out,
     output [WIDTH_LOG-1:0] data_out_enc
 );
     wire data_in_is_zero;

@@ -10,22 +10,22 @@ module inorder_deq_policy #(
     output reg  [ QUEUE_SIZE -1 : 0] deq_ptr_oh,
     output reg  [QUEUE_SIZE_LOG : 0] deq_ptr
 );
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n) begin
-      deq_ptr <= 'b0;
-    end else if (deq_fire) begin
-      deq_ptr <= deq_ptr + 1;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            deq_ptr <= 'b0;
+        end else if (deq_fire) begin
+            deq_ptr <= deq_ptr + 1;
+        end
     end
-  end
 
-  always @(*) begin
-    integer i;
-    deq_ptr_oh = 'b0;
-    for (i = 0; i < QUEUE_SIZE; i = i + 1) begin
-      if (deq_ptr[QUEUE_SIZE_LOG-1:0] == i) begin
-        deq_ptr_oh[i] = 'b1;
-      end
+    always @(*) begin
+        integer i;
+        deq_ptr_oh = 'b0;
+        for (i = 0; i < QUEUE_SIZE; i = i + 1) begin
+            if (deq_ptr[QUEUE_SIZE_LOG-1:0] == i) begin
+                deq_ptr_oh[i] = 'b1;
+            end
+        end
     end
-  end
 
 endmodule

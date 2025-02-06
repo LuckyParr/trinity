@@ -216,7 +216,7 @@ module storequeue (
         flush_dec = 'b0;
         for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
             if (flush_valid) begin
-                if(enq_ptr[`STOREQUEUE_LOG-1:0] >= flush_sqid[`STOREQUEUE_LOG-1:0])begin
+                if (enq_ptr[`STOREQUEUE_LOG-1:0] >= flush_sqid[`STOREQUEUE_LOG-1:0]) begin
                     flush_dec[i] = (i[`STOREQUEUE_LOG-1:0] >= flush_sqid[`STOREQUEUE_LOG-1:0]) & (i[`STOREQUEUE_LOG-1:0] < enq_ptr[`STOREQUEUE_LOG-1:0]);
                 end else begin
                     flush_dec[i] = (i[`STOREQUEUE_LOG-1:0] >= flush_sqid[`STOREQUEUE_LOG-1:0]) | (i[`STOREQUEUE_LOG-1:0] < enq_ptr[`STOREQUEUE_LOG-1:0]);
