@@ -46,7 +46,7 @@ module robentry
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n | flush_vld) begin
             entry_complete <= 1'b0;
-        end else if (~entry_complete & wb_set_complete) begin
+        end else if (~entry_complete & wb_set_complete & entry_valid) begin
             entry_complete <= 1'b1;
         end else if (commit_vld) begin
             entry_complete <= 1'b0;

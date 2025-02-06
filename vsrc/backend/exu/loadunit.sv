@@ -99,9 +99,9 @@ module loadunit (
     assign req_fire = instr_valid & instr_ready;
 
     always @(posedge clock or negedge reset_n) begin
-        if (~reset_n) begin
+        if (~reset_n| need_flush) begin
             instr_valid_latch <= 'b0;
-        end else if (req_fire & ~need_flush & ~flush_this_beat) begin
+        end else if (req_fire & ~flush_this_beat) begin
             instr_valid_latch <= 1'b1;
         end else if (load2arb_tbus_operation_done) begin
             instr_valid_latch <= 1'b0;
