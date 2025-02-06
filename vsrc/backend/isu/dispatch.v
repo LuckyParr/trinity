@@ -162,7 +162,7 @@ module dispatch (
     assign iru2isu_instr1_ready             = 1'b0;
 
     /* --------------------- write instr0 and instr1 to rob --------------------- */
-    assign disp2rob_instr0_enq_valid        = iru2isu_instr0_valid && ~flush_valid;
+    assign disp2rob_instr0_enq_valid        = iru2isu_instr0_valid && ~flush_valid && iq_can_alloc0 && sq_can_alloc;
     assign disp2rob_instr0_pc               = instr0_pc;
     assign disp2rob_instr0_instr            = instr0_instr;
     assign disp2rob_instr0_lrd              = instr0_lrd;
@@ -193,7 +193,7 @@ module dispatch (
 
 
 
-    assign disp2intisq_instr0_enq_valid     = iru2isu_instr0_valid && ~flush_valid;
+    assign disp2intisq_instr0_enq_valid     = iru2isu_instr0_valid && ~flush_valid && sq_can_alloc;
     assign disp2intisq_instr0_pc            = instr0_pc;
     assign disp2intisq_instr0_instr         = instr0_instr;
     assign disp2intisq_instr0_lrs1          = instr0_lrs1;
@@ -225,7 +225,7 @@ module dispatch (
     /* -------------------------------------------------------------------------- */
     /*                               to store queue                               */
     /* -------------------------------------------------------------------------- */
-    assign disp2sq_valid                    = iru2isu_instr0_valid & instr0_is_store & ~flush_valid;
+    assign disp2sq_valid                    = iru2isu_instr0_valid & instr0_is_store & ~flush_valid && iq_can_alloc0;
     assign disp2sq_robid                    = rob2disp_instr_robid;
     assign disp2sq_pc                       = instr0_pc;
 endmodule

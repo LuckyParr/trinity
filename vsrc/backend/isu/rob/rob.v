@@ -422,7 +422,7 @@ module rob (
 
     //    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0;
     //    assign instr1_actually_enq = instr1_enq_valid & iq_can_alloc1;    
-    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0 & sq_can_alloc;
+    assign instr0_actually_enq = instr0_enq_valid ;
     assign instr1_actually_enq = instr1_enq_valid;
 
     genvar i;
