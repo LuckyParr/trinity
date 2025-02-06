@@ -3,7 +3,6 @@ module int_isq (
     input  wire reset_n,
     //ready sigs,cause dispathc only can dispatch when rob,IQ,SQ both have avail entry
     output wire iq_can_alloc0,
-    input  wire sq_can_alloc,
     input  wire all_iq_ready,
 
     input wire               enq_instr0_valid,
@@ -158,7 +157,7 @@ module int_isq (
     wire                             enq_has_avail_entry;
     wire                             enq_fire;
     assign enq_has_avail_entry = |(enq_ptr_oh & ~iq_entries_valid);
-    assign enq_fire            = enq_has_avail_entry & enq_instr0_valid & sq_can_alloc;
+    assign enq_fire            = enq_has_avail_entry & enq_instr0_valid ;
 
     findfirstone u_findfirstone (
         .in_vector(~iq_entries_valid),

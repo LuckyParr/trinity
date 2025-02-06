@@ -281,6 +281,7 @@ module isu_top (
 
     wire                      rob_can_enq;
     wire                      iq_can_alloc0;
+    wire                      iq_can_alloc1;
     dispatch u_dispatch (
         .clock                           (clock),
         .reset_n                         (reset_n),
@@ -481,14 +482,13 @@ module isu_top (
     );
 
     /* -------------------------------------------------------------------------- */
-    /*                                 issuequeue                                 */
+    /*                              int   issuequeue                              */
     /* -------------------------------------------------------------------------- */
 
     int_isq u_int_isq (
         .clock                   (clock),
         .reset_n                 (reset_n),
         .iq_can_alloc0           (iq_can_alloc0),
-        .sq_can_alloc            (sq_can_alloc),                      //input
         .all_iq_ready            (1'b1),
         .enq_instr0_valid        (disp2intisq_instr0_enq_valid),
         .enq_instr0_lrs1         (disp2intisq_instr0_lrs1),
@@ -554,6 +554,79 @@ module isu_top (
         .flush_valid             (flush_valid),
         .flush_robid             (flush_robid)
     );
+
+
+
+    // int_isq mem_isq (
+    //     .clock                   (clock),
+    //     .reset_n                 (reset_n),
+    //     .iq_can_alloc0           (iq_can_alloc1),
+    //     .sq_can_alloc            (sq_can_alloc),
+    //     .all_iq_ready            (all_iq_ready),
+    //     .enq_instr0_valid        (enq_instr0_valid),
+    //     .enq_instr0_lrs1         (enq_instr0_lrs1),
+    //     .enq_instr0_lrs2         (enq_instr0_lrs2),
+    //     .enq_instr0_lrd          (enq_instr0_lrd),
+    //     .enq_instr0_pc           (enq_instr0_pc),
+    //     .enq_instr0              (enq_instr0),
+    //     .enq_instr0_imm          (enq_instr0_imm),
+    //     .enq_instr0_src1_is_reg  (enq_instr0_src1_is_reg),
+    //     .enq_instr0_src2_is_reg  (enq_instr0_src2_is_reg),
+    //     .enq_instr0_need_to_wb   (enq_instr0_need_to_wb),
+    //     .enq_instr0_cx_type      (enq_instr0_cx_type),
+    //     .enq_instr0_is_unsigned  (enq_instr0_is_unsigned),
+    //     .enq_instr0_alu_type     (enq_instr0_alu_type),
+    //     .enq_instr0_muldiv_type  (enq_instr0_muldiv_type),
+    //     .enq_instr0_is_word      (enq_instr0_is_word),
+    //     .enq_instr0_is_imm       (enq_instr0_is_imm),
+    //     .enq_instr0_is_load      (enq_instr0_is_load),
+    //     .enq_instr0_is_store     (enq_instr0_is_store),
+    //     .enq_instr0_ls_size      (enq_instr0_ls_size),
+    //     .enq_instr0_prs1         (enq_instr0_prs1),
+    //     .enq_instr0_prs2         (enq_instr0_prs2),
+    //     .enq_instr0_prd          (enq_instr0_prd),
+    //     .enq_instr0_old_prd      (enq_instr0_old_prd),
+    //     .enq_instr0_predicttaken (enq_instr0_predicttaken),
+    //     .enq_instr0_predicttarget(enq_instr0_predicttarget),
+    //     .enq_instr0_robid        (enq_instr0_robid),
+    //     .enq_instr0_sqid         (enq_instr0_sqid),
+    //     .enq_instr0_src1_state   (enq_instr0_src1_state),
+    //     .enq_instr0_src2_state   (enq_instr0_src2_state),
+    //     .issue0_valid            (issue0_valid),
+    //     .issue0_ready            (issue0_ready),
+    //     .issue0_prs1             (issue0_prs1),
+    //     .issue0_prs2             (issue0_prs2),
+    //     .issue0_src1_is_reg      (issue0_src1_is_reg),
+    //     .issue0_src2_is_reg      (issue0_src2_is_reg),
+    //     .issue0_prd              (issue0_prd),
+    //     .issue0_old_prd          (issue0_old_prd),
+    //     .issue0_pc               (issue0_pc),
+    //     .issue0_instr            (issue0_instr),
+    //     .issue0_imm              (issue0_imm),
+    //     .issue0_need_to_wb       (issue0_need_to_wb),
+    //     .issue0_cx_type          (issue0_cx_type),
+    //     .issue0_is_unsigned      (issue0_is_unsigned),
+    //     .issue0_alu_type         (issue0_alu_type),
+    //     .issue0_muldiv_type      (issue0_muldiv_type),
+    //     .issue0_is_word          (issue0_is_word),
+    //     .issue0_is_imm           (issue0_is_imm),
+    //     .issue0_is_load          (issue0_is_load),
+    //     .issue0_is_store         (issue0_is_store),
+    //     .issue0_ls_size          (issue0_ls_size),
+    //     .issue0_predicttaken     (issue0_predicttaken),
+    //     .issue0_predicttarget    (issue0_predicttarget),
+    //     .issue0_robid            (issue0_robid),
+    //     .issue0_sqid             (issue0_sqid),
+    //     .writeback0_valid        (writeback0_valid),
+    //     .writeback0_need_to_wb   (writeback0_need_to_wb),
+    //     .writeback0_prd          (writeback0_prd),
+    //     .writeback1_valid        (writeback1_valid),
+    //     .writeback1_need_to_wb   (writeback1_need_to_wb),
+    //     .writeback1_prd          (writeback1_prd),
+    //     .rob_state               (rob_state),
+    //     .flush_valid             (flush_valid),
+    //     .flush_robid             (flush_robid)
+    // );
 
 
 

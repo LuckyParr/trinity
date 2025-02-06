@@ -64,8 +64,6 @@ module rob (
 
 
     /* ------------------------------ enq relevant ------------------------------ */
-    input  wire                   iq_can_alloc0,
-    input  wire                   sq_can_alloc,
     output reg                    rob_can_enq,
     output reg  [`ROB_SIZE_LOG:0] rob2disp_instr_robid
 
@@ -419,9 +417,6 @@ module rob (
 
     /* ----------------------------- internal signal ---------------------------- */
 
-
-    //    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0;
-    //    assign instr1_actually_enq = instr1_enq_valid & iq_can_alloc1;    
     assign instr0_actually_enq = instr0_enq_valid;
     assign instr1_actually_enq = instr1_enq_valid;
 
