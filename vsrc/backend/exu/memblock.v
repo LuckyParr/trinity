@@ -121,6 +121,7 @@ module memblock (
     wire                   ldu_out_need_to_wb;
     wire [    `PREG_RANGE] ldu_out_prd;
     wire [`ROB_SIZE_LOG:0] ldu_out_robid;
+    wire [      `PC_RANGE] ldu_out_pc;
     wire [  `RESULT_RANGE] ldu_out_load_data;
 
     wire                   flush_this_beat;
@@ -132,6 +133,7 @@ module memblock (
         .reset_n                     (reset_n),
         .flush_this_beat             (flush_this_beat),
         .instr_valid                 (instr_valid & is_load & ~mmio_valid),
+        .pc                          (pc),
         .instr_ready                 (instr_ready),
         .prd                         (prd),
         .is_load                     (is_load),
@@ -157,6 +159,7 @@ module memblock (
         .ldu_out_need_to_wb          (ldu_out_need_to_wb),
         .ldu_out_prd                 (ldu_out_prd),
         .ldu_out_robid               (ldu_out_robid),
+        .ldu_out_pc                  (ldu_out_pc),
         .ldu_out_load_data           (ldu_out_load_data),
         /* --------------------------------- forward -------------------------------- */
         .ldu2sq_forward_req_valid    (ldu2sq_forward_req_valid),

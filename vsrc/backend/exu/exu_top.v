@@ -71,7 +71,11 @@ module exu_top (
     output wire [                    8:0] intwb0_btb_write_index,
     output wire [                  128:0] intwb0_btb_din,
 
-
+    /* --------------------------------- commit --------------------------------- */
+    input  wire                   commit0_valid,
+    input  wire [`ROB_SIZE_LOG:0] commit0_robid,
+    input  wire                   commit1_valid,
+    input  wire [`ROB_SIZE_LOG:0] commit1_robid,
     //flush
     output wire                   flush_valid,
     output wire [           63:0] flush_target,
@@ -152,12 +156,6 @@ module exu_top (
     wire [             `SRC_RANGE] memwb_store_data;
     wire [             `SRC_RANGE] memwb_store_mask;
     wire [                    3:0] memwb_store_ls_size;
-    /* --------------------------------- commit --------------------------------- */
-    wire                           commit0_valid;
-    wire [        `ROB_SIZE_LOG:0] commit0_robid;
-
-    wire                           commit1_valid;
-    wire [        `ROB_SIZE_LOG:0] commit1_robid;
 
     wire [      `STOREQUEUE_LOG:0] flush_sqid;
 

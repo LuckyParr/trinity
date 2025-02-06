@@ -3,6 +3,7 @@ module loadunit (
     input  wire                     reset_n,
     input  wire                     flush_this_beat,
     input  wire                     instr_valid,
+    input  wire [        `PC_RANGE] pc,
     output wire                     instr_ready,
     input  wire [      `PREG_RANGE] prd,
     input  wire                     is_load,
@@ -36,6 +37,7 @@ module loadunit (
     output wire [    `PREG_RANGE] ldu_out_prd,
     output wire [`ROB_SIZE_LOG:0] ldu_out_robid,
     output wire [  `RESULT_RANGE] ldu_out_load_data,
+    output wire [      `PC_RANGE] ldu_out_pc,
 
     /* --------------------------- SQ forwarding query -------------------------- */
     output wire                         ldu2sq_forward_req_valid,
@@ -75,6 +77,7 @@ module loadunit (
     reg                    instr_valid_latch;
     reg                    need_to_wb_latch;
     reg  [    `PREG_RANGE] prd_latch;
+    reg  [      `PC_RANGE] pc_latch;
     reg  [`ROB_SIZE_LOG:0] robid_latch;
 
     agu u_agu (
@@ -128,6 +131,16 @@ module loadunit (
             robid_latch <= robid;
         end
     end
+
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            pc_latch <= 'b0;
+        end else if (req_fire) begin
+            pc_latch <= pc;
+        end
+    end
+
+
 
     /*
     0 = B
@@ -285,6 +298,7 @@ module loadunit (
     assign ldu_out_prd         = prd_latch;
     assign ldu_out_robid       = robid_latch;
     assign ldu_out_load_data   = opload_read_data_wb;
+    assign ldu_out_pc          = pc_latch;
 
     /* -------------------------------------------------------------------------- */
     /*                                 flush logic                                */

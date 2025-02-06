@@ -225,7 +225,7 @@ module dispatch (
     /* -------------------------------------------------------------------------- */
     /*                               to store queue                               */
     /* -------------------------------------------------------------------------- */
-    assign disp2sq_valid                    = iru2isu_instr0_valid & instr0_is_store;
+    assign disp2sq_valid                    = iru2isu_instr0_valid & instr0_is_store & ~flush_valid;
     assign disp2sq_robid                    = rob2disp_instr_robid;
     assign disp2sq_pc                       = instr0_pc;
 endmodule

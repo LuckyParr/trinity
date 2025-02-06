@@ -632,6 +632,10 @@ module backend #(
         .intwb0_sqid                    (),
         .intwb0_instr                   (),
         .intwb0_pc                      (),
+        .commit0_valid                  (commit0_valid),
+        .commit0_robid                  (commit0_robid),
+        .commit1_valid                  (commit1_valid),
+        .commit1_robid                  (commit1_robid),
         .flush_valid                    (flush_valid),                      //rename signal
         .flush_target                   (flush_target),                     //rename signal
         .flush_robid                    (flush_robid),
