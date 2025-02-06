@@ -211,14 +211,19 @@ module storequeue (
     /* -------------------------------------------------------------------------- */
 
     //when ready togo,cannot flush use robidx,cause idx compare would be lleagal
-    always @(flush_valid or flush_robid) begin
+    always @(flush_valid or flush_sqid) begin
         integer i;
         flush_dec = 'b0;
         for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
             if (flush_valid) begin
-                if (flush_valid & sq_entries_valid_dec[i] & (~sq_entries_ready_to_go_dec[i]) & ((flush_robid[`ROB_SIZE_LOG] ^ sq_entries_robid_dec[i][`ROB_SIZE_LOG]) ^ (flush_robid[`ROB_SIZE_LOG-1:0] <= sq_entries_robid_dec[i][`ROB_SIZE_LOG-1:0]))) begin
-                    flush_dec[i] = 1'b1;
+                if(enq_ptr[`STOREQUEUE_LOG-1:0] > flush_sqid[`STOREQUEUE_LOG-1:0])begin
+                    flush_dec[i] = (i[`STOREQUEUE_LOG-1:0] > flush_sqid[`STOREQUEUE_LOG-1:0]) & (i[`STOREQUEUE_LOG-1:0] <= enq_ptr[`STOREQUEUE_LOG-1:0]);
+                end else begin
+                    flush_dec[i] = (i[`STOREQUEUE_LOG-1:0] > flush_sqid[`STOREQUEUE_LOG-1:0]) | (i[`STOREQUEUE_LOG-1:0] <= enq_ptr[`STOREQUEUE_LOG-1:0]);
                 end
+                // if (flush_valid & sq_entries_valid_dec[i] & (~sq_entries_ready_to_go_dec[i]) & ((flush_sqid[`ROB_SIZE_LOG] ^ sq_entries_robid_dec[i][`ROB_SIZE_LOG]) ^ (flush_robid[`ROB_SIZE_LOG-1:0] <= sq_entries_robid_dec[i][`ROB_SIZE_LOG-1:0]))) begin
+                //     flush_dec[i] = 1'b1;
+                // end
             end
         end
     end

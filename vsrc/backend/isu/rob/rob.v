@@ -65,8 +65,9 @@ module rob (
 
     /* ------------------------------ enq relevant ------------------------------ */
     input  wire                   iq_can_alloc0,
-    output reg  [`ROB_SIZE_LOG:0] rob2disp_instr_robid,
-    output reg                    rob_can_enq
+    input  wire                   sq_can_alloc,
+    output reg                    rob_can_enq,
+    output reg  [`ROB_SIZE_LOG:0] rob2disp_instr_robid
 
 );
     reg [6:0] rob_counter;
@@ -262,10 +263,9 @@ module rob (
         integer i;
         for (i = 0; i < `ROB_SIZE; i = i + 1) begin
             commit_vld_dec[i] = 'b0;
-            if(~is_idle || flush_valid)begin
+            if (~is_idle || flush_valid) begin
                 commit_vld_dec = 'b0;
-            end
-            else if (entry_ready_to_commit_dec[i] & (dequeue_ptr[`ROB_SIZE_LOG-1:0] == i[`ROB_SIZE_LOG-1:0])) begin
+            end else if (entry_ready_to_commit_dec[i] & (dequeue_ptr[`ROB_SIZE_LOG-1:0] == i[`ROB_SIZE_LOG-1:0])) begin
                 commit_vld_dec[i] = 1'b1;
             end
         end
@@ -369,7 +369,7 @@ module rob (
         endcase
     end
 
-    reg [`ROB_SIZE_LOG:0] flush_robid_latch; // 7bit:contain flag
+    reg [`ROB_SIZE_LOG:0] flush_robid_latch;  // 7bit:contain flag
 
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
@@ -380,7 +380,7 @@ module rob (
     end
 
 
-        always @(*) begin
+    always @(*) begin
         integer i;
         needflush_dec = 'b0;
         for (i = 0; i < `ROB_SIZE; i = i + 1) begin
@@ -422,7 +422,7 @@ module rob (
 
     //    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0;
     //    assign instr1_actually_enq = instr1_enq_valid & iq_can_alloc1;    
-    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0;
+    assign instr0_actually_enq = instr0_enq_valid & iq_can_alloc0 & sq_can_alloc;
     assign instr1_actually_enq = instr1_enq_valid;
 
     genvar i;

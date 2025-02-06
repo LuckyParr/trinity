@@ -13,25 +13,25 @@ module inorder_enq_policy #(
 
 );
 
-  always @(posedge clock or negedge reset_n) begin
-    if (~reset_n) begin
-      enq_ptr <= 'b0;
-    end else if (flush_valid) begin
-      enq_ptr <= flush_sqid;  //flush_sqid auto +1, not like robid
-    end else if (enq_fire) begin
-      enq_ptr <= enq_ptr + 1;
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            enq_ptr <= 'b0;
+        end else if (flush_valid) begin
+            enq_ptr <= flush_sqid;  //flush_sqid auto +1, not like robid
+        end else if (enq_fire) begin
+            enq_ptr <= enq_ptr + 1;
+        end
     end
-  end
 
-  always @(*) begin
-    integer i;
-    enq_ptr_oh = 'b0;
-    for (i = 0; i < QUEUE_SIZE; i = i + 1) begin
-      if (enq_ptr[QUEUE_SIZE_LOG-1:0] == i) begin
-        enq_ptr_oh[i] = 'b1;
-      end
+    always @(*) begin
+        integer i;
+        enq_ptr_oh = 'b0;
+        for (i = 0; i < QUEUE_SIZE; i = i + 1) begin
+            if (enq_ptr[QUEUE_SIZE_LOG-1:0] == i) begin
+                enq_ptr_oh[i] = 'b1;
+            end
+        end
     end
-  end
 
 
 
