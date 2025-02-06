@@ -106,7 +106,7 @@ module isu_top (
     output wire                   commit1_need_to_wb,
     output wire                   commit1_skip,
 
-    /* ---------------------------------- issue --------------------------------- */
+    /* ----------------------------------to issue --------------------------------- */
     output wire                     issue0_valid,
     input  wire                     issue0_ready,
     output wire [  `ROB_SIZE_LOG:0] issue0_robid,
@@ -138,6 +138,37 @@ module isu_top (
     output wire [       `SRC_RANGE] issue0_src1,
     output wire [       `SRC_RANGE] issue0_src2,
 
+
+    output wire                     issue1_valid,
+    input  wire                     issue1_ready,
+    output wire [  `ROB_SIZE_LOG:0] issue1_robid,
+    output wire [`STOREQUEUE_LOG:0] issue1_sqid,
+    output wire [             63:0] issue1_pc,
+    output wire [             31:0] issue1_instr,
+    output wire [      `LREG_RANGE] issue1_lrs1,
+    output wire [      `LREG_RANGE] issue1_lrs2,
+    output wire [      `LREG_RANGE] issue1_lrd,
+    output wire [      `PREG_RANGE] issue1_prd,
+    output wire [      `PREG_RANGE] issue1_old_prd,
+    output wire                     issue1_need_to_wb,
+    output wire [      `PREG_RANGE] issue1_prs1,
+    output wire [      `PREG_RANGE] issue1_prs2,
+    output wire                     issue1_src1_is_reg,
+    output wire                     issue1_src2_is_reg,
+    output wire [             63:0] issue1_imm,
+    output wire [   `CX_TYPE_RANGE] issue1_cx_type,
+    output wire                     issue1_is_unsigned,
+    output wire [             10:0] issue1_alu_type,
+    output wire [             12:0] issue1_muldiv_type,
+    output wire                     issue1_is_word,
+    output wire                     issue1_is_imm,
+    output wire                     issue1_is_load,
+    output wire                     issue1_is_store,
+    output wire [              3:0] issue1_ls_size,
+    output wire                     issue1_predicttaken,
+    output wire [        `PC_RANGE] issue1_predicttarget,
+    output wire [       `SRC_RANGE] issue1_src1,
+    output wire [       `SRC_RANGE] issue1_src2,
 
     /* ---------------------------------- walk ---------------------------------- */
     output wire [        1:0] rob_state,
@@ -278,6 +309,37 @@ module isu_top (
     wire                      disp2intisq_instr0_src1_state;
     wire                      disp2intisq_instr0_src2_state;
 
+    wire                      disp2memisq_instr0_enq_valid;
+    wire [         `PC_RANGE] disp2memisq_instr0_pc;
+    wire [              31:0] disp2memisq_instr0_instr;
+    wire [       `LREG_RANGE] disp2memisq_instr0_lrs1;
+    wire [       `LREG_RANGE] disp2memisq_instr0_lrs2;
+    wire [       `LREG_RANGE] disp2memisq_instr0_lrd;
+    wire [       `PREG_RANGE] disp2memisq_instr0_prd;
+    wire [       `PREG_RANGE] disp2memisq_instr0_old_prd;
+    wire                      disp2memisq_instr0_need_to_wb;
+    wire [       `PREG_RANGE] disp2memisq_instr0_prs1;
+    wire [       `PREG_RANGE] disp2memisq_instr0_prs2;
+    wire                      disp2memisq_instr0_src1_is_reg;
+    wire                      disp2memisq_instr0_src2_is_reg;
+    wire [              63:0] disp2memisq_instr0_imm;
+    wire [    `CX_TYPE_RANGE] disp2memisq_instr0_cx_type;
+    wire                      disp2memisq_instr0_is_unsigned;
+    wire [   `ALU_TYPE_RANGE] disp2memisq_instr0_alu_type;
+    wire [`MULDIV_TYPE_RANGE] disp2memisq_instr0_muldiv_type;
+    wire                      disp2memisq_instr0_is_word;
+    wire                      disp2memisq_instr0_is_imm;
+    wire                      disp2memisq_instr0_is_load;
+    wire                      disp2memisq_instr0_is_store;
+    wire [               3:0] disp2memisq_instr0_ls_size;
+    wire [   `ROB_SIZE_LOG:0] disp2memisq_instr0_robid;
+    wire [ `STOREQUEUE_LOG:0] disp2memisq_instr0_sqid;
+    wire                      disp2memisq_instr0_predicttaken;
+    wire [         `PC_RANGE] disp2memisq_instr0_predicttarget;
+    wire                      disp2memisq_instr0_src1_state;
+    wire                      disp2memisq_instr0_src2_state;
+
+
 
     wire                      rob_can_enq;
     wire                      iq_can_alloc0;
@@ -288,6 +350,7 @@ module isu_top (
         //decide if dispatch can read instr or not (ROB and ISQ available and (rob_state == `ROB_STATE_IDLE))
         .rob_can_enq                     (rob_can_enq),
         .iq_can_alloc0                   (iq_can_alloc0),
+        .iq_can_alloc1                   (iq_can_alloc1),
         .rob_state                       (rob_state),
         .rob2disp_instr_robid            (rob2disp_instr_robid),
         .sq2disp_sqid                    (sq2disp_sqid),
@@ -361,7 +424,7 @@ module isu_top (
         .disp2rob_instr1_prd             (),
         .disp2rob_instr1_old_prd         (),
         .disp2rob_instr1_need_to_wb      (),
-        /* ------------------------------- issue queue ------------------------------ */
+        /* ---------------------------- to int issuequeue --------------------------- */
         .disp2intisq_instr0_enq_valid    (disp2intisq_instr0_enq_valid),
         .disp2intisq_instr0_pc           (disp2intisq_instr0_pc),
         .disp2intisq_instr0_instr        (disp2intisq_instr0_instr),
@@ -391,6 +454,36 @@ module isu_top (
         .disp2intisq_instr0_predicttarget(disp2intisq_instr0_predicttarget),
         .disp2intisq_instr0_src1_state   (disp2intisq_instr0_src1_state),
         .disp2intisq_instr0_src2_state   (disp2intisq_instr0_src2_state),
+        /* ---------------------------- to mem issuequeue --------------------------- */
+        .disp2memisq_instr0_enq_valid    (disp2memisq_instr0_enq_valid),
+        .disp2memisq_instr0_pc           (disp2memisq_instr0_pc),
+        .disp2memisq_instr0_instr        (disp2memisq_instr0_instr),
+        .disp2memisq_instr0_lrs1         (disp2memisq_instr0_lrs1),
+        .disp2memisq_instr0_lrs2         (disp2memisq_instr0_lrs2),
+        .disp2memisq_instr0_lrd          (disp2memisq_instr0_lrd),
+        .disp2memisq_instr0_prd          (disp2memisq_instr0_prd),
+        .disp2memisq_instr0_old_prd      (disp2memisq_instr0_old_prd),
+        .disp2memisq_instr0_need_to_wb   (disp2memisq_instr0_need_to_wb),
+        .disp2memisq_instr0_prs1         (disp2memisq_instr0_prs1),
+        .disp2memisq_instr0_prs2         (disp2memisq_instr0_prs2),
+        .disp2memisq_instr0_src1_is_reg  (disp2memisq_instr0_src1_is_reg),
+        .disp2memisq_instr0_src2_is_reg  (disp2memisq_instr0_src2_is_reg),
+        .disp2memisq_instr0_imm          (disp2memisq_instr0_imm),
+        .disp2memisq_instr0_cx_type      (disp2memisq_instr0_cx_type),
+        .disp2memisq_instr0_is_unsigned  (disp2memisq_instr0_is_unsigned),
+        .disp2memisq_instr0_alu_type     (disp2memisq_instr0_alu_type),
+        .disp2memisq_instr0_muldiv_type  (disp2memisq_instr0_muldiv_type),
+        .disp2memisq_instr0_is_word      (disp2memisq_instr0_is_word),
+        .disp2memisq_instr0_is_imm       (disp2memisq_instr0_is_imm),
+        .disp2memisq_instr0_is_load      (disp2memisq_instr0_is_load),
+        .disp2memisq_instr0_is_store     (disp2memisq_instr0_is_store),
+        .disp2memisq_instr0_ls_size      (disp2memisq_instr0_ls_size),
+        .disp2memisq_instr0_robid        (disp2memisq_instr0_robid),
+        .disp2memisq_instr0_sqid         (disp2memisq_instr0_sqid),
+        .disp2memisq_instr0_predicttaken (disp2memisq_instr0_predicttaken),
+        .disp2memisq_instr0_predicttarget(disp2memisq_instr0_predicttarget),
+        .disp2memisq_instr0_src1_state   (disp2memisq_instr0_src1_state),
+        .disp2memisq_instr0_src2_state   (disp2memisq_instr0_src2_state),
         /* ----------------------------- to store queue ----------------------------- */
         .disp2sq_valid                   (disp2sq_valid),
         .sq_can_alloc                    (sq_can_alloc),
@@ -399,12 +492,16 @@ module isu_top (
         /* ------------------------------- busy_table ------------------------------- */
         //disp read from busy_table
         .disp2bt_instr0_rs1              (disp2bt_instr0_rs1),
+        .disp2bt_instr0_src1_is_reg      (disp2bt_instr0_src1_is_reg),
         .bt2disp_instr0_src1_busy        (bt2disp_instr0_src1_busy),
         .disp2bt_instr0_rs2              (disp2bt_instr0_rs2),
+        .disp2bt_instr0_src2_is_reg      (disp2bt_instr0_src2_is_reg),
         .bt2disp_instr0_src2_busy        (bt2disp_instr0_src2_busy),
         .disp2bt_instr1_rs1              (),
+        .disp2bt_instr1_src1_is_reg      (),
         .bt2disp_instr1_src1_busy        (),
         .disp2bt_instr1_rs2              (),
+        .disp2bt_instr1_src2_is_reg      (),
         .bt2disp_instr1_src2_busy        (),
         //disp write rd as busy in busy_table
         .disp2bt_alloc_instr0_rd_en      (disp2bt_alloc_instr0_rd_en),
@@ -442,43 +539,39 @@ module isu_top (
         .memwb_robid       (memwb_robid),
         .memwb_mmio_valid  (memwb_mmio_valid),
 
-        .flush_valid       (flush_valid),
-        .flush_robid       (flush_robid),
+        .flush_valid         (flush_valid),
+        .flush_robid         (flush_robid),
         //rob commit output
-        .commit0_valid     (commit0_valid),
-        .commit0_pc        (commit0_pc),
-        .commit0_instr     (commit0_instr),
-        .commit0_lrd       (commit0_lrd),
-        .commit0_prd       (commit0_prd),
-        .commit0_old_prd   (commit0_old_prd),
-        .commit0_need_to_wb(commit0_need_to_wb),
-        .commit0_robid     (commit0_robid),
-        .commit0_skip      (commit0_skip),
-        .commit1_valid     (),
-        .commit1_pc        (),
-        .commit1_instr     (),
-        .commit1_lrd       (),
-        .commit1_prd       (),
-        .commit1_old_prd   (),
-        .commit1_robid     (),
-        .commit1_need_to_wb(),
-        .commit1_skip      (),
+        .commit0_valid       (commit0_valid),
+        .commit0_pc          (commit0_pc),
+        .commit0_instr       (commit0_instr),
+        .commit0_lrd         (commit0_lrd),
+        .commit0_prd         (commit0_prd),
+        .commit0_old_prd     (commit0_old_prd),
+        .commit0_need_to_wb  (commit0_need_to_wb),
+        .commit0_robid       (commit0_robid),
+        .commit0_skip        (commit0_skip),
+        .commit1_valid       (),
+        .commit1_pc          (),
+        .commit1_instr       (),
+        .commit1_lrd         (),
+        .commit1_prd         (),
+        .commit1_old_prd     (),
+        .commit1_robid       (),
+        .commit1_need_to_wb  (),
+        .commit1_skip        (),
         //walking logic
-        .rob_state         (rob_state),
-        .rob_walk0_valid   (rob_walk0_valid),
-        .rob_walk0_complete(rob_walk0_complete),
-        .rob_walk0_lrd     (rob_walk0_lrd),
-        .rob_walk0_prd     (rob_walk0_prd),
-        .rob_walk1_valid   (rob_walk1_valid),
-        .rob_walk1_lrd     (rob_walk1_lrd),
-        .rob_walk1_prd     (rob_walk1_prd),
-        .rob_walk1_complete(rob_walk1_complete),
-
+        .rob_state           (rob_state),
+        .rob_walk0_valid     (rob_walk0_valid),
+        .rob_walk0_complete  (rob_walk0_complete),
+        .rob_walk0_lrd       (rob_walk0_lrd),
+        .rob_walk0_prd       (rob_walk0_prd),
+        .rob_walk1_valid     (rob_walk1_valid),
+        .rob_walk1_lrd       (rob_walk1_lrd),
+        .rob_walk1_prd       (rob_walk1_prd),
+        .rob_walk1_complete  (rob_walk1_complete),
         .rob2disp_instr_robid(rob2disp_instr_robid),
-        .rob_can_enq         (rob_can_enq),
-        .iq_can_alloc0       (iq_can_alloc0),
-        .sq_can_alloc        (sq_can_alloc)
-
+        .rob_can_enq         (rob_can_enq)
     );
 
     /* -------------------------------------------------------------------------- */
@@ -556,84 +649,85 @@ module isu_top (
     );
 
 
-
-    // int_isq mem_isq (
-    //     .clock                   (clock),
-    //     .reset_n                 (reset_n),
-    //     .iq_can_alloc0           (iq_can_alloc1),
-    //     .sq_can_alloc            (sq_can_alloc),
-    //     .all_iq_ready            (all_iq_ready),
-    //     .enq_instr0_valid        (enq_instr0_valid),
-    //     .enq_instr0_lrs1         (enq_instr0_lrs1),
-    //     .enq_instr0_lrs2         (enq_instr0_lrs2),
-    //     .enq_instr0_lrd          (enq_instr0_lrd),
-    //     .enq_instr0_pc           (enq_instr0_pc),
-    //     .enq_instr0              (enq_instr0),
-    //     .enq_instr0_imm          (enq_instr0_imm),
-    //     .enq_instr0_src1_is_reg  (enq_instr0_src1_is_reg),
-    //     .enq_instr0_src2_is_reg  (enq_instr0_src2_is_reg),
-    //     .enq_instr0_need_to_wb   (enq_instr0_need_to_wb),
-    //     .enq_instr0_cx_type      (enq_instr0_cx_type),
-    //     .enq_instr0_is_unsigned  (enq_instr0_is_unsigned),
-    //     .enq_instr0_alu_type     (enq_instr0_alu_type),
-    //     .enq_instr0_muldiv_type  (enq_instr0_muldiv_type),
-    //     .enq_instr0_is_word      (enq_instr0_is_word),
-    //     .enq_instr0_is_imm       (enq_instr0_is_imm),
-    //     .enq_instr0_is_load      (enq_instr0_is_load),
-    //     .enq_instr0_is_store     (enq_instr0_is_store),
-    //     .enq_instr0_ls_size      (enq_instr0_ls_size),
-    //     .enq_instr0_prs1         (enq_instr0_prs1),
-    //     .enq_instr0_prs2         (enq_instr0_prs2),
-    //     .enq_instr0_prd          (enq_instr0_prd),
-    //     .enq_instr0_old_prd      (enq_instr0_old_prd),
-    //     .enq_instr0_predicttaken (enq_instr0_predicttaken),
-    //     .enq_instr0_predicttarget(enq_instr0_predicttarget),
-    //     .enq_instr0_robid        (enq_instr0_robid),
-    //     .enq_instr0_sqid         (enq_instr0_sqid),
-    //     .enq_instr0_src1_state   (enq_instr0_src1_state),
-    //     .enq_instr0_src2_state   (enq_instr0_src2_state),
-    //     .issue0_valid            (issue0_valid),
-    //     .issue0_ready            (issue0_ready),
-    //     .issue0_prs1             (issue0_prs1),
-    //     .issue0_prs2             (issue0_prs2),
-    //     .issue0_src1_is_reg      (issue0_src1_is_reg),
-    //     .issue0_src2_is_reg      (issue0_src2_is_reg),
-    //     .issue0_prd              (issue0_prd),
-    //     .issue0_old_prd          (issue0_old_prd),
-    //     .issue0_pc               (issue0_pc),
-    //     .issue0_instr            (issue0_instr),
-    //     .issue0_imm              (issue0_imm),
-    //     .issue0_need_to_wb       (issue0_need_to_wb),
-    //     .issue0_cx_type          (issue0_cx_type),
-    //     .issue0_is_unsigned      (issue0_is_unsigned),
-    //     .issue0_alu_type         (issue0_alu_type),
-    //     .issue0_muldiv_type      (issue0_muldiv_type),
-    //     .issue0_is_word          (issue0_is_word),
-    //     .issue0_is_imm           (issue0_is_imm),
-    //     .issue0_is_load          (issue0_is_load),
-    //     .issue0_is_store         (issue0_is_store),
-    //     .issue0_ls_size          (issue0_ls_size),
-    //     .issue0_predicttaken     (issue0_predicttaken),
-    //     .issue0_predicttarget    (issue0_predicttarget),
-    //     .issue0_robid            (issue0_robid),
-    //     .issue0_sqid             (issue0_sqid),
-    //     .writeback0_valid        (writeback0_valid),
-    //     .writeback0_need_to_wb   (writeback0_need_to_wb),
-    //     .writeback0_prd          (writeback0_prd),
-    //     .writeback1_valid        (writeback1_valid),
-    //     .writeback1_need_to_wb   (writeback1_need_to_wb),
-    //     .writeback1_prd          (writeback1_prd),
-    //     .rob_state               (rob_state),
-    //     .flush_valid             (flush_valid),
-    //     .flush_robid             (flush_robid)
-    // );
+    /* -------------------------------------------------------------------------- */
+    /*                            mem issuequeue region                           */
+    /* -------------------------------------------------------------------------- */
+    int_isq mem_isq (
+        .clock                   (clock),
+        .reset_n                 (reset_n),
+        .iq_can_alloc0           (iq_can_alloc1),
+        .all_iq_ready            (1'b1),
+        .enq_instr0_valid        (disp2memisq_instr0_enq_valid),
+        .enq_instr0_lrs1         (disp2memisq_instr0_lrs1),
+        .enq_instr0_lrs2         (disp2memisq_instr0_lrs2),
+        .enq_instr0_lrd          (disp2memisq_instr0_lrd),
+        .enq_instr0_pc           (disp2memisq_instr0_pc),
+        .enq_instr0              (disp2memisq_instr0_instr),
+        .enq_instr0_imm          (disp2memisq_instr0_imm),
+        .enq_instr0_src1_is_reg  (disp2memisq_instr0_src1_is_reg),
+        .enq_instr0_src2_is_reg  (disp2memisq_instr0_src2_is_reg),
+        .enq_instr0_need_to_wb   (disp2memisq_instr0_need_to_wb),
+        .enq_instr0_cx_type      (disp2memisq_instr0_cx_type),
+        .enq_instr0_is_unsigned  (disp2memisq_instr0_is_unsigned),
+        .enq_instr0_alu_type     (disp2memisq_instr0_alu_type),
+        .enq_instr0_muldiv_type  (disp2memisq_instr0_muldiv_type),
+        .enq_instr0_is_word      (disp2memisq_instr0_is_word),
+        .enq_instr0_is_imm       (disp2memisq_instr0_is_imm),
+        .enq_instr0_is_load      (disp2memisq_instr0_is_load),
+        .enq_instr0_is_store     (disp2memisq_instr0_is_store),
+        .enq_instr0_ls_size      (disp2memisq_instr0_ls_size),
+        .enq_instr0_prs1         (disp2memisq_instr0_prs1),
+        .enq_instr0_prs2         (disp2memisq_instr0_prs2),
+        .enq_instr0_prd          (disp2memisq_instr0_prd),
+        .enq_instr0_old_prd      (disp2memisq_instr0_old_prd),
+        .enq_instr0_predicttaken (disp2memisq_instr0_predicttaken),
+        .enq_instr0_predicttarget(disp2memisq_instr0_predicttarget),
+        .enq_instr0_robid        (disp2memisq_instr0_robid),
+        .enq_instr0_sqid         (disp2memisq_instr0_sqid),
+        .enq_instr0_src1_state   (disp2memisq_instr0_src1_state),
+        .enq_instr0_src2_state   (disp2memisq_instr0_src2_state),
+        .issue0_valid            (issue1_valid),
+        .issue0_ready            (issue1_ready),
+        .issue0_prs1             (issue1_prs1),
+        .issue0_prs2             (issue1_prs2),
+        .issue0_src1_is_reg      (issue1_src1_is_reg),
+        .issue0_src2_is_reg      (issue1_src2_is_reg),
+        .issue0_prd              (issue1_prd),
+        .issue0_old_prd          (issue1_old_prd),
+        .issue0_pc               (issue1_pc),
+        .issue0_instr            (issue1_instr),
+        .issue0_imm              (issue1_imm),
+        .issue0_need_to_wb       (issue1_need_to_wb),
+        .issue0_cx_type          (issue1_cx_type),
+        .issue0_is_unsigned      (issue1_is_unsigned),
+        .issue0_alu_type         (issue1_alu_type),
+        .issue0_muldiv_type      (issue1_muldiv_type),
+        .issue0_is_word          (issue1_is_word),
+        .issue0_is_imm           (issue1_is_imm),
+        .issue0_is_load          (issue1_is_load),
+        .issue0_is_store         (issue1_is_store),
+        .issue0_ls_size          (issue1_ls_size),
+        .issue0_predicttaken     (issue1_predicttaken),
+        .issue0_predicttarget    (issue1_predicttarget),
+        .issue0_robid            (issue1_robid),
+        .issue0_sqid             (issue1_sqid),
+        .writeback0_valid        (intwb0_instr_valid),
+        .writeback0_need_to_wb   (intwb0_need_to_wb),
+        .writeback0_prd          (intwb0_prd),
+        .writeback1_valid        (memwb_instr_valid),
+        .writeback1_need_to_wb   (memwb_need_to_wb),
+        .writeback1_prd          (memwb_prd),
+        .rob_state               (rob_state),
+        .flush_valid             (flush_valid),
+        .flush_robid             (flush_robid)
+    );
 
 
 
 
 
     /* -------------------------------------------------------------------------- */
-    /*     intisq read from pregfile , pregfile send result directly to exu     */
+    /*          isq read from pregfile , pregfile send result directly to exu     */
     /* -------------------------------------------------------------------------- */
 
     wire               intisq2prf_instr0_src1_is_reg;
@@ -644,6 +738,15 @@ module isu_top (
     assign intisq2prf_inst0_prs1         = {`PREG_LENGTH{issue0_valid}} & issue0_prs1;
     assign intisq2prf_instr0_src2_is_reg = issue0_valid && issue0_src2_is_reg;
     assign intisq2prf_inst0_prs2         = {`PREG_LENGTH{issue0_valid}} & issue0_prs2;
+
+    wire               memisq2prf_instr0_src1_is_reg;
+    wire [`PREG_RANGE] memisq2prf_inst0_prs1;
+    wire               memisq2prf_instr0_src2_is_reg;
+    wire [`PREG_RANGE] memisq2prf_inst0_prs2;
+    assign memisq2prf_instr0_src1_is_reg = issue1_valid && issue1_src1_is_reg;
+    assign memisq2prf_inst0_prs1         = {`PREG_LENGTH{issue1_valid}} & issue1_prs1;
+    assign memisq2prf_instr0_src2_is_reg = issue1_valid && issue1_src2_is_reg;
+    assign memisq2prf_inst0_prs2         = {`PREG_LENGTH{issue1_valid}} & issue1_prs2;
 
     busy_table u_busy_table (
         .clock                     (clock),
@@ -704,12 +807,12 @@ module isu_top (
         .rden1       (intisq2prf_instr0_src2_is_reg),
         .raddr1      (intisq2prf_inst0_prs2),
         .rdata1      (issue0_src2),
-        .rden2       (),
-        .raddr2      (),
-        .rdata2      (),
-        .rden3       (),
-        .raddr3      (),
-        .rdata3      (),
+        .rden2       (memisq2prf_instr0_src1_is_reg),
+        .raddr2      (memisq2prf_inst0_prs1),
+        .rdata2      (issue1_src1),
+        .rden3       (memisq2prf_instr0_src2_is_reg),
+        .raddr3      (memisq2prf_inst0_prs2),
+        .rdata3      (issue1_src2),
         //phsical reg number from arch_rat
         .debug_preg0 (debug_preg0),
         .debug_preg1 (debug_preg1),
