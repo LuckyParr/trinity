@@ -1,4 +1,5 @@
 module dcache_arb (
+    /* verilator lint_off UNOPTFLAT */
     input wire clock,   // Clock signal
     input wire reset_n, // Active-low reset_n signal
 
@@ -23,16 +24,15 @@ module dcache_arb (
 
     // dcache Control Inputs and Outputs
     output reg                       tbus_index_valid,
-    input  wire                      tbus_index_ready,     // Indicates if dcache is ready for new operation
-    output reg  [              63:0] tbus_index,           // 64-bit selected index to be sent to dcache
-    output reg  [              63:0] tbus_write_mask,      // Output write mask for opstore channel
-    output reg  [              63:0] tbus_write_data,      // Output write data for opstore channel
-    input  wire [              63:0] tbus_read_data,       // 512-bit data output for lw channel read
+    input  wire                      tbus_index_ready,       // Indicates if dcache is ready for new operation
+    output reg  [              63:0] tbus_index,             // 64-bit selected index to be sent to dcache
+    output reg  [              63:0] tbus_write_mask,        // Output write mask for opstore channel
+    output reg  [              63:0] tbus_write_data,        // Output write data for opstore channel
+    input  wire [              63:0] tbus_read_data,         // 512-bit data output for lw channel read
     output reg  [`TBUS_OPTYPE_RANGE] tbus_operation_type,
-    input  wire                      tbus_operation_done
-
-    //add redirect wire
-    //input wire redirect_valid
+    input  wire                      tbus_operation_done,
+    // load flush to dcache 
+    output reg                       arb2dcache_flush_valid
 
 );
 
@@ -47,19 +47,23 @@ module dcache_arb (
 
     // Arbiter Logic
     always @(posedge clock or negedge reset_n) begin
-        if (~reset_n | load2arb_flush_valid) current_state <= IDLE;
-        else current_state <= next_state;
+        //note:ONLY LOAD COULD BE FLUSHED!!
+        if (~reset_n | load2arb_flush_valid & (current_state == LSU)) begin
+            current_state <= IDLE;
+        end else current_state <= next_state;
     end
     reg ddr_chip_enable_level;
 
     always @(*) begin
         case (current_state)
             IDLE: begin
-                ddr_chip_enable_level        = 0;
-                sq2arb_tbus_operation_done   = 0;
-                load2arb_tbus_operation_done = 0;
-                load2arb_tbus_index_ready    = 0;
-                sq2arb_tbus_index_ready      = 0;
+                ddr_chip_enable_level        = 'b0;
+                sq2arb_tbus_operation_done   = 'b0;
+                load2arb_tbus_operation_done = 'b0;
+                load2arb_tbus_index_ready    = 'b0;
+                sq2arb_tbus_index_ready      = 'b0;
+                next_state                   = 'b0;
+                arb2dcache_flush_valid       = 'b0;
                 //when SQ request to arb,it has retired.
                 if (sq2arb_tbus_index_valid && tbus_index_ready) begin
                     next_state = SQ;
@@ -75,6 +79,7 @@ module dcache_arb (
                 tbus_write_mask            = sq2arb_tbus_write_mask;
                 sq2arb_tbus_operation_done = tbus_operation_done;
                 sq2arb_tbus_index_ready    = tbus_index_ready;
+                arb2dcache_flush_valid     = 'b0;
                 if (sq2arb_tbus_operation_type == `TBUS_WRITE) begin
                     tbus_operation_type = `TBUS_WRITE;
                 end else begin
@@ -94,7 +99,7 @@ module dcache_arb (
                 tbus_operation_type          = 'b0;
                 load2arb_tbus_operation_done = tbus_operation_done;
                 load2arb_tbus_index_ready    = tbus_index_ready;
-
+                arb2dcache_flush_valid       = load2arb_flush_valid;
                 if (tbus_operation_done) begin
                     load2arb_tbus_read_data = tbus_read_data;
                     //load2arb_tbus_index_ready = 1'b0;
@@ -115,6 +120,7 @@ module dcache_arb (
 
                 sq2arb_tbus_index_ready   = 1'b0;
                 sq2arb_tbus_read_data     = 512'b0;
+                arb2dcache_flush_valid    = 'b0;
             end
         endcase
     end
@@ -130,5 +136,6 @@ module dcache_arb (
         end
     end
 
-    assign tbus_index_valid = ddr_chip_enable_level & ~ddr_chip_enable_latch;
+    assign tbus_index_valid = ddr_chip_enable_level & ~ddr_chip_enable_latch & ~((current_state == LSU) & load2arb_flush_valid);
 endmodule
+

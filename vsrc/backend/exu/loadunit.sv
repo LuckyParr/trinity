@@ -30,8 +30,8 @@ module loadunit (
     input  wire                   flush_valid,
     input  wire [`ROB_SIZE_LOG:0] flush_robid,
     /* --------------------------- memblock to dcache --------------------------- */
-    //In addition to flush dcache,it can be used to flush dcache arb.
-    output wire                   mem2dcache_flush,
+    //it can be used to flush dcache arb.
+    output wire                   load2arb_flush_valid,
     /* --------------------------- output to writeback -------------------------- */
     output wire                   ldu_out_instr_valid,
     output wire                   ldu_out_need_to_wb,
@@ -307,9 +307,10 @@ module loadunit (
     wire need_flush;
     // wire flush_this_beat;
     wire flush_outstanding;
-    assign flush_outstanding = (~is_idle) & flush_valid & ((flush_robid[`ROB_SIZE_LOG] ^ ldu_out_robid[`ROB_SIZE_LOG]) ^ (flush_robid[`ROB_SIZE_LOG-1:0] < ldu_out_robid[`ROB_SIZE_LOG-1:0]));
-    assign need_flush        = flush_outstanding;
+    assign flush_outstanding    = (~is_idle) & flush_valid & ((flush_robid[`ROB_SIZE_LOG] ^ ldu_out_robid[`ROB_SIZE_LOG]) ^ (flush_robid[`ROB_SIZE_LOG-1:0] < ldu_out_robid[`ROB_SIZE_LOG-1:0]));
+    assign need_flush           = flush_outstanding;
 
-    assign mem2dcache_flush  = need_flush;
+    //ONLY WHEN IS OUTSTANDING, LOAD COULD FLUSH DCACHE AND ARB
+    assign load2arb_flush_valid = need_flush;
 
 endmodule

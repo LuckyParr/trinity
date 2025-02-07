@@ -15,7 +15,7 @@ module core_top #(
     input  wire         ddr_operation_done,
     input  wire         ddr_ready
 );
-    wire                               mem2dcache_flush;
+    wire                               arb2dcache_flush_valid;
     // ibuffer outputs
     wire                               ibuffer_instr_valid;
     wire                               ibuffer_instr_ready;
@@ -137,7 +137,7 @@ module core_top #(
     dcache u_dcache (
         .clock                         (clock),
         .reset_n                       (reset_n),
-        .flush                         (mem2dcache_flush),                //flush_valid was send to memblock to determine if dcache operation should be cancel or not
+        .flush                         (arb2dcache_flush_valid),          //flush_valid was send to memblock to determine if dcache operation should be cancel or not
         //tbus channel from backend 
         .tbus_index_valid              (tbus_index_valid),
         .tbus_index_ready              (tbus_index_ready),
@@ -218,7 +218,7 @@ module core_top #(
         .tbus_read_data           (tbus_read_data),
         .tbus_operation_done      (tbus_operation_done),
         .tbus_operation_type      (tbus_operation_type),
-        .mem2dcache_flush         (mem2dcache_flush),
+        .arb2dcache_flush_valid   (arb2dcache_flush_valid),
 
         .intwb0_bht_write_enable        (intwb_bht_write_enable),
         .intwb0_bht_write_index         (intwb_bht_write_index),

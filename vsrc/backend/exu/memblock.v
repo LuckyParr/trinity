@@ -49,7 +49,7 @@ module memblock (
     input  wire [`ROB_SIZE_LOG:0] flush_robid,
 
     /* --------------------------- memblock to dcache --------------------------- */
-    output wire                         mem2dcache_flush,              // use to flush dcache process
+    output wire                         load2arb_flush_valid,              // use to flush dcache process
     /* --------------------------- SQ forwarding query -------------------------- */
     output wire                         ldu2sq_forward_req_valid,
     output wire [      `ROB_SIZE_LOG:0] ldu2sq_forward_req_sqid,
@@ -154,7 +154,7 @@ module memblock (
         .load2arb_tbus_operation_type(load2arb_tbus_operation_type),
         .flush_valid                 (flush_valid),
         .flush_robid                 (flush_robid),
-        .mem2dcache_flush            (mem2dcache_flush),
+        .load2arb_flush_valid            (load2arb_flush_valid),
         .ldu_out_instr_valid         (ldu_out_instr_valid),
         .ldu_out_need_to_wb          (ldu_out_need_to_wb),
         .ldu_out_prd                 (ldu_out_prd),

@@ -40,15 +40,15 @@ module exu_top (
     input  wire [   `LS_SIZE_RANGE] mem_ls_size,
 
     // Trinity Bus Interface
-    output wire                      tbus_index_valid,
-    input  wire                      tbus_index_ready,
-    output wire [     `RESULT_RANGE] tbus_index,
-    output wire [        `SRC_RANGE] tbus_write_data,
-    output wire [              63:0] tbus_write_mask,
-    input  wire [     `RESULT_RANGE] tbus_read_data,
-    input  wire                      tbus_operation_done,
-    output wire [`TBUS_OPTYPE_RANGE] tbus_operation_type,
-
+    output wire                           tbus_index_valid,
+    input  wire                           tbus_index_ready,
+    output wire [          `RESULT_RANGE] tbus_index,
+    output wire [             `SRC_RANGE] tbus_write_data,
+    output wire [                   63:0] tbus_write_mask,
+    input  wire [          `RESULT_RANGE] tbus_read_data,
+    input  wire                           tbus_operation_done,
+    output wire [     `TBUS_OPTYPE_RANGE] tbus_operation_type,
+    output wire                           arb2dcache_flush_valid,
     // Intblock Outputs
     output wire                           intwb0_instr_valid,
     output wire [           `INSTR_RANGE] intwb0_instr,
@@ -92,8 +92,6 @@ module exu_top (
     output wire [      `RESULT_RANGE] memwb_result,
     /* --------------------------------- to disp -------------------------------- */
     output wire [`STOREQUEUE_LOG : 0] sq2disp_sqid,
-    // Dcache Flush
-    output wire                       mem2dcache_flush,
     /* ------------------------------ from dispatch ----------------------------- */
     input  wire                       disp2sq_valid,
     output wire                       sq_can_alloc,
@@ -274,7 +272,7 @@ module exu_top (
         .intwb_bjusb_btb_din                 (intwb0_btb_din)
 
     );
-
+    wire load2arb_flush_valid;
     memblock u_memblock (
         .clock                       (clock),
         .reset_n                     (reset_n),
@@ -314,7 +312,7 @@ module exu_top (
         .memblock_out_store_ls_size  (memblock_out_store_ls_size),
         .flush_valid                 (flush_valid),
         .flush_robid                 (flush_robid),
-        .mem2dcache_flush            (mem2dcache_flush),
+        .load2arb_flush_valid        (load2arb_flush_valid),
         .ldu2sq_forward_req_valid    (ldu2sq_forward_req_valid),
         .ldu2sq_forward_req_sqid     (ldu2sq_forward_req_sqid),
         .ldu2sq_forward_req_sqmask   (ldu2sq_forward_req_sqmask),
@@ -417,7 +415,7 @@ module exu_top (
         .load2arb_tbus_index_ready   (load2arb_tbus_index_ready),
         .load2arb_tbus_read_data     (load2arb_tbus_read_data),
         .load2arb_tbus_operation_done(load2arb_tbus_operation_done),
-        .load2arb_flush_valid        (mem2dcache_flush),
+        .load2arb_flush_valid        (load2arb_flush_valid),
         .sq2arb_tbus_index_valid     (sq2arb_tbus_index_valid),
         .sq2arb_tbus_index_ready     (sq2arb_tbus_index_ready),
         .sq2arb_tbus_index           (sq2arb_tbus_index),
@@ -433,7 +431,8 @@ module exu_top (
         .tbus_write_data             (tbus_write_data),
         .tbus_read_data              (tbus_read_data),
         .tbus_operation_type         (tbus_operation_type),
-        .tbus_operation_done         (tbus_operation_done)
+        .tbus_operation_done         (tbus_operation_done),
+        .arb2dcache_flush_valid      (arb2dcache_flush_valid)
     );
 
 

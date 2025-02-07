@@ -1,4 +1,5 @@
 module channel_arb (
+    /* verilator lint_off UNOPTFLAT */
     input wire clock,   // Clock signal
     input wire reset_n, // Active-low reset_n signal
 
@@ -133,4 +134,5 @@ end
 
 assign ddr_chip_enable =  ddr_chip_enable_level & ~ddr_chip_enable_latch;
 
+/* verilator lint_off UNOPTFLAT */
 endmodule

@@ -23,7 +23,7 @@ module backend #(
     input  [`SRC_RANGE] tbus_read_data,
     input               tbus_operation_done,
     output              tbus_operation_type,
-    output              mem2dcache_flush,
+    output              arb2dcache_flush_valid,
 
     //bht btb port
     output         intwb0_bht_write_enable,
@@ -679,6 +679,7 @@ module backend #(
         .tbus_read_data                 (tbus_read_data),
         .tbus_operation_done            (tbus_operation_done),
         .tbus_operation_type            (tbus_operation_type),
+        .arb2dcache_flush_valid         (arb2dcache_flush_valid),
         .intwb0_instr_valid             (intwb0_instr_valid),
         .intwb0_need_to_wb              (intwb0_need_to_wb),
         .intwb0_prd                     (intwb0_prd),
@@ -714,7 +715,6 @@ module backend #(
         .memwb_pc                       (),
         .memwb_result                   (memwb_result),                       //rename signal
         .sq2disp_sqid                   (sq2disp_sqid),
-        .mem2dcache_flush               (mem2dcache_flush),
         //from dispatch
         .disp2sq_valid                  (disp2sq_valid),
         .sq_can_alloc                   (sq_can_alloc),
