@@ -1,5 +1,4 @@
 `include "defines.sv"
-/* verilator lint_off UNOPTFLAT */
 module storequeue (
     input wire clock,
     input wire reset_n,
@@ -51,9 +50,9 @@ module storequeue (
     input  wire [`STOREQUEUE_DEPTH-1:0] ldu2sq_forward_req_sqmask,
     input  wire [           `SRC_RANGE] ldu2sq_forward_req_load_addr,
     input  wire [       `LS_SIZE_RANGE] ldu2sq_forward_req_load_size,
-    output wire                         ldu2sq_forward_resp_valid,
-    output wire [           `SRC_RANGE] ldu2sq_forward_resp_data,
-    output wire [           `SRC_RANGE] ldu2sq_forward_resp_mask
+    output reg                          ldu2sq_forward_resp_valid,
+    output reg  [           `SRC_RANGE] ldu2sq_forward_resp_data,
+    output reg  [           `SRC_RANGE] ldu2sq_forward_resp_mask
 
 
 );
@@ -80,6 +79,7 @@ module storequeue (
 
     // reg  [   `STOREQUEUE_DEPTH-1:0] sq_entries_commit_dec;
     reg  [   `STOREQUEUE_DEPTH-1:0] sq_entries_issuing_dec;
+    reg  [   `STOREQUEUE_DEPTH-1:0] sq_entries_complete_dec;
     reg  [   `STOREQUEUE_DEPTH-1:0] flush_dec;
 
     wire [   `STOREQUEUE_DEPTH-1:0] sq_entries_ready_to_go_dec;
@@ -292,7 +292,7 @@ module storequeue (
 
 
     /* -------------------------------------------------------------------------- */
-    /*                                  forwading                                 */
+    /*                                  forwarding                                */
     /* -------------------------------------------------------------------------- */
     // jpz note:below cite from Kunminghu Core.
     // "Compare deqPtr (deqPtr) and forward.sqIdx, we have two cases:
@@ -311,7 +311,7 @@ module storequeue (
         integer i;
         cmp_addr_hit = 'b0;
         for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
-            if (cmp_sqmask[i] & sq_entries_valid_dec[i] & ldu2sq_forward_req_valid) begin
+            if (cmp_sqmask[i] & sq_entries_valid_dec[i] & sq_entries_complete_dec[i] & ldu2sq_forward_req_valid) begin
                 if ((sq_entries_deq_store_addr_dec[i] & cmp_addr_mask) == (ldu2sq_forward_req_load_addr & cmp_addr_mask)) begin
                     cmp_addr_hit[i] = 1'b1;
                 end
@@ -319,6 +319,73 @@ module storequeue (
         end
     end
 
+    wire [63:0] load_1b_mask;
+    wire [63:0] load_1h_mask;
+    wire [63:0] load_1w_mask;
+    wire [63:0] load_2w_mask;
+
+    assign load_1b_mask = {56'b0, {8{1'b1}}};
+    assign load_1h_mask = {48'b0, {16{1'b1}}};
+    assign load_1w_mask = {32'b0, {32{1'b1}}};
+    assign load_2w_mask = {64{1'b1}};
+    // reg 
+
+    wire [`STOREQUEUE_DEPTH-1:0] different_flag_upper_cmp_addr_hit;
+    wire [`STOREQUEUE_DEPTH-1:0] different_flag_lower_cmp_addr_hit;
+    assign different_flag_upper_cmp_addr_hit = cmp_addr_hit & (~deq_ptr_mask);
+    assign different_flag_lower_cmp_addr_hit = cmp_addr_hit & ldu2sq_forward_req_sqmask;
+
+
+
+    //size is ont hot,means 1b,1h,1w,1d.
+    always @(*) begin
+        ldu2sq_forward_resp_valid = 'b0;
+
+        case (ldu2sq_forward_req_load_size)
+            4'b0001: begin
+                ldu2sq_forward_resp_valid = &forwarding_valid_mask[7:0];
+            end
+            4'b0010: begin
+                ldu2sq_forward_resp_valid = &forwarding_valid_mask[15:0];
+            end
+            4'b0100: begin
+                ldu2sq_forward_resp_valid = &forwarding_valid_mask[31:0];
+            end
+            4'b1000: begin
+                ldu2sq_forward_resp_valid = &forwarding_valid_mask[63:0];
+            end
+            default: ;
+        endcase
+    end
+    reg [`SRC_RANGE] forwarding_valid_mask;
+
+
+    always @(*) begin
+        integer i;
+        ldu2sq_forward_resp_data = 'b0;
+        forwarding_valid_mask    = 'b0;
+        if (same_flag) begin
+            for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+                if (cmp_addr_hit[i]) begin
+                    ldu2sq_forward_resp_data = ldu2sq_forward_resp_data & (~sq_entries_deq_store_mask_dec[i]) | (sq_entries_deq_store_data_dec[i] & sq_entries_deq_store_mask_dec[i]);
+                    forwarding_valid_mask    = forwarding_valid_mask | sq_entries_deq_store_mask_dec[i];
+                end
+            end
+        end else begin
+            for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+                if (different_flag_upper_cmp_addr_hit[i]) begin
+                    ldu2sq_forward_resp_data = ldu2sq_forward_resp_data & (~sq_entries_deq_store_mask_dec[i]) | (sq_entries_deq_store_data_dec[i] & sq_entries_deq_store_mask_dec[i]);
+                    forwarding_valid_mask    = forwarding_valid_mask | sq_entries_deq_store_mask_dec[i];
+                end
+            end
+            for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+                if (different_flag_lower_cmp_addr_hit[i]) begin
+                    ldu2sq_forward_resp_data = ldu2sq_forward_resp_data & (~sq_entries_deq_store_mask_dec[i]) | (sq_entries_deq_store_data_dec[i] & sq_entries_deq_store_mask_dec[i]);
+                    forwarding_valid_mask    = forwarding_valid_mask | sq_entries_deq_store_mask_dec[i];
+                end
+            end
+        end
+    end
 
 
 
@@ -342,6 +409,7 @@ module storequeue (
                 .writeback_store_ls_size(memwb_store_ls_size),
                 .robid                  (sq_entries_robid_dec[i]),
                 .commit                 (commits_dec[i]),
+                .complete               (sq_entries_complete_dec[i]),
                 .issuing                (sq_entries_issuing_dec[i]),
                 .flush                  (flush_dec[i]),
                 .valid                  (sq_entries_valid_dec[i]),
@@ -355,5 +423,4 @@ module storequeue (
         end
     endgenerate
 
-    /* verilator lint_off UNOPTFLAT */
 endmodule

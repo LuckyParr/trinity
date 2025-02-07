@@ -71,16 +71,17 @@ module loadunit (
     /*                            stage : info generate                           */
     /* -------------------------------------------------------------------------- */
 
-    wire [  `RESULT_RANGE] ls_address;
-    reg  [  `RESULT_RANGE] ls_address_latch;
+    wire [    `RESULT_RANGE] ls_address;
+    reg  [    `RESULT_RANGE] ls_address_latch;
 
 
-    reg                    instr_valid_latch;
-    reg                    need_to_wb_latch;
-    reg  [    `PREG_RANGE] prd_latch;
-    reg  [      `PC_RANGE] pc_latch;
-    reg  [`ROB_SIZE_LOG:0] robid_latch;
-
+    reg                      instr_valid_latch;
+    reg                      need_to_wb_latch;
+    reg  [      `PREG_RANGE] prd_latch;
+    reg  [        `PC_RANGE] pc_latch;
+    reg  [  `ROB_SIZE_LOG:0] robid_latch;
+    reg  [`STOREQUEUE_LOG:0] sqid_latch;
+    reg  [   `LS_SIZE_RANGE] ls_size_latch;
     agu u_agu (
         .src1      (src1),
         .imm       (imm),
@@ -140,6 +141,21 @@ module loadunit (
             pc_latch <= pc;
         end
     end
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            sqid_latch <= 'b0;
+        end else if (req_fire) begin
+            sqid_latch <= sqid;
+        end
+    end
+
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            ls_size_latch <= 'b0;
+        end else if (req_fire) begin
+            ls_size_latch <= ls_size;
+        end
+    end
 
 
 
@@ -180,6 +196,11 @@ module loadunit (
     /*                         stage : SQ forwarding query                        */
     /* -------------------------------------------------------------------------- */
 
+    assign ldu2sq_forward_req_valid     = instr_valid_latch;
+    assign ldu2sq_forward_req_sqid      = sqid_latch;
+    assign ldu2sq_forward_req_sqmask    = (1'b1 << sqid_latch[`STOREQUEUE_LOG-1:0]) - 'b1;
+    assign ldu2sq_forward_req_load_addr = ls_address_latch;
+    assign ldu2sq_forward_req_load_size = ls_size_latch;
 
 
 
@@ -200,7 +221,7 @@ module loadunit (
         load2arb_tbus_write_data     = 'b0;
         load2arb_tbus_write_mask     = 'b0;
         load2arb_tbus_operation_type = 'b0;
-        if (instr_valid_latch) begin
+        if (instr_valid_latch & ~ldu2sq_forward_resp_valid) begin
             if ((~is_outstanding)) begin
                 load2arb_tbus_index_valid    = 1'b1;
                 load2arb_tbus_index          = ls_address_latch[`RESULT_WIDTH-1:0];
@@ -294,11 +315,11 @@ module loadunit (
     /* -------------------------------------------------------------------------- */
     /*                                output logic                                */
     /* -------------------------------------------------------------------------- */
-    assign ldu_out_instr_valid = load2arb_tbus_operation_done & instr_valid_latch;
-    assign ldu_out_need_to_wb  = load2arb_tbus_operation_done & instr_valid_latch;
+    assign ldu_out_instr_valid = load2arb_tbus_operation_done & instr_valid_latch | ldu2sq_forward_resp_valid;
+    assign ldu_out_need_to_wb  = ldu2sq_forward_resp_valid ? 1'b1 : load2arb_tbus_operation_done & instr_valid_latch;
     assign ldu_out_prd         = prd_latch;
     assign ldu_out_robid       = robid_latch;
-    assign ldu_out_load_data   = opload_read_data_wb;
+    assign ldu_out_load_data   = ldu2sq_forward_resp_valid ? ldu2sq_forward_resp_data : opload_read_data_wb;
     assign ldu_out_pc          = pc_latch;
 
     /* -------------------------------------------------------------------------- */

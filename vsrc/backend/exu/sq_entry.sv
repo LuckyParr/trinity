@@ -14,7 +14,6 @@ module sq_entry (
     input wire [`SRC_RANGE] writeback_store_mask,
     input wire [       3:0] writeback_store_ls_size,
 
-    output wire [`ROB_SIZE_LOG:0] robid,
     /* ---------------------------- commit to wakeup ---------------------------- */
     input  wire                   commit,
     /* ------------------------------ deq to dcache ----------------------------- */
@@ -22,8 +21,10 @@ module sq_entry (
     /* ---------------------------------- flush --------------------------------- */
     input  wire                   flush,
     /* ---------------------------- output deq region --------------------------- */
+    output wire [`ROB_SIZE_LOG:0] robid,
     output wire                   ready_to_go,
     output wire                   valid,
+    output wire                   complete,
     output wire                   mmio,
     output wire [     `SRC_RANGE] deq_store_addr,
     output wire [     `SRC_RANGE] deq_store_data,
@@ -36,6 +37,7 @@ module sq_entry (
     reg [      `PC_RANGE] queue_pc;
     reg [`ROB_SIZE_LOG:0] queue_robid;
     reg                   queue_commited;
+    reg                   queue_complete;
     //sig below wait for wb update
     reg                   queue_mmio;
     reg [     `SRC_RANGE] queue_store_addr;
@@ -89,6 +91,18 @@ module sq_entry (
 
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n | flush) begin
+            queue_complete <= 'b0;
+        end else if (enq_valid) begin
+            queue_complete <= 'b0;
+        end else if (writeback_valid) begin
+            queue_complete <= 1'b1;
+        end
+    end
+
+
+
+    always @(posedge clock or negedge reset_n) begin
+        if (~reset_n | flush) begin
             queue_store_addr <= 'b0;
         end else if (writeback_valid & ~writeback_mmio) begin
             queue_store_addr <= writeback_store_addr;
@@ -118,9 +132,8 @@ module sq_entry (
 
     assign valid             = queue_valid;
     assign mmio              = queue_mmio;
-
     assign robid             = queue_robid;
-
+    assign complete          = queue_complete;
     assign deq_store_addr    = queue_store_addr;
     assign deq_store_data    = queue_store_data;
     assign deq_store_mask    = queue_store_mask;

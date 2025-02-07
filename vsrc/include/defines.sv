@@ -150,8 +150,8 @@
 `define WALK_SIZE 2
 `define COMMIT_SIZE 2
 
-`define STOREQUEUE_DEPTH 4
-`define STOREQUEUE_LOG 2
+`define STOREQUEUE_DEPTH 8
+`define STOREQUEUE_LOG 3
 
 `define MACRO_DFF_NONEN(dff_data_q, dff_data_in, dff_data_width) \
 always @(posedge clock or negedge reset_n) begin \
