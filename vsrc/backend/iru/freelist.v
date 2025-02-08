@@ -69,7 +69,7 @@ module freelist #(
         integer i;
         deq_count = 'b0;
         for (i = 0; i < ENQ_NUM; i = i + 1) begin
-            if (deq_vec[i]) begin
+            if (deq_vec[i] & freelist_can_alloc) begin
                 deq_count = deq_count + 1'b1;
             end
         end
@@ -111,7 +111,11 @@ module freelist #(
             deq_ptr <= 'h0;  // Reset deq on reset
             //when ovwr,taken deq_ptr = enq_ptr,then increase
         end else if (is_rollback) begin
-            deq_ptr <= enq_ptr;
+            if (deq_ptr[`FREELIST_SIZE_LOG:0] == enq_ptr[`FREELIST_SIZE_LOG:0]) begin
+                deq_ptr <= enq_ptr;
+            end else begin
+                deq_ptr <= {deq_ptr[`FREELIST_SIZE_LOG], enq_ptr[`FREELIST_SIZE_LOG-1:0]};
+            end
         end else if (is_walking) begin
             deq_ptr <= deq_ptr + walk_count;
         end else begin
@@ -171,10 +175,10 @@ module freelist #(
             freelist_valid <= {`FREELIST_SIZE{1'b1}};
         end else if (is_walking) begin
             if (walk_count == 1) begin
-                freelist_valid[deq_ptr[`FREELIST_SIZE_LOG-1:0]+1] <= 'b0;
+                freelist_valid[deq_ptr[`FREELIST_SIZE_LOG-1:0]] <= 'b0;
             end else if (walk_count == 2) begin
+                freelist_valid[deq_ptr[`FREELIST_SIZE_LOG-1:0]]   <= 'b0;
                 freelist_valid[deq_ptr[`FREELIST_SIZE_LOG-1:0]+1] <= 'b0;
-                freelist_valid[deq_ptr[`FREELIST_SIZE_LOG-1:0]+2] <= 'b0;
             end
         end else begin
             if (write0_valid) begin
@@ -190,22 +194,22 @@ module freelist #(
 
 
 
-    // wire is_full;
-    // wire is_empty;
-    // assign is_full  = (deq_ptr[`FREELIST_SIZE_LOG] != enq_ptr[`FREELIST_SIZE_LOG]) & (deq_ptr[`FREELIST_SIZE_LOG-1:0] == enq_ptr[`FREELIST_SIZE_LOG-1:0]);
-    // assign is_empty = deq_ptr == enq_ptr;
-    // always @(*) begin
-    //     available_count = 'b0;
-    //     if (is_full) begin
-    //         available_count = 'd`FREELIST_SIZE;
-    //     end else if (is_empty) begin
-    //         available_count = 'h0;
-    //     end else if (deq_ptr[`FREELIST_SIZE_LOG] == enq_ptr[`FREELIST_SIZE_LOG]) begin
-    //         available_count = enq_ptr[`FREELIST_SIZE_LOG-1:0] - deq_ptr[`FREELIST_SIZE_LOG-1:0];
-    //     end else begin
-    //         available_count = `FREELIST_SIZE - deq_ptr[`FREELIST_SIZE_LOG-1:0] + enq_ptr[`FREELIST_SIZE_LOG-1:0];
-    //     end
-    // end
+    wire is_full;
+    wire is_empty;
+    assign is_full  = (deq_ptr[`FREELIST_SIZE_LOG] != enq_ptr[`FREELIST_SIZE_LOG]) & (deq_ptr[`FREELIST_SIZE_LOG-1:0] == enq_ptr[`FREELIST_SIZE_LOG-1:0]);
+    assign is_empty = deq_ptr == enq_ptr;
+    always @(*) begin
+        available_count = 'b0;
+        if (is_full) begin
+            available_count = 'd`FREELIST_SIZE;
+        end else if (is_empty) begin
+            available_count = 'h0;
+        end else if (deq_ptr[`FREELIST_SIZE_LOG] == enq_ptr[`FREELIST_SIZE_LOG]) begin
+            available_count = enq_ptr[`FREELIST_SIZE_LOG-1:0] - deq_ptr[`FREELIST_SIZE_LOG-1:0];
+        end else begin
+            available_count = `FREELIST_SIZE - deq_ptr[`FREELIST_SIZE_LOG-1:0] + enq_ptr[`FREELIST_SIZE_LOG-1:0];
+        end
+    end
 
     // Request port logic
     always @(*) begin

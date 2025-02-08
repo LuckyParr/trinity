@@ -579,7 +579,7 @@ module isu_top (
     /* -------------------------------------------------------------------------- */
 
     int_isq #(
-        .OUT_OF_ORDER(0)
+        .OUT_OF_ORDER(1)
     ) u_int_isq (
         .clock                   (clock),
         .reset_n                 (reset_n),

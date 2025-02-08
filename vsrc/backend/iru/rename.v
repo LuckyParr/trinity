@@ -245,7 +245,7 @@ module rename (
 
     /* ------------ write renamed physical number of 2 rd to spec_rat ----------- */
 
-    assign rn2specrat_instr0_lrd_wren   = waw_hazard ? 0 : instr0_lrd_valid & rn2pipe_instr0_ready;
+    assign rn2specrat_instr0_lrd_wren   = waw_hazard ? 0 : instr0_lrd_valid & rn2pipe_instr0_ready & freelist_can_alloc;
     assign rn2specrat_instr0_lrd_wraddr = instr0_lrd;
     assign rn2specrat_instr0_lrd_wrdata = fl2rn_instr0prd;
 
@@ -255,7 +255,7 @@ module rename (
 
 
     /* --------------------------- other info of instr -------------------------- */
-    assign rn2pipe_instr0_valid         = instr0_valid;
+    assign rn2pipe_instr0_valid         = instr0_valid & freelist_can_alloc;
     assign rn2pipe_instr0_lrs1          = instr0_lrs1;
     assign rn2pipe_instr0_lrs2          = instr0_lrs2;
     assign rn2pipe_instr0_lrd           = instr0_lrd;
