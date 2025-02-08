@@ -13,7 +13,7 @@ module loadunit (
     input  wire [       `SRC_RANGE] src2,
     input  wire [   `LS_SIZE_RANGE] ls_size,
     input  wire [  `ROB_SIZE_LOG:0] robid,
-    input  wire [`STOREQUEUE_LOG:0] sqid,
+    input  wire [`STOREQUEUE_SIZE_LOG:0] sqid,
 
     //trinity bus channel
     output reg                  load2arb_tbus_index_valid,
@@ -43,7 +43,7 @@ module loadunit (
     /* --------------------------- SQ forwarding query -------------------------- */
     output wire                         ldu2sq_forward_req_valid,
     output wire [      `ROB_SIZE_LOG:0] ldu2sq_forward_req_sqid,
-    output wire [`STOREQUEUE_DEPTH-1:0] ldu2sq_forward_req_sqmask,
+    output wire [`STOREQUEUE_SIZE-1:0] ldu2sq_forward_req_sqmask,
     output wire [           `SRC_RANGE] ldu2sq_forward_req_load_addr,
     output wire [       `LS_SIZE_RANGE] ldu2sq_forward_req_load_size,
     input  wire                         ldu2sq_forward_resp_valid,
@@ -80,7 +80,7 @@ module loadunit (
     reg  [      `PREG_RANGE] prd_latch;
     reg  [        `PC_RANGE] pc_latch;
     reg  [  `ROB_SIZE_LOG:0] robid_latch;
-    reg  [`STOREQUEUE_LOG:0] sqid_latch;
+    reg  [`STOREQUEUE_SIZE_LOG:0] sqid_latch;
     reg  [   `LS_SIZE_RANGE] ls_size_latch;
     agu u_agu (
         .src1      (src1),
@@ -198,7 +198,7 @@ module loadunit (
 
     assign ldu2sq_forward_req_valid     = instr_valid_latch;
     assign ldu2sq_forward_req_sqid      = sqid_latch;
-    assign ldu2sq_forward_req_sqmask    = (1'b1 << sqid_latch[`STOREQUEUE_LOG-1:0]) - 'b1;
+    assign ldu2sq_forward_req_sqmask    = (1'b1 << sqid_latch[`STOREQUEUE_SIZE_LOG-1:0]) - 'b1;
     assign ldu2sq_forward_req_load_addr = ls_address_latch;
     assign ldu2sq_forward_req_load_size = ls_size_latch;
 

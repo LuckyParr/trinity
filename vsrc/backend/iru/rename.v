@@ -151,11 +151,13 @@ module rename (
     output wire [               3:0] rn2pipe_instr1_ls_size,
     output wire [       `PREG_RANGE] rn2pipe_instr1_old_prd,
     output wire                      rn2pipe_instr1_predicttaken,
-    output wire [              31:0] rn2pipe_instr1_predicttarget
+    output wire [              31:0] rn2pipe_instr1_predicttarget,
+    /* ------------------------------ from freelist ----------------------------- */
+    input  wire                      freelist_can_alloc
 
 );
 
-    assign instr0_ready = rn2pipe_instr0_ready;
+    assign instr0_ready = rn2pipe_instr0_ready & freelist_can_alloc;
     //assign instr1_ready = pipe2rn_instr1_ready;
 
     /* --------------------------- determine if 6 reg is valid or not -------------------------- */

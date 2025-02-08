@@ -137,11 +137,14 @@
 
 `define INSTR_ID_WIDTH 6+1
 
-`define ROB_SIZE_LOG 6
 `define ROB_SIZE 64
+`define ROB_SIZE_LOG 6
 
 `define ISSUE_QUEUE_DEPTH 8
 `define ISSUE_QUEUE_LOG 3
+
+`define FREELIST_SIZE 32
+`define FREELIST_SIZE_LOG 5
 
 `define ROB_STATE_IDLE 2'b00
 `define ROB_STATE_ROLLBACK 2'b01
@@ -150,8 +153,8 @@
 `define WALK_SIZE 2
 `define COMMIT_SIZE 2
 
-`define STOREQUEUE_DEPTH 4
-`define STOREQUEUE_LOG 2
+`define STOREQUEUE_SIZE 4
+`define STOREQUEUE_SIZE_LOG 2
 
 `define MACRO_DFF_NONEN(dff_data_q, dff_data_in, dff_data_width) \
 always @(posedge clock or negedge reset_n) begin \

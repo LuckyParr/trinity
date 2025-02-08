@@ -154,7 +154,7 @@ module backend #(
 
     // ISU <-> EXU INTBLOCK
     wire [    `ROB_SIZE_LOG:0] isu2intblock_instr0_robid;
-    wire [  `STOREQUEUE_LOG:0] isu2intblock_instr0_sqid;
+    wire [  `STOREQUEUE_SIZE_LOG:0] isu2intblock_instr0_sqid;
     wire [          `PC_RANGE] isu2intblock_instr0_pc;
     wire [               31:0] isu2intblock_instr0_instr;
     wire [        `LREG_RANGE] isu2intblock_instr0_lrs1;
@@ -185,7 +185,7 @@ module backend #(
 
     // ISU <-> EXU MEMBLOCK
     wire [    `ROB_SIZE_LOG:0] isu2memblock_instr0_robid;
-    wire [  `STOREQUEUE_LOG:0] isu2memblock_instr0_sqid;
+    wire [  `STOREQUEUE_SIZE_LOG:0] isu2memblock_instr0_sqid;
     wire [          `PC_RANGE] isu2memblock_instr0_pc;
     wire [               31:0] isu2memblock_instr0_instr;
     wire [        `LREG_RANGE] isu2memblock_instr0_lrs1;
@@ -634,7 +634,7 @@ module backend #(
     //     .valid_out  (xbar_valid  )
     // );
 
-    wire [`STOREQUEUE_LOG : 0] sq2disp_sqid;
+    wire [`STOREQUEUE_SIZE_LOG : 0] sq2disp_sqid;
     exu_top u_exu_top (
         .clock                          (clock),
         .reset_n                        (reset_n),

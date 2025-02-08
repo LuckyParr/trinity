@@ -8,7 +8,7 @@ module exu_top (
     input  wire [      `INSTR_RANGE] int_instr,
     input  wire [         `PC_RANGE] int_pc,
     input  wire [   `ROB_SIZE_LOG:0] int_robid,
-    input  wire [ `STOREQUEUE_LOG:0] int_sqid,
+    input  wire [ `STOREQUEUE_SIZE_LOG:0] int_sqid,
     input  wire [        `SRC_RANGE] int_src1,
     input  wire [        `SRC_RANGE] int_src2,
     input  wire [       `PREG_RANGE] int_prd,
@@ -29,7 +29,7 @@ module exu_top (
     input  wire [     `INSTR_RANGE] mem_instr,
     input  wire [        `PC_RANGE] mem_pc,
     input  wire [  `ROB_SIZE_LOG:0] mem_robid,
-    input  wire [`STOREQUEUE_LOG:0] mem_sqid,
+    input  wire [`STOREQUEUE_SIZE_LOG:0] mem_sqid,
     input  wire [       `SRC_RANGE] mem_src1,
     input  wire [       `SRC_RANGE] mem_src2,
     input  wire [      `PREG_RANGE] mem_prd,
@@ -57,7 +57,7 @@ module exu_top (
     output wire [            `PREG_RANGE] intwb0_prd,
     output wire [          `RESULT_RANGE] intwb0_result,
     output wire [        `ROB_SIZE_LOG:0] intwb0_robid,
-    output wire [      `STOREQUEUE_LOG:0] intwb0_sqid,
+    output wire [      `STOREQUEUE_SIZE_LOG:0] intwb0_sqid,
     // BHT/BTB Update
     output wire                           intwb0_bht_write_enable,
     output wire [`BHTBTB_INDEX_WIDTH-1:0] intwb0_bht_write_index,
@@ -91,7 +91,7 @@ module exu_top (
     output wire                       memwb_mmio_valid,
     output wire [      `RESULT_RANGE] memwb_result,
     /* --------------------------------- to disp -------------------------------- */
-    output wire [`STOREQUEUE_LOG : 0] sq2disp_sqid,
+    output wire [`STOREQUEUE_SIZE_LOG : 0] sq2disp_sqid,
     /* ------------------------------ from dispatch ----------------------------- */
     input  wire                       disp2sq_valid,
     output wire                       sq_can_alloc,
@@ -110,7 +110,7 @@ module exu_top (
     wire                           intblock_out_redirect_valid;
     wire [                   63:0] intblock_out_redirect_target;
     wire [        `ROB_SIZE_LOG:0] intblock_out_robid;
-    wire [      `STOREQUEUE_LOG:0] intblock_out_sqid;
+    wire [      `STOREQUEUE_SIZE_LOG:0] intblock_out_sqid;
     wire [           `INSTR_RANGE] intblock_out_instr;
     wire [              `PC_RANGE] intblock_out_pc;
 
@@ -143,7 +143,7 @@ module exu_top (
 
     wire                           ldu2sq_forward_req_valid;
     wire [        `ROB_SIZE_LOG:0] ldu2sq_forward_req_sqid;
-    wire [  `STOREQUEUE_DEPTH-1:0] ldu2sq_forward_req_sqmask;
+    wire [  `STOREQUEUE_SIZE-1:0] ldu2sq_forward_req_sqmask;
     wire [             `SRC_RANGE] ldu2sq_forward_req_load_addr;
     wire [         `LS_SIZE_RANGE] ldu2sq_forward_req_load_size;
     wire                           ldu2sq_forward_resp_valid;
@@ -155,7 +155,7 @@ module exu_top (
     wire [             `SRC_RANGE] memwb_store_mask;
     wire [                    3:0] memwb_store_ls_size;
 
-    wire [      `STOREQUEUE_LOG:0] flush_sqid;
+    wire [      `STOREQUEUE_SIZE_LOG:0] flush_sqid;
 
     /* ------------------------------- dcache_arb ------------------------------- */
     // LSU Channel Inputs and Outputs : from lsu

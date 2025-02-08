@@ -29,7 +29,7 @@ module storequeue (
     /* -------------------------- redirect flush logic -------------------------- */
     input wire                     flush_valid,
     input wire [  `ROB_SIZE_LOG:0] flush_robid,
-    input wire [`STOREQUEUE_LOG:0] flush_sqid,
+    input wire [`STOREQUEUE_SIZE_LOG:0] flush_sqid,
 
 
     /* ------------------------- sq to dcache port ------------------------ */
@@ -43,11 +43,11 @@ module storequeue (
     output wire [`TBUS_OPTYPE_RANGE] sq2arb_tbus_operation_type,
     input  wire                      sq2arb_tbus_operation_done,
 
-    output wire [    `STOREQUEUE_LOG:0] sq2disp_sqid,
+    output wire [    `STOREQUEUE_SIZE_LOG:0] sq2disp_sqid,
     /* --------------------------- SQ forwarding  -------------------------- */
     input  wire                         ldu2sq_forward_req_valid,
-    input  wire [    `STOREQUEUE_LOG:0] ldu2sq_forward_req_sqid,
-    input  wire [`STOREQUEUE_DEPTH-1:0] ldu2sq_forward_req_sqmask,
+    input  wire [    `STOREQUEUE_SIZE_LOG:0] ldu2sq_forward_req_sqid,
+    input  wire [`STOREQUEUE_SIZE-1:0] ldu2sq_forward_req_sqmask,
     input  wire [           `SRC_RANGE] ldu2sq_forward_req_load_addr,
     input  wire [       `LS_SIZE_RANGE] ldu2sq_forward_req_load_size,
     output reg                          ldu2sq_forward_resp_valid,
@@ -61,45 +61,45 @@ module storequeue (
     /* -------------------------------------------------------------------------- */
 
 
-    reg  [   `STOREQUEUE_DEPTH-1:0] sq_entries_enq_valid_dec;
+    reg  [   `STOREQUEUE_SIZE-1:0] sq_entries_enq_valid_dec;
     //pc used to debug
-    reg  [               `PC_RANGE] sq_entries_enq_pc_dec           [`STOREQUEUE_DEPTH-1:0];
-    reg  [         `ROB_SIZE_LOG:0] sq_entries_enq_robid_dec        [`STOREQUEUE_DEPTH-1:0];
+    reg  [               `PC_RANGE] sq_entries_enq_pc_dec           [`STOREQUEUE_SIZE-1:0];
+    reg  [         `ROB_SIZE_LOG:0] sq_entries_enq_robid_dec        [`STOREQUEUE_SIZE-1:0];
 
-    reg  [   `STOREQUEUE_DEPTH-1:0] sq_entries_wb_valid_dec;
-    reg  [   `STOREQUEUE_DEPTH-1:0] sq_entries_wb_mmio_dec;
+    reg  [   `STOREQUEUE_SIZE-1:0] sq_entries_wb_valid_dec;
+    reg  [   `STOREQUEUE_SIZE-1:0] sq_entries_wb_mmio_dec;
     //below sig could save
-    // reg  [              `SRC_RANGE] sq_entries_wb_store_addr_dec    [`STOREQUEUE_DEPTH-1:0];
-    // reg  [              `SRC_RANGE] sq_entries_wb_store_data_dec    [`STOREQUEUE_DEPTH-1:0];
-    // reg  [              `SRC_RANGE] sq_entries_wb_store_mask_dec    [`STOREQUEUE_DEPTH-1:0];
-    // reg  [                     3:0] sq_entries_wb_store_ls_size_dec [`STOREQUEUE_DEPTH-1:0];
+    // reg  [              `SRC_RANGE] sq_entries_wb_store_addr_dec    [`STOREQUEUE_SIZE-1:0];
+    // reg  [              `SRC_RANGE] sq_entries_wb_store_data_dec    [`STOREQUEUE_SIZE-1:0];
+    // reg  [              `SRC_RANGE] sq_entries_wb_store_mask_dec    [`STOREQUEUE_SIZE-1:0];
+    // reg  [                     3:0] sq_entries_wb_store_ls_size_dec [`STOREQUEUE_SIZE-1:0];
 
 
-    reg  [         `ROB_SIZE_LOG:0] sq_entries_robid_dec            [`STOREQUEUE_DEPTH-1:0];
+    reg  [         `ROB_SIZE_LOG:0] sq_entries_robid_dec            [`STOREQUEUE_SIZE-1:0];
 
-    // reg  [   `STOREQUEUE_DEPTH-1:0] sq_entries_commit_dec;
-    reg  [   `STOREQUEUE_DEPTH-1:0] sq_entries_issuing_dec;
-    reg  [   `STOREQUEUE_DEPTH-1:0] sq_entries_complete_dec;
-    reg  [   `STOREQUEUE_DEPTH-1:0] flush_dec;
+    // reg  [   `STOREQUEUE_SIZE-1:0] sq_entries_commit_dec;
+    reg  [   `STOREQUEUE_SIZE-1:0] sq_entries_issuing_dec;
+    reg  [   `STOREQUEUE_SIZE-1:0] sq_entries_complete_dec;
+    reg  [   `STOREQUEUE_SIZE-1:0] flush_dec;
 
-    wire [   `STOREQUEUE_DEPTH-1:0] sq_entries_ready_to_go_dec;
-    wire [   `STOREQUEUE_DEPTH-1:0] sq_entries_valid_dec;
-    wire [   `STOREQUEUE_DEPTH-1:0] sq_entries_mmio_dec;
+    wire [   `STOREQUEUE_SIZE-1:0] sq_entries_ready_to_go_dec;
+    wire [   `STOREQUEUE_SIZE-1:0] sq_entries_valid_dec;
+    wire [   `STOREQUEUE_SIZE-1:0] sq_entries_mmio_dec;
 
-    wire [              `SRC_RANGE] sq_entries_deq_store_addr_dec   [`STOREQUEUE_DEPTH-1:0];
-    wire [              `SRC_RANGE] sq_entries_deq_store_data_dec   [`STOREQUEUE_DEPTH-1:0];
-    wire [              `SRC_RANGE] sq_entries_deq_store_mask_dec   [`STOREQUEUE_DEPTH-1:0];
-    wire [                     3:0] sq_entries_deq_store_ls_size_dec[`STOREQUEUE_DEPTH-1:0];
+    wire [              `SRC_RANGE] sq_entries_deq_store_addr_dec   [`STOREQUEUE_SIZE-1:0];
+    wire [              `SRC_RANGE] sq_entries_deq_store_data_dec   [`STOREQUEUE_SIZE-1:0];
+    wire [              `SRC_RANGE] sq_entries_deq_store_mask_dec   [`STOREQUEUE_SIZE-1:0];
+    wire [                     3:0] sq_entries_deq_store_ls_size_dec[`STOREQUEUE_SIZE-1:0];
 
 
     /* -------------------------------------------------------------------------- */
     /*                                  pointers                                  */
     /* -------------------------------------------------------------------------- */
-    wire [     `STOREQUEUE_LOG : 0] enq_ptr;
-    wire [`STOREQUEUE_DEPTH -1 : 0] enq_ptr_oh;
+    wire [     `STOREQUEUE_SIZE_LOG : 0] enq_ptr;
+    wire [`STOREQUEUE_SIZE -1 : 0] enq_ptr_oh;
 
-    wire [     `STOREQUEUE_LOG : 0] deq_ptr;
-    reg  [`STOREQUEUE_DEPTH -1 : 0] deq_ptr_oh;
+    wire [     `STOREQUEUE_SIZE_LOG : 0] deq_ptr;
+    reg  [`STOREQUEUE_SIZE -1 : 0] deq_ptr_oh;
 
     /* -------------------------------------------------------------------------- */
     /*                                  enq logic                                 */
@@ -118,18 +118,18 @@ module storequeue (
         integer i;
         sq_entries_enq_valid_dec = 'b0;
         if (enq_fire) begin
-            for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+            for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin
                 sq_entries_enq_valid_dec[i] = enq_ptr_oh[i];
             end
         end
     end
 
-    `MACRO_ENQ_DEC(enq_ptr_oh, sq_entries_enq_robid_dec, disp2sq_robid, `STOREQUEUE_DEPTH)
-    `MACRO_ENQ_DEC(enq_ptr_oh, sq_entries_enq_pc_dec, disp2sq_pc, `STOREQUEUE_DEPTH)
+    `MACRO_ENQ_DEC(enq_ptr_oh, sq_entries_enq_robid_dec, disp2sq_robid, `STOREQUEUE_SIZE)
+    `MACRO_ENQ_DEC(enq_ptr_oh, sq_entries_enq_pc_dec, disp2sq_pc, `STOREQUEUE_SIZE)
 
     inorder_enq_policy #(
-        .QUEUE_SIZE    (`STOREQUEUE_DEPTH),
-        .QUEUE_SIZE_LOG(`STOREQUEUE_LOG)
+        .QUEUE_SIZE    (`STOREQUEUE_SIZE),
+        .QUEUE_SIZE_LOG(`STOREQUEUE_SIZE_LOG)
     ) u_inorder_enq_policy (
         .clock      (clock),
         .reset_n    (reset_n),
@@ -152,7 +152,7 @@ module storequeue (
         integer i;
         sq_entries_wb_valid_dec = 'b0;
         if (memwb_instr_valid) begin
-            for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+            for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin
                 if ((memwb_robid == sq_entries_robid_dec[i])) begin
                     sq_entries_wb_valid_dec[i] = 1'b1;
                 end
@@ -164,7 +164,7 @@ module storequeue (
         integer i;
         sq_entries_wb_mmio_dec = 'b0;
         if (memwb_instr_valid) begin
-            for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+            for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin
                 if ((memwb_robid == sq_entries_robid_dec[i])) begin
                     sq_entries_wb_mmio_dec[i] = memwb_mmio_valid;
                 end
@@ -176,15 +176,15 @@ module storequeue (
     /* -------------------------------------------------------------------------- */
     /*                             commit wakeup logic                            */
     /* -------------------------------------------------------------------------- */
-    reg  [`STOREQUEUE_DEPTH-1:0] commit0_dec;
-    reg  [`STOREQUEUE_DEPTH-1:0] commit1_dec;
-    wire [`STOREQUEUE_DEPTH-1:0] commits_dec;
+    reg  [`STOREQUEUE_SIZE-1:0] commit0_dec;
+    reg  [`STOREQUEUE_SIZE-1:0] commit1_dec;
+    wire [`STOREQUEUE_SIZE-1:0] commits_dec;
     assign commits_dec = commit0_dec | commit1_dec;
     always @(*) begin
         integer i;
         commit0_dec = 'b0;
         if (commit0_valid) begin
-            for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+            for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin
                 if (sq_entries_valid_dec[i] & (commit0_robid == sq_entries_robid_dec[i])) begin
                     commit0_dec[i] = 1'b1;
                 end
@@ -195,7 +195,7 @@ module storequeue (
         integer i;
         commit1_dec = 'b0;
         if (commit1_valid) begin
-            for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+            for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin
                 if (sq_entries_valid_dec[i] & (commit1_robid == sq_entries_robid_dec[i])) begin
                     commit1_dec[i] = 1'b1;
                 end
@@ -214,12 +214,12 @@ module storequeue (
     always @(flush_valid or flush_sqid) begin
         integer i;
         flush_dec = 'b0;
-        for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+        for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin
             if (flush_valid) begin
-                if (enq_ptr[`STOREQUEUE_LOG-1:0] >= flush_sqid[`STOREQUEUE_LOG-1:0]) begin
-                    flush_dec[i] = (i[`STOREQUEUE_LOG-1:0] >= flush_sqid[`STOREQUEUE_LOG-1:0]) & (i[`STOREQUEUE_LOG-1:0] < enq_ptr[`STOREQUEUE_LOG-1:0]);
+                if (enq_ptr[`STOREQUEUE_SIZE_LOG-1:0] >= flush_sqid[`STOREQUEUE_SIZE_LOG-1:0]) begin
+                    flush_dec[i] = (i[`STOREQUEUE_SIZE_LOG-1:0] >= flush_sqid[`STOREQUEUE_SIZE_LOG-1:0]) & (i[`STOREQUEUE_SIZE_LOG-1:0] < enq_ptr[`STOREQUEUE_SIZE_LOG-1:0]);
                 end else begin
-                    flush_dec[i] = (i[`STOREQUEUE_LOG-1:0] >= flush_sqid[`STOREQUEUE_LOG-1:0]) | (i[`STOREQUEUE_LOG-1:0] < enq_ptr[`STOREQUEUE_LOG-1:0]);
+                    flush_dec[i] = (i[`STOREQUEUE_SIZE_LOG-1:0] >= flush_sqid[`STOREQUEUE_SIZE_LOG-1:0]) | (i[`STOREQUEUE_SIZE_LOG-1:0] < enq_ptr[`STOREQUEUE_SIZE_LOG-1:0]);
                 end
                 // if (flush_valid & sq_entries_valid_dec[i] & (~sq_entries_ready_to_go_dec[i]) & ((flush_sqid[`ROB_SIZE_LOG] ^ sq_entries_robid_dec[i][`ROB_SIZE_LOG]) ^ (flush_robid[`ROB_SIZE_LOG-1:0] <= sq_entries_robid_dec[i][`ROB_SIZE_LOG-1:0]))) begin
                 //     flush_dec[i] = 1'b1;
@@ -234,7 +234,7 @@ module storequeue (
     wire                         deq_fire;
     wire                         deq_has_req;
     wire                         mmio_fake_fire;
-    reg  [`STOREQUEUE_DEPTH-1:0] deq_ptr_mask;
+    reg  [`STOREQUEUE_SIZE-1:0] deq_ptr_mask;
 
     assign deq_has_req    = (|(deq_ptr_oh & sq_entries_valid_dec & sq_entries_ready_to_go_dec & ~sq_entries_mmio_dec));
     assign mmio_fake_fire = (|(deq_ptr_oh & sq_entries_valid_dec & sq_entries_ready_to_go_dec & sq_entries_mmio_dec));
@@ -245,7 +245,7 @@ module storequeue (
         integer i;
         sq_entries_issuing_dec = 'b0;
         if (deq_fire) begin
-            for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+            for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin
                 sq_entries_issuing_dec[i] = deq_ptr_oh[i];
             end
         end
@@ -255,7 +255,7 @@ module storequeue (
     always @(*) begin
         integer i;
         deq_ptr_mask = 'b0;
-        for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+        for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin
             if (deq_ptr_oh[i] == 1'b0) begin
                 deq_ptr_mask[i] = 'b1;
             end else begin
@@ -266,8 +266,8 @@ module storequeue (
 
 
     inorder_deq_policy #(
-        .QUEUE_SIZE    (`STOREQUEUE_DEPTH),
-        .QUEUE_SIZE_LOG(`STOREQUEUE_LOG)
+        .QUEUE_SIZE    (`STOREQUEUE_SIZE),
+        .QUEUE_SIZE_LOG(`STOREQUEUE_SIZE_LOG)
     ) u_inorder_deq_policy (
         .clock     (clock),
         .reset_n   (reset_n),
@@ -283,9 +283,9 @@ module storequeue (
 
     assign sq2arb_tbus_operation_type = `TBUS_WRITE;
 
-    `MACRO_DEQ_DEC(deq_ptr_oh, sq2arb_tbus_index, sq_entries_deq_store_addr_dec, `STOREQUEUE_DEPTH)
-    `MACRO_DEQ_DEC(deq_ptr_oh, sq2arb_tbus_write_data, sq_entries_deq_store_data_dec, `STOREQUEUE_DEPTH)
-    `MACRO_DEQ_DEC(deq_ptr_oh, sq2arb_tbus_write_mask, sq_entries_deq_store_mask_dec, `STOREQUEUE_DEPTH)
+    `MACRO_DEQ_DEC(deq_ptr_oh, sq2arb_tbus_index, sq_entries_deq_store_addr_dec, `STOREQUEUE_SIZE)
+    `MACRO_DEQ_DEC(deq_ptr_oh, sq2arb_tbus_write_data, sq_entries_deq_store_data_dec, `STOREQUEUE_SIZE)
+    `MACRO_DEQ_DEC(deq_ptr_oh, sq2arb_tbus_write_mask, sq_entries_deq_store_mask_dec, `STOREQUEUE_SIZE)
 
     assign sq2arb_tbus_index_valid = deq_has_req;
 
@@ -299,18 +299,18 @@ module storequeue (
     // (1) if they have the same flag, we need to check range(tail, sqIdx)
     // (2) if they have different flags, we need to check range(tail, VirtualLoadQueueSize) and range(0, sqIdx)""
     wire                         same_flag;
-    wire [`STOREQUEUE_DEPTH-1:0] cmp_sqmask;
-    assign same_flag  = ldu2sq_forward_req_sqid[`STOREQUEUE_LOG] == deq_ptr[`STOREQUEUE_LOG];
+    wire [`STOREQUEUE_SIZE-1:0] cmp_sqmask;
+    assign same_flag  = ldu2sq_forward_req_sqid[`STOREQUEUE_SIZE_LOG] == deq_ptr[`STOREQUEUE_SIZE_LOG];
     assign cmp_sqmask = same_flag ? ldu2sq_forward_req_sqmask ^ deq_ptr_mask : ldu2sq_forward_req_sqmask | ~deq_ptr_mask;
     //we can use cam to checkout addr hit
-    reg  [`STOREQUEUE_DEPTH-1:0] cmp_addr_hit;
+    reg  [`STOREQUEUE_SIZE-1:0] cmp_addr_hit;
     wire [           `SRC_RANGE] cmp_addr_mask;
     assign cmp_addr_mask = ldu2sq_forward_req_load_size[0] ? {64{1'b1}} : ldu2sq_forward_req_load_size[1] ? {{63{1'b1}}, 1'b0} : ldu2sq_forward_req_load_size[2] ? {{62{1'b1}}, 2'b0} : {{61{1'b1}}, 3'b0};
 
     always @(*) begin
         integer i;
         cmp_addr_hit = 'b0;
-        for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+        for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin
             if (cmp_sqmask[i] & sq_entries_valid_dec[i] & sq_entries_complete_dec[i] & ldu2sq_forward_req_valid) begin
                 if ((sq_entries_deq_store_addr_dec[i] & cmp_addr_mask) == (ldu2sq_forward_req_load_addr & cmp_addr_mask)) begin
                     cmp_addr_hit[i] = 1'b1;
@@ -330,8 +330,8 @@ module storequeue (
     assign load_2w_mask = {64{1'b1}};
     // reg 
 
-    wire [`STOREQUEUE_DEPTH-1:0] different_flag_upper_cmp_addr_hit;
-    wire [`STOREQUEUE_DEPTH-1:0] different_flag_lower_cmp_addr_hit;
+    wire [`STOREQUEUE_SIZE-1:0] different_flag_upper_cmp_addr_hit;
+    wire [`STOREQUEUE_SIZE-1:0] different_flag_lower_cmp_addr_hit;
     assign different_flag_upper_cmp_addr_hit = cmp_addr_hit & (~deq_ptr_mask);
     assign different_flag_lower_cmp_addr_hit = cmp_addr_hit & ldu2sq_forward_req_sqmask;
 
@@ -365,20 +365,20 @@ module storequeue (
         ldu2sq_forward_resp_data = 'b0;
         forwarding_valid_mask    = 'b0;
         if (same_flag) begin
-            for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+            for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin
                 if (cmp_addr_hit[i]) begin
                     ldu2sq_forward_resp_data = ldu2sq_forward_resp_data & (~sq_entries_deq_store_mask_dec[i]) | (sq_entries_deq_store_data_dec[i] & sq_entries_deq_store_mask_dec[i]);
                     forwarding_valid_mask    = forwarding_valid_mask | sq_entries_deq_store_mask_dec[i];
                 end
             end
         end else begin
-            for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+            for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin
                 if (different_flag_upper_cmp_addr_hit[i]) begin
                     ldu2sq_forward_resp_data = ldu2sq_forward_resp_data & (~sq_entries_deq_store_mask_dec[i]) | (sq_entries_deq_store_data_dec[i] & sq_entries_deq_store_mask_dec[i]);
                     forwarding_valid_mask    = forwarding_valid_mask | sq_entries_deq_store_mask_dec[i];
                 end
             end
-            for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin
+            for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin
                 if (different_flag_lower_cmp_addr_hit[i]) begin
                     ldu2sq_forward_resp_data = ldu2sq_forward_resp_data & (~sq_entries_deq_store_mask_dec[i]) | (sq_entries_deq_store_data_dec[i] & sq_entries_deq_store_mask_dec[i]);
                     forwarding_valid_mask    = forwarding_valid_mask | sq_entries_deq_store_mask_dec[i];
@@ -393,7 +393,7 @@ module storequeue (
 
     genvar i;
     generate
-        for (i = 0; i < `STOREQUEUE_DEPTH; i = i + 1) begin : sq_entity
+        for (i = 0; i < `STOREQUEUE_SIZE; i = i + 1) begin : sq_entity
             sq_entry u_sq_entry (
                 .clock                  (clock),
                 .reset_n                (reset_n),

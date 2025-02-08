@@ -8,7 +8,7 @@ module memblock (
     input wire [     `INSTR_RANGE] instr,  // for debug
     input wire [        `PC_RANGE] pc,     //for debug
     input wire [  `ROB_SIZE_LOG:0] robid,
-    input wire [`STOREQUEUE_LOG:0] sqid,
+    input wire [`STOREQUEUE_SIZE_LOG:0] sqid,
 
     input wire [    `SRC_RANGE] src1,
     input wire [    `SRC_RANGE] src2,
@@ -53,7 +53,7 @@ module memblock (
     /* --------------------------- SQ forwarding query -------------------------- */
     output wire                         ldu2sq_forward_req_valid,
     output wire [      `ROB_SIZE_LOG:0] ldu2sq_forward_req_sqid,
-    output wire [`STOREQUEUE_DEPTH-1:0] ldu2sq_forward_req_sqmask,
+    output wire [`STOREQUEUE_SIZE-1:0] ldu2sq_forward_req_sqmask,
     output wire [           `SRC_RANGE] ldu2sq_forward_req_load_addr,
     output wire [       `LS_SIZE_RANGE] ldu2sq_forward_req_load_size,
     input  wire                         ldu2sq_forward_resp_valid,
