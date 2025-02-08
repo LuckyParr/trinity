@@ -42,7 +42,9 @@ module ifu_top (
     input wire         btb_we,           // Write enable for BTB
     input wire [128:0] btb_wmask,
     input wire [  8:0] btb_write_index,  // Set index for BTB write operation
-    input wire [128:0] btb_din
+    input wire [128:0] btb_din,
+    input  wire end_of_program
+
 
 );
 

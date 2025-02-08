@@ -32,8 +32,12 @@ module bju #(
     output reg         bjusb_btb_we,           // Write enable
     output reg [128:0] bjusb_btb_wmask,
     output reg [  8:0] bjusb_btb_write_index,  // Write address (9 bits for 512 sets)
-    output reg [128:0] bjusb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
-
+    output reg [128:0] bjusb_btb_din,          // Data input (1 valid bit + 4 targets * 32 bits)
+    output reg [ 31:0] bju_pmu_situation1_cnt,
+    output reg [ 31:0] bju_pmu_situation2_cnt,
+    output reg [ 31:0] bju_pmu_situation3_cnt,
+    output reg [ 31:0] bju_pmu_situation4_cnt,
+    output reg [ 31:0] bju_pmu_situation5_cnt
 
 );
     /* --------------------- bju calculation logic (bjucal) --------------------- */
@@ -87,11 +91,11 @@ module bju #(
     assign dest                   = bjucal_dest;
 
     /* ----------------------------bju scoreboard logic (bjusb) ---------------------------- */
-    wire bjusb_bju_taken_bpu_taken_right;  //situation1
-    wire bjusb_bju_taken_bpu_taken_butaddrwrong;  //situation2
-    wire bjusb_bju_taken_bpu_nottaken_wrong;  //situation3
-    wire bjusb_bju_nottaken_bpu_taken_wrong;  //situation4
-    wire bjusb_bju_nottaken_bpu_nottaken_right;  //situation5
+    wire bjusb_bju_taken_bpu_taken_right;  //bju_pmu_situation1
+    wire bjusb_bju_taken_bpu_taken_butaddrwrong;  //bju_pmu_situation2
+    wire bjusb_bju_taken_bpu_nottaken_wrong;  //bju_pmu_situation3
+    wire bjusb_bju_nottaken_bpu_taken_wrong;  //bju_pmu_situation4
+    wire bjusb_bju_nottaken_bpu_nottaken_right;  //bju_pmu_situation5
 
     assign bjusb_bju_taken_bpu_taken_right        = valid && (bjucal_redirect_valid && predict_taken) && (bjucal_redirect_target[31:0] == predict_target);
 
@@ -187,32 +191,28 @@ module bju #(
     end
 
     /* -------------------------------- pmu logic ------------------------------- */
-    reg [31:0] situation1_cnt;
-    reg [31:0] situation2_cnt;
-    reg [31:0] situation3_cnt;
-    reg [31:0] situation4_cnt;
-    reg [31:0] situation5_cnt;
+
 
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
-            situation1_cnt <= 'b0;
-            situation2_cnt <= 'b0;
-            situation3_cnt <= 'b0;
-            situation4_cnt <= 'b0;
-            situation5_cnt <= 'b0;
+            bju_pmu_situation1_cnt <= 'b0;
+            bju_pmu_situation2_cnt <= 'b0;
+            bju_pmu_situation3_cnt <= 'b0;
+            bju_pmu_situation4_cnt <= 'b0;
+            bju_pmu_situation5_cnt <= 'b0;
         end else if (bjusb_bju_taken_bpu_taken_right) begin
-            situation1_cnt <= situation1_cnt + 1;
+            bju_pmu_situation1_cnt <= bju_pmu_situation1_cnt + 1;
         end else if (bjusb_bju_taken_bpu_taken_butaddrwrong) begin
-            situation2_cnt <= situation2_cnt + 1;
+            bju_pmu_situation2_cnt <= bju_pmu_situation2_cnt + 1;
         end else if (bjusb_bju_taken_bpu_nottaken_wrong) begin
-            situation3_cnt <= situation3_cnt + 1;
+            bju_pmu_situation3_cnt <= bju_pmu_situation3_cnt + 1;
         end else if (bjusb_bju_nottaken_bpu_taken_wrong) begin
-            situation4_cnt <= situation3_cnt + 1;
+            bju_pmu_situation4_cnt <= bju_pmu_situation3_cnt + 1;
         end else if (bjusb_bju_nottaken_bpu_nottaken_right) begin
-            situation5_cnt <= situation4_cnt + 1;
+            bju_pmu_situation5_cnt <= bju_pmu_situation4_cnt + 1;
         end
     end
     //250117 record: 
-    //correctness rate = (situation1_cnt + situation5)/sum : (11011+1013)/14079=85.4%
+    //correctness rate = (bju_pmu_situation1_cnt + bju_pmu_situation5)/sum : (11011+1013)/14079=85.4%
 
 endmodule

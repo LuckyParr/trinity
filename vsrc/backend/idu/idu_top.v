@@ -42,7 +42,8 @@ module idu_top (
     output wire [`PREG_RANGE] idu2iru_old_prd,
 
     output wire        idu2iru_instr0_predicttaken,
-    output wire [31:0] idu2iru_instr0_predicttarget
+    output wire [31:0] idu2iru_instr0_predicttarget,
+    input  wire end_of_program
 );
 
     //----------------------------------

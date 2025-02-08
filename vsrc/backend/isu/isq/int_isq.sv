@@ -84,7 +84,13 @@ module int_isq #(
     //-----------------------------------------------------
     input logic [            1:0] rob_state,
     input logic                   flush_valid,
-    input logic [`ROB_SIZE_LOG:0] flush_robid
+    input logic [`ROB_SIZE_LOG:0] flush_robid,
+    /* -------------------------------------------------------------------------- */
+    /*                                  pmu logic                                 */
+    /* -------------------------------------------------------------------------- */
+    output reg [31:0] intisq_pmu_block_enq_cycle_cnt,
+    output reg [31:0] intisq_pmu_can_issue_more
+
 );
 
 
@@ -422,6 +428,32 @@ module int_isq #(
         end
     endgenerate
 
+ /* -------------------------------- pmu logic ------------------------------- */
+    //count cycles when int_isq refuse to accept req due to entries full  
+    always @(posedge clock or negedge reset_n) begin
+        if(~reset_n)begin
+            intisq_pmu_block_enq_cycle_cnt <= 'b0;
+        end else if(~iq_can_alloc0 && enq_instr0_valid) begin
+            intisq_pmu_block_enq_cycle_cnt <= intisq_pmu_block_enq_cycle_cnt + 1;
+        end
+    end
 
+    //count cycles when int_isq issue req while it can actually issue more
+    reg [4:0] ready_to_go_cnt;
+    always @(*) begin
+        integer i;
+        ready_to_go_cnt = 'b0;
+        for ( i=0 ; i<`ISSUE_QUEUE_DEPTH;i=i+1 ) begin
+            ready_to_go_cnt = ready_to_go_cnt + iq_entries_ready_to_go[i];
+        end
+    end
+
+    always @(posedge clock or negedge reset_n) begin
+        if(~reset_n)begin
+            intisq_pmu_can_issue_more <= 'b0;
+        end else if(issue0_valid && (ready_to_go_cnt>1)) begin
+            intisq_pmu_can_issue_more <= intisq_pmu_can_issue_more + 1;
+        end
+    end
 
 endmodule

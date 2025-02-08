@@ -3,41 +3,41 @@ module exu_top (
     input wire reset_n,
 
     // Intblock Inputs
-    input  wire                      int_instr_valid,
-    output wire                      int_instr_ready,
-    input  wire [      `INSTR_RANGE] int_instr,
-    input  wire [         `PC_RANGE] int_pc,
-    input  wire [   `ROB_SIZE_LOG:0] int_robid,
-    input  wire [ `STOREQUEUE_SIZE_LOG:0] int_sqid,
-    input  wire [        `SRC_RANGE] int_src1,
-    input  wire [        `SRC_RANGE] int_src2,
-    input  wire [       `PREG_RANGE] int_prd,
-    input  wire [        `SRC_RANGE] int_imm,
-    input  wire                      int_need_to_wb,
-    input  wire [    `CX_TYPE_RANGE] int_cx_type,
-    input  wire                      int_is_unsigned,
-    input  wire [   `ALU_TYPE_RANGE] int_alu_type,
-    input  wire [`MULDIV_TYPE_RANGE] int_muldiv_type,
-    input  wire                      int_is_imm,
-    input  wire                      int_is_word,
-    input  wire                      int_predict_taken,
-    input  wire [              31:0] int_predict_target,
+    input  wire                          int_instr_valid,
+    output wire                          int_instr_ready,
+    input  wire [          `INSTR_RANGE] int_instr,
+    input  wire [             `PC_RANGE] int_pc,
+    input  wire [       `ROB_SIZE_LOG:0] int_robid,
+    input  wire [`STOREQUEUE_SIZE_LOG:0] int_sqid,
+    input  wire [            `SRC_RANGE] int_src1,
+    input  wire [            `SRC_RANGE] int_src2,
+    input  wire [           `PREG_RANGE] int_prd,
+    input  wire [            `SRC_RANGE] int_imm,
+    input  wire                          int_need_to_wb,
+    input  wire [        `CX_TYPE_RANGE] int_cx_type,
+    input  wire                          int_is_unsigned,
+    input  wire [       `ALU_TYPE_RANGE] int_alu_type,
+    input  wire [    `MULDIV_TYPE_RANGE] int_muldiv_type,
+    input  wire                          int_is_imm,
+    input  wire                          int_is_word,
+    input  wire                          int_predict_taken,
+    input  wire [                  31:0] int_predict_target,
 
     // Memblock Inputs
-    input  wire                     mem_instr_valid,
-    output wire                     mem_instr_ready,
-    input  wire [     `INSTR_RANGE] mem_instr,
-    input  wire [        `PC_RANGE] mem_pc,
-    input  wire [  `ROB_SIZE_LOG:0] mem_robid,
+    input  wire                          mem_instr_valid,
+    output wire                          mem_instr_ready,
+    input  wire [          `INSTR_RANGE] mem_instr,
+    input  wire [             `PC_RANGE] mem_pc,
+    input  wire [       `ROB_SIZE_LOG:0] mem_robid,
     input  wire [`STOREQUEUE_SIZE_LOG:0] mem_sqid,
-    input  wire [       `SRC_RANGE] mem_src1,
-    input  wire [       `SRC_RANGE] mem_src2,
-    input  wire [      `PREG_RANGE] mem_prd,
-    input  wire [       `SRC_RANGE] mem_imm,
-    input  wire                     mem_is_load,
-    input  wire                     mem_is_store,
-    input  wire                     mem_is_unsigned,
-    input  wire [   `LS_SIZE_RANGE] mem_ls_size,
+    input  wire [            `SRC_RANGE] mem_src1,
+    input  wire [            `SRC_RANGE] mem_src2,
+    input  wire [           `PREG_RANGE] mem_prd,
+    input  wire [            `SRC_RANGE] mem_imm,
+    input  wire                          mem_is_load,
+    input  wire                          mem_is_store,
+    input  wire                          mem_is_unsigned,
+    input  wire [        `LS_SIZE_RANGE] mem_ls_size,
 
     // Trinity Bus Interface
     output wire                           tbus_index_valid,
@@ -57,7 +57,7 @@ module exu_top (
     output wire [            `PREG_RANGE] intwb0_prd,
     output wire [          `RESULT_RANGE] intwb0_result,
     output wire [        `ROB_SIZE_LOG:0] intwb0_robid,
-    output wire [      `STOREQUEUE_SIZE_LOG:0] intwb0_sqid,
+    output wire [ `STOREQUEUE_SIZE_LOG:0] intwb0_sqid,
     // BHT/BTB Update
     output wire                           intwb0_bht_write_enable,
     output wire [`BHTBTB_INDEX_WIDTH-1:0] intwb0_bht_write_index,
@@ -82,22 +82,24 @@ module exu_top (
     output wire [`ROB_SIZE_LOG:0] flush_robid,
 
     // Memblock Outputs
-    output wire                       memwb_instr_valid,
-    output wire [       `INSTR_RANGE] memwb_instr,
-    output wire [          `PC_RANGE] memwb_pc,
-    output wire [    `ROB_SIZE_LOG:0] memwb_robid,
-    output wire [        `PREG_RANGE] memwb_prd,
-    output wire                       memwb_need_to_wb,
-    output wire                       memwb_mmio_valid,
-    output wire [      `RESULT_RANGE] memwb_result,
+    output wire                            memwb_instr_valid,
+    output wire [            `INSTR_RANGE] memwb_instr,
+    output wire [               `PC_RANGE] memwb_pc,
+    output wire [         `ROB_SIZE_LOG:0] memwb_robid,
+    output wire [             `PREG_RANGE] memwb_prd,
+    output wire                            memwb_need_to_wb,
+    output wire                            memwb_mmio_valid,
+    output wire [           `RESULT_RANGE] memwb_result,
     /* --------------------------------- to disp -------------------------------- */
     output wire [`STOREQUEUE_SIZE_LOG : 0] sq2disp_sqid,
     /* ------------------------------ from dispatch ----------------------------- */
-    input  wire                       disp2sq_valid,
-    output wire                       sq_can_alloc,
-    input  wire [    `ROB_SIZE_LOG:0] disp2sq_robid,
+    input  wire                            disp2sq_valid,
+    output wire                            sq_can_alloc,
+    input  wire [         `ROB_SIZE_LOG:0] disp2sq_robid,
     //debug
-    input  wire [          `PC_RANGE] disp2sq_pc
+    input  wire [               `PC_RANGE] disp2sq_pc,
+    input  wire                            end_of_program
+
 );
 
     assign flush_robid = intwb0_robid;
@@ -110,7 +112,7 @@ module exu_top (
     wire                           intblock_out_redirect_valid;
     wire [                   63:0] intblock_out_redirect_target;
     wire [        `ROB_SIZE_LOG:0] intblock_out_robid;
-    wire [      `STOREQUEUE_SIZE_LOG:0] intblock_out_sqid;
+    wire [ `STOREQUEUE_SIZE_LOG:0] intblock_out_sqid;
     wire [           `INSTR_RANGE] intblock_out_instr;
     wire [              `PC_RANGE] intblock_out_pc;
 
@@ -143,7 +145,7 @@ module exu_top (
 
     wire                           ldu2sq_forward_req_valid;
     wire [        `ROB_SIZE_LOG:0] ldu2sq_forward_req_sqid;
-    wire [  `STOREQUEUE_SIZE-1:0] ldu2sq_forward_req_sqmask;
+    wire [   `STOREQUEUE_SIZE-1:0] ldu2sq_forward_req_sqmask;
     wire [             `SRC_RANGE] ldu2sq_forward_req_load_addr;
     wire [         `LS_SIZE_RANGE] ldu2sq_forward_req_load_size;
     wire                           ldu2sq_forward_resp_valid;
@@ -155,7 +157,7 @@ module exu_top (
     wire [             `SRC_RANGE] memwb_store_mask;
     wire [                    3:0] memwb_store_ls_size;
 
-    wire [      `STOREQUEUE_SIZE_LOG:0] flush_sqid;
+    wire [ `STOREQUEUE_SIZE_LOG:0] flush_sqid;
 
     /* ------------------------------- dcache_arb ------------------------------- */
     // LSU Channel Inputs and Outputs : from lsu
@@ -174,6 +176,13 @@ module exu_top (
     wire [                   63:0] sq2arb_tbus_read_data;
     wire                           sq2arb_tbus_operation_done;
     wire [     `TBUS_OPTYPE_RANGE] sq2arb_tbus_operation_type;
+
+    wire [                   31:0] bju_pmu_situation1_cnt;
+    wire [                   31:0] bju_pmu_situation2_cnt;
+    wire [                   31:0] bju_pmu_situation3_cnt;
+    wire [                   31:0] bju_pmu_situation4_cnt;
+    wire [                   31:0] bju_pmu_situation5_cnt;
+
 
     // Instantiate intblock
     intblock intblock_inst (
@@ -220,7 +229,12 @@ module exu_top (
         .bjusb_btb_we                  (bjusb_btb_we),
         .bjusb_btb_wmask               (bjusb_btb_wmask),
         .bjusb_btb_write_index         (bjusb_btb_write_index),
-        .bjusb_btb_din                 (bjusb_btb_din)
+        .bjusb_btb_din                 (bjusb_btb_din),
+        .bju_pmu_situation1_cnt        (bju_pmu_situation1_cnt),
+        .bju_pmu_situation2_cnt        (bju_pmu_situation2_cnt),
+        .bju_pmu_situation3_cnt        (bju_pmu_situation3_cnt),
+        .bju_pmu_situation4_cnt        (bju_pmu_situation4_cnt),
+        .bju_pmu_situation5_cnt        (bju_pmu_situation5_cnt)
 
     );
 
@@ -433,6 +447,17 @@ module exu_top (
         .tbus_operation_type         (tbus_operation_type),
         .tbus_operation_done         (tbus_operation_done),
         .arb2dcache_flush_valid      (arb2dcache_flush_valid)
+    );
+
+
+    exu_pmu u_exu_pmu (
+        .clock                 (clock),
+        .end_of_program        (end_of_program),
+        .bju_pmu_situation1_cnt(bju_pmu_situation1_cnt),
+        .bju_pmu_situation2_cnt(bju_pmu_situation2_cnt),
+        .bju_pmu_situation3_cnt(bju_pmu_situation3_cnt),
+        .bju_pmu_situation4_cnt(bju_pmu_situation4_cnt),
+        .bju_pmu_situation5_cnt(bju_pmu_situation5_cnt)
     );
 
 

@@ -170,7 +170,8 @@ module iru_top (
     output wire [`PREG_RANGE] debug_preg28,
     output wire [`PREG_RANGE] debug_preg29,
     output wire [`PREG_RANGE] debug_preg30,
-    output wire [`PREG_RANGE] debug_preg31
+    output wire [`PREG_RANGE] debug_preg31,
+    input wire end_of_program
 );
 
     // Internal signals between modules

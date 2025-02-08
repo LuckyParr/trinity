@@ -36,214 +36,215 @@ module backend #(
     output         intwb0_btb_we,
     output [128:0] intwb0_btb_wmask,
     output [  8:0] intwb0_btb_write_index,
-    output [128:0] intwb0_btb_din
+    output [128:0] intwb0_btb_din,
+    output         end_of_program
 );
     //---------------- internal signals ----------------//
-    wire [`INSTR_ID_WIDTH-1:0] flush_robid;
+    wire [   `INSTR_ID_WIDTH-1:0] flush_robid;
     // commit signals
-    wire                       commit0_valid;
-    wire [          `PC_RANGE] commit0_pc;
-    wire [               31:0] commit0_instr;
-    wire [        `LREG_RANGE] commit0_lrd;
-    wire [        `PREG_RANGE] commit0_prd;
-    wire [        `PREG_RANGE] commit0_old_prd;
-    wire                       commit0_need_to_wb;
-    wire [    `ROB_SIZE_LOG:0] commit0_robid;
-    wire                       commit0_skip;
+    wire                          commit0_valid;
+    wire [             `PC_RANGE] commit0_pc;
+    wire [                  31:0] commit0_instr;
+    wire [           `LREG_RANGE] commit0_lrd;
+    wire [           `PREG_RANGE] commit0_prd;
+    wire [           `PREG_RANGE] commit0_old_prd;
+    wire                          commit0_need_to_wb;
+    wire [       `ROB_SIZE_LOG:0] commit0_robid;
+    wire                          commit0_skip;
 
-    wire                       commit1_valid;
-    wire [          `PC_RANGE] commit1_pc;
-    wire [               31:0] commit1_instr;
-    wire [        `LREG_RANGE] commit1_lrd;
-    wire [        `PREG_RANGE] commit1_prd;
-    wire [        `PREG_RANGE] commit1_old_prd;
-    wire                       commit1_need_to_wb;
-    wire [    `ROB_SIZE_LOG:0] commit1_robid;
-    wire                       commit1_skip;
+    wire                          commit1_valid;
+    wire [             `PC_RANGE] commit1_pc;
+    wire [                  31:0] commit1_instr;
+    wire [           `LREG_RANGE] commit1_lrd;
+    wire [           `PREG_RANGE] commit1_prd;
+    wire [           `PREG_RANGE] commit1_old_prd;
+    wire                          commit1_need_to_wb;
+    wire [       `ROB_SIZE_LOG:0] commit1_robid;
+    wire                          commit1_skip;
 
     /* --------------------- arch_rat : 32 arch regfile content -------------------- */
-    wire [        `PREG_RANGE] debug_preg0;
-    wire [        `PREG_RANGE] debug_preg1;
-    wire [        `PREG_RANGE] debug_preg2;
-    wire [        `PREG_RANGE] debug_preg3;
-    wire [        `PREG_RANGE] debug_preg4;
-    wire [        `PREG_RANGE] debug_preg5;
-    wire [        `PREG_RANGE] debug_preg6;
-    wire [        `PREG_RANGE] debug_preg7;
-    wire [        `PREG_RANGE] debug_preg8;
-    wire [        `PREG_RANGE] debug_preg9;
-    wire [        `PREG_RANGE] debug_preg10;
-    wire [        `PREG_RANGE] debug_preg11;
-    wire [        `PREG_RANGE] debug_preg12;
-    wire [        `PREG_RANGE] debug_preg13;
-    wire [        `PREG_RANGE] debug_preg14;
-    wire [        `PREG_RANGE] debug_preg15;
-    wire [        `PREG_RANGE] debug_preg16;
-    wire [        `PREG_RANGE] debug_preg17;
-    wire [        `PREG_RANGE] debug_preg18;
-    wire [        `PREG_RANGE] debug_preg19;
-    wire [        `PREG_RANGE] debug_preg20;
-    wire [        `PREG_RANGE] debug_preg21;
-    wire [        `PREG_RANGE] debug_preg22;
-    wire [        `PREG_RANGE] debug_preg23;
-    wire [        `PREG_RANGE] debug_preg24;
-    wire [        `PREG_RANGE] debug_preg25;
-    wire [        `PREG_RANGE] debug_preg26;
-    wire [        `PREG_RANGE] debug_preg27;
-    wire [        `PREG_RANGE] debug_preg28;
-    wire [        `PREG_RANGE] debug_preg29;
-    wire [        `PREG_RANGE] debug_preg30;
-    wire [        `PREG_RANGE] debug_preg31;
+    wire [           `PREG_RANGE] debug_preg0;
+    wire [           `PREG_RANGE] debug_preg1;
+    wire [           `PREG_RANGE] debug_preg2;
+    wire [           `PREG_RANGE] debug_preg3;
+    wire [           `PREG_RANGE] debug_preg4;
+    wire [           `PREG_RANGE] debug_preg5;
+    wire [           `PREG_RANGE] debug_preg6;
+    wire [           `PREG_RANGE] debug_preg7;
+    wire [           `PREG_RANGE] debug_preg8;
+    wire [           `PREG_RANGE] debug_preg9;
+    wire [           `PREG_RANGE] debug_preg10;
+    wire [           `PREG_RANGE] debug_preg11;
+    wire [           `PREG_RANGE] debug_preg12;
+    wire [           `PREG_RANGE] debug_preg13;
+    wire [           `PREG_RANGE] debug_preg14;
+    wire [           `PREG_RANGE] debug_preg15;
+    wire [           `PREG_RANGE] debug_preg16;
+    wire [           `PREG_RANGE] debug_preg17;
+    wire [           `PREG_RANGE] debug_preg18;
+    wire [           `PREG_RANGE] debug_preg19;
+    wire [           `PREG_RANGE] debug_preg20;
+    wire [           `PREG_RANGE] debug_preg21;
+    wire [           `PREG_RANGE] debug_preg22;
+    wire [           `PREG_RANGE] debug_preg23;
+    wire [           `PREG_RANGE] debug_preg24;
+    wire [           `PREG_RANGE] debug_preg25;
+    wire [           `PREG_RANGE] debug_preg26;
+    wire [           `PREG_RANGE] debug_preg27;
+    wire [           `PREG_RANGE] debug_preg28;
+    wire [           `PREG_RANGE] debug_preg29;
+    wire [           `PREG_RANGE] debug_preg30;
+    wire [           `PREG_RANGE] debug_preg31;
 
     // IDU <-> IRU
-    wire                       iru2idu_instr0_ready;
-    wire                       idu2iru_instr0_valid;
-    wire [               31:0] idu2iru_instr0_instr;
-    wire [          `PC_RANGE] idu2iru_instr0_pc;
-    wire [        `LREG_RANGE] idu2iru_instr0_lrs1;
-    wire [        `LREG_RANGE] idu2iru_instr0_lrs2;
-    wire [        `LREG_RANGE] idu2iru_instr0_lrd;
-    wire [         `SRC_RANGE] idu2iru_instr0_imm;
-    wire                       idu2iru_instr0_src1_is_reg;
-    wire                       idu2iru_instr0_src2_is_reg;
-    wire                       idu2iru_instr0_need_to_wb;
-    wire [     `CX_TYPE_RANGE] idu2iru_instr0_cx_type;
-    wire                       idu2iru_instr0_is_unsigned;
-    wire [    `ALU_TYPE_RANGE] idu2iru_instr0_alu_type;
-    wire                       idu2iru_instr0_is_word;
-    wire                       idu2iru_instr0_is_load;
-    wire                       idu2iru_instr0_is_imm;
-    wire                       idu2iru_instr0_is_store;
-    wire [     `LS_SIZE_RANGE] idu2iru_instr0_ls_size;
-    wire [ `MULDIV_TYPE_RANGE] idu2iru_instr0_muldiv_type;
-    wire [        `PREG_RANGE] idu2iru_instr0_prs1;
-    wire [        `PREG_RANGE] idu2iru_instr0_prs2;
-    wire [        `PREG_RANGE] idu2iru_instr0_prd;
-    wire [        `PREG_RANGE] idu2iru_instr0_old_prd;
-    wire                       idu2iru_instr0_predicttaken;
-    wire [               31:0] idu2iru_instr0_predicttarget;
+    wire                          iru2idu_instr0_ready;
+    wire                          idu2iru_instr0_valid;
+    wire [                  31:0] idu2iru_instr0_instr;
+    wire [             `PC_RANGE] idu2iru_instr0_pc;
+    wire [           `LREG_RANGE] idu2iru_instr0_lrs1;
+    wire [           `LREG_RANGE] idu2iru_instr0_lrs2;
+    wire [           `LREG_RANGE] idu2iru_instr0_lrd;
+    wire [            `SRC_RANGE] idu2iru_instr0_imm;
+    wire                          idu2iru_instr0_src1_is_reg;
+    wire                          idu2iru_instr0_src2_is_reg;
+    wire                          idu2iru_instr0_need_to_wb;
+    wire [        `CX_TYPE_RANGE] idu2iru_instr0_cx_type;
+    wire                          idu2iru_instr0_is_unsigned;
+    wire [       `ALU_TYPE_RANGE] idu2iru_instr0_alu_type;
+    wire                          idu2iru_instr0_is_word;
+    wire                          idu2iru_instr0_is_load;
+    wire                          idu2iru_instr0_is_imm;
+    wire                          idu2iru_instr0_is_store;
+    wire [        `LS_SIZE_RANGE] idu2iru_instr0_ls_size;
+    wire [    `MULDIV_TYPE_RANGE] idu2iru_instr0_muldiv_type;
+    wire [           `PREG_RANGE] idu2iru_instr0_prs1;
+    wire [           `PREG_RANGE] idu2iru_instr0_prs2;
+    wire [           `PREG_RANGE] idu2iru_instr0_prd;
+    wire [           `PREG_RANGE] idu2iru_instr0_old_prd;
+    wire                          idu2iru_instr0_predicttaken;
+    wire [                  31:0] idu2iru_instr0_predicttarget;
 
 
     // IRU <-> ISU
-    wire                       iru2isu_instr0_valid;
-    wire                       iru2isu_instr0_ready;
-    wire [               31:0] iru2isu_instr0_instr;
-    wire [          `PC_RANGE] iru2isu_instr0_pc;
-    wire [        `LREG_RANGE] iru2isu_instr0_lrs1;
-    wire [        `LREG_RANGE] iru2isu_instr0_lrs2;
-    wire [        `LREG_RANGE] iru2isu_instr0_lrd;
-    wire [         `SRC_RANGE] iru2isu_instr0_imm;
-    wire                       iru2isu_instr0_src1_is_reg;
-    wire                       iru2isu_instr0_src2_is_reg;
-    wire                       iru2isu_instr0_need_to_wb;
-    wire [     `CX_TYPE_RANGE] iru2isu_instr0_cx_type;
-    wire                       iru2isu_instr0_is_unsigned;
-    wire [    `ALU_TYPE_RANGE] iru2isu_instr0_alu_type;
-    wire [ `MULDIV_TYPE_RANGE] iru2isu_instr0_muldiv_type;
-    wire                       iru2isu_instr0_is_word;
-    wire                       iru2isu_instr0_is_imm;
-    wire                       iru2isu_instr0_is_load;
-    wire                       iru2isu_instr0_is_store;
-    wire [     `LS_SIZE_RANGE] iru2isu_instr0_ls_size;
-    wire [        `PREG_RANGE] iru2isu_instr0_prs1;
-    wire [        `PREG_RANGE] iru2isu_instr0_prs2;
-    wire [        `PREG_RANGE] iru2isu_instr0_prd;
-    wire [        `PREG_RANGE] iru2isu_instr0_old_prd;
-    wire                       iru2isu_instr0_predicttaken;
-    wire [               31:0] iru2isu_instr0_predicttarget;
+    wire                          iru2isu_instr0_valid;
+    wire                          iru2isu_instr0_ready;
+    wire [                  31:0] iru2isu_instr0_instr;
+    wire [             `PC_RANGE] iru2isu_instr0_pc;
+    wire [           `LREG_RANGE] iru2isu_instr0_lrs1;
+    wire [           `LREG_RANGE] iru2isu_instr0_lrs2;
+    wire [           `LREG_RANGE] iru2isu_instr0_lrd;
+    wire [            `SRC_RANGE] iru2isu_instr0_imm;
+    wire                          iru2isu_instr0_src1_is_reg;
+    wire                          iru2isu_instr0_src2_is_reg;
+    wire                          iru2isu_instr0_need_to_wb;
+    wire [        `CX_TYPE_RANGE] iru2isu_instr0_cx_type;
+    wire                          iru2isu_instr0_is_unsigned;
+    wire [       `ALU_TYPE_RANGE] iru2isu_instr0_alu_type;
+    wire [    `MULDIV_TYPE_RANGE] iru2isu_instr0_muldiv_type;
+    wire                          iru2isu_instr0_is_word;
+    wire                          iru2isu_instr0_is_imm;
+    wire                          iru2isu_instr0_is_load;
+    wire                          iru2isu_instr0_is_store;
+    wire [        `LS_SIZE_RANGE] iru2isu_instr0_ls_size;
+    wire [           `PREG_RANGE] iru2isu_instr0_prs1;
+    wire [           `PREG_RANGE] iru2isu_instr0_prs2;
+    wire [           `PREG_RANGE] iru2isu_instr0_prd;
+    wire [           `PREG_RANGE] iru2isu_instr0_old_prd;
+    wire                          iru2isu_instr0_predicttaken;
+    wire [                  31:0] iru2isu_instr0_predicttarget;
 
     // ISU <-> EXU INTBLOCK
-    wire [    `ROB_SIZE_LOG:0] isu2intblock_instr0_robid;
-    wire [  `STOREQUEUE_SIZE_LOG:0] isu2intblock_instr0_sqid;
-    wire [          `PC_RANGE] isu2intblock_instr0_pc;
-    wire [               31:0] isu2intblock_instr0_instr;
-    wire [        `LREG_RANGE] isu2intblock_instr0_lrs1;
-    wire [        `LREG_RANGE] isu2intblock_instr0_lrs2;
-    wire [        `LREG_RANGE] isu2intblock_instr0_lrd;
-    wire [        `PREG_RANGE] isu2intblock_instr0_prd;
-    wire [        `PREG_RANGE] isu2intblock_instr0_old_prd;
-    wire                       isu2intblock_instr0_need_to_wb;
-    wire [        `PREG_RANGE] isu2intblock_instr0_prs1;
-    wire [        `PREG_RANGE] isu2intblock_instr0_prs2;
-    wire                       isu2intblock_instr0_src1_is_reg;
-    wire                       isu2intblock_instr0_src2_is_reg;
-    wire [         `SRC_RANGE] isu2intblock_instr0_imm;
-    wire [     `CX_TYPE_RANGE] isu2intblock_instr0_cx_type;
-    wire                       isu2intblock_instr0_is_unsigned;
-    wire [    `ALU_TYPE_RANGE] isu2intblock_instr0_alu_type;
-    wire [ `MULDIV_TYPE_RANGE] isu2intblock_instr0_muldiv_type;
-    wire                       isu2intblock_instr0_is_word;
-    wire                       isu2intblock_instr0_is_imm;
-    wire                       isu2intblock_instr0_is_load;
-    wire                       isu2intblock_instr0_is_store;
-    wire [     `LS_SIZE_RANGE] isu2intblock_instr0_ls_size;
-    wire                       isu2intblock_instr0_predicttaken;
-    wire [               31:0] isu2intblock_instr0_predicttarget;
-    wire [      `RESULT_RANGE] isu2intblock_instr0_src1;
-    wire [      `RESULT_RANGE] isu2intblock_instr0_src2;
+    wire [       `ROB_SIZE_LOG:0] isu2intblock_instr0_robid;
+    wire [`STOREQUEUE_SIZE_LOG:0] isu2intblock_instr0_sqid;
+    wire [             `PC_RANGE] isu2intblock_instr0_pc;
+    wire [                  31:0] isu2intblock_instr0_instr;
+    wire [           `LREG_RANGE] isu2intblock_instr0_lrs1;
+    wire [           `LREG_RANGE] isu2intblock_instr0_lrs2;
+    wire [           `LREG_RANGE] isu2intblock_instr0_lrd;
+    wire [           `PREG_RANGE] isu2intblock_instr0_prd;
+    wire [           `PREG_RANGE] isu2intblock_instr0_old_prd;
+    wire                          isu2intblock_instr0_need_to_wb;
+    wire [           `PREG_RANGE] isu2intblock_instr0_prs1;
+    wire [           `PREG_RANGE] isu2intblock_instr0_prs2;
+    wire                          isu2intblock_instr0_src1_is_reg;
+    wire                          isu2intblock_instr0_src2_is_reg;
+    wire [            `SRC_RANGE] isu2intblock_instr0_imm;
+    wire [        `CX_TYPE_RANGE] isu2intblock_instr0_cx_type;
+    wire                          isu2intblock_instr0_is_unsigned;
+    wire [       `ALU_TYPE_RANGE] isu2intblock_instr0_alu_type;
+    wire [    `MULDIV_TYPE_RANGE] isu2intblock_instr0_muldiv_type;
+    wire                          isu2intblock_instr0_is_word;
+    wire                          isu2intblock_instr0_is_imm;
+    wire                          isu2intblock_instr0_is_load;
+    wire                          isu2intblock_instr0_is_store;
+    wire [        `LS_SIZE_RANGE] isu2intblock_instr0_ls_size;
+    wire                          isu2intblock_instr0_predicttaken;
+    wire [                  31:0] isu2intblock_instr0_predicttarget;
+    wire [         `RESULT_RANGE] isu2intblock_instr0_src1;
+    wire [         `RESULT_RANGE] isu2intblock_instr0_src2;
 
 
     // ISU <-> EXU MEMBLOCK
-    wire [    `ROB_SIZE_LOG:0] isu2memblock_instr0_robid;
-    wire [  `STOREQUEUE_SIZE_LOG:0] isu2memblock_instr0_sqid;
-    wire [          `PC_RANGE] isu2memblock_instr0_pc;
-    wire [               31:0] isu2memblock_instr0_instr;
-    wire [        `LREG_RANGE] isu2memblock_instr0_lrs1;
-    wire [        `LREG_RANGE] isu2memblock_instr0_lrs2;
-    wire [        `LREG_RANGE] isu2memblock_instr0_lrd;
-    wire [        `PREG_RANGE] isu2memblock_instr0_prd;
-    wire [        `PREG_RANGE] isu2memblock_instr0_old_prd;
-    wire                       isu2memblock_instr0_need_to_wb;
-    wire [        `PREG_RANGE] isu2memblock_instr0_prs1;
-    wire [        `PREG_RANGE] isu2memblock_instr0_prs2;
-    wire                       isu2memblock_instr0_src1_is_reg;
-    wire                       isu2memblock_instr0_src2_is_reg;
-    wire [         `SRC_RANGE] isu2memblock_instr0_imm;
-    wire [     `CX_TYPE_RANGE] isu2memblock_instr0_cx_type;
-    wire                       isu2memblock_instr0_is_unsigned;
-    wire [    `ALU_TYPE_RANGE] isu2memblock_instr0_alu_type;
-    wire [ `MULDIV_TYPE_RANGE] isu2memblock_instr0_muldiv_type;
-    wire                       isu2memblock_instr0_is_word;
-    wire                       isu2memblock_instr0_is_imm;
-    wire                       isu2memblock_instr0_is_load;
-    wire                       isu2memblock_instr0_is_store;
-    wire [     `LS_SIZE_RANGE] isu2memblock_instr0_ls_size;
-    wire                       isu2memblock_instr0_predicttaken;
-    wire [               31:0] isu2memblock_instr0_predicttarget;
-    wire [      `RESULT_RANGE] isu2memblock_instr0_src1;
-    wire [      `RESULT_RANGE] isu2memblock_instr0_src2;
+    wire [       `ROB_SIZE_LOG:0] isu2memblock_instr0_robid;
+    wire [`STOREQUEUE_SIZE_LOG:0] isu2memblock_instr0_sqid;
+    wire [             `PC_RANGE] isu2memblock_instr0_pc;
+    wire [                  31:0] isu2memblock_instr0_instr;
+    wire [           `LREG_RANGE] isu2memblock_instr0_lrs1;
+    wire [           `LREG_RANGE] isu2memblock_instr0_lrs2;
+    wire [           `LREG_RANGE] isu2memblock_instr0_lrd;
+    wire [           `PREG_RANGE] isu2memblock_instr0_prd;
+    wire [           `PREG_RANGE] isu2memblock_instr0_old_prd;
+    wire                          isu2memblock_instr0_need_to_wb;
+    wire [           `PREG_RANGE] isu2memblock_instr0_prs1;
+    wire [           `PREG_RANGE] isu2memblock_instr0_prs2;
+    wire                          isu2memblock_instr0_src1_is_reg;
+    wire                          isu2memblock_instr0_src2_is_reg;
+    wire [            `SRC_RANGE] isu2memblock_instr0_imm;
+    wire [        `CX_TYPE_RANGE] isu2memblock_instr0_cx_type;
+    wire                          isu2memblock_instr0_is_unsigned;
+    wire [       `ALU_TYPE_RANGE] isu2memblock_instr0_alu_type;
+    wire [    `MULDIV_TYPE_RANGE] isu2memblock_instr0_muldiv_type;
+    wire                          isu2memblock_instr0_is_word;
+    wire                          isu2memblock_instr0_is_imm;
+    wire                          isu2memblock_instr0_is_load;
+    wire                          isu2memblock_instr0_is_store;
+    wire [        `LS_SIZE_RANGE] isu2memblock_instr0_ls_size;
+    wire                          isu2memblock_instr0_predicttaken;
+    wire [                  31:0] isu2memblock_instr0_predicttarget;
+    wire [         `RESULT_RANGE] isu2memblock_instr0_src1;
+    wire [         `RESULT_RANGE] isu2memblock_instr0_src2;
 
 
     //writeback signal
-    wire                       intwb0_instr_valid;
-    wire [    `ROB_SIZE_LOG:0] intwb0_robid;
-    wire [        `PREG_RANGE] intwb0_prd;
-    wire                       intwb0_need_to_wb;
-    wire [      `RESULT_RANGE] intwb0_result;
+    wire                          intwb0_instr_valid;
+    wire [       `ROB_SIZE_LOG:0] intwb0_robid;
+    wire [           `PREG_RANGE] intwb0_prd;
+    wire                          intwb0_need_to_wb;
+    wire [         `RESULT_RANGE] intwb0_result;
 
-    wire                       memwb_instr_valid;
-    wire [    `ROB_SIZE_LOG:0] memwb_robid;
-    wire [        `PREG_RANGE] memwb_prd;
-    wire                       memwb_need_to_wb;
-    wire                       memwb_mmio_valid;
-    wire [      `RESULT_RANGE] memwb_result;
+    wire                          memwb_instr_valid;
+    wire [       `ROB_SIZE_LOG:0] memwb_robid;
+    wire [           `PREG_RANGE] memwb_prd;
+    wire                          memwb_need_to_wb;
+    wire                          memwb_mmio_valid;
+    wire [         `RESULT_RANGE] memwb_result;
 
-    wire                       issue0_valid;
-    wire                       issue1_valid;
+    wire                          issue0_valid;
+    wire                          issue1_valid;
 
     // rob walk signal
-    wire [                1:0] rob_state;
-    wire                       rob_walk0_valid;
-    wire                       rob_walk0_complete;
-    wire [        `LREG_RANGE] rob_walk0_lrd;
-    wire [        `PREG_RANGE] rob_walk0_prd;
-    wire                       rob_walk1_valid;
-    wire [        `LREG_RANGE] rob_walk1_lrd;
-    wire [        `PREG_RANGE] rob_walk1_prd;
-    wire                       rob_walk1_complete;
+    wire [                   1:0] rob_state;
+    wire                          rob_walk0_valid;
+    wire                          rob_walk0_complete;
+    wire [           `LREG_RANGE] rob_walk0_lrd;
+    wire [           `PREG_RANGE] rob_walk0_prd;
+    wire                          rob_walk1_valid;
+    wire [           `LREG_RANGE] rob_walk1_lrd;
+    wire [           `PREG_RANGE] rob_walk1_prd;
+    wire                          rob_walk1_complete;
 
-    wire                       int_instr_ready;
-    wire                       mem_instr_ready;
+    wire                          int_instr_ready;
+    wire                          mem_instr_ready;
 
 
     //TODO add _instr0_ to output port
@@ -282,7 +283,8 @@ module backend #(
         .idu2iru_prd                 (idu2iru_instr0_prd),
         .idu2iru_old_prd             (idu2iru_instr0_old_prd),
         .idu2iru_instr0_predicttaken (idu2iru_instr0_predicttaken),
-        .idu2iru_instr0_predicttarget(idu2iru_instr0_predicttarget)
+        .idu2iru_instr0_predicttarget(idu2iru_instr0_predicttarget),
+        .end_of_program              (end_of_program)
     );
 
     //TODO add idu2iru/ iru2isu prefix
@@ -408,7 +410,8 @@ module backend #(
         .debug_preg28                (debug_preg28),
         .debug_preg29                (debug_preg29),
         .debug_preg30                (debug_preg30),
-        .debug_preg31                (debug_preg31)
+        .debug_preg31                (debug_preg31),
+        .end_of_program              (end_of_program)
     );
 
 
@@ -615,16 +618,17 @@ module backend #(
         .debug_preg28      (debug_preg28),        //input
         .debug_preg29      (debug_preg29),        //input
         .debug_preg30      (debug_preg30),        //input
-        .debug_preg31      (debug_preg31)
+        .debug_preg31      (debug_preg31),
+        .end_of_program    (end_of_program)
     );
 
     // intblock always can accept, mem can accept only when no operation in process
     // wire                       exu_available = int_instr_ready && mem_instr_ready;
-    wire                       issue0_ready = int_instr_ready;
-    wire                       issue1_ready = mem_instr_ready;
-    wire                       instr_goto_memblock = isu2intblock_instr0_is_store || isu2intblock_instr0_is_load;
-    wire                       int_instr_valid = issue0_valid;
-    wire                       mem_instr_valid = issue1_valid;
+    wire                            issue0_ready = int_instr_ready;
+    wire                            issue1_ready = mem_instr_ready;
+    wire                            instr_goto_memblock = isu2intblock_instr0_is_store || isu2intblock_instr0_is_load;
+    wire                            int_instr_valid = issue0_valid;
+    wire                            mem_instr_valid = issue1_valid;
 
     // wire xbar_valid;
     // xbar u_xbar(
@@ -719,8 +723,8 @@ module backend #(
         .disp2sq_valid                  (disp2sq_valid),
         .sq_can_alloc                   (sq_can_alloc),
         .disp2sq_robid                  (disp2sq_robid),
-        .disp2sq_pc                     (disp2sq_pc)
-
+        .disp2sq_pc                     (disp2sq_pc),
+        .end_of_program                 (end_of_program)
     );
 
 

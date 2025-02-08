@@ -2,42 +2,42 @@
 module intblock #(
     parameter BHTBTB_INDEX_WIDTH = 9  // Width of the set index (for SETS=512, BHTBTB_INDEX_WIDTH=9)
 ) (
-    input  wire                       clock,
-    input  wire                       reset_n,
-    input  wire                       instr_valid,
-    output wire                       instr_ready,
-    input  wire [       `INSTR_RANGE] instr,        //for debug
-    input  wire [          `PC_RANGE] pc,
-    input  wire [`INSTR_ID_WIDTH-1:0] robid,
-    input  wire [  `STOREQUEUE_SIZE_LOG:0] sqid,
+    input  wire                          clock,
+    input  wire                          reset_n,
+    input  wire                          instr_valid,
+    output wire                          instr_ready,
+    input  wire [          `INSTR_RANGE] instr,        //for debug
+    input  wire [             `PC_RANGE] pc,
+    input  wire [   `INSTR_ID_WIDTH-1:0] robid,
+    input  wire [`STOREQUEUE_SIZE_LOG:0] sqid,
 
 
     /* -------------------------- calculation meterial -------------------------- */
-    input  wire [         `SRC_RANGE] src1,
-    input  wire [         `SRC_RANGE] src2,
-    input  wire [        `PREG_RANGE] prd,
-    input  wire [         `SRC_RANGE] imm,
-    input  wire                       need_to_wb,
-    input  wire [     `CX_TYPE_RANGE] cx_type,
-    input  wire                       is_unsigned,
-    input  wire [    `ALU_TYPE_RANGE] alu_type,
-    input  wire [ `MULDIV_TYPE_RANGE] muldiv_type,
-    input  wire                       is_imm,
-    input  wire                       is_word,
+    input  wire [            `SRC_RANGE] src1,
+    input  wire [            `SRC_RANGE] src2,
+    input  wire [           `PREG_RANGE] prd,
+    input  wire [            `SRC_RANGE] imm,
+    input  wire                          need_to_wb,
+    input  wire [        `CX_TYPE_RANGE] cx_type,
+    input  wire                          is_unsigned,
+    input  wire [       `ALU_TYPE_RANGE] alu_type,
+    input  wire [    `MULDIV_TYPE_RANGE] muldiv_type,
+    input  wire                          is_imm,
+    input  wire                          is_word,
     /* ------------------------------ bhtbtb input info ------------------------------ */
-    input  wire                       predict_taken,
-    input  wire [               31:0] predict_target,
+    input  wire                          predict_taken,
+    input  wire [                  31:0] predict_target,
     /* ----------------------- output result to wb pipereg ---------------------- */
     // output valid, pc, inst, robid
-    output wire                       intblock_out_instr_valid,
-    output wire                       intblock_out_need_to_wb,
-    output wire [        `PREG_RANGE] intblock_out_prd,
-    output wire [      `RESULT_RANGE] intblock_out_result,
+    output wire                          intblock_out_instr_valid,
+    output wire                          intblock_out_need_to_wb,
+    output wire [           `PREG_RANGE] intblock_out_prd,
+    output wire [         `RESULT_RANGE] intblock_out_result,
     //redirect
-    output wire                       intblock_out_redirect_valid,
-    output wire [          `PC_RANGE] intblock_out_redirect_target,
-    output wire [`INSTR_ID_WIDTH-1:0] intblock_out_robid,
-    output wire [  `STOREQUEUE_SIZE_LOG:0] intblock_out_sqid,
+    output wire                          intblock_out_redirect_valid,
+    output wire [             `PC_RANGE] intblock_out_redirect_target,
+    output wire [   `INSTR_ID_WIDTH-1:0] intblock_out_robid,
+    output wire [`STOREQUEUE_SIZE_LOG:0] intblock_out_sqid,
 
     output wire [       `INSTR_RANGE] intblock_out_instr,  //for debug
     output wire [          `PC_RANGE] intblock_out_pc,     //for debug
@@ -56,11 +56,16 @@ module intblock #(
     output wire                          bjusb_bht_valid_in,              // Valid signal for the write operation
 
     //BTB Write Interface
-    output wire         bjusb_btb_ce,           // Chip enable
-    output wire         bjusb_btb_we,           // Write enable
+    output wire         bjusb_btb_ce,            // Chip enable
+    output wire         bjusb_btb_we,            // Write enable
     output wire [128:0] bjusb_btb_wmask,
-    output wire [  8:0] bjusb_btb_write_index,  // Write address (9 bits for 512 sets)
-    output wire [128:0] bjusb_btb_din           // Data input (1 valid bit + 4 targets * 32 bits)
+    output wire [  8:0] bjusb_btb_write_index,   // Write address (9 bits for 512 sets)
+    output wire [128:0] bjusb_btb_din,           // Data input (1 valid bit + 4 targets * 32 bits)
+    output reg  [ 31:0] bju_pmu_situation1_cnt,
+    output reg  [ 31:0] bju_pmu_situation2_cnt,
+    output reg  [ 31:0] bju_pmu_situation3_cnt,
+    output reg  [ 31:0] bju_pmu_situation4_cnt,
+    output reg  [ 31:0] bju_pmu_situation5_cnt
 
 );
     wire                 redirect_valid_internal;
@@ -127,7 +132,12 @@ module intblock #(
         .bjusb_btb_we                  (bjusb_btb_we),
         .bjusb_btb_wmask               (bjusb_btb_wmask),
         .bjusb_btb_write_index         (bjusb_btb_write_index),
-        .bjusb_btb_din                 (bjusb_btb_din)
+        .bjusb_btb_din                 (bjusb_btb_din),
+        .bju_pmu_situation1_cnt        (bju_pmu_situation1_cnt),
+        .bju_pmu_situation2_cnt        (bju_pmu_situation2_cnt),
+        .bju_pmu_situation3_cnt        (bju_pmu_situation3_cnt),
+        .bju_pmu_situation4_cnt        (bju_pmu_situation4_cnt),
+        .bju_pmu_situation5_cnt        (bju_pmu_situation5_cnt)
 
     );
 

@@ -78,6 +78,7 @@ module core_top #(
     wire [         `TBUS_OPTYPE_RANGE] icache2arb_dbus_operation_type;
     wire                               icache2arb_dbus_burst_mode;
 
+    wire end_of_program;
 
     /* -------------------------------------------------------------------------- */
     /*                             channel_arb / icache / dcache                  */
@@ -191,7 +192,8 @@ module core_top #(
         .intwb_btb_we                  (intwb_btb_we),
         .intwb_btb_wmask               (intwb_btb_wmask),
         .intwb_btb_write_index         (intwb_btb_write_index),
-        .intwb_btb_din                 (intwb_btb_din)
+        .intwb_btb_din                 (intwb_btb_din),
+        .end_of_program                (end_of_program)
     );
 
 
@@ -230,7 +232,8 @@ module core_top #(
         .intwb0_btb_we                  (intwb_btb_we),
         .intwb0_btb_wmask               (intwb_btb_wmask),
         .intwb0_btb_write_index         (intwb_btb_write_index),
-        .intwb0_btb_din                 (intwb_btb_din)
+        .intwb0_btb_din                 (intwb_btb_din),
+        .end_of_program                (end_of_program)
     );
 
 
