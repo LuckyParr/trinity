@@ -120,7 +120,7 @@ module freelist #(
         if (!reset_n) begin
             available_count <= NUM_REGS;  // Reset enq on reset
         end else begin
-            available_count <= available_count + enq_count - deq_count;
+            available_count <= available_count + enq_count - deq_count  ;
         end
     end
 

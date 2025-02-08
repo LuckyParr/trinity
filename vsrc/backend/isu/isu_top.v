@@ -578,7 +578,9 @@ module isu_top (
     /*                              int   issuequeue                              */
     /* -------------------------------------------------------------------------- */
 
-    int_isq u_int_isq (
+    int_isq #(
+        .OUT_OF_ORDER(1)
+    ) u_int_isq (
         .clock                   (clock),
         .reset_n                 (reset_n),
         .iq_can_alloc0           (iq_can_alloc0),

@@ -1,4 +1,6 @@
-module int_isq (
+module int_isq #(
+    parameter OUT_OF_ORDER = 0
+) (
     input  wire clock,
     input  wire reset_n,
     //ready sigs,cause dispathc only can dispatch when rob,IQ,SQ both have avail entry
@@ -157,7 +159,7 @@ module int_isq (
     wire                             enq_has_avail_entry;
     wire                             enq_fire;
     assign enq_has_avail_entry = |(enq_ptr_oh & ~iq_entries_valid);
-    assign enq_fire            = enq_has_avail_entry & enq_instr0_valid ;
+    assign enq_fire            = enq_has_avail_entry & enq_instr0_valid;
 
     findfirstone u_findfirstone (
         .in_vector(~iq_entries_valid),
@@ -265,19 +267,33 @@ module int_isq (
     assign issue0_valid = ((|deq_ptr_oh) & oldest_found);
     assign deq_fire     = issue0_valid & issue0_ready;
 
-
-    age_deq_policy u_age_deq_policy (
-        .clock                 (clock),
-        .reset_n               (reset_n),
-        .iq_entries_wren_oh    (iq_entries_wren_oh),
-        .enq_ptr               (enq_ptr),
-        .iq_entries_ready_to_go(iq_entries_ready_to_go),
-        .iq_entries_valid      (iq_entries_valid),
-        .iq_entries_clear_entry(iq_entries_clear_entry),
-        .deq_ptr               (deq_ptr),
-        .oldest_found          (oldest_found),
-        .oldest_idx_oh         (deq_ptr_oh)
-    );
+    if (OUT_OF_ORDER == 1) begin
+        age_deq_policy_ooo u_ooo_deq_policy (
+            .clock                 (clock),
+            .reset_n               (reset_n),
+            .iq_entries_wren_oh    (iq_entries_wren_oh),
+            .enq_ptr               (enq_ptr),
+            .iq_entries_ready_to_go(iq_entries_ready_to_go),
+            .iq_entries_valid      (iq_entries_valid),
+            .iq_entries_clear_entry(iq_entries_clear_entry),
+            .deq_ptr               (deq_ptr),
+            .oldest_found          (oldest_found),
+            .oldest_idx_oh         (deq_ptr_oh)
+        );
+    end else begin
+        age_deq_policy u_age_deq_policy (
+            .clock                 (clock),
+            .reset_n               (reset_n),
+            .iq_entries_wren_oh    (iq_entries_wren_oh),
+            .enq_ptr               (enq_ptr),
+            .iq_entries_ready_to_go(iq_entries_ready_to_go),
+            .iq_entries_valid      (iq_entries_valid),
+            .iq_entries_clear_entry(iq_entries_clear_entry),
+            .deq_ptr               (deq_ptr),
+            .oldest_found          (oldest_found),
+            .oldest_idx_oh         (deq_ptr_oh)
+        );
+    end
 
 
     //check if age buffer have available entry
