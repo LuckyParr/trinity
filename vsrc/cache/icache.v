@@ -362,9 +362,10 @@ module icache #(
         if (~reset_n) begin
             tagarray_din_refillread_sx <= 0;
         end else begin
-            if (lookup_hitway_dec_or == 1'b0) begin  //hit way0
+            //if (lookup_hitway_dec_or == 1'b0) begin  //hit way0
+            if (victimway_oh_s1 == 2'b01) begin  //hit way0
                 tagarray_din_refillread_sx <= {tagarray_dout_or[37:19], 1'b1, 1'b0, ls_addr_or[31:15]};  // set way0 dirty to 0
-            end else begin
+            end else if (victimway_oh_s1 == 2'b10) begin
                 tagarray_din_refillread_sx <= {1'b1, 1'b0, ls_addr_or[31:15], tagarray_dout_or[18:0]};  // set way1 dirty to 0            
             end
         end
@@ -376,9 +377,9 @@ module icache #(
         if (~reset_n) begin
             tagarray_din_refillwrite_sx <= 0;
         end else begin
-            if (lookup_hitway_dec_or == 1'b0) begin  //hit way0
+            if (victimway_oh_s1 == 2'b01) begin  //hit way0
                 tagarray_din_refillwrite_sx <= {tagarray_dout_or[37:19], 1'b1, 1'b1, ls_addr_or[31:15]};  // set way0 dirty to 1
-            end else begin
+            end else if (victimway_oh_s1 == 2'b10) begin
                 tagarray_din_refillwrite_sx <= {1'b1, 1'b1, ls_addr_or[31:15], tagarray_dout_or[18:0]};  // set way1 dirty to 1            
             end
         end
