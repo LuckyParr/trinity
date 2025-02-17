@@ -28,16 +28,21 @@ module bju #(
     output reg                          bjusb_bht_valid_in,              // Valid signal for the write operation
 
     //BTB Write Interface
-    output reg         bjusb_btb_ce,           // Chip enable
-    output reg         bjusb_btb_we,           // Write enable
+    output reg         bjusb_btb_ce,            // Chip enable
+    output reg         bjusb_btb_we,            // Write enable
     output reg [128:0] bjusb_btb_wmask,
-    output reg [  8:0] bjusb_btb_write_index,  // Write address (9 bits for 512 sets)
-    output reg [128:0] bjusb_btb_din,          // Data input (1 valid bit + 4 targets * 32 bits)
-    output reg [ 31:0] bju_pmu_situation1_cnt,
-    output reg [ 31:0] bju_pmu_situation2_cnt,
-    output reg [ 31:0] bju_pmu_situation3_cnt,
-    output reg [ 31:0] bju_pmu_situation4_cnt,
-    output reg [ 31:0] bju_pmu_situation5_cnt
+    output reg [  8:0] bjusb_btb_write_index,   // Write address (9 bits for 512 sets)
+    output reg [128:0] bjusb_btb_din,           // Data input (1 valid bit + 4 targets * 32 bits)
+    output reg [ 31:0] bju_pmu_situation1_cnt_btype,  //b-type
+    output reg [ 31:0] bju_pmu_situation2_cnt_btype,
+    output reg [ 31:0] bju_pmu_situation3_cnt_btype,
+    output reg [ 31:0] bju_pmu_situation4_cnt_btype,
+    output reg [ 31:0] bju_pmu_situation5_cnt_btype,
+    output reg [ 31:0] bju_pmu_situation1_cnt_jtype, //j-type
+    output reg [ 31:0] bju_pmu_situation2_cnt_jtype,
+    output reg [ 31:0] bju_pmu_situation3_cnt_jtype,
+    output reg [ 31:0] bju_pmu_situation4_cnt_jtype,
+    output reg [ 31:0] bju_pmu_situation5_cnt_jtype
 
 );
     /* --------------------- bju calculation logic (bjucal) --------------------- */
@@ -204,27 +209,52 @@ module bju #(
 
     /* -------------------------------- pmu logic ------------------------------- */
 
-
+    wire j_type = (is_jal || is_jalr);
+    wire b_type = ~j_type;
     always @(posedge clock or negedge reset_n) begin
         if (~reset_n) begin
-            bju_pmu_situation1_cnt <= 'b0;
-            bju_pmu_situation2_cnt <= 'b0;
-            bju_pmu_situation3_cnt <= 'b0;
-            bju_pmu_situation4_cnt <= 'b0;
-            bju_pmu_situation5_cnt <= 'b0;
-        end else if (bjusb_bju_taken_bpu_taken_right) begin
-            bju_pmu_situation1_cnt <= bju_pmu_situation1_cnt + 1;
-        end else if (bjusb_bju_taken_bpu_taken_butaddrwrong) begin
-            bju_pmu_situation2_cnt <= bju_pmu_situation2_cnt + 1;
-        end else if (bjusb_bju_taken_bpu_nottaken_wrong) begin
-            bju_pmu_situation3_cnt <= bju_pmu_situation3_cnt + 1;
-        end else if (bjusb_bju_nottaken_bpu_taken_wrong) begin
-            bju_pmu_situation4_cnt <= bju_pmu_situation4_cnt + 1;
-        end else if (bjusb_bju_nottaken_bpu_nottaken_right) begin
-            bju_pmu_situation5_cnt <= bju_pmu_situation5_cnt + 1;
+            bju_pmu_situation1_cnt_btype <= 'b0;
+            bju_pmu_situation2_cnt_btype <= 'b0;
+            bju_pmu_situation3_cnt_btype <= 'b0;
+            bju_pmu_situation4_cnt_btype <= 'b0;
+            bju_pmu_situation5_cnt_btype <= 'b0;
+        end else if (b_type) begin
+            if (bjusb_bju_taken_bpu_taken_right) begin
+                bju_pmu_situation1_cnt_btype <= bju_pmu_situation1_cnt_btype + 1;
+            end else if (bjusb_bju_taken_bpu_taken_butaddrwrong) begin
+                bju_pmu_situation2_cnt_btype <= bju_pmu_situation2_cnt_btype + 1;
+            end else if (bjusb_bju_taken_bpu_nottaken_wrong) begin
+                bju_pmu_situation3_cnt_btype <= bju_pmu_situation3_cnt_btype + 1;
+            end else if (bjusb_bju_nottaken_bpu_taken_wrong) begin
+                bju_pmu_situation4_cnt_btype <= bju_pmu_situation4_cnt_btype + 1;
+            end else if (bjusb_bju_nottaken_bpu_nottaken_right) begin
+                bju_pmu_situation5_cnt_btype <= bju_pmu_situation5_cnt_btype + 1;
+            end
         end
     end
-    //250117 record: 
-    //correctness rate = (bju_pmu_situation1_cnt + bju_pmu_situation5)/sum : (11011+1013)/14079=85.4%
+
+        always @(posedge clock or negedge reset_n) begin
+        if (~reset_n) begin
+            bju_pmu_situation1_cnt_jtype <= 'b0;
+            bju_pmu_situation2_cnt_jtype <= 'b0;
+            bju_pmu_situation3_cnt_jtype <= 'b0;
+            bju_pmu_situation4_cnt_jtype <= 'b0;
+            bju_pmu_situation5_cnt_jtype <= 'b0;
+        end else if (j_type) begin
+            if (bjusb_bju_taken_bpu_taken_right) begin
+                bju_pmu_situation1_cnt_jtype <= bju_pmu_situation1_cnt_jtype + 1;
+            end else if (bjusb_bju_taken_bpu_taken_butaddrwrong) begin
+                bju_pmu_situation2_cnt_jtype <= bju_pmu_situation2_cnt_jtype + 1;
+            end else if (bjusb_bju_taken_bpu_nottaken_wrong) begin
+                bju_pmu_situation3_cnt_jtype <= bju_pmu_situation3_cnt_jtype + 1;
+            end else if (bjusb_bju_nottaken_bpu_taken_wrong) begin
+                bju_pmu_situation4_cnt_jtype <= bju_pmu_situation4_cnt_jtype + 1;
+            end else if (bjusb_bju_nottaken_bpu_nottaken_right) begin
+                bju_pmu_situation5_cnt_jtype <= bju_pmu_situation5_cnt_jtype + 1;
+            end
+        end
+    end
+
+
 
 endmodule

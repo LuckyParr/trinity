@@ -177,11 +177,17 @@ module exu_top (
     wire                           sq2arb_tbus_operation_done;
     wire [     `TBUS_OPTYPE_RANGE] sq2arb_tbus_operation_type;
 
-    wire [                   31:0] bju_pmu_situation1_cnt;
-    wire [                   31:0] bju_pmu_situation2_cnt;
-    wire [                   31:0] bju_pmu_situation3_cnt;
-    wire [                   31:0] bju_pmu_situation4_cnt;
-    wire [                   31:0] bju_pmu_situation5_cnt;
+    wire [                   31:0] bju_pmu_situation1_cnt_btype;
+    wire [                   31:0] bju_pmu_situation2_cnt_btype;
+    wire [                   31:0] bju_pmu_situation3_cnt_btype;
+    wire [                   31:0] bju_pmu_situation4_cnt_btype;
+    wire [                   31:0] bju_pmu_situation5_cnt_btype;
+
+    wire [                   31:0] bju_pmu_situation1_cnt_jtype;
+    wire [                   31:0] bju_pmu_situation2_cnt_jtype;
+    wire [                   31:0] bju_pmu_situation3_cnt_jtype;
+    wire [                   31:0] bju_pmu_situation4_cnt_jtype;
+    wire [                   31:0] bju_pmu_situation5_cnt_jtype;
 
 
     // Instantiate intblock
@@ -230,11 +236,16 @@ module exu_top (
         .bjusb_btb_wmask               (bjusb_btb_wmask),
         .bjusb_btb_write_index         (bjusb_btb_write_index),
         .bjusb_btb_din                 (bjusb_btb_din),
-        .bju_pmu_situation1_cnt        (bju_pmu_situation1_cnt),
-        .bju_pmu_situation2_cnt        (bju_pmu_situation2_cnt),
-        .bju_pmu_situation3_cnt        (bju_pmu_situation3_cnt),
-        .bju_pmu_situation4_cnt        (bju_pmu_situation4_cnt),
-        .bju_pmu_situation5_cnt        (bju_pmu_situation5_cnt)
+        .bju_pmu_situation1_cnt_btype        (bju_pmu_situation1_cnt_btype),
+        .bju_pmu_situation2_cnt_btype        (bju_pmu_situation2_cnt_btype),
+        .bju_pmu_situation3_cnt_btype        (bju_pmu_situation3_cnt_btype),
+        .bju_pmu_situation4_cnt_btype        (bju_pmu_situation4_cnt_btype),
+        .bju_pmu_situation5_cnt_btype        (bju_pmu_situation5_cnt_btype),
+        .bju_pmu_situation1_cnt_jtype        (bju_pmu_situation1_cnt_jtype),
+        .bju_pmu_situation2_cnt_jtype        (bju_pmu_situation2_cnt_jtype),
+        .bju_pmu_situation3_cnt_jtype        (bju_pmu_situation3_cnt_jtype),
+        .bju_pmu_situation4_cnt_jtype        (bju_pmu_situation4_cnt_jtype),
+        .bju_pmu_situation5_cnt_jtype        (bju_pmu_situation5_cnt_jtype)
 
     );
 
@@ -453,11 +464,18 @@ module exu_top (
     exu_pmu u_exu_pmu (
         .clock                 (clock),
         .end_of_program        (end_of_program),
-        .bju_pmu_situation1_cnt(bju_pmu_situation1_cnt),
-        .bju_pmu_situation2_cnt(bju_pmu_situation2_cnt),
-        .bju_pmu_situation3_cnt(bju_pmu_situation3_cnt),
-        .bju_pmu_situation4_cnt(bju_pmu_situation4_cnt),
-        .bju_pmu_situation5_cnt(bju_pmu_situation5_cnt)
+        .bju_pmu_situation1_cnt_btype        (bju_pmu_situation1_cnt_btype),
+        .bju_pmu_situation2_cnt_btype        (bju_pmu_situation2_cnt_btype),
+        .bju_pmu_situation3_cnt_btype        (bju_pmu_situation3_cnt_btype),
+        .bju_pmu_situation4_cnt_btype        (bju_pmu_situation4_cnt_btype),
+        .bju_pmu_situation5_cnt_btype        (bju_pmu_situation5_cnt_btype),
+        
+        .bju_pmu_situation1_cnt_jtype        (bju_pmu_situation1_cnt_jtype),
+        .bju_pmu_situation2_cnt_jtype        (bju_pmu_situation2_cnt_jtype),
+        .bju_pmu_situation3_cnt_jtype        (bju_pmu_situation3_cnt_jtype),
+        .bju_pmu_situation4_cnt_jtype        (bju_pmu_situation4_cnt_jtype),
+        .bju_pmu_situation5_cnt_jtype        (bju_pmu_situation5_cnt_jtype)
+
     );
 
 

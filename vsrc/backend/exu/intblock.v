@@ -61,11 +61,16 @@ module intblock #(
     output wire [128:0] bjusb_btb_wmask,
     output wire [  8:0] bjusb_btb_write_index,   // Write address (9 bits for 512 sets)
     output wire [128:0] bjusb_btb_din,           // Data input (1 valid bit + 4 targets * 32 bits)
-    output reg  [ 31:0] bju_pmu_situation1_cnt,
-    output reg  [ 31:0] bju_pmu_situation2_cnt,
-    output reg  [ 31:0] bju_pmu_situation3_cnt,
-    output reg  [ 31:0] bju_pmu_situation4_cnt,
-    output reg  [ 31:0] bju_pmu_situation5_cnt
+    output reg [ 31:0] bju_pmu_situation1_cnt_btype,  //b-type
+    output reg [ 31:0] bju_pmu_situation2_cnt_btype,
+    output reg [ 31:0] bju_pmu_situation3_cnt_btype,
+    output reg [ 31:0] bju_pmu_situation4_cnt_btype,
+    output reg [ 31:0] bju_pmu_situation5_cnt_btype,
+    output reg [ 31:0] bju_pmu_situation1_cnt_jtype, //j-type
+    output reg [ 31:0] bju_pmu_situation2_cnt_jtype,
+    output reg [ 31:0] bju_pmu_situation3_cnt_jtype,
+    output reg [ 31:0] bju_pmu_situation4_cnt_jtype,
+    output reg [ 31:0] bju_pmu_situation5_cnt_jtype
 
 );
     wire                 redirect_valid_internal;
@@ -133,11 +138,16 @@ module intblock #(
         .bjusb_btb_wmask               (bjusb_btb_wmask),
         .bjusb_btb_write_index         (bjusb_btb_write_index),
         .bjusb_btb_din                 (bjusb_btb_din),
-        .bju_pmu_situation1_cnt        (bju_pmu_situation1_cnt),
-        .bju_pmu_situation2_cnt        (bju_pmu_situation2_cnt),
-        .bju_pmu_situation3_cnt        (bju_pmu_situation3_cnt),
-        .bju_pmu_situation4_cnt        (bju_pmu_situation4_cnt),
-        .bju_pmu_situation5_cnt        (bju_pmu_situation5_cnt)
+        .bju_pmu_situation1_cnt_btype        (bju_pmu_situation1_cnt_btype),
+        .bju_pmu_situation2_cnt_btype        (bju_pmu_situation2_cnt_btype),
+        .bju_pmu_situation3_cnt_btype        (bju_pmu_situation3_cnt_btype),
+        .bju_pmu_situation4_cnt_btype        (bju_pmu_situation4_cnt_btype),
+        .bju_pmu_situation5_cnt_btype        (bju_pmu_situation5_cnt_btype),
+        .bju_pmu_situation1_cnt_jtype        (bju_pmu_situation1_cnt_jtype),
+        .bju_pmu_situation2_cnt_jtype        (bju_pmu_situation2_cnt_jtype),
+        .bju_pmu_situation3_cnt_jtype        (bju_pmu_situation3_cnt_jtype),
+        .bju_pmu_situation4_cnt_jtype        (bju_pmu_situation4_cnt_jtype),
+        .bju_pmu_situation5_cnt_jtype        (bju_pmu_situation5_cnt_jtype)
 
     );
 
