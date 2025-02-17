@@ -4,7 +4,7 @@ module ibuffer (
     input wire        pc_index_ready,       // Signal indicating readiness from `pc_index`
     input wire        pc_operation_done,
     input wire [`ICACHE_FETCHWIDTH128_RANGE] admin2ib_instr,        // 64-bit input data from arbiter (two instructions, 32 bits each)
-    input wire [ 3:0] admin2ib_instr_valid,  // 2-bit validity indicator (11 or 01)
+    input wire [ 3:0]                        admin2ib_instr_valid,  // 2-bit validity indicator (11 or 01)
     input wire        redirect_valid,        // Clear signal for ibuffer
     input wire [63:0] pc,
 
@@ -21,6 +21,27 @@ module ibuffer (
     input wire [3:0]       admin2ib_predicttaken,
     input wire [4*32-1:0]  admin2ib_predicttarget
 );
+
+    reg [1:0] front_zero_cnt;//0,1,2,3
+    always @(*) begin
+        integer i;
+        front_zero_cnt ='b0;
+        for ( i=0 ;i<4 ;i=i+1 ) begin
+            if(admin2ib_instr_valid[i]==1'b0)begin
+                front_zero_cnt = front_zero_cnt + 'b1;
+            end else begin
+                break;
+            end
+        end
+    end
+
+    wire [`ICACHE_FETCHWIDTH128_RANGE] shift_admin2ib_instr;
+    wire [3:0] shift_admin2ib_instr_valid;
+    assign   shift_admin2ib_instr = admin2ib_instr >> (32*front_zero_cnt);
+    assign   shift_admin2ib_instr_valid = admin2ib_instr_valid >> (front_zero_cnt);
+
+
+
     wire [(1+32+32+64-1):0] fifo_data_out;  // Output data from the FIFO
     assign ibuffer_predicttaken_out = fifo_data_out[ (1+32+64+32-1) : (32+64+32)];
     assign ibuffer_predicttarget_out = fifo_data_out[ (32+64+32-1) : (32+64)];
@@ -35,10 +56,10 @@ module ibuffer (
 
     // Splitting instructions and calculating PCs
     always @(*) begin
-        inst_cut[0] = admin2ib_instr[31:0];
-        inst_cut[1] = admin2ib_instr[63:32];
-        inst_cut[2] = admin2ib_instr[95:64];
-        inst_cut[3] = admin2ib_instr[127:96];
+        inst_cut[0] = shift_admin2ib_instr[31:0];
+        inst_cut[1] = shift_admin2ib_instr[63:32];
+        inst_cut[2] = shift_admin2ib_instr[95:64];
+        inst_cut[3] = shift_admin2ib_instr[127:96];
         pc_cut[0]   = pc;
         pc_cut[1]   = pc + 4;
         pc_cut[2]   = pc + 8;
@@ -82,20 +103,20 @@ module ibuffer (
             fetch_inst      <= 1'b1;
             fifo_count_prev <= 6'b0;
         end else begin
-            // Generate inst_buffer  based on admin2ib_instr_valid
-            if (admin2ib_instr_valid[0]) begin
+            // Generate inst_buffer  based on shift_admin2ib_instr_valid
+            if (shift_admin2ib_instr_valid[0]) begin
                 inst_buffer[0] <= {predict_taken_cut[0], predict_target_cut[0][31:0] , inst_cut[0], pc_cut[0][63:0]};
             end
 
-            if (admin2ib_instr_valid[1]) begin
+            if (shift_admin2ib_instr_valid[1]) begin
                 inst_buffer[1] <= {predict_taken_cut[1], predict_target_cut[1][31:0] , inst_cut[1], pc_cut[1][63:0]};
             end
 
-            if (admin2ib_instr_valid[2]) begin
+            if (shift_admin2ib_instr_valid[2]) begin
                 inst_buffer[2] <= {predict_taken_cut[2], predict_target_cut[2][31:0] , inst_cut[2], pc_cut[2][63:0]};
             end
 
-            if (admin2ib_instr_valid[3]) begin
+            if (shift_admin2ib_instr_valid[3]) begin
                 inst_buffer[3] <= {predict_taken_cut[3], predict_target_cut[3][31:0] , inst_cut[3], pc_cut[3][63:0]};
             end
 
@@ -111,9 +132,9 @@ module ibuffer (
         if (!reset_n || redirect_valid) begin
             valid_counter <= 3'h0;
         end else begin
-            // Initialize valid_counter based on admin2ib_instr_valid
-            if (admin2ib_instr_valid != 4'b0000) begin
-                valid_counter <= admin2ib_instr_valid[0] + admin2ib_instr_valid[1] +admin2ib_instr_valid[2] +admin2ib_instr_valid[3];
+            // Initialize valid_counter based on shift_admin2ib_instr_valid
+            if (shift_admin2ib_instr_valid != 4'b0000) begin
+                valid_counter <= shift_admin2ib_instr_valid[0] + shift_admin2ib_instr_valid[1] +shift_admin2ib_instr_valid[2] +shift_admin2ib_instr_valid[3];
             end  // Write instructions to FIFO and decrement counter
             else if (valid_counter > 0 && !fifo_full) begin
                 valid_counter <= valid_counter - 1;

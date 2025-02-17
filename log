@@ -1,0 +1,124 @@
+cd difftest_trinity && make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 -j 32 EMU_TRACE=fst RELEASE=1
+make[1]: Entering directory '/nfs/home/xuyue/trinity/difftest_trinity'
+Mon, 17 Feb 2025 22:12:07 +0800
+time -avp -o /nfs/home/xuyue/trinity/build/time.log verilator --exe -O0 --cc --top-module SimTop +define+VERILATOR=1 +define+PRINTF_COND=1 +define+RANDOMIZE_REG_INIT +define+RANDOMIZE_MEM_INIT +define+RANDOMIZE_GARBAGE_ASSIGN +define+RANDOMIZE_DELAY=0 -Wno-STMTDLY -Wno-WIDTH --max-num-width 150000 --assert --x-assign unique --output-split 30000 --output-split-cfuncs 30000 -I/nfs/home/xuyue/trinity/build/rtl -I/nfs/home/xuyue/trinity/build/generated-src -I../vsrc/ -I../vsrc/common -I../vsrc/sim_ram/ -I../vsrc/pipereg/ -I../vsrc/frontend/ -I../vsrc/backend/ -I../vsrc/backend/idu/ -I../vsrc/backend/iru -I../vsrc/backend/isu -I../vsrc/backend/isu/isq -I../vsrc/backend/isu/rob -I../vsrc/backend/exu -I../vsrc/backend/exu/fu -I../vsrc/include/ -I../vsrc/cache/ --trace-max-array 560 -CFLAGS "-I/nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common -I/nfs/home/xuyue/trinity/difftest_trinity/config -DNOOP_HOME=\\\"/nfs/home/xuyue/trinity\\\" -I/nfs/home/xuyue/trinity/build/generated-src -I/nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/plugin/include -I/nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/difftest -DBASIC_DIFFTEST_ONLY -I/nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/plugin/spikedasm -I/nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/verilator -DVERILATOR -DNUM_CORES=1 --std=c++17 -DVERILATOR_4_210 -DENABLE_FST -DEMU_THREAD=4" -LDFLAGS "-lz -lzstd -ldl" -CFLAGS "\$(PGO_CFLAGS)" -LDFLAGS "\$(PGO_LDFLAGS)" -o /nfs/home/xuyue/trinity/build/emu +define+DIFFTEST --instr-count-dpi 1 --no-timing +define+VERILATOR_5 --quiet-stats --trace-fst --threads 4 --threads-dpi all					 -Mdir /nfs/home/xuyue/trinity/build/emu-compile /nfs/home/xuyue/trinity/vsrc/SimTop.sv /nfs/home/xuyue/trinity/difftest_trinity/src/test/vsrc/common/ref.v /nfs/home/xuyue/trinity/difftest_trinity/src/test/vsrc/common/assert.v /nfs/home/xuyue/trinity/difftest_trinity/src/test/vsrc/common/SimJTAG.v /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/uart.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/main.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/compress.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/common.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/golden.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/flash.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/coverage.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/lightsss.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/device.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/keyboard.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/dut.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/ram.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/SimJTAG.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/vga.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/remote_bitbang.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/perf.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/common/sdcard.cpp /nfs/home/xuyue/trinity/build/generated-src/difftest-dpic.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/difftest/difftrace.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/difftest/difftest.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/difftest/refproxy.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/difftest/goldenmem.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/plugin/spikedasm/spikedasm.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/verilator/snapshot.cpp /nfs/home/xuyue/trinity/difftest_trinity/src/test/csrc/verilator/emu.cpp
+Mon, 17 Feb 2025 22:12:09 +0800
+Building emu...
+make[2]: Entering directory '/nfs/home/xuyue/trinity/difftest_trinity'
+time -avp -o /nfs/home/xuyue/trinity/build/time.log make -s VM_PARALLEL_BUILDS=8 OPT_SLOW="-O0" \
+					OPT_FAST=-O3 \
+					PGO_CFLAGS= \
+					PGO_LDFLAGS= \
+					-C /nfs/home/xuyue/trinity/build/emu-compile -f /nfs/home/xuyue/trinity/build/emu-compile/VSimTop.mk 
+make[3]: Entering directory '/nfs/home/xuyue/trinity/build/emu-compile'
+make[3]: Leaving directory '/nfs/home/xuyue/trinity/build/emu-compile'
+make[2]: Leaving directory '/nfs/home/xuyue/trinity/difftest_trinity'
+make[1]: Leaving directory '/nfs/home/xuyue/trinity/difftest_trinity'
+./build/emu --diff=/nfs/home/xuyue/trinity/r2r/tri-riscv64-nemu-interpreter-so  --dump-wave-full --wave-path=/nfs/home/xuyue/trinity/dump/sim.vcd -b 0 -e 0 --image=/nfs/home/xuyue/trinity/r2r/cmark/coremark-riscv64-nutshell-2.bin
+emu compiled at Jan 19 2025, 15:07:50
+Using simulated 32768B flash
+Using simulated 8192MB RAM
+The image is /nfs/home/xuyue/trinity/r2r/cmark/coremark-riscv64-nutshell-2.bin
+The reference model is /nfs/home/xuyue/trinity/r2r/tri-riscv64-nemu-interpreter-so
+The first instruction of core 0 has commited. Difftest enabled. 
+nemu does not enable flash fetch!
+
+==============  In the last commit group  ==============
+the first commit instr pc of DUT is 0x0000000000000000
+the first commit instr pc of REF is 0x0000000000000000
+
+============== Commit Group Trace (Core 0) ==============
+commit group [00]: pc 0080000fb4 cmtcnt 1
+commit group [01]: pc 0080000fb8 cmtcnt 1
+commit group [02]: pc 0080000fbc cmtcnt 1
+commit group [03]: pc 0080000fc0 cmtcnt 1
+commit group [04]: pc 0080000fc4 cmtcnt 1
+commit group [05]: pc 0080001d2c cmtcnt 1
+commit group [06]: pc 0080001d34 cmtcnt 1 <--
+commit group [07]: pc 0080001d24 cmtcnt 1
+commit group [08]: pc 0080001d28 cmtcnt 1
+commit group [09]: pc 0080000f98 cmtcnt 1
+commit group [10]: pc 0080000f9c cmtcnt 1
+commit group [11]: pc 0080000fa0 cmtcnt 1
+commit group [12]: pc 0080000fa4 cmtcnt 1
+commit group [13]: pc 0080000fa8 cmtcnt 1
+commit group [14]: pc 0080000fac cmtcnt 1
+commit group [15]: pc 0080000fb0 cmtcnt 1
+
+============== Commit Instr Trace ==============
+[00] commit pc 0000000080000fb4 inst 00e787b3 wen 1 dst 15 data 0000000000000000 idx 000 (33)
+[01] commit pc 0000000080000fb8 inst 00078067 wen 0 dst 00 data 0000000000000000 idx 001 (00)
+[02] commit pc 0000000080000fec inst 00002517 wen 1 dst 10 data 0000000000000000 idx 002 (26)
+[03] commit pc 0000000080000ff0 inst 9cc52503 wen 1 dst 10 data 0000000000000000 idx 003 (3a)
+[04] commit pc 0000000080000ff4 inst 00008067 wen 0 dst 00 data 0000000000000000 idx 004 (00)
+[05] commit pc 0000000080001d1c inst 00050793 wen 1 dst 15 data 0000000000000000 idx 005 (27)
+[06] commit pc 0000000080001d20 inst 00500513 wen 1 dst 10 data 0000000000000000 idx 006 (39)
+[07] commit pc 0000000080001d24 inst 02f12e23 wen 0 dst 28 data 0000000000000000 idx 007 (00)
+[08] commit pc 0000000080001d28 inst a70ff0ef wen 1 dst 01 data 0000000000000000 idx 008 (3b)
+[09] commit pc 0000000080000f98 inst 00500793 wen 1 dst 15 data 0000000000000000 idx 009 (08)
+[10] commit pc 0000000080000f9c inst 04a7ee63 wen 0 dst 28 data 0000000000000000 idx 00a (00)
+[11] commit pc 0000000080000fa0 inst 00002717 wen 1 dst 14 data 0000000000000000 idx 00b (3d)
+[12] commit pc 0000000080000fa4 inst 9d070713 wen 1 dst 14 data 0000000000000000 idx 00c (2e)
+[13] commit pc 0000000080000fa8 inst 00251513 wen 1 dst 10 data 0000000000000000 idx 00d (29)
+[14] commit pc 0000000080000fac inst 00e50533 wen 1 dst 10 data 0000000000000000 idx 00e (21)
+[15] commit pc 0000000080000fb0 inst 00052783 wen 1 dst 15 data 0000000000000000 idx 00f (0b)
+[16] commit pc 0000000080000fb4 inst 00e787b3 wen 1 dst 15 data 0000000000000000 idx 010 (23)
+[17] commit pc 0000000080000fb8 inst 00078067 wen 0 dst 00 data 0000000000000000 idx 011 (00)
+[18] commit pc 0000000080000fbc inst 00002517 wen 1 dst 10 data 0000000000000000 idx 012 (3c)
+[19] commit pc 0000000080000fc0 inst 1e452503 wen 1 dst 10 data 0000000000000000 idx 013 (02)
+[20] commit pc 0000000080000fc4 inst 00008067 wen 0 dst 00 data 0000000000000000 idx 014 (00)
+[21] commit pc 0000000080001d2c inst 00051463 wen 0 dst 08 data 0000000000000000 idx 015 (00)
+[22] commit pc 0000000080001d30 inst 01013783 wen 1 dst 15 data 0000000000000000 idx 016 (30) <--
+[23] commit pc 0000000080001d14 inst 00f11a23 wen 0 dst 20 data 0000000000000000 idx 077 (00)
+[24] commit pc 0000000080001d18 inst a80ff0ef wen 1 dst 01 data 0000000000000000 idx 078 (2f)
+[25] commit pc 0000000080000f98 inst 00500793 wen 1 dst 15 data 0000000000000000 idx 079 (34)
+[26] commit pc 0000000080000f9c inst 04a7ee63 wen 0 dst 28 data 0000000000000000 idx 07a (00)
+[27] commit pc 0000000080000fa0 inst 00002717 wen 1 dst 14 data 0000000000000000 idx 07b (31)
+[28] commit pc 0000000080000fa4 inst 9d070713 wen 1 dst 14 data 0000000000000000 idx 07c (35)
+[29] commit pc 0000000080000fa8 inst 00251513 wen 1 dst 10 data 0000000000000000 idx 07d (0d)
+[30] commit pc 0000000080000fac inst 00e50533 wen 1 dst 10 data 0000000000000000 idx 07e (37)
+[31] commit pc 0000000080000fb0 inst 00052783 wen 1 dst 15 data 0000000000000000 idx 07f (36)
+
+==============  REF Regs  ==============
+  $0: 0x0000000000000000   ra: 0x0000000080001d2c   sp: 0x000000008000bf30   gp: 0x0000000000000000 
+  tp: 0x0000000000000000   t0: 0x0000000000000000   t1: 0x0000000000000000   t2: 0x0000000000000000 
+  s0: 0x0000000000000000   s1: 0x0000000000000000   a0: 0x0000000000000007   a1: 0x000000008000bf3c 
+  a2: 0x0000000000000000   a3: 0xffffffffe353f7cf   a4: 0x0000000080002970   a5: 0x0000000080000fbc 
+  a6: 0x0000000000000000   a7: 0x0000000000000000   s2: 0x0000000000000000   s3: 0x0000000000000000 
+  s4: 0x0000000000000000   s5: 0x0000000000000000   s6: 0x0000000000000000   s7: 0x0000000000000000 
+  s8: 0x0000000000000000   s9: 0x0000000000000000  s10: 0x0000000000000000  s11: 0x0000000000000000 
+  t3: 0x0000000000000000   t4: 0x0000000000000000   t5: 0x0000000000000000   t6: 0x0000000000000000 
+ ft0: 0x0000000000000000  ft1: 0x0000000000000000  ft2: 0x0000000000000000  ft3: 0x0000000000000000 
+ ft4: 0x0000000000000000  ft5: 0x0000000000000000  ft6: 0x0000000000000000  ft7: 0x0000000000000000 
+ fs0: 0x0000000000000000  fs1: 0x0000000000000000  fa0: 0x0000000000000000  fa1: 0x0000000000000000 
+ fa2: 0x0000000000000000  fa3: 0x0000000000000000  fa4: 0x0000000000000000  fa5: 0x0000000000000000 
+ fa6: 0x0000000000000000  fa7: 0x0000000000000000  fs2: 0x0000000000000000  fs3: 0x0000000000000000 
+ fs4: 0x0000000000000000  fs5: 0x0000000000000000  fs6: 0x0000000000000000  fs7: 0x0000000000000000 
+ fs8: 0x0000000000000000  fs9: 0x0000000000000000 fs10: 0x0000000000000000 fs11: 0x0000000000000000 
+ ft8: 0x0000000000000000  ft9: 0x0000000000000000 ft10: 0x0000000000000000 ft11: 0x0000000000000000 
+pc: 0x0000000080001d34 mstatus: 0x0000000000000000 mcause: 0x0000000000000000 mepc: 0x0000000000000000
+                       sstatus: 0x0000000000000000 scause: 0x0000000000000000 sepc: 0x0000000000000000
+satp: 0x0000000000000000
+mip: 0x0000000000000000 mie: 0x0000000000000000 mscratch: 0x0000000000000000 sscratch: 0x0000000000000000
+mideleg: 0x0000000000000000 medeleg: 0x0000000000000000
+mtval: 0x0000000000000000 stval: 0x0000000000000000 mtvec: 0x0000000000000000 stvec: 0x0000000000000000
+fcsr: 0x0000000000000000
+privilege mode:0
+pmp: 4 entries active, details:
+ 0: cfg:0x00 addr:0x0000000000000000| 1: cfg:0x00 addr:0x0000000000000000
+ 2: cfg:0x00 addr:0x0000000000000000| 3: cfg:0x00 addr:0x0000000000000000
+ 4: cfg:0x00 addr:0x0000000000000000| 5: cfg:0x00 addr:0x0000000000000000
+ 6: cfg:0x00 addr:0x0000000000000000| 7: cfg:0x00 addr:0x0000000000000000
+ 8: cfg:0x00 addr:0x0000000000000000| 9: cfg:0x00 addr:0x0000000000000000
+10: cfg:0x00 addr:0x0000000000000000|11: cfg:0x00 addr:0x0000000000000000
+12: cfg:0x00 addr:0x0000000000000000|13: cfg:0x00 addr:0x0000000000000000
+14: cfg:0x00 addr:0x0000000000000000|15: cfg:0x00 addr:0x0000000000000000
+pmp csr rw: enable, pmp check: disable
+privilegeMode: 0
+     a0 different at pc = 0x0080001d34, right= 0x0000000000000007, wrong = 0x0000000000000000
+     a5 different at pc = 0x0080001d34, right= 0x0000000080000fbc, wrong = 0x0000006600000000
+Core 0: [31mABORT at pc = 0x80001d34
+[0m[35mCore-0 instrCnt = 151, cycleCnt = 2,904, IPC = 0.051997
+[0m[34mSeed=0 Guest cycle spent: 2,905 (this will be different from cycleCnt if emu loads a snapshot)
+[0m[34mHost time spent: 322ms
+[0m

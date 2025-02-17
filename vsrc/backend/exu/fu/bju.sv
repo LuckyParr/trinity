@@ -179,6 +179,12 @@ module bju #(
             //send pc+4 as redirect
             redirect_valid                 = 1'b1;
             redirect_target                = pc + 'd4;
+            //
+            bjusb_btb_ce                   = 1'b1;
+            bjusb_btb_we                   = 1'b1;
+            bjusb_btb_wmask                = btb_wmask;
+            bjusb_btb_write_index          = pc[12:4];
+            bjusb_btb_din                  = btb_din;
         end else if (bjusb_bju_nottaken_bpu_nottaken_right) begin
             //predict not jump right, decrease bht
             bjusb_bht_write_enable         = 1'b1;
@@ -187,6 +193,12 @@ module bju #(
             bjusb_bht_write_inc            = 1'b0;
             bjusb_bht_write_dec            = 1'b1;
             bjusb_bht_valid_in             = 1'b1;
+            //
+            bjusb_btb_ce                   = 1'b1;
+            bjusb_btb_we                   = 1'b1;
+            bjusb_btb_wmask                = btb_wmask;
+            bjusb_btb_write_index          = pc[12:4];
+            bjusb_btb_din                  = btb_din;
         end
     end
 

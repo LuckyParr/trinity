@@ -21,10 +21,10 @@ module instr_admin (
     /* ------------ aligner logic : to delete some front instr base on pc ------------ */
     // let s say 4 instruciton fetch from icache like this:
     //                      fetch_instr              aligned_instr_valid   aligned_instr
-    //                      |instr 0|                              0         | empty |  
-    //                pc->  |instr 1|     ------>                  1         |instr 1|  
-    //                      |instr 2|                              1         |instr 2|  
-    //                      |instr 3|                              1         |instr 3|     
+    //                    70  |instr 0|                              0         | empty |  
+    //                pc->74  |instr 1|     ------>                  1         |instr 1|  
+    //                    78  |instr 2|                              1         |instr 2|  
+    //                    7c  |instr 3|                              1         |instr 3|     
 
     always @* begin
         aligned_instr       = 'b0;
@@ -35,25 +35,25 @@ module instr_admin (
                 aligned_instr       = fetch_instr;
             end else if (pc[3:2] == 2'b01) begin
                 // Shift cache line to discard the lowest 32 bits (shift by 32 bits)
-                aligned_instr_valid = {4'b0111};
-                aligned_instr       = {32'b0, fetch_instr[127:32]};
+                aligned_instr_valid = {4'b1110};
+                aligned_instr       = {fetch_instr[127:32],32'b0};
             end else if (pc[3:2] == 2'b10) begin
-                aligned_instr_valid = {4'b0011};
-                aligned_instr       = {64'b0, fetch_instr[127:64]};
+                aligned_instr_valid = {4'b1100};
+                aligned_instr       = {fetch_instr[127:64],64'b0};
             end else if (pc[3:2] == 2'b11) begin
-                aligned_instr_valid = {4'b0001};
-                aligned_instr       = {96'b0, fetch_instr[127:96]};
+                aligned_instr_valid = {4'b1000};
+                aligned_instr       = {fetch_instr[127:96],96'b0};
             end
         end
     end
 
     /* ------- checker logic : determine if 4 instr is true branch/jal/jalr , then get instrs that truly need jump ------- */
     // continue:
-    // aligned_instr_valid   aligned_instr         bht_say_jump    bht_say_jump_aligned     ctrl_xfer_of_4instr         ::  admin2ib_predicttaken    admin2ib_predicttarget    ::  set_valid_till_first_branch     admin2ib_instr_valid      admin2ib_instr     ::     admin2pcctrl_predicttarget     admin2pcctrl_predicttarget                                                                            
-    //             0         | empty | (br)             1                    0                        1                 ::          0                    |      empty     |    ::              1                           0                 |   emtpy   |      ::                                              
-    //             1         |instr 1| (add)            1                    1                        0                 ::          0                    |      empty     |    ::              1                           1                 |  instr 1  |      ::                 1                         |  instr 1  |               
-    //             1         |instr 2| (br)             1                    1                        1                 ::          1                    |predict target 2|    ::              1                           1                 |  instr 2  |      ::                    
-    //             1         |instr 3| (br)             1                    1                        1                 ::          1                    |predict target 3|    ::              0                           0                 |   emtpy   |      ::                    
+    // aligned_instr_valid   aligned_instr              bht_say_jump    bht_say_jump_aligned     ctrl_xfer_of_4instr            ::  admin2ib_predicttaken    admin2ib_predicttarget    ::  set_valid_till_first_branch     admin2ib_instr_valid      admin2ib_instr     ::     admin2pcctrl_predicttaken     admin2pcctrl_predicttarget                                                                            
+    //             1         |instr 3| (br)  [127:96]           1                    1                        1                 ::          1                    |predict target 3|    ::              0                           0                 |   emtpy   |      ::                    
+    //             1         |instr 2| (br)  [95:64]            1                    1                        1                 ::          1                    |predict target 2|    ::              1                           1                 |  instr 2  |      ::                    
+    //             1         |instr 1| (add) [63:32]            1                    1                        0                 ::          0                    |      empty     |    ::              1                           1                 |  instr 1  |      ::                 1                         |  instr 1  |               
+    //             0         | empty | (br)  [31:0]             1                    0                        1                 ::          0                    |      empty     |    ::              1                           0                 |   emtpy   |      ::                                              
 
 
     /* ---------admin check which instr of fetched 4 instr is truly jump or branch instruction--------- */
