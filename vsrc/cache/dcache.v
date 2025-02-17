@@ -271,15 +271,31 @@ module dcache #(
   wire [1:0] ff_way_s1;
   wire       victimway_isdirty_s1;
 
-  findfirstone u_findfirstone (
+  findfirstone u_findfirstone_nonvalid (
       .in_vector(~tagarray_dout_wayvalid_s1),
       .onehot   (ff_way_s1),
       .enc      (),
       .valid    ()
   );
 
+  wire tagarray_full_have_clean;
+  assign tagarray_full_have_clean = tagarray_dout_wayisfull_s1 && ((& tagarray_dout_waydirty_s1) == 'b0);
+
+  wire [`CACHE_WAY_NUM-1:0] tagarray_full_clean_way_oh;
+  findfirstone u_findfirstone_clean (
+      .in_vector(~tagarray_dout_waydirty_s1),
+      .onehot   (tagarray_full_clean_way_oh),
+      .enc      (),
+      .valid    ()
+  );
+
+
   assign random_way_s1 = {random_num[0], ~random_num[0]};  //random_num[0] itself is decimal num 
-  assign victimway_oh_s1 = tagarray_dout_wayisfull_s1 ? random_way_s1 : ff_way_s1;
+//  assign victimway_oh_s1 = tagarray_dout_wayisfull_s1 ? random_way_s1 : ff_way_s1;
+  assign victimway_oh_s1 = tagarray_dout_wayisfull_s1 && (tagarray_dout_waydirty_s1 == 2'b11) ? random_way_s1 :
+                           tagarray_full_have_clean  ? tagarray_full_clean_way_oh :
+                          ff_way_s1;
+
   assign victimway_isdirty_s1 = |(tagarray_dout_waydirty_s1 & tagarray_dout_wayvalid_s1 & victimway_oh_s1);
 
   /* -------------------------- calculate victim addr (s1)------------------------- */

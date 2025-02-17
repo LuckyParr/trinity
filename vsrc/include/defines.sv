@@ -193,3 +193,5 @@ end
             end\
         end\
     end
+
+`define CACHE_WAY_NUM 2
