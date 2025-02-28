@@ -137,6 +137,7 @@ module freelist #(
     /* -------------------------------------------------------------------------- */
     /*                             freelist valid vec                             */
     /* -------------------------------------------------------------------------- */
+    //enq_ptr_oh 是 ​入队指针的 One-Hot 编码，用于表示当前入队指针（enq_ptr）在自由列表中的位置。
     reg [`FREELIST_SIZE-1:0] enq_ptr_oh;
     reg [`FREELIST_SIZE-1:0] deq_ptr_oh;
     reg [`FREELIST_SIZE-1:0] walk_ptr_dec;
