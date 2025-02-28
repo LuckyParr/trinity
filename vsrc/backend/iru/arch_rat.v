@@ -1,4 +1,4 @@
-
+//arch_rat 模块是寄存器重命名机制的核心组件，负责维护逻辑寄存器到物理寄存器的映射，并在指令提交时更新映射关系。
 module arch_rat (
     input wire clock,
     input wire reset_n,
